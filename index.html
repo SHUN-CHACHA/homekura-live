@@ -81,7 +81,81 @@ margin-left:6px;
 
 </style>
 </head>
+<script>
 
+const API_KEY = "AIzaSyAj-96z_JFwqNr6Gl0d2p3UdDUHDk2wGEE";
+
+const channels = [
+
+{name:"まぐにぃ",id:"UCMP7QuS4suoONg47Nbi-wrg"},
+{name:"じゃじゃーん菊地",id:"UCi2kiw8hMo0vMAh5lXiafug"},
+{name:"さかいさんだー",id:"UCuk8ABJTVWiApYlEojW_QrA"},
+{name:"Ｍさん",id:"UCGK0iFuXhfA5VnL64xiKEmQ"},
+{name:"タツナミ先生",id:"UCedenULTLYf3DanflEXdRCQ"},
+{name:"神近",id:"UCdLe2q91fJkN9GEyDvItp-w"},
+{name:"しろくる",id:"UCle3bhQ-tZty8KNcACbUBZQ"},
+{name:"たにし",id:"UCiC8VCiSLD3mxoO-QFKQnBQ"},
+{name:"凸もり",id:"UCdN9GjPrqhcrzE27eWNNjxg"},
+{name:"神宮寺ちゃんねる",id:"UCou8IVB8jJPk56H0farYQdA"},
+{name:"カズクラ",id:"UCu3Mp1ZimtNvyA-bcfo9VrQ"},
+{name:"たいたい",id:"UCds-nvoKCcvixVXJ_54QcbQ"},
+{name:"岐阜のこみちん",id:"UCw4frqkotySLjJ_CFZR5-7w"},
+{name:"ナナホシナナ",id:"UCncsOsnMBAAaYb6WidBYIDw"},
+{name:"月成るくす",id:"UCP9rcDSyTRtnu8EsG2CmLMg"},
+{name:"メッス",id:"UCkJeBcOPRBs5bri5B3sFgVg"},
+{name:"よいよい",id:"UCzk-vAIbo3iVBGTNaJQS2qQ"},
+{name:"うえまさ",id:"UCIBDdDXnViOgN5tCpfX7NOA"},
+{name:"久那式リン",id:"UCPs7s2VlkwVWWpjcyjviINA"},
+{name:"犬野はる",id:"UCVB16vOi24WElLNbbmOFFsA"},
+{name:"珍珠花こまり",id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ"},
+{name:"ぽこにゃん",id:"UCO06KZjWOe6b1tXrgzzakZA"},
+{name:"KtR（こーたろー）",id:"UCuJVrV6spfu9QUP6Wr4fugA"}
+
+];
+
+const grid = document.querySelector(".grid");
+
+async function loadStreams(){
+
+grid.innerHTML = "";
+
+for(const ch of channels){
+
+const url =
+`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${ch.id}&eventType=live&type=video&key=${API_KEY}`;
+
+const res = await fetch(url);
+const data = await res.json();
+
+if(data.items.length > 0){
+
+const videoId = data.items[0].id.videoId;
+
+const card = document.createElement("div");
+card.className = "card";
+
+card.innerHTML = `
+<div class="name">${ch.name} 🔴LIVE</div>
+<iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>
+`;
+
+grid.appendChild(card);
+
+}
+
+}
+
+if(grid.innerHTML === ""){
+grid.innerHTML = "<h2>現在配信している人はいません</h2>";
+}
+
+}
+
+loadStreams();
+
+setInterval(loadStreams,60000);
+
+</script>
 <body>
 
 <header>
