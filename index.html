@@ -19,9 +19,7 @@ padding:20px;
 text-align:center;
 }
 
-h1{
-margin:0;
-}
+h1{margin:0;}
 
 .stats{
 text-align:center;
@@ -70,13 +68,9 @@ transition:0.2s;
 transform:translateY(-5px);
 }
 
-.thumb{
-width:100%;
-}
+.thumb{width:100%;}
 
-.info{
-padding:10px;
-}
+.info{padding:10px;}
 
 .streamer{
 display:flex;
@@ -181,22 +175,10 @@ const channels=[
 const liveGrid=document.getElementById("live");
 const rankingGrid=document.getElementById("ranking");
 
-async function getChannelIcon(channelId){
-
-const url=`https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${channelId}&key=${API_KEY}`;
-const res=await fetch(url);
-const data=await res.json();
-
-if(data.items.length>0){
-return data.items[0].snippet.thumbnails.default.url;
-}
-
-return "";
-}
-
 async function getViewers(videoId){
 
 const url=`https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${videoId}&key=${API_KEY}`;
+
 const res=await fetch(url);
 const data=await res.json();
 
@@ -205,6 +187,7 @@ return data.items[0].liveStreamingDetails.concurrentViewers || 0;
 }
 
 return 0;
+
 }
 
 async function loadStreams(){
@@ -224,12 +207,14 @@ const data=await res.json();
 if(data.items.length>0){
 
 const item=data.items[0];
+
 const videoId=item.id.videoId;
 const title=item.snippet.title;
 const thumb=item.snippet.thumbnails.medium.url;
 
 const viewers=await getViewers(videoId);
-const icon=await getChannelIcon(ch.id);
+
+const icon=`https://yt3.googleusercontent.com/channel/${ch.id}`;
 
 streams.push({
 name:ch.name,
@@ -250,7 +235,7 @@ document.getElementById("liveCount").innerText=streams.length;
 
 streams.forEach((s,i)=>{
 
-const mc = s.title.toLowerCase().includes("minecraft") ? '<span class="minecraft">🎮Minecraft</span>' : "";
+const mc=s.title.toLowerCase().includes("minecraft") ? '<span class="minecraft">🎮Minecraft</span>' : "";
 
 const card=`
 
