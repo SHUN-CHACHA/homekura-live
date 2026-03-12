@@ -19,9 +19,7 @@ padding:20px;
 text-align:center;
 }
 
-h1{
-margin:0;
-}
+h1{margin:0;}
 
 .stats{
 text-align:center;
@@ -56,9 +54,14 @@ background:#1a1a1a;
 border-radius:12px;
 overflow:hidden;
 box-shadow:0 0 10px rgba(0,0,0,0.6);
+transition:.2s;
 }
 
-.card img{
+.card:hover{
+transform:translateY(-4px);
+}
+
+.thumb{
 width:100%;
 }
 
@@ -68,11 +71,12 @@ padding:10px;
 
 .name{
 font-weight:bold;
-margin-bottom:5px;
+margin-bottom:6px;
 }
 
 .title{
 font-size:14px;
+opacity:.9;
 }
 
 </style>
@@ -137,7 +141,9 @@ for(const ch of channels){
 try{
 
 const rss=`https://www.youtube.com/feeds/videos.xml?channel_id=${ch.id}`;
-const proxy=`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(rss)}`;
+
+// 安定プロキシ
+const proxy=`https://api.allorigins.win/raw?url=${encodeURIComponent(rss)}`;
 
 const res=await fetch(proxy);
 const xmlText=await res.text();
@@ -146,7 +152,6 @@ const parser=new DOMParser();
 const xml=parser.parseFromString(xmlText,"text/xml");
 
 const entry=xml.querySelector("entry");
-
 if(!entry) continue;
 
 const title=entry.querySelector("title").textContent;
@@ -160,7 +165,7 @@ const card=`
 
 <a href="https://youtube.com/watch?v=${videoId}" target="_blank">
 
-<img src="${thumb}">
+<img class="thumb" src="${thumb}">
 
 <div class="info">
 
@@ -180,18 +185,22 @@ grid.innerHTML+=card;
 count++;
 
 }catch(e){
-console.log("error",ch.name);
+console.log("取得失敗:",ch.name);
 }
 
 }
 
-document.getElementById("count").innerText=count;
+document.getElementById("count").textContent=count;
 
 }
 
 loadVideos();
 
+// 5分更新
 setInterval(loadVideos,300000);
+
+
+// 検索
 
 document.getElementById("search").addEventListener("input",function(){
 
