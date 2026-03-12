@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>ほめクラLIVE</title>
+<title>homeｸﾗ 配信ポータル</title>
 
 <style>
 
@@ -10,53 +10,61 @@ body{
 background:#0f0f0f;
 color:white;
 font-family:sans-serif;
+margin:0;
 text-align:center;
+}
+
+header{
+background:#1f1f1f;
+padding:20px;
+}
+
+h1{
+margin:0;
+font-size:28px;
+}
+
+p{
+opacity:0.8;
 }
 
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
 gap:20px;
 padding:20px;
 }
 
 .card{
-background:#1b1b1b;
+background:#1a1a1a;
 border-radius:10px;
 padding:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.5);
 }
 
-.thumb{
+iframe{
 width:100%;
+height:180px;
+border:none;
 border-radius:8px;
 }
 
-.live{
-color:#ff4444;
-font-weight:bold;
-}
-
-button{
-background:red;
-border:none;
-padding:10px;
-color:white;
-border-radius:6px;
+.name{
+margin:10px 0;
+font-size:16px;
 }
 
 </style>
-
 </head>
 
 <body>
 
-<h1>ほめクラLIVE</h1>
+<header>
+<h1>🏠homeｸﾗ 配信ポータル</h1>
+<p>このサーバーに参加している配信者のYouTubeライブ一覧</p>
+</header>
 
-<div class="grid" id="grid"></div>
-
-<script>
-
-const streamers=[
+<div class="grid">
 
 <div class="card"><div class="name">まぐにぃ</div><iframe src="https://www.youtube.com/channel/UCMP7QuS4suoONg47Nbi-wrg"></iframe></div>
 <div class="card"><div class="name">じゃじゃーん菊地</div><iframe src="https://www.youtube.com/channel/UCi2kiw8hMo0vMAh5lXiafug"></iframe></div>
@@ -82,34 +90,7 @@ const streamers=[
 <div class="card"><div class="name">ぽこにゃん</div><iframe src="https://www.youtube.com/channel/UCO06KZjWOe6b1tXrgzzakZA"></iframe></div>
 <div class="card"><div class="name">KtR（こーたろー）</div><iframe src="https://www.youtube.com/channel/UCuJVrV6spfu9QUP6Wr4fugA"></iframe></div>
 
-
-];
-
-const grid=document.getElementById("grid");
-
-streamers.forEach(s=>{
-
-const div=document.createElement("div");
-div.className="card";
-
-div.innerHTML=`
-
-<h3>${s.name}</h3>
-
-<img class="thumb"
-src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg">
-
-<button onclick="window.open('https://youtube.com/@${s.handle}')">
-チャンネル
-</button>
-
-`;
-
-grid.appendChild(div);
-
-});
-
-</script>
+</div>
 
 </body>
 </html>
