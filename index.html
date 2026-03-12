@@ -7,10 +7,10 @@
 <style>
 
 body{
+margin:0;
+font-family:sans-serif;
 background:#0f0f0f;
 color:white;
-font-family:sans-serif;
-margin:0;
 }
 
 header{
@@ -19,7 +19,10 @@ padding:20px;
 text-align:center;
 }
 
-h1{margin:0;}
+h1{
+margin:0;
+font-size:28px;
+}
 
 .stats{
 text-align:center;
@@ -32,7 +35,7 @@ text-align:center;
 padding:10px;
 }
 
-input{
+.search input{
 padding:10px;
 width:300px;
 border-radius:8px;
@@ -40,19 +43,12 @@ border:none;
 font-size:16px;
 }
 
-.section{
-font-size:22px;
-padding:10px 20px;
-max-width:1500px;
-margin:auto;
-}
-
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
 gap:20px;
 padding:20px;
-max-width:1500px;
+max-width:1400px;
 margin:auto;
 }
 
@@ -68,26 +64,16 @@ transition:0.2s;
 transform:translateY(-5px);
 }
 
-.thumb{width:100%;}
+.thumb{
+width:100%;
+}
 
-.info{padding:10px;}
+.info{
+padding:10px;
+}
 
 .streamer{
-display:flex;
-align-items:center;
-gap:10px;
 font-weight:bold;
-}
-
-.icon{
-width:32px;
-height:32px;
-border-radius:50%;
-}
-
-.title{
-font-size:14px;
-margin-top:6px;
 }
 
 .live{
@@ -96,24 +82,15 @@ font-size:12px;
 margin-left:6px;
 }
 
-.viewers{
-font-size:12px;
-opacity:0.8;
-margin-top:4px;
-}
-
 .minecraft{
 color:#00ff9d;
 font-size:12px;
 margin-left:6px;
 }
 
-.rank{
-background:#ff4444;
-padding:2px 6px;
-border-radius:4px;
-font-size:12px;
-margin-left:6px;
+.title{
+font-size:14px;
+margin-top:6px;
 }
 
 </style>
@@ -122,27 +99,23 @@ margin-left:6px;
 <body>
 
 <header>
+
 <h1>🏠 homeクラ 配信ポータル</h1>
-<p>homeクラ参加者のYouTube配信一覧</p>
+<p>homeクラ参加者の配信一覧</p>
+
 </header>
 
 <div class="stats">
-🔴 現在のLIVE人数：<span id="liveCount">0</span>
+🔴 現在配信中：<span id="liveCount">0</span>
 </div>
 
 <div class="search">
-<input type="text" id="search" placeholder="配信者検索">
+<input id="search" placeholder="配信者検索">
 </div>
 
-<div class="section">👑 同接ランキング</div>
-<div id="ranking" class="grid"></div>
-
-<div class="section">🔴 LIVE</div>
-<div id="live" class="grid"></div>
+<div id="grid" class="grid"></div>
 
 <script>
-
-const API_KEY="AIzaSyAj-96z_JFwqNr6Gl0d2p3UdDUHDk2wGEE";
 
 const channels=[
 
@@ -172,94 +145,60 @@ const channels=[
 
 ];
 
-const liveGrid=document.getElementById("live");
-const rankingGrid=document.getElementById("ranking");
-
-async function getViewers(videoId){
-
-const url=`https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${videoId}&key=${API_KEY}`;
-
-const res=await fetch(url);
-const data=await res.json();
-
-if(data.items.length>0){
-return data.items[0].liveStreamingDetails.concurrentViewers || 0;
-}
-
-return 0;
-
-}
+const grid=document.getElementById("grid");
 
 async function loadStreams(){
 
-liveGrid.innerHTML="";
-rankingGrid.innerHTML="";
+grid.innerHTML="";
 
-let streams=[];
+let liveCount=0;
 
 for(const ch of channels){
 
-const url=`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${ch.id}&eventType=live&type=video&key=${API_KEY}`;
+const rss=`https://www.youtube.com/feeds/videos.xml?channel_id=${ch.id}`;
 
-const res=await fetch(url);
+const proxy=`https://api.allorigins.win/get?url=${encodeURIComponent(rss)}`;
+
+const res=await fetch(proxy);
 const data=await res.json();
 
-if(data.items.length>0){
+const parser=new DOMParser();
+const xml=parser.parseFromString(data.contents,"text/xml");
 
-const item=data.items[0];
+const entry=xml.querySelector("entry");
 
-const videoId=item.id.videoId;
-const title=item.snippet.title;
-const thumb=item.snippet.thumbnails.medium.url;
+if(!entry) continue;
 
-const viewers=await getViewers(videoId);
+const title=entry.querySelector("title").textContent;
+const videoId=entry.querySelector("yt\\:videoId").textContent;
 
-const icon=`https://yt3.googleusercontent.com/channel/${ch.id}`;
+if(title.includes("ライブ") || title.toLowerCase().includes("live")){
 
-streams.push({
-name:ch.name,
-videoId,
-title,
-thumb,
-viewers,
-icon
-});
+liveCount++;
 
-}
+const thumb=`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 
-}
-
-streams.sort((a,b)=>b.viewers-a.viewers);
-
-document.getElementById("liveCount").innerText=streams.length;
-
-streams.forEach((s,i)=>{
-
-const mc=s.title.toLowerCase().includes("minecraft") ? '<span class="minecraft">🎮Minecraft</span>' : "";
+const mc=title.toLowerCase().includes("minecraft") ? '<span class="minecraft">🎮Minecraft</span>' : "";
 
 const card=`
 
 <div class="card">
 
-<a href="https://youtube.com/watch?v=${s.videoId}" target="_blank">
+<a href="https://youtube.com/watch?v=${videoId}" target="_blank">
 
-<img class="thumb" src="${s.thumb}">
+<img class="thumb" src="${thumb}">
 
 <div class="info">
 
 <div class="streamer">
 
-<img class="icon" src="${s.icon}">
-
-${s.name}
+${ch.name}
 <span class="live">LIVE</span>
-<span class="rank">#${i+1}</span>
 ${mc}
 
 </div>
 
-<div class="title">${s.title}</div>
-<div class="viewers">👀 ${s.viewers} 人視聴中</div>
+<div class="title">${title}</div>
 
 </div>
 
@@ -269,26 +208,28 @@ ${mc}
 
 `;
 
-liveGrid.innerHTML+=card;
+grid.innerHTML+=card;
 
-if(i<5){
-rankingGrid.innerHTML+=card;
 }
 
-});
+}
+
+document.getElementById("liveCount").innerText=liveCount;
 
 }
 
 loadStreams();
-setInterval(loadStreams,30000);
+
+setInterval(loadStreams,300000);
 
 document.getElementById("search").addEventListener("input",function(){
 
 const word=this.value.toLowerCase();
-const cards=document.querySelectorAll(".card");
 
-cards.forEach(c=>{
-c.style.display=c.innerText.toLowerCase().includes(word)?"block":"none";
+document.querySelectorAll(".card").forEach(card=>{
+
+card.style.display=card.innerText.toLowerCase().includes(word) ? "block":"none";
+
 });
 
 });
