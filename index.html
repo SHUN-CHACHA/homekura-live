@@ -12,12 +12,12 @@ background:#0f0f0f;
 color:white;
 font-family:sans-serif;
 margin:0;
-text-align:center;
 }
 
 header{
 background:#1f1f1f;
 padding:20px;
+text-align:center;
 box-shadow:0 4px 10px rgba(0,0,0,0.5);
 }
 
@@ -26,42 +26,73 @@ margin:0;
 font-size:30px;
 }
 
-p{
-opacity:0.8;
-}
-
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+grid-template-columns:repeat(auto-fill,minmax(360px,1fr));
 gap:20px;
 padding:20px;
-max-width:1400px;
+max-width:1500px;
 margin:auto;
 }
 
 .card{
 background:#1a1a1a;
 border-radius:12px;
-padding:12px;
+overflow:hidden;
+transition:0.25s;
 box-shadow:0 0 10px rgba(0,0,0,0.5);
 }
 
-iframe{
-width:100%;
-height:210px;
-border:none;
-border-radius:8px;
+.card:hover{
+transform:translateY(-5px);
+box-shadow:0 10px 20px rgba(0,0,0,0.8);
 }
 
-.name{
-margin:10px 0;
-font-size:16px;
+.thumb{
+width:100%;
+}
+
+.info{
+padding:12px;
+}
+
+.streamer{
+display:flex;
+align-items:center;
+gap:10px;
 font-weight:bold;
+}
+
+.icon{
+width:32px;
+height:32px;
+border-radius:50%;
+}
+
+.title{
+font-size:14px;
+margin-top:6px;
+opacity:0.9;
 }
 
 .live{
 color:#ff4444;
 margin-left:6px;
+font-size:12px;
+}
+
+.upcoming{
+color:#ffaa00;
+margin-left:6px;
+font-size:12px;
+}
+
+.section{
+max-width:1500px;
+margin:auto;
+padding:10px 20px;
+font-size:22px;
+font-weight:bold;
 }
 
 </style>
@@ -71,10 +102,14 @@ margin-left:6px;
 
 <header>
 <h1>🏠 homeクラ 配信ポータル</h1>
-<p>このサーバーに参加している配信者のYouTubeライブ一覧</p>
+<p style="opacity:0.8">homeクラ参加者のYouTube配信状況</p>
 </header>
 
-<div class="grid"></div>
+<div class="section">🔴 LIVE</div>
+<div id="live" class="grid"></div>
+
+<div class="section">🟡 配信予定</div>
+<div id="upcoming" class="grid"></div>
 
 <script>
 
@@ -108,39 +143,66 @@ const channels=[
 
 ];
 
-const grid=document.querySelector(".grid");
+const liveGrid=document.getElementById("live");
+const upcomingGrid=document.getElementById("upcoming");
 
-async function loadStreams(){
-
-grid.innerHTML="";
-
-for(const ch of channels){
+async function checkChannel(ch){
 
 const url=`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${ch.id}&eventType=live&type=video&key=${API_KEY}`;
-
 const res=await fetch(url);
 const data=await res.json();
 
 if(data.items.length>0){
 
-const videoId=data.items[0].id.videoId;
+const item=data.items[0];
+const videoId=item.id.videoId;
+const title=item.snippet.title;
+const thumb=item.snippet.thumbnails.medium.url;
 
 const card=document.createElement("div");
 card.className="card";
 
 card.innerHTML=`
-<div class="name">${ch.name}<span class="live">🔴LIVE</span></div>
-<iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>
+
+<a href="https://youtube.com/watch?v=${videoId}" target="_blank">
+
+<img class="thumb" src="${thumb}">
+
+<div class="info">
+
+<div class="streamer">
+
+<img class="icon" src="https://yt3.googleusercontent.com/ytc/APkrFKZ">
+
+${ch.name}
+
+<span class="live">LIVE</span>
+
+</div>
+
+<div class="title">${title}</div>
+
+</div>
+
+</a>
+
 `;
 
-grid.appendChild(card);
+liveGrid.appendChild(card);
 
 }
 
 }
 
-if(grid.innerHTML===""){
-grid.innerHTML="<h2>現在配信している人はいません</h2>";
+async function loadStreams(){
+
+liveGrid.innerHTML="";
+upcomingGrid.innerHTML="";
+
+for(const ch of channels){
+
+await checkChannel(ch);
+
 }
 
 }
