@@ -2,218 +2,231 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>homeクラ 配信ポータル</title>
 
 <style>
-
-body{
-margin:0;
-font-family:sans-serif;
-background:#0f0f0f;
-color:white;
+body {
+    margin: 0;
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+    background: #0f0f0f;
+    color: white;
 }
 
-header{
-background:#1f1f1f;
-padding:20px;
-text-align:center;
+header {
+    background: #1f1f1f;
+    padding: 30px 20px;
+    text-align: center;
+    border-bottom: 1px solid #333;
 }
 
-h1{margin:0;}
+h1 { margin: 0; font-size: 24px; }
+header p { margin: 10px 0 0; opacity: 0.7; font-size: 14px; }
 
-.stats{
-text-align:center;
-padding:10px;
-font-size:18px;
+.stats {
+    text-align: center;
+    padding: 15px;
+    font-size: 16px;
+    color: #aaa;
 }
 
-.search{
-text-align:center;
-padding:10px;
+.search {
+    text-align: center;
+    padding: 10px;
+    position: sticky;
+    top: 0;
+    background: #0f0f0f;
+    z-index: 100;
 }
 
-.search input{
-padding:10px;
-width:300px;
-border-radius:8px;
-border:none;
-font-size:16px;
+.search input {
+    padding: 12px 20px;
+    width: 80%;
+    max-width: 400px;
+    border-radius: 25px;
+    border: 1px solid #333;
+    background: #1a1a1a;
+    color: white;
+    font-size: 16px;
+    outline: none;
 }
 
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-gap:20px;
-padding:20px;
-max-width:1400px;
-margin:auto;
+.search input:focus {
+    border-color: #ff0000;
 }
 
-.card{
-background:#1a1a1a;
-border-radius:12px;
-overflow:hidden;
-box-shadow:0 0 10px rgba(0,0,0,0.6);
-transition:.2s;
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 1400px;
+    margin: auto;
 }
 
-.card:hover{
-transform:translateY(-4px);
+.card {
+    background: #1a1a1a;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.thumb{
-width:100%;
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.8);
 }
 
-.info{
-padding:10px;
+.card a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
 
-.name{
-font-weight:bold;
-margin-bottom:6px;
+.thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
 }
 
-.title{
-font-size:14px;
-opacity:.9;
+.info {
+    padding: 12px;
 }
 
+.name {
+    font-weight: bold;
+    font-size: 14px;
+    color: #aaa;
+    margin-bottom: 4px;
+}
+
+.title {
+    font-size: 15px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>🏠 homeクラ 配信ポータル</h1>
-<p>homeクラ参加者の最新動画</p>
+    <h1>🏠 homeクラ 配信ポータル</h1>
+    <p>homeクラ参加者の最新動画をチェック</p>
 </header>
 
 <div class="stats">
-表示数：<span id="count">0</span>
+    取得済みチャンネル：<span id="count">0</span> / 23
 </div>
 
 <div class="search">
-<input id="search" placeholder="配信者検索">
+    <input id="search" placeholder="配信者名や動画タイトルで検索...">
 </div>
 
-<div id="grid" class="grid"></div>
+<div id="grid" class="grid">
+    </div>
 
 <script>
-
-const channels=[
-
-{name:"まぐにぃ",id:"UCMP7QuS4suoONg47Nbi-wrg"},
-{name:"じゃじゃーん菊地",id:"UCi2kiw8hMo0vMAh5lXiafug"},
-{name:"さかいさんだー",id:"UCuk8ABJTVWiApYlEojW_QrA"},
-{name:"Ｍさん",id:"UCGK0iFuXhfA5VnL64xiKEmQ"},
-{name:"タツナミ先生",id:"UCedenULTLYf3DanflEXdRCQ"},
-{name:"神近",id:"UCdLe2q91fJkN9GEyDvItp-w"},
-{name:"しろくる",id:"UCle3bhQ-tZty8KNcACbUBZQ"},
-{name:"たにし",id:"UCiC8VCiSLD3mxoO-QFKQnBQ"},
-{name:"凸もり",id:"UCdN9GjPrqhcrzE27eWNNjxg"},
-{name:"神宮寺ちゃんねる",id:"UCou8IVB8jJPk56H0farYQdA"},
-{name:"カズクラ",id:"UCu3Mp1ZimtNvyA-bcfo9VrQ"},
-{name:"たいたい",id:"UCds-nvoKCcvixVXJ_54QcbQ"},
-{name:"岐阜のこみちん",id:"UCw4frqkotySLjJ_CFZR5-7w"},
-{name:"ナナホシナナ",id:"UCncsOsnMBAAaYb6WidBYIDw"},
-{name:"月成るくす",id:"UCP9rcDSyTRtnu8EsG2CmLMg"},
-{name:"メッス",id:"UCkJeBcOPRBs5bri5B3sFgVg"},
-{name:"よいよい",id:"UCzk-vAIbo3iVBGTNaJQS2qQ"},
-{name:"うえまさ",id:"UCIBDdDXnViOgN5tCpfX7NOA"},
-{name:"久那式リン",id:"UCPs7s2VlkwVWWpjcyjviINA"},
-{name:"犬野はる",id:"UCVB16vOi24WElLNbbmOFFsA"},
-{name:"珍珠花こまり",id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ"},
-{name:"ぽこにゃん",id:"UCO06KZjWOe6b1tXrgzzakZA"},
-{name:"KtR（こーたろー）",id:"UCuJVrV6spfu9QUP6Wr4fugA"}
-
+const channels = [
+    {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg"},
+    {name:"じゃじゃーん菊地", id:"UCi2kiw8hMo0vMAh5lXiafug"},
+    {name:"さかいさんだー", id:"UCuk8ABJTVWiApYlEojW_QrA"},
+    {name:"Ｍさん", id:"UCGK0iFuXhfA5VnL64xiKEmQ"},
+    {name:"タツナミ先生", id:"UCedenULTLYf3DanflEXdRCQ"},
+    {name:"神近", id:"UCdLe2q91fJkN9GEyDvItp-w"},
+    {name:"しろくる", id:"UCle3bhQ-tZty8KNcACbUBZQ"},
+    {name:"たにし", id:"UCiC8VCiSLD3mxoO-QFKQnBQ"},
+    {name:"凸もり", id:"UCdN9GjPrqhcrzE27eWNNjxg"},
+    {name:"神宮寺ちゃんねる", id:"UCou8IVB8jJPk56H0farYQdA"},
+    {name:"カズクラ", id:"UCu3Mp1ZimtNvyA-bcfo9VrQ"},
+    {name:"たいたい", id:"UCds-nvoKCcvixVXJ_54QcbQ"},
+    {name:"岐阜のこみちん", id:"UCw4frqkotySLjJ_CFZR5-7w"},
+    {name:"ナナホシナナ", id:"UCncsOsnMBAAaYb6WidBYIDw"},
+    {name:"月成るくす", id:"UCP9rcDSyTRtnu8EsG2CmLMg"},
+    {name:"メッス", id:"UCkJeBcOPRBs5bri5B3sFgVg"},
+    {name:"よいよい", id:"UCzk-vAIbo3iVBGTNaJQS2qQ"},
+    {name:"うえまさ", id:"UCIBDdDXnViOgN5tCpfX7NOA"},
+    {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA"},
+    {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA"},
+    {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ"},
+    {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA"},
+    {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA"}
 ];
 
-const grid=document.getElementById("grid");
+const grid = document.getElementById("grid");
 
-async function loadVideos(){
+async function loadVideos() {
+    let count = 0;
+    let htmlBuffer = ""; // 高速化のため
 
-grid.innerHTML="";
-let count=0;
+    // 取得中メッセージ（任意）
+    if(grid.innerHTML === "") grid.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>読み込み中...</p>";
 
-for(const ch of channels){
+    for (const ch of channels) {
+        try {
+            const rss = `https://www.youtube.com/feeds/videos.xml?channel_id=${ch.id}`;
+            const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(rss)}`;
 
-try{
+            const res = await fetch(proxy);
+            if (!res.ok) throw new Error("Network response was not ok");
+            
+            const xmlText = await res.text();
+            const parser = new DOMParser();
+            const xml = parser.parseFromString(xmlText, "text/xml");
 
-const rss=`https://www.youtube.com/feeds/videos.xml?channel_id=${ch.id}`;
+            const entry = xml.querySelector("entry");
+            if (!entry) continue;
 
-// 安定プロキシ
-const proxy=`https://api.allorigins.win/raw?url=${encodeURIComponent(rss)}`;
+            const title = entry.querySelector("title").textContent;
+            // 修正ポイント：コロンを含むタグを安全に取得
+            const videoId = xml.getElementsByTagName("yt:videoId")[0]?.textContent || 
+                            entry.querySelector("videoId")?.textContent;
+            
+            if (!videoId) continue;
 
-const res=await fetch(proxy);
-const xmlText=await res.text();
+            const thumb = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 
-const parser=new DOMParser();
-const xml=parser.parseFromString(xmlText,"text/xml");
+            htmlBuffer += `
+                <div class="card">
+                    <a href="https://youtube.com/watch?v=${videoId}" target="_blank">
+                        <img class="thumb" src="${thumb}" alt="${ch.name}" loading="lazy">
+                        <div class="info">
+                            <div class="name">${ch.name}</div>
+                            <div class="title">${title}</div>
+                        </div>
+                    </a>
+                </div>
+            `;
+            count++;
+        } catch (e) {
+            console.warn("取得失敗:", ch.name);
+        }
+    }
 
-const entry=xml.querySelector("entry");
-if(!entry) continue;
-
-const title=entry.querySelector("title").textContent;
-const videoId=entry.querySelector("yt\\:videoId").textContent;
-
-const thumb=`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
-
-const card=`
-
-<div class="card">
-
-<a href="https://youtube.com/watch?v=${videoId}" target="_blank">
-
-<img class="thumb" src="${thumb}">
-
-<div class="info">
-
-<div class="name">${ch.name}</div>
-
-<div class="title">${title}</div>
-
-</div>
-
-</a>
-
-</div>
-
-`;
-
-grid.innerHTML+=card;
-count++;
-
-}catch(e){
-console.log("取得失敗:",ch.name);
+    grid.innerHTML = htmlBuffer;
+    document.getElementById("count").textContent = count;
 }
 
-}
-
-document.getElementById("count").textContent=count;
-
-}
-
+// 初期読み込み
 loadVideos();
 
-// 5分更新
-setInterval(loadVideos,300000);
+// 10分おきに更新（負荷を考慮して少し長めに設定）
+setInterval(loadVideos, 600000);
 
-
-// 検索
-
-document.getElementById("search").addEventListener("input",function(){
-
-const word=this.value.toLowerCase();
-
-document.querySelectorAll(".card").forEach(card=>{
-
-card.style.display=card.innerText.toLowerCase().includes(word)?"block":"none";
-
+// 検索機能
+document.getElementById("search").addEventListener("input", function() {
+    const word = this.value.toLowerCase();
+    const cards = document.querySelectorAll(".card");
+    
+    cards.forEach(card => {
+        const isMatch = card.innerText.toLowerCase().includes(word);
+        card.style.display = isMatch ? "block" : "none";
+    });
 });
-
-});
-
 </script>
 
 </body>
