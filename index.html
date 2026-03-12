@@ -23,6 +23,12 @@ h1{
 margin:0;
 }
 
+.stats{
+text-align:center;
+padding:10px;
+font-size:18px;
+}
+
 .search{
 text-align:center;
 padding:10px;
@@ -108,6 +114,14 @@ font-size:12px;
 margin-left:6px;
 }
 
+.rank{
+background:#ff4444;
+padding:2px 6px;
+border-radius:4px;
+font-size:12px;
+margin-left:6px;
+}
+
 </style>
 </head>
 
@@ -118,15 +132,19 @@ margin-left:6px;
 <p>homeクラ参加者のYouTube配信一覧</p>
 </header>
 
+<div class="stats">
+🔴 現在のLIVE人数：<span id="liveCount">0</span>
+</div>
+
 <div class="search">
 <input type="text" id="search" placeholder="配信者検索">
 </div>
 
+<div class="section">👑 同接ランキング</div>
+<div id="ranking" class="grid"></div>
+
 <div class="section">🔴 LIVE</div>
 <div id="live" class="grid"></div>
-
-<div class="section">🟡 配信予定</div>
-<div id="upcoming" class="grid"></div>
 
 <script>
 
@@ -161,7 +179,20 @@ const channels=[
 ];
 
 const liveGrid=document.getElementById("live");
-const upcomingGrid=document.getElementById("upcoming");
+const rankingGrid=document.getElementById("ranking");
+
+async function getChannelIcon(channelId){
+
+const url=`https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${channelId}&key=${API_KEY}`;
+const res=await fetch(url);
+const data=await res.json();
+
+if(data.items.length>0){
+return data.items[0].snippet.thumbnails.default.url;
+}
+
+return "";
+}
 
 async function getViewers(videoId){
 
@@ -170,16 +201,23 @@ const res=await fetch(url);
 const data=await res.json();
 
 if(data.items.length>0){
-return data.items[0].liveStreamingDetails.concurrentViewers || "0";
+return data.items[0].liveStreamingDetails.concurrentViewers || 0;
 }
 
-return "0";
-
+return 0;
 }
 
-async function checkChannel(ch){
+async function loadStreams(){
+
+liveGrid.innerHTML="";
+rankingGrid.innerHTML="";
+
+let streams=[];
+
+for(const ch of channels){
 
 const url=`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${ch.id}&eventType=live&type=video&key=${API_KEY}`;
+
 const res=await fetch(url);
 const data=await res.json();
 
@@ -191,54 +229,68 @@ const title=item.snippet.title;
 const thumb=item.snippet.thumbnails.medium.url;
 
 const viewers=await getViewers(videoId);
+const icon=await getChannelIcon(ch.id);
 
-const card=document.createElement("div");
-card.className="card";
+streams.push({
+name:ch.name,
+videoId,
+title,
+thumb,
+viewers,
+icon
+});
 
-const mc = title.toLowerCase().includes("minecraft") ? '<span class="minecraft">🎮Minecraft</span>' : "";
+}
 
-card.innerHTML=`
+}
 
-<a href="https://youtube.com/watch?v=${videoId}" target="_blank">
+streams.sort((a,b)=>b.viewers-a.viewers);
 
-<img class="thumb" src="${thumb}">
+document.getElementById("liveCount").innerText=streams.length;
+
+streams.forEach((s,i)=>{
+
+const mc = s.title.toLowerCase().includes("minecraft") ? '<span class="minecraft">🎮Minecraft</span>' : "";
+
+const card=`
+
+<div class="card">
+
+<a href="https://youtube.com/watch?v=${s.videoId}" target="_blank">
+
+<img class="thumb" src="${s.thumb}">
 
 <div class="info">
 
 <div class="streamer">
 
-<img class="icon" src="https://yt3.googleusercontent.com/ytc/APkrFKZ">
+<img class="icon" src="${s.icon}">
 
-${ch.name}
+${s.name}
 <span class="live">LIVE</span>
+<span class="rank">#${i+1}</span>
 ${mc}
 
 </div>
 
-<div class="title">${title}</div>
-<div class="viewers">👀 ${viewers} 人視聴中</div>
+<div class="title">${s.title}</div>
+<div class="viewers">👀 ${s.viewers} 人視聴中</div>
 
 </div>
 
 </a>
 
+</div>
+
 `;
 
-liveGrid.appendChild(card);
+liveGrid.innerHTML+=card;
 
+if(i<5){
+rankingGrid.innerHTML+=card;
 }
 
-}
-
-async function loadStreams(){
-
-liveGrid.innerHTML="";
-
-for(const ch of channels){
-
-await checkChannel(ch);
-
-}
+});
 
 }
 
@@ -260,3 +312,4 @@ c.style.display=c.innerText.toLowerCase().includes(word)?"block":"none";
 
 </body>
 </html>
+```
