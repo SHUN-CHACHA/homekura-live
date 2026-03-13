@@ -17,9 +17,20 @@
     header { background: #1f1f1f; padding: 10px 20px; text-align: center; border-bottom: 2px solid #333; height: 50px; display: flex; justify-content: center; align-items: center; }
     .header-logo { max-height: 100%; width: auto; }
 
+    /* プログレスバーのスタイル */
+    .progress-container { width: 100%; height: 3px; background: #333; position: relative; overflow: hidden; }
+    #progress-bar { width: 100%; height: 100%; background: #28a745; transition: width 1s linear; }
+
     /* 追加フォームのスタイル */
     .admin-panel { max-width: 1400px; margin: 20px auto; padding: 15px; background: #1a1a1a; border-radius: 8px; border: 1px solid #333; }
-    .admin-panel h3 { margin-top: 0; font-size: 14px; color: #888; }
+    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .admin-panel h3 { margin: 0; font-size: 14px; color: #888; }
+    .timer-area { display: flex; align-items: center; }
+    .btn-refresh { background: #444; color: #fff; border: 1px solid #555; padding: 4px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; margin-right: 12px; transition: 0.2s; }
+    .btn-refresh:hover { background: #555; }
+    .btn-refresh:disabled { opacity: 0.5; cursor: not-allowed; }
+    #timer { font-size: 11px; color: #888; font-family: monospace; }
+
     .input-group { display: flex; flex-wrap: wrap; gap: 8px; }
     .input-group input { background: #222; border: 1px solid #444; color: white; padding: 8px; border-radius: 4px; flex: 1; min-width: 140px; font-size: 12px; }
     .btn-add { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
@@ -62,6 +73,10 @@
 
 <header><img src="logo.png" alt="homeクラ" class="header-logo"></header>
 
+<div class="progress-container">
+    <div id="progress-bar"></div>
+</div>
+
 <div id="liveSection" style="display: none;">
     <div class="section-title" style="color:#ff4444">🔴 配信中のメンバー</div>
     <div id="liveGrid" class="grid"></div>
@@ -70,7 +85,13 @@
 <hr style="border: 0; border-top: 1px solid #222; margin: 20px 0;">
 
 <div class="admin-panel">
-    <h3>➕ 配信者を追加する</h3>
+    <div class="admin-header">
+        <h3>➕ 配信者を追加する</h3>
+        <div class="timer-area">
+            <button id="refresh-btn" class="btn-refresh" onclick="manualRefresh()">今すぐ更新</button>
+            <span id="timer">Next Update: --:--</span>
+        </div>
+    </div>
     <div class="input-group">
         <input type="text" id="new-name" placeholder="名前 (例: HIKAKIN)">
         <input type="text" id="new-id" placeholder="チャンネルID (UC...)">
@@ -85,7 +106,7 @@
 <div id="allGrid" class="grid"></div>
 
 <script>
-const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY'; // あなたのAPIキーを入れてください
+const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY'; 
 
 const defaultChannels = [
     {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29", color:"#ff9900"},
@@ -114,6 +135,8 @@ const defaultChannels = [
 ];
 
 let channels = [];
+const UPDATE_INTERVAL = 600; // 10分
+let timeLeft = UPDATE_INTERVAL;
 
 function initChannels() {
     const saved = localStorage.getItem('custom_channels');
@@ -225,9 +248,47 @@ async function loadPortal() {
     } catch (e) { console.error(e); }
 }
 
+// カウントダウンとバーの表示更新
+function updateTimerDisplay() {
+    const timerElement = document.getElementById('timer');
+    const barElement = document.getElementById('progress-bar');
+    
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    timerElement.innerText = `Next Update: ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    
+    const percentage = (timeLeft / UPDATE_INTERVAL) * 100;
+    barElement.style.width = `${percentage}%`;
+    barElement.style.background = timeLeft < 60 ? "#ff4444" : "#28a745";
+}
+
+// 手動更新
+async function manualRefresh() {
+    const btn = document.getElementById('refresh-btn');
+    btn.innerText = "更新中...";
+    btn.disabled = true;
+
+    await loadPortal();
+    
+    timeLeft = UPDATE_INTERVAL;
+    updateTimerDisplay();
+    btn.innerText = "今すぐ更新";
+    btn.disabled = false;
+}
+
+// 初期化とループ開始
 initChannels();
 loadPortal();
-setInterval(loadPortal, 600000);
+updateTimerDisplay();
+
+setInterval(() => {
+    timeLeft--;
+    if (timeLeft < 0) {
+        loadPortal();
+        timeLeft = UPDATE_INTERVAL;
+    }
+    updateTimerDisplay();
+}, 1000);
 </script>
 </body>
 </html>
