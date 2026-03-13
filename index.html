@@ -6,39 +6,70 @@
 <title>homeクラ 配信ポータル</title>
 <style>
     body { margin: 0; font-family: sans-serif; background: #0f0f0f; color: white; padding-bottom: 50px; }
-    header { background: #1f1f1f; padding: 15px 20px; text-align: center; border-bottom: 2px solid #333; display: flex; justify-content: center; align-items: center; height: 60px; }
+    
+    header { 
+        background: #1f1f1f; padding: 10px 20px; text-align: center; 
+        border-bottom: 2px solid #333; display: flex; justify-content: center; align-items: center; height: 50px; 
+    }
     .header-logo { max-height: 100%; width: auto; display: block; }
 
     /* セクションの見出し */
     .section-title { 
-        max-width: 1400px; margin: 30px auto 10px; padding: 0 20px; 
-        font-size: 18px; font-weight: bold; display: flex; align-items: center; gap: 10px;
+        max-width: 1400px; margin: 20px auto 10px; padding: 0 10px; 
+        font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 6px;
     }
     .section-title.live { color: #ff4444; }
-    .section-title.all { color: #aaa; border-top: 1px solid #333; pt: 30px; margin-top: 40px; padding-top: 20px; }
+    .section-title.all { color: #aaa; border-top: 1px solid #333; margin-top: 30px; padding-top: 15px; }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 0 20px 20px; max-width: 1400px; margin: auto; }
+    /* 基本：スマホ用の3列グリッド */
+    .grid { 
+        display: grid; 
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 6px; 
+        padding: 0 8px 20px; 
+        max-width: 1400px; 
+        margin: auto; 
+    }
     
-    .card { background: #1a1a1a; border-radius: 12px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; transition: .2s; }
-    .card:hover { transform: translateY(-3px); border-color: #555; }
-    .card.is-live { border-color: #ff0000; box-shadow: 0 0 15px rgba(255,0,0,0.3); }
+    .card { background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; transition: .2s; }
+    .card.is-live { border-color: #ff0000; box-shadow: 0 0 10px rgba(255,0,0,0.3); }
 
     .video-link { text-decoration: none; color: inherit; flex-grow: 1; }
     .thumb-wrap { position: relative; }
     .thumb { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
     
-    .live-label { position: absolute; top: 10px; left: 10px; background: #ff0000; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; animation: blink 1.5s infinite; }
+    .live-label { position: absolute; top: 4px; left: 4px; background: #ff0000; color: white; padding: 1px 4px; border-radius: 3px; font-size: 9px; font-weight: bold; animation: blink 1.5s infinite; }
     @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
-    .info { padding: 12px; }
-    .name { font-weight: bold; font-size: 14px; color: #aaa; margin-bottom: 4px; }
-    .title { font-size: 14px; line-height: 1.4; height: 2.8em; overflow: hidden; margin-bottom: 8px; color: #eee; }
-    .time-info { font-size: 12px; color: #ff8888; font-weight: bold; }
+    /* スマホ用の小さい文字設定 */
+    .info { padding: 6px; }
+    .name { font-weight: bold; font-size: 10px; color: #aaa; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .title { font-size: 10px; line-height: 1.2; height: 2.4em; overflow: hidden; margin-bottom: 5px; color: #eee; }
+    .time-info { font-size: 9px; color: #ff8888; font-weight: bold; }
 
-    .btn-area { padding: 0 12px 12px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .btn { display: block; text-align: center; text-decoration: none; font-size: 12px; padding: 8px 0; border-radius: 6px; border: 1px solid #444; color: white; }
-    .btn-yt { background: #c00; }
+    .btn-area { padding: 0 6px 8px 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+    .btn { display: block; text-align: center; text-decoration: none; font-size: 9px; padding: 4px 0; border-radius: 4px; border: 1px solid #444; color: white; }
+    .btn-yt { background: #c00; border-color: #e00; }
     .btn-tw { background: #000; }
+
+    /* PCなど画面が広い時（768px以上）の表示設定 */
+    @media (min-width: 768px) {
+        header { height: 60px; }
+        .section-title { font-size: 18px; padding: 0 20px; }
+        .grid { 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 20px; 
+            padding: 0 20px 20px; 
+        }
+        .card { border-radius: 12px; }
+        .info { padding: 12px; }
+        .name { font-size: 14px; margin-bottom: 4px; }
+        .title { font-size: 14px; height: 2.8em; margin-bottom: 8px; }
+        .time-info { font-size: 12px; }
+        .btn-area { padding: 0 12px 12px 12px; gap: 8px; }
+        .btn { font-size: 12px; padding: 8px 0; border-radius: 6px; }
+        .live-label { font-size: 12px; padding: 2px 8px; top: 10px; left: 10px; }
+    }
 </style>
 </head>
 <body>
@@ -56,32 +87,34 @@
 <div id="allGrid" class="grid"></div>
 
 <script>
-const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY'; 
+// --- 新しいAPIキーをここに貼り付けてください ---
+const API_KEY = 'あなたの新しいAPIキー'; 
+// ------------------------------------------
 
 const channels = [
     {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29"},
-    {name:"じゃじゃーん菊地", id:"UCi2kiw8hMo0vMAh5lXiafug", twitterId:"kikuchidaisuke"},
+    {name:"じゃじゃーん菊地", id:"UCi2kiw8hMo0vMAh5lXiafug", twitterId:"kikuchi_jaja"},
     {name:"さかいさんだー", id:"UCuk8ABJTVWiApYlEojW_QrA", twitterId:"Sakai_Thunder"},
-    {name:"Ｍさん", id:"UCGK0iFuXhfA5VnL64xiKEmQ", twitterId:"maikura_souti"},
+    {name:"Ｍさん", id:"UCGK0iFuXhfA5VnL64xiKEmQ", twitterId:""},
     {name:"タツナミ先生", id:"UCedenULTLYf3DanflEXdRCQ", twitterId:"tatsunami"},
-    {name:"神近", id:"UCdLe2q91fJkN9GEyDvItp-w", twitterId:"t_kamichika"},
-    {name:"しろくる", id:"UCle3bhQ-tZty8KNcACbUBZQ", twitterId:"sirokuru_"},
-    {name:"たにし", id:"UCiC8VCiSLD3mxoO-QFKQnBQ", twitterId:"tanishi_manbo"},
-    {name:"凸もり", id:"UCdN9GjPrqhcrzE27eWNNjxg", twitterId:"mk_2_totsu"},
-    {name:"神宮寺ちゃんねる", id:"UCou8IVB8jJPk56H0farYQdA", twitterId:"jinguji777ch"},
+    {name:"神近", id:"UCdLe2q91fJkN9GEyDvItp-w", twitterId:"kamichika"},
+    {name:"しろくる", id:"UCle3bhQ-tZty8KNcACbUBZQ", twitterId:"4696_v_v"},
+    {name:"たにし", id:"UCiC8VCiSLD3mxoO-QFKQnBQ", twitterId:"tanishi_vrc"},
+    {name:"凸もり", id:"UCdN9GjPrqhcrzE27eWNNjxg", twitterId:"totsumori"},
+    {name:"神宮寺ちゃんねる", id:"UCou8IVB8jJPk56H0farYQdA", twitterId:"_jinguji"},
     {name:"カズクラ", id:"UCu3Mp1ZimtNvyA-bcfo9VrQ", twitterId:"kazuch0924"},
-    {name:"たいたい", id:"UCds-nvoKCcvixVXJ_54QcbQ", twitterId:"taitaiMEN1997"},
-    {name:"岐阜のこみちん", id:"UCw4frqkotySLjJ_CFZR5-7w", twitterId:"komichin0704"},
-    {name:"ナナホシナナ", id:"UCncsOsnMBAAaYb6WidBYIDw", twitterId:"nanahoshinana77"},
-    {name:"月成るくす", id:"UCP9rcDSyTRtnu8EsG2CmLMg", twitterId:"Tsukinari_Lux_"},
-    {name:"メッス", id:"UCkJeBcOPRBs5bri5B3sFgVg", twitterId:"messu_009"},
-    {name:"よいよい", id:"UCzk-vAIbo3iVBGTNaJQS2qQ", twitterId:"yoiy0i"},
-    {name:"うえまさ", id:"UCIBDdDXnViOgN5tCpfX7NOA", twitterId:"uema5aCh"},
-    {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA", twitterId:"Kunashiki_Lin_"},
-    {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"VT_InunoHaru"},
-    {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ", twitterId:"komari_yuki"},
+    {name:"たいたい", id:"UCds-nvoKCcvixVXJ_54QcbQ", twitterId:"taitaitatata"},
+    {name:"岐阜のこみちん", id:"UCw4frqkotySLjJ_CFZR5-7w", twitterId:"komichin_info"},
+    {name:"ナナホシナナ", id:"UCncsOsnMBAAaYb6WidBYIDw", twitterId:"nanahoshi_nana"},
+    {name:"月成るくす", id:"UCP9rcDSyTRtnu8EsG2CmLMg", twitterId:"tsukinari_lux"},
+    {name:"メッス", id:"UCkJeBcOPRBs5bri5B3sFgVg", twitterId:"Messu_009"},
+    {name:"よいよい", id:"UCzk-vAIbo3iVBGTNaJQS2qQ", twitterId:"yoiyoi_v"},
+    {name:"うえまーさ", id:"UCIBDdDXnViOgN5tCpfX7NOA", twitterId:"uemasa_v"},
+    {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA", twitterId:"Kunashiki_Lin"},
+    {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"inuno_haru"},
+    {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ", twitterId:"chinjuhana"},
     {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA", twitterId:"pokonyan1185"},
-    {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"HAOKtR"}
+    {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"KtR_game_"}
 ];
 
 function getRelativeTime(dateStr) {
@@ -94,6 +127,7 @@ function getRelativeTime(dateStr) {
 async function loadPortal() {
     let videoIds = [];
     let channelInfoMap = {};
+    const liveSection = document.getElementById("liveSection");
 
     for (const ch of channels) {
         try {
@@ -128,7 +162,7 @@ async function loadPortal() {
             <div class="card ${isLive ? 'is-live' : ''}">
                 <a href="https://youtube.com/watch?v=${vId}" target="_blank" class="video-link">
                     <div class="thumb-wrap">
-                        <img class="thumb" src="${item.snippet.thumbnails.high ? item.snippet.thumbnails.high.url : item.snippet.thumbnails.default.url}">
+                        <img class="thumb" src="${item.snippet.thumbnails.medium ? item.snippet.thumbnails.medium.url : item.snippet.thumbnails.default.url}">
                         ${isLive ? '<div class="live-label">LIVE</div>' : ''}
                     </div>
                     <div class="info">
@@ -139,7 +173,7 @@ async function loadPortal() {
                 </a>
                 <div class="btn-area">
                     <a href="https://youtube.com/channel/${info.chId}" target="_blank" class="btn btn-yt">YouTube</a>
-                    <a href="https://twitter.com/${info.twitter}" target="_blank" class="btn btn-tw">Twitter(X)</a>
+                    <a href="https://twitter.com/${info.twitter}" target="_blank" class="btn btn-tw">Twitter</a>
                 </div>
             </div>`;
             
@@ -147,18 +181,15 @@ async function loadPortal() {
                 liveHtml += cardHtml;
                 liveCount++;
             }
-            allHtml += cardHtml; // 放送していない人も含め全員分
+            allHtml += cardHtml;
         });
 
-        // 配信中セクションの表示・非表示
-        const liveSection = document.getElementById("liveSection");
         if (liveCount > 0) {
             liveSection.style.display = "block";
             document.getElementById("liveGrid").innerHTML = liveHtml;
         } else {
             liveSection.style.display = "none";
         }
-
         document.getElementById("allGrid").innerHTML = allHtml;
 
     } catch (e) { console.error(e); }
