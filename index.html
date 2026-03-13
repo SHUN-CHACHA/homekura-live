@@ -5,64 +5,58 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>homeクラ 配信ポータル</title>
 <style>
-    body { margin: 0; font-family: sans-serif; background: #0f0f0f; color: white; }
-    
-    header { 
-        background: #1f1f1f; padding: 15px 20px; text-align: center; 
-        border-bottom: 2px solid #333; display: flex; justify-content: center; align-items: center; height: 60px; 
-    }
+    body { margin: 0; font-family: sans-serif; background: #0f0f0f; color: white; padding-bottom: 50px; }
+    header { background: #1f1f1f; padding: 15px 20px; text-align: center; border-bottom: 2px solid #333; display: flex; justify-content: center; align-items: center; height: 60px; }
     .header-logo { max-height: 100%; width: auto; display: block; }
 
-    .stats { text-align: center; padding: 15px; font-size: 14px; color: #aaa; }
-    .live-count { color: #ff4444; font-weight: bold; margin-left: 10px; }
+    /* セクションの見出し */
+    .section-title { 
+        max-width: 1400px; margin: 30px auto 10px; padding: 0 20px; 
+        font-size: 18px; font-weight: bold; display: flex; align-items: center; gap: 10px;
+    }
+    .section-title.live { color: #ff4444; }
+    .section-title.all { color: #aaa; border-top: 1px solid #333; pt: 30px; margin-top: 40px; padding-top: 20px; }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 20px; max-width: 1400px; margin: auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 0 20px 20px; max-width: 1400px; margin: auto; }
     
-    /* 基本のカードスタイル */
     .card { background: #1a1a1a; border-radius: 12px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; transition: .2s; }
     .card:hover { transform: translateY(-3px); border-color: #555; }
-    
-    /* ライブ中だけ光らせる */
     .card.is-live { border-color: #ff0000; box-shadow: 0 0 15px rgba(255,0,0,0.3); }
 
     .video-link { text-decoration: none; color: inherit; flex-grow: 1; }
     .thumb-wrap { position: relative; }
     .thumb { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
     
-    /* LIVEバッジ */
     .live-label { position: absolute; top: 10px; left: 10px; background: #ff0000; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; animation: blink 1.5s infinite; }
     @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
     .info { padding: 12px; }
     .name { font-weight: bold; font-size: 14px; color: #aaa; margin-bottom: 4px; }
     .title { font-size: 14px; line-height: 1.4; height: 2.8em; overflow: hidden; margin-bottom: 8px; color: #eee; }
-    
-    .time-info { font-size: 12px; color: #ff8888; font-weight: bold; display: flex; align-items: center; gap: 4px; }
+    .time-info { font-size: 12px; color: #ff8888; font-weight: bold; }
 
-    /* ボタンエリア */
     .btn-area { padding: 0 12px 12px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .btn { display: block; text-align: center; text-decoration: none; font-size: 12px; padding: 8px 0; border-radius: 6px; border: 1px solid #444; transition: .2s; color: white; }
-    .btn-yt { background: #c00; border-color: #e00; }
-    .btn-yt:hover { background: #f00; }
+    .btn { display: block; text-align: center; text-decoration: none; font-size: 12px; padding: 8px 0; border-radius: 6px; border: 1px solid #444; color: white; }
+    .btn-yt { background: #c00; }
     .btn-tw { background: #000; }
-    .btn-tw:hover { background: #333; border-color: #1da1f2; }
 </style>
 </head>
 <body>
 
 <header>
-    <img src="logo.png" alt="homeクラ 配信ポータル" class="header-logo" id="headerLogo">
+    <img src="logo.png" alt="homeクラ 配信ポータル" class="header-logo">
 </header>
 
-<div class="stats">
-    メンバー：23名 <span id="liveStatus" class="live-count">取得中...</span>
+<div id="liveSection" style="display: none;">
+    <div class="section-title live">🔴 配信中のメンバー</div>
+    <div id="liveGrid" class="grid"></div>
 </div>
 
-<div id="grid" class="grid"></div>
+<div class="section-title all">👥 メンバー一覧</div>
+<div id="allGrid" class="grid"></div>
 
 <script>
 const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY'; 
-const LOGO_URL = 'logo.png'; 
 
 const channels = [
     {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29"},
@@ -93,17 +87,14 @@ const channels = [
 function getRelativeTime(dateStr) {
     const start = new Date(dateStr);
     const now = new Date();
-    const diffMs = now - start;
-    const diffMin = Math.floor(diffMs / 60000);
-    if (diffMin < 60) return `${diffMin}分前に開始`;
-    return `${Math.floor(diffMin / 60)}時間前に開始`;
+    const diffMin = Math.floor((now - start) / 60000);
+    return diffMin < 60 ? `${diffMin}分前に開始` : `${Math.floor(diffMin / 60)}時間前に開始`;
 }
 
 async function loadPortal() {
     let videoIds = [];
     let channelInfoMap = {};
 
-    // 1. 各chの最新動画IDを取得
     for (const ch of channels) {
         try {
             const playlistId = ch.id.replace(/^UC/, 'UU');
@@ -117,20 +108,19 @@ async function loadPortal() {
         } catch (e) { console.error(ch.name, e); }
     }
 
-    // 2. まとめて詳細（ライブ中かどうか）を取得
     try {
         const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
         const data = await res.json();
         
-        let allCards = [];
+        let liveHtml = "";
+        let allHtml = "";
         let liveCount = 0;
 
         data.items.forEach(item => {
             const vId = item.id;
             const info = channelInfoMap[vId];
             const isLive = item.snippet.liveBroadcastContent === 'live';
-            if (isLive) liveCount++;
-
+            
             const startTime = isLive && item.liveStreamingDetails ? item.liveStreamingDetails.actualStartTime : null;
             const timeTag = startTime ? `<div class="time-info">🕒 ${getRelativeTime(startTime)}</div>` : "";
 
@@ -138,7 +128,7 @@ async function loadPortal() {
             <div class="card ${isLive ? 'is-live' : ''}">
                 <a href="https://youtube.com/watch?v=${vId}" target="_blank" class="video-link">
                     <div class="thumb-wrap">
-                        <img class="thumb" src="${item.snippet.thumbnails.high.url}">
+                        <img class="thumb" src="${item.snippet.thumbnails.high ? item.snippet.thumbnails.high.url : item.snippet.thumbnails.default.url}">
                         ${isLive ? '<div class="live-label">LIVE</div>' : ''}
                     </div>
                     <div class="info">
@@ -153,13 +143,23 @@ async function loadPortal() {
                 </div>
             </div>`;
             
-            allCards.push({ html: cardHtml, isLive: isLive });
+            if (isLive) {
+                liveHtml += cardHtml;
+                liveCount++;
+            }
+            allHtml += cardHtml; // 放送していない人も含め全員分
         });
 
-        // ライブ中を一番上に並び替え
-        allCards.sort((a, b) => b.isLive - a.isLive);
-        document.getElementById("grid").innerHTML = allCards.map(c => c.html).join("");
-        document.getElementById("liveStatus").textContent = `LIVE中：${liveCount}名`;
+        // 配信中セクションの表示・非表示
+        const liveSection = document.getElementById("liveSection");
+        if (liveCount > 0) {
+            liveSection.style.display = "block";
+            document.getElementById("liveGrid").innerHTML = liveHtml;
+        } else {
+            liveSection.style.display = "none";
+        }
+
+        document.getElementById("allGrid").innerHTML = allHtml;
 
     } catch (e) { console.error(e); }
 }
