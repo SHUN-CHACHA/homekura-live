@@ -3,135 +3,182 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>homeクラ 配信ポータル (節約版)</title>
+<title>homeクラ ライブなう！</title>
 <style>
     body { margin: 0; font-family: sans-serif; background: #0f0f0f; color: white; }
-    header { background: #1f1f1f; padding: 30px 20px; text-align: center; border-bottom: 1px solid #333; }
-    .stats { text-align: center; padding: 15px; font-size: 16px; color: #aaa; }
-    .search { text-align: center; padding: 10px; position: sticky; top: 0; background: #0f0f0f; z-index: 100; }
-    .search input { padding: 12px 20px; width: 80%; max-width: 400px; border-radius: 25px; border: 1px solid #333; background: #1a1a1a; color: white; font-size: 16px; outline: none; }
+    
+    /* ヘッダーのスタイル調整 */
+    header { 
+        background: #1f1f1f; 
+        padding: 15px 20px; /* 上下パディングを少し詰める */
+        text-align: center; 
+        border-bottom: 2px solid #ff0000; 
+        display: flex;       /* 中央揃えのため */
+        justify-content: center;
+        align-items: center;
+        height: 60px;       /* ヘッダーの高さを固定 */
+    }
+    
+    /* ロゴ画像のスタイル */
+    .header-logo {
+        max-height: 100%;  /* ヘッダーの高さに合わせて自動縮小 */
+        width: auto;       /* 横幅は自動調整 */
+        display: block;
+    }
+
+    .stats { text-align: center; padding: 15px; font-size: 16px; color: #ff4444; font-weight: bold; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 20px; max-width: 1400px; margin: auto; }
-    .card { background: #1a1a1a; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: .2s; }
-    .card:hover { transform: translateY(-5px); }
-    .card a { text-decoration: none; color: inherit; }
+    .card { background: #1a1a1a; border-radius: 12px; overflow: hidden; box-shadow: 0 0 20px rgba(255,0,0,0.2); transition: .2s; border: 1px solid #333; display: flex; flex-direction: column; }
+    .card:hover { transform: translateY(-5px); border-color: #ff0000; }
+    
+    .video-link { text-decoration: none; color: inherit; flex-grow: 1; }
+    .thumb-wrap { position: relative; }
     .thumb { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+    .live-label { position: absolute; top: 10px; left: 10px; background: #ff0000; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+    
     .info { padding: 12px; }
     .name { font-weight: bold; font-size: 14px; color: #aaa; margin-bottom: 4px; }
-    .title { font-size: 15px; line-height: 1.4; height: 3em; overflow: hidden; }
-    .error-msg { text-align: center; grid-column: 1/-1; color: #ff4444; padding: 20px; }
+    .title { font-size: 15px; line-height: 1.4; height: 3em; overflow: hidden; margin-bottom: 8px; }
+    
+    .time-info { font-size: 12px; color: #ff8888; margin-bottom: 10px; display: flex; align-items: center; gap: 4px; }
+
+    .btn-area { padding: 0 12px 12px 12px; display: flex; flex-direction: column; gap: 8px; }
+    .twitter-btn {
+        display: block;
+        background: #000;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        font-size: 13px;
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #444;
+        transition: .2s;
+    }
+    .twitter-btn:hover { background: #333; border-color: #1da1f2; }
+    .empty-msg { text-align: center; grid-column: 1/-1; padding: 50px; color: #888; font-size: 18px; }
 </style>
 </head>
 <body>
 
 <header>
-    <h1>🏠 homeクラ 配信ポータル</h1>
-    <p>YouTube API 節約モードで取得中</p>
+    <img src="logo.png" alt="homeクラ 配信ポータル" class="header-logo" id="headerLogo">
 </header>
 
-<div class="stats">
-    表示数：<span id="count">0</span> / 23
-</div>
-
-<div class="search">
-    <input id="search" placeholder="配信者を検索...">
-</div>
-
+<div id="status" class="stats">取得中...</div>
 <div id="grid" class="grid"></div>
 
 <script>
 // --- 設定エリア ---
-// 今すぐ試すなら、新しいキーをここに。リセット（夕方）を待つなら今のままでOK
-const API_KEY = 'AIzaSyAj-96z_JFwqNr6Gl0d2p3UdDUHDk2wGEE'; 
+const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY'; 
+// 用意したロゴ画像のファイル名を指定 (例: 'logo.svg', 'images/logo.png' など)
+const LOGO_URL = 'logo.png'; 
 // ----------------
 
+// ページ読み込み時にロゴ画像のURLを設定
+document.getElementById('headerLogo').src = LOGO_URL;
+
 const channels = [
-    {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg"},
-    {name:"じゃじゃーん菊地", id:"UCi2kiw8hMo0vMAh5lXiafug"},
-    {name:"さかいさんだー", id:"UCuk8ABJTVWiApYlEojW_QrA"},
-    {name:"Ｍさん", id:"UCGK0iFuXhfA5VnL64xiKEmQ"},
-    {name:"タツナミ先生", id:"UCedenULTLYf3DanflEXdRCQ"},
-    {name:"神近", id:"UCdLe2q91fJkN9GEyDvItp-w"},
-    {name:"しろくる", id:"UCle3bhQ-tZty8KNcACbUBZQ"},
-    {name:"たにし", id:"UCiC8VCiSLD3mxoO-QFKQnBQ"},
-    {name:"凸もり", id:"UCdN9GjPrqhcrzE27eWNNjxg"},
-    {name:"神宮寺ちゃんねる", id:"UCou8IVB8jJPk56H0farYQdA"},
-    {name:"カズクラ", id:"UCu3Mp1ZimtNvyA-bcfo9VrQ"},
-    {name:"たいたい", id:"UCds-nvoKCcvixVXJ_54QcbQ"},
-    {name:"岐阜のこみちん", id:"UCw4frqkotySLjJ_CFZR5-7w"},
-    {name:"ナナホシナナ", id:"UCncsOsnMBAAaYb6WidBYIDw"},
-    {name:"月成るくす", id:"UCP9rcDSyTRtnu8EsG2CmLMg"},
-    {name:"メッス", id:"UCkJeBcOPRBs5bri5B3sFgVg"},
-    {name:"よいよい", id:"UCzk-vAIbo3iVBGTNaJQS2qQ"},
-    {name:"うえまさ", id:"UCIBDdDXnViOgN5tCpfX7NOA"},
-    {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA"},
-    {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA"},
-    {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ"},
-    {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA"},
-    {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA"}
+    {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29"},
+    {name:"じゃじゃーん菊地", id:"UCi2kiw8hMo0vMAh5lXiafug", twitterId:"kikuchi_jaja"},
+    {name:"さかいさんだー", id:"UCuk8ABJTVWiApYlEojW_QrA", twitterId:"Sakai_Thunder"},
+    {name:"Ｍさん", id:"UCGK0iFuXhfA5VnL64xiKEmQ", twitterId:""},
+    {name:"タツナミ先生", id:"UCedenULTLYf3DanflEXdRCQ", twitterId:"tatsunami"},
+    {name:"神近", id:"UCdLe2q91fJkN9GEyDvItp-w", twitterId:"kamichika"},
+    {name:"しろくる", id:"UCle3bhQ-tZty8KNcACbUBZQ", twitterId:"4696_v_v"},
+    {name:"たにし", id:"UCiC8VCiSLD3mxoO-QFKQnBQ", twitterId:"tanishi_vrc"},
+    {name:"凸もり", id:"UCdN9GjPrqhcrzE27eWNNjxg", twitterId:"totsumori"},
+    {name:"神宮寺ちゃんねる", id:"UCou8IVB8jJPk56H0farYQdA", twitterId:"_jinguji"},
+    {name:"カズクラ", id:"UCu3Mp1ZimtNvyA-bcfo9VrQ", twitterId:"kazuch0924"},
+    {name:"たいたい", id:"UCds-nvoKCcvixVXJ_54QcbQ", twitterId:"taitaitatata"},
+    {name:"岐阜のこみちん", id:"UCw4frqkotySLjJ_CFZR5-7w", twitterId:"komichin_info"},
+    {name:"ナナホシナナ", id:"UCncsOsnMBAAaYb6WidBYIDw", twitterId:"nanahoshi_nana"},
+    {name:"月成るくす", id:"UCP9rcDSyTRtnu8EsG2CmLMg", twitterId:"tsukinari_lux"},
+    {name:"メッス", id:"UCkJeBcOPRBs5bri5B3sFgVg", twitterId:"Messu_009"},
+    {name:"よいよい", id:"UCzk-vAIbo3iVBGTNaJQS2qQ", twitterId:"yoiyoi_v"},
+    {name:"うえまーさ", id:"UCIBDdDXnViOgN5tCpfX7NOA", twitterId:"uemasa_v"},
+    {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA", twitterId:"Kunashiki_Lin"},
+    {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"inuno_haru"},
+    {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ", twitterId:"chinjuhana"},
+    {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA", twitterId:"pokonyan1185"},
+    {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"KtR_game_"}
 ];
 
-const grid = document.getElementById("grid");
+function getRelativeTime(dateStr) {
+    const start = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now - start;
+    const diffMin = Math.floor(diffMs / 60000);
+    
+    if (diffMin < 60) return `${diffMin}分前に開始`;
+    const diffHours = Math.floor(diffMin / 60);
+    return `${diffHours}時間前に開始`;
+}
 
-async function loadPortal() {
-    grid.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>最新情報を取得中...</p>";
-    let allCards = [];
-    let errorOccurred = null;
+async function loadLiveStreams() {
+    let videoIds = [];
+    let channelInfoMap = {};
 
     for (const ch of channels) {
         try {
-            // クォータ節約のため「アップロード済みプレイリスト」を取得
-            // UC... を UU... に変えるとアップロード動画のプレイリストIDになる
-            const uploadsPlaylistId = ch.id.replace(/^UC/, 'UU');
-            const url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${uploadsPlaylistId}&part=snippet&maxResults=1`;
-
-            const res = await fetch(url);
+            const playlistId = ch.id.replace(/^UC/, 'UU');
+            const res = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${playlistId}&part=snippet&maxResults=1`);
             const data = await res.json();
-
-            if (data.error) {
-                errorOccurred = data.error.message;
-                break; // エラーが出たらループ中断
-            }
-
             if (data.items && data.items.length > 0) {
-                const item = data.items[0].snippet;
-                const videoId = item.resourceId.videoId;
-                const thumb = item.thumbnails.high ? item.thumbnails.high.url : item.thumbnails.default.url;
-
-                allCards.push(`
-                    <div class="card">
-                        <a href="https://youtube.com/watch?v=${videoId}" target="_blank">
-                            <img class="thumb" src="${thumb}" alt="${ch.name}">
-                            <div class="info">
-                                <div class="name">${ch.name}</div>
-                                <div class="title">${item.title}</div>
-                            </div>
-                        </a>
-                    </div>
-                `);
+                const vId = data.items[0].snippet.resourceId.videoId;
+                videoIds.push(vId);
+                channelInfoMap[vId] = { name: ch.name, twitter: ch.twitterId };
             }
-        } catch (e) {
-            console.warn(ch.name + " の取得に失敗");
-        }
+        } catch (e) { console.error(ch.name, e); }
     }
 
-    if (errorOccurred) {
-        grid.innerHTML = `<div class="error-msg">APIエラー: ${errorOccurred}<br>※利用制限中のため、リセットされるまで表示されません。</div>`;
-    } else {
-        grid.innerHTML = allCards.join("");
-        document.getElementById("count").textContent = allCards.length;
-    }
+    try {
+        const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
+        const data = await res.json();
+        if (data.error) { statusDiv.textContent = "API制限中..."; return; }
+
+        const liveItems = data.items.filter(item => item.snippet.liveBroadcastContent === 'live');
+
+        if (liveItems.length === 0) {
+            grid.innerHTML = '<div class="empty-msg">現在、配信中のメンバーはいません。</div>';
+            statusDiv.textContent = "ライブ配信：0名";
+        } else {
+            let html = "";
+            liveItems.forEach(item => {
+                const vId = item.id;
+                const info = channelInfoMap[vId];
+                
+                const startTime = item.liveStreamingDetails ? item.liveStreamingDetails.actualStartTime : null;
+                const timeText = startTime ? `🕒 ${getRelativeTime(startTime)}` : "🕒 配信中";
+
+                const twitterLink = info.twitter ? `<a href="https://twitter.com/${info.twitter}" target="_blank" class="twitter-btn">Twitter(X)</a>` : "";
+
+                html += `
+                <div class="card">
+                    <a href="https://youtube.com/watch?v=${vId}" target="_blank" class="video-link">
+                        <div class="thumb-wrap">
+                            <img class="thumb" src="${item.snippet.thumbnails.high.url}">
+                            <div class="live-label">LIVE</div>
+                        </div>
+                        <div class="info">
+                            <div class="name">${info.name}</div>
+                            <div class="title">${item.snippet.title}</div>
+                            <div class="time-info">${timeText}</div>
+                        </div>
+                    </a>
+                    <div class="btn-area">
+                        ${twitterLink}
+                    </div>
+                </div>`;
+            });
+            grid.innerHTML = html;
+            statusDiv.textContent = `LIVE中：${liveItems.length}名`;
+        }
+    } catch (e) { statusDiv.textContent = "取得エラー"; }
 }
 
-// 初期読み込み
-loadPortal();
-
-// 検索機能
-document.getElementById("search").addEventListener("input", function() {
-    const word = this.value.toLowerCase();
-    document.querySelectorAll(".card").forEach(card => {
-        card.style.display = card.innerText.toLowerCase().includes(word) ? "block" : "none";
-    });
-});
+loadLiveStreams();
+setInterval(loadLiveStreams, 600000);
 </script>
 
 </body>
