@@ -4,29 +4,39 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>homeクラ 配信ポータル　＠旬茶</title>
-  <link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="https://shun-chacha.github.io/homekura-live/favicon.ico" type="image/png">
 
-  <link rel="icon" href="/icon.png" type="image/png">
+<link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/apple-touch-icon.png">
 
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="homeクラ">
+<link rel="icon" sizes="192x192" href="https://shun-chacha.github.io/homekura-live/icon.png">
 
-  <link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#1f1f1f">  
 <style>
     body { margin: 0; font-family: sans-serif; background: #0f0f0f; color: white; padding-bottom: 50px; }
     header { background: #1f1f1f; padding: 10px 20px; text-align: center; border-bottom: 2px solid #333; height: 50px; display: flex; justify-content: center; align-items: center; }
     .header-logo { max-height: 100%; width: auto; }
 
+    /* 追加フォームのスタイル */
+    .admin-panel { max-width: 1400px; margin: 20px auto; padding: 15px; background: #222; border-radius: 8px; border: 1px solid #444; }
+    .admin-panel h3 { margin-top: 0; font-size: 14px; color: #aaa; }
+    .input-group { display: flex; flex-wrap: wrap; gap: 10px; }
+    .input-group input { background: #333; border: 1px solid #555; color: white; padding: 8px; border-radius: 4px; flex: 1; min-width: 150px; }
+    .btn-add { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    .btn-reset { background: #666; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-top: 10px; }
+
     .section-title { max-width: 1400px; margin: 20px auto 10px; padding: 0 10px; font-size: 14px; font-weight: bold; }
     .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 0 8px 20px; max-width: 1400px; margin: auto; }
     
-    .card { background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; }
-    
-    /* 配信中のカード。後ほどJSで枠線の色を変えます */
+    .card { background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; position: relative; }
     .card.is-live { box-shadow: 0 0 15px rgba(255,255,255,0.2); z-index: 5; }
 
-    .thumb-wrap { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-    
-    /* 配信外：アイコンを浮かせるための背景 */
+    /* 削除ボタンのスタイル */
+    .delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(255,0,0,0.7); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer; z-index: 10; display: none; }
+    .card:hover .delete-btn { display: block; }
+
+    .thumb-wrap { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; text-decoration: none; }
     .thumb-bg { position: absolute; width: 100%; height: 100%; opacity: 0.3; filter: blur(20px); }
     .thumb-profile { width: 45%; height: auto; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5); position: relative; z-index: 2; }
     .thumb { width: 100%; height: 100%; object-fit: cover; }
@@ -34,6 +44,7 @@
     .info { padding: 6px; }
     .name { font-weight: bold; font-size: 10px; margin-bottom: 2px; }
     .title { font-size: 10px; line-height: 1.2; height: 2.4em; overflow: hidden; color: #eee; }
+    .video-link { text-decoration: none; color: inherit; }
 
     .btn-area { padding: 0 6px 8px 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
     .btn { display: block; text-align: center; text-decoration: none; font-size: 9px; padding: 4px 0; border-radius: 4px; color: white; background: #333; }
@@ -52,6 +63,18 @@
 
 <header><img src="logo.png" alt="homeクラ" class="header-logo"></header>
 
+<div class="admin-panel">
+    <h3>➕ 配信者を追加する</h3>
+    <div class="input-group">
+        <input type="text" id="new-name" placeholder="名前 (例: HIKAKIN)">
+        <input type="text" id="new-id" placeholder="チャンネルID (UC...)">
+        <input type="text" id="new-twitter" placeholder="X ID (Twitter)">
+        <input type="color" id="new-color" value="#ffffff" style="width: 50px; flex:none;">
+        <button class="btn-add" onclick="addChannel()">追加</button>
+    </div>
+    <button class="btn-reset" onclick="resetChannels()">初期メンバーに戻す</button>
+</div>
+
 <div id="liveSection" style="display: none;">
     <div class="section-title" style="color:#ff4444">🔴 配信中のメンバー</div>
     <div id="liveGrid" class="grid"></div>
@@ -61,10 +84,10 @@
 <div id="allGrid" class="grid"></div>
 
 <script>
-const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY'; 
+const API_KEY = 'YOUR_API_KEY'; // あなたのAPIキーを入れてください
 
-// color プロパティを追加しました
-const channels = [
+// 初期メンバーリスト
+const defaultChannels = [
     {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29", color:"#ff9900"},
     {name:"じゃじゃーん菊地", id:"UCi2kiw8hMo0vMAh5lXiafug", twitterId:"kikuchi_jaja", color:"#ffff00"},
     {name:"さかいさんだー", id:"UCuk8ABJTVWiApYlEojW_QrA", twitterId:"Sakai_Thunder", color:"#ff00ff"},
@@ -88,9 +111,66 @@ const channels = [
     {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ", twitterId:"chinjuhana", color:"#ffffff"},
     {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA", twitterId:"pokonyan1185", color:"#00ff00"},
     {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"KtR_game_", color:"#3399ff"}
+
+    // ... 必要に応じて追加
 ];
 
+let channels = [];
+
+// 1. データの読み込み
+function initChannels() {
+    const saved = localStorage.getItem('custom_channels');
+    if (saved) {
+        channels = JSON.parse(saved);
+    } else {
+        channels = [...defaultChannels];
+    }
+}
+
+// 2. 配信者の追加
+function addChannel() {
+    const name = document.getElementById('new-name').value;
+    const id = document.getElementById('new-id').value;
+    const twitterId = document.getElementById('new-twitter').value;
+    const color = document.getElementById('new-color').value;
+
+    if (!name || !id) {
+        alert("名前とチャンネルIDは必須です");
+        return;
+    }
+
+    const newCh = { name, id, twitterId, color };
+    channels.push(newCh);
+    localStorage.setItem('custom_channels', JSON.stringify(channels));
+    
+    // 入力をクリアして再読み込み
+    document.getElementById('new-name').value = "";
+    document.getElementById('new-id').value = "";
+    document.getElementById('new-twitter').value = "";
+    loadPortal();
+}
+
+// 3. 配信者の削除
+function deleteChannel(id) {
+    if(confirm("この配信者を削除しますか？")) {
+        channels = channels.filter(ch => ch.id !== id);
+        localStorage.setItem('custom_channels', JSON.stringify(channels));
+        loadPortal();
+    }
+}
+
+// 4. リセット
+function resetChannels() {
+    if(confirm("追加したメンバーを削除して初期状態に戻しますか？")) {
+        localStorage.removeItem('custom_channels');
+        channels = [...defaultChannels];
+        loadPortal();
+    }
+}
+
 async function loadPortal() {
+    if (channels.length === 0) return;
+
     let videoIds = [];
     let channelInfoMap = {};
     const channelIds = channels.map(c => c.id).join(',');
@@ -98,10 +178,14 @@ async function loadPortal() {
     try {
         const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${channelIds}&part=snippet`);
         const chData = await chRes.json();
-        chData.items.forEach(item => {
-            channelInfoMap[item.id] = { icon: item.snippet.thumbnails.medium.url };
-        });
+        
+        if (chData.items) {
+            chData.items.forEach(item => {
+                channelInfoMap[item.id] = { icon: item.snippet.thumbnails.medium.url };
+            });
+        }
 
+        // プレイリスト情報の取得（最新動画取得用）
         for (const ch of channels) {
             const playlistId = ch.id.replace(/^UC/, 'UU');
             const res = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${playlistId}&part=snippet&maxResults=1`);
@@ -109,10 +193,13 @@ async function loadPortal() {
             if (data.items && data.items.length > 0) {
                 const vId = data.items[0].snippet.resourceId.videoId;
                 videoIds.push(vId);
-                Object.assign(channelInfoMap[ch.id], { lastVideoId: vId });
+                if (channelInfoMap[ch.id]) {
+                    Object.assign(channelInfoMap[ch.id], { lastVideoId: vId });
+                }
             }
         }
 
+        // 動画情報の詳細取得
         const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
         const vData = await vRes.json();
         
@@ -120,10 +207,11 @@ async function loadPortal() {
 
         channels.forEach(ch => {
             const chInfo = channelInfoMap[ch.id];
+            if (!chInfo) return; // 情報が取得できなかった場合スキップ
+
             const videoItem = vData.items.find(v => v.id === chInfo.lastVideoId);
             const isLive = videoItem && videoItem.snippet.liveBroadcastContent === 'live';
             
-            // 配信中の時は枠線をその人の色に
             const borderStyle = isLive ? `style="border-color: ${ch.color}; box-shadow: 0 0 10px ${ch.color}55;"` : '';
             const nameStyle = `style="color: ${ch.color}"`;
 
@@ -133,6 +221,7 @@ async function loadPortal() {
 
             const cardHtml = `
             <div class="card ${isLive ? 'is-live' : ''}" ${borderStyle}>
+                <button class="delete-btn" onclick="deleteChannel('${ch.id}')">×</button>
                 <a href="https://youtube.com/watch?v=${chInfo.lastVideoId}" target="_blank" class="video-link">
                     <div class="thumb-wrap">
                         ${mediaHtml}
@@ -159,6 +248,8 @@ async function loadPortal() {
     } catch (e) { console.error(e); }
 }
 
+// 実行開始
+initChannels();
 loadPortal();
 setInterval(loadPortal, 600000);
 </script>
