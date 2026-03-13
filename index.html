@@ -73,37 +73,72 @@ const channels = [
 const grid = document.getElementById("grid");
 
 async function fetchVideoData(channel) {
-    // 検索APIを使用して、そのチャンネルで最新の「ライブ中またはアップロード動画」を取得
     const url = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${channel.id}&part=snippet&order=date&maxResults=1&type=video`;
 
     try {
         const res = await fetch(url);
         const data = await res.json();
 
+        // APIエラー（キーが無効、制限超えなど）の判定
+        if (data.error) {
+            console.error(`${channel.name}の取得エラー:`, data.error.message);
+            return { error: data.error.message };
+        }
+
         if (data.items && data.items.length > 0) {
             const item = data.items[0];
             const videoId = item.id.videoId;
             const title = item.snippet.title;
             const thumb = item.snippet.thumbnails.high.url;
-            const liveBroadcastContent = item.snippet.liveBroadcastContent; // "live" なら配信中
+            const liveStatus = item.snippet.liveBroadcastContent;
 
-            return `
+            return {
+                isLive: liveStatus === 'live',
+                html: `
                 <div class="card">
                     <a href="https://youtube.com/watch?v=${videoId}" target="_blank">
                         <img class="thumb" src="${thumb}" alt="${channel.name}">
                         <div class="info">
-                            <span class="live-badge">${liveBroadcastContent === 'live' ? '● ライブ配信中' : ''}</span>
+                            <span class="live-badge">${liveStatus === 'live' ? '● ライブ配信中' : ''}</span>
                             <div class="name">${channel.name}</div>
                             <div class="title">${title}</div>
                         </div>
                     </a>
-                </div>
-            `;
+                </div>`
+            };
         }
     } catch (e) {
-        console.error("API取得失敗:", channel.name);
+        return null;
     }
-    return "";
+    return null;
 }
 
 async function loadPortal() {
+    grid.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>最新情報を取得中...</p>";
+    
+    const results = await Promise.all(channels.map(ch => fetchVideoData(ch)));
+    
+    // エラーメッセージがあるか確認
+    const firstError = results.find(r => r && r.error);
+    if (firstError) {
+        grid.innerHTML = `<p style='text-align:center; grid-column:1/-1; color:#ff4444;'>APIエラーが発生しました: ${firstError.error}<br>Google Cloud Consoleの設定を確認してください。</p>`;
+        return;
+    }
+
+    const validResults = results.filter(r => r && r.html);
+    // ライブ中を上に
+    validResults.sort((a, b) => b.isLive - a.isLive);
+
+    grid.innerHTML = validResults.map(r => r.html).join("");
+    document.getElementById("count").textContent = validResults.length;
+}
+
+loadPortal();
+
+document.getElementById("search").addEventListener("input", function() {
+    const word = this.value.toLowerCase();
+    document.querySelectorAll(".card").forEach(card => {
+        card.style.display = card.innerText.toLowerCase().includes(word) ? "block" : "none";
+    });
+});
+</script>
