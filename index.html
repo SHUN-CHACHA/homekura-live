@@ -6,190 +6,147 @@
 <title>homeクラ 配信ポータル</title>
 <style>
     body { margin: 0; font-family: sans-serif; background: #0f0f0f; color: white; padding-bottom: 50px; }
+    header { background: #1f1f1f; padding: 10px 20px; text-align: center; border-bottom: 2px solid #333; height: 50px; display: flex; justify-content: center; align-items: center; }
+    .header-logo { max-height: 100%; width: auto; }
+
+    .section-title { max-width: 1400px; margin: 20px auto 10px; padding: 0 10px; font-size: 14px; font-weight: bold; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 0 8px 20px; max-width: 1400px; margin: auto; }
     
-    header { 
-        background: #1f1f1f; padding: 10px 20px; text-align: center; 
-        border-bottom: 2px solid #333; display: flex; justify-content: center; align-items: center; height: 50px; 
-    }
-    .header-logo { max-height: 100%; width: auto; display: block; }
-
-    /* セクションの見出し */
-    .section-title { 
-        max-width: 1400px; margin: 20px auto 10px; padding: 0 10px; 
-        font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 6px;
-    }
-    .section-title.live { color: #ff4444; }
-    .section-title.all { color: #aaa; border-top: 1px solid #333; margin-top: 30px; padding-top: 15px; }
-
-    /* 基本：スマホ用の3列グリッド */
-    .grid { 
-        display: grid; 
-        grid-template-columns: repeat(3, 1fr); 
-        gap: 6px; 
-        padding: 0 8px 20px; 
-        max-width: 1400px; 
-        margin: auto; 
-    }
+    .card { background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; }
     
-    .card { background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; transition: .2s; }
-    .card.is-live { border-color: #ff0000; box-shadow: 0 0 10px rgba(255,0,0,0.3); }
+    /* 配信中のカード。後ほどJSで枠線の色を変えます */
+    .card.is-live { box-shadow: 0 0 15px rgba(255,255,255,0.2); z-index: 5; }
 
-    .video-link { text-decoration: none; color: inherit; flex-grow: 1; }
-    .thumb-wrap { position: relative; }
-    .thumb { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+    .thumb-wrap { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     
-    .live-label { position: absolute; top: 4px; left: 4px; background: #ff0000; color: white; padding: 1px 4px; border-radius: 3px; font-size: 9px; font-weight: bold; animation: blink 1.5s infinite; }
-    @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
-
-    /* スマホ用の小さい文字設定 */
+    /* 配信外：アイコンを浮かせるための背景 */
+    .thumb-bg { position: absolute; width: 100%; height: 100%; opacity: 0.3; filter: blur(20px); }
+    .thumb-profile { width: 45%; height: auto; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5); position: relative; z-index: 2; }
+    .thumb { width: 100%; height: 100%; object-fit: cover; }
+    
     .info { padding: 6px; }
-    .name { font-weight: bold; font-size: 10px; color: #aaa; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .title { font-size: 10px; line-height: 1.2; height: 2.4em; overflow: hidden; margin-bottom: 5px; color: #eee; }
-    .time-info { font-size: 9px; color: #ff8888; font-weight: bold; }
+    .name { font-weight: bold; font-size: 10px; margin-bottom: 2px; }
+    .title { font-size: 10px; line-height: 1.2; height: 2.4em; overflow: hidden; color: #eee; }
 
     .btn-area { padding: 0 6px 8px 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-    .btn { display: block; text-align: center; text-decoration: none; font-size: 9px; padding: 4px 0; border-radius: 4px; border: 1px solid #444; color: white; }
-    .btn-yt { background: #c00; border-color: #e00; }
-    .btn-x { background: #000; border-color: #333; } /* TwitterからX(黒色)へ */
+    .btn { display: block; text-align: center; text-decoration: none; font-size: 9px; padding: 4px 0; border-radius: 4px; color: white; background: #333; }
+    .btn-yt { background: #c00; }
+    .btn-x { background: #000; }
 
-    /* PCなど画面が広い時（768px以上）の表示設定 */
     @media (min-width: 768px) {
-        header { height: 60px; }
-        .section-title { font-size: 18px; padding: 0 20px; }
-        .grid { 
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 20px; 
-            padding: 0 20px 20px; 
-        }
-        .card { border-radius: 12px; }
-        .info { padding: 12px; }
-        .name { font-size: 14px; margin-bottom: 4px; }
-        .title { font-size: 14px; height: 2.8em; margin-bottom: 8px; }
-        .time-info { font-size: 12px; }
-        .btn-area { padding: 0 12px 12px 12px; gap: 8px; }
-        .btn { font-size: 12px; padding: 8px 0; border-radius: 6px; }
-        .live-label { font-size: 12px; padding: 2px 8px; top: 10px; left: 10px; }
+        .grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .name { font-size: 14px; }
+        .title { font-size: 14px; }
+        .btn { font-size: 12px; }
     }
 </style>
 </head>
 <body>
 
-<header>
-    <img src="logo.png" alt="homeクラ 配信ポータル" class="header-logo">
-</header>
+<header><img src="logo.png" alt="homeクラ" class="header-logo"></header>
 
 <div id="liveSection" style="display: none;">
-    <div class="section-title live">🔴 配信中のメンバー</div>
+    <div class="section-title" style="color:#ff4444">🔴 配信中のメンバー</div>
     <div id="liveGrid" class="grid"></div>
 </div>
 
-<div class="section-title all">👥 メンバー一覧</div>
+<div class="section-title" style="color:#aaa">👥 メンバー一覧</div>
 <div id="allGrid" class="grid"></div>
 
 <script>
-// --- APIキー ---
 const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY'; 
-// --------------
 
+// color プロパティを追加しました
 const channels = [
-    {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29"},
-    {name:"じゃじゃーん菊地", id:"UCi2kiw8hMo0vMAh5lXiafug", twitterId:"kikuchi_jaja"},
-    {name:"さかいさんだー", id:"UCuk8ABJTVWiApYlEojW_QrA", twitterId:"Sakai_Thunder"},
-    {name:"Ｍさん", id:"UCGK0iFuXhfA5VnL64xiKEmQ", twitterId:""},
-    {name:"タツナミ先生", id:"UCedenULTLYf3DanflEXdRCQ", twitterId:"tatsunami"},
-    {name:"神近", id:"UCdLe2q91fJkN9GEyDvItp-w", twitterId:"kamichika"},
-    {name:"しろくる", id:"UCle3bhQ-tZty8KNcACbUBZQ", twitterId:"4696_v_v"},
-    {name:"たにし", id:"UCiC8VCiSLD3mxoO-QFKQnBQ", twitterId:"tanishi_vrc"},
-    {name:"凸もり", id:"UCdN9GjPrqhcrzE27eWNNjxg", twitterId:"totsumori"},
-    {name:"神宮寺ちゃんねる", id:"UCou8IVB8jJPk56H0farYQdA", twitterId:"_jinguji"},
-    {name:"カズクラ", id:"UCu3Mp1ZimtNvyA-bcfo9VrQ", twitterId:"kazuch0924"},
-    {name:"たいたい", id:"UCds-nvoKCcvixVXJ_54QcbQ", twitterId:"taitaitatata"},
-    {name:"岐阜のこみちん", id:"UCw4frqkotySLjJ_CFZR5-7w", twitterId:"komichin_info"},
-    {name:"ナナホシナナ", id:"UCncsOsnMBAAaYb6WidBYIDw", twitterId:"nanahoshi_nana"},
-    {name:"月成るくす", id:"UCP9rcDSyTRtnu8EsG2CmLMg", twitterId:"tsukinari_lux"},
-    {name:"メッス", id:"UCkJeBcOPRBs5bri5B3sFgVg", twitterId:"Messu_009"},
-    {name:"よいよい", id:"UCzk-vAIbo3iVBGTNaJQS2qQ", twitterId:"yoiyoi_v"},
-    {name:"うえまーさ", id:"UCIBDdDXnViOgN5tCpfX7NOA", twitterId:"uemasa_v"},
-    {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA", twitterId:"Kunashiki_Lin"},
-    {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"inuno_haru"},
-    {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ", twitterId:"chinjuhana"},
-    {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA", twitterId:"pokonyan1185"},
-    {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"KtR_game_"}
+    {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29", color:"#ff9900"},
+    {name:"じゃじゃーん菊地", id:"UCi2kiw8hMo0vMAh5lXiafug", twitterId:"kikuchi_jaja", color:"#ffff00"},
+    {name:"さかいさんだー", id:"UCuk8ABJTVWiApYlEojW_QrA", twitterId:"Sakai_Thunder", color:"#ff00ff"},
+    {name:"Ｍさん", id:"UCGK0iFuXhfA5VnL64xiKEmQ", twitterId:"", color:"#00ffff"},
+    {name:"タツナミ先生", id:"UCedenULTLYf3DanflEXdRCQ", twitterId:"tatsunami", color:"#00ff00"},
+    {name:"神近", id:"UCdLe2q91fJkN9GEyDvItp-w", twitterId:"kamichika", color:"#ffffff"},
+    {name:"しろくる", id:"UCle3bhQ-tZty8KNcACbUBZQ", twitterId:"4696_v_v", color:"#ffffff"},
+    {name:"たにし", id:"UCiC8VCiSLD3mxoO-QFKQnBQ", twitterId:"tanishi_vrc", color:"#0000ff"},
+    {name:"凸もり", id:"UCdN9GjPrqhcrzE27eWNNjxg", twitterId:"totsumori", color:"#888888"},
+    {name:"神宮寺ちゃんねる", id:"UCou8IVB8jJPk56H0farYQdA", twitterId:"_jinguji", color:"#ff0000"},
+    {name:"カズクラ", id:"UCu3Mp1ZimtNvyA-bcfo9VrQ", twitterId:"kazuch0924", color:"#ff0000"},
+    {name:"たいたい", id:"UCds-nvoKCcvixVXJ_54QcbQ", twitterId:"taitaitatata", color:"#00ccff"},
+    {name:"岐阜のこみちん", id:"UCw4frqkotySLjJ_CFZR5-7w", twitterId:"komichin_info", color:"#ffcc00"},
+    {name:"ナナホシナナ", id:"UCncsOsnMBAAaYb6WidBYIDw", twitterId:"nanahoshi_nana", color:"#ff33ff"},
+    {name:"月成るくす", id:"UCP9rcDSyTRtnu8EsG2CmLMg", twitterId:"tsukinari_lux", color:"#ffffcc"},
+    {name:"メッス", id:"UCkJeBcOPRBs5bri5B3sFgVg", twitterId:"Messu_009", color:"#333333"},
+    {name:"よいよい", id:"UCzk-vAIbo3iVBGTNaJQS2qQ", twitterId:"yoiyoi_v", color:"#ccff00"},
+    {name:"うえまーさ", id:"UCIBDdDXnViOgN5tCpfX7NOA", twitterId:"uemasa_v", color:"#9900ff"},
+    {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA", twitterId:"Kunashiki_Lin", color:"#ffffff"},
+    {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"inuno_haru", color:"#ccffcc"},
+    {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ", twitterId:"chinjuhana", color:"#ffffff"},
+    {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA", twitterId:"pokonyan1185", color:"#00ff00"},
+    {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"KtR_game_", color:"#3399ff"}
 ];
-
-function getRelativeTime(dateStr) {
-    const start = new Date(dateStr);
-    const now = new Date();
-    const diffMin = Math.floor((now - start) / 60000);
-    return diffMin < 60 ? `${diffMin}分前に開始` : `${Math.floor(diffMin / 60)}時間前に開始`;
-}
 
 async function loadPortal() {
     let videoIds = [];
     let channelInfoMap = {};
-    const liveSection = document.getElementById("liveSection");
+    const channelIds = channels.map(c => c.id).join(',');
 
-    for (const ch of channels) {
-        try {
+    try {
+        const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${channelIds}&part=snippet`);
+        const chData = await chRes.json();
+        chData.items.forEach(item => {
+            channelInfoMap[item.id] = { icon: item.snippet.thumbnails.medium.url };
+        });
+
+        for (const ch of channels) {
             const playlistId = ch.id.replace(/^UC/, 'UU');
             const res = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${playlistId}&part=snippet&maxResults=1`);
             const data = await res.json();
             if (data.items && data.items.length > 0) {
                 const vId = data.items[0].snippet.resourceId.videoId;
                 videoIds.push(vId);
-                channelInfoMap[vId] = { name: ch.name, chId: ch.id, twitter: ch.twitterId };
+                Object.assign(channelInfoMap[ch.id], { lastVideoId: vId });
             }
-        } catch (e) { console.error(ch.name, e); }
-    }
+        }
 
-    try {
-        const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
-        const data = await res.json();
+        const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
+        const vData = await vRes.json();
         
-        let liveHtml = "";
-        let allHtml = "";
-        let liveCount = 0;
+        let liveHtml = "", allHtml = "", liveCount = 0;
 
-        data.items.forEach(item => {
-            const vId = item.id;
-            const info = channelInfoMap[vId];
-            const isLive = item.snippet.liveBroadcastContent === 'live';
+        channels.forEach(ch => {
+            const chInfo = channelInfoMap[ch.id];
+            const videoItem = vData.items.find(v => v.id === chInfo.lastVideoId);
+            const isLive = videoItem && videoItem.snippet.liveBroadcastContent === 'live';
             
-            const startTime = isLive && item.liveStreamingDetails ? item.liveStreamingDetails.actualStartTime : null;
-            const timeTag = startTime ? `<div class="time-info">🕒 ${getRelativeTime(startTime)}</div>` : "";
+            // 配信中の時は枠線をその人の色に
+            const borderStyle = isLive ? `style="border-color: ${ch.color}; box-shadow: 0 0 10px ${ch.color}55;"` : '';
+            const nameStyle = `style="color: ${ch.color}"`;
+
+            const mediaHtml = isLive 
+                ? `<img class="thumb" src="${videoItem.snippet.thumbnails.medium.url}">`
+                : `<div class="thumb-bg" style="background: ${ch.color}"></div><img class="thumb-profile" src="${chInfo.icon}">`;
 
             const cardHtml = `
-            <div class="card ${isLive ? 'is-live' : ''}">
-                <a href="https://youtube.com/watch?v=${vId}" target="_blank" class="video-link">
+            <div class="card ${isLive ? 'is-live' : ''}" ${borderStyle}>
+                <a href="https://youtube.com/watch?v=${chInfo.lastVideoId}" target="_blank" class="video-link">
                     <div class="thumb-wrap">
-                        <img class="thumb" src="${item.snippet.thumbnails.medium ? item.snippet.thumbnails.medium.url : item.snippet.thumbnails.default.url}">
-                        ${isLive ? '<div class="live-label">LIVE</div>' : ''}
+                        ${mediaHtml}
                     </div>
                     <div class="info">
-                        <div class="name">${info.name}</div>
-                        <div class="title">${item.snippet.title}</div>
-                        ${timeTag}
+                        <div class="name" ${nameStyle}>${ch.name}</div>
+                        <div class="title">${isLive ? videoItem.snippet.title : 'OFFLINE'}</div>
                     </div>
                 </a>
                 <div class="btn-area">
-                    <a href="https://youtube.com/channel/${info.chId}" target="_blank" class="btn btn-yt">YouTube</a>
-                    <a href="https://x.com/${info.twitter}" target="_blank" class="btn btn-x">X</a>
+                    <a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>
+                    <a href="https://x.com/${ch.twitterId}" target="_blank" class="btn btn-x">X</a>
                 </div>
             </div>`;
             
-            if (isLive) {
-                liveHtml += cardHtml;
-                liveCount++;
-            }
+            if (isLive) { liveHtml += cardHtml; liveCount++; }
             allHtml += cardHtml;
         });
 
-        if (liveCount > 0) {
-            liveSection.style.display = "block";
-            document.getElementById("liveGrid").innerHTML = liveHtml;
-        } else {
-            liveSection.style.display = "none";
-        }
+        document.getElementById("liveSection").style.display = liveCount > 0 ? "block" : "none";
+        document.getElementById("liveGrid").innerHTML = liveHtml;
         document.getElementById("allGrid").innerHTML = allHtml;
 
     } catch (e) { console.error(e); }
