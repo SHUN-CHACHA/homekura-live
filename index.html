@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>homeクラ 配信ポータル (API版)</title>
+<title>homeクラ 配信ポータル (節約版)</title>
 <style>
-    /* CSSは前回と同じなので、使い勝手を考慮してそのまま維持します */
     body { margin: 0; font-family: sans-serif; background: #0f0f0f; color: white; }
     header { background: #1f1f1f; padding: 30px 20px; text-align: center; border-bottom: 1px solid #333; }
     .stats { text-align: center; padding: 15px; font-size: 16px; color: #aaa; }
@@ -19,14 +18,14 @@
     .info { padding: 12px; }
     .name { font-weight: bold; font-size: 14px; color: #aaa; margin-bottom: 4px; }
     .title { font-size: 15px; line-height: 1.4; height: 3em; overflow: hidden; }
-    .live-badge { color: #ff0000; font-weight: bold; font-size: 12px; margin-bottom: 4px; display: block; }
+    .error-msg { text-align: center; grid-column: 1/-1; color: #ff4444; padding: 20px; }
 </style>
 </head>
 <body>
 
 <header>
     <h1>🏠 homeクラ 配信ポータル</h1>
-    <p>YouTube Data APIを使用して最新情報を取得中</p>
+    <p>YouTube API 節約モードで取得中</p>
 </header>
 
 <div class="stats">
@@ -41,6 +40,7 @@
 
 <script>
 // --- 設定エリア ---
+// 今すぐ試すなら、新しいキーをここに。リセット（夕方）を待つなら今のままでOK
 const API_KEY = 'AIzaSyAj-96z_JFwqNr6Gl0d2p3UdDUHDk2wGEE'; 
 // ----------------
 
@@ -72,69 +72,60 @@ const channels = [
 
 const grid = document.getElementById("grid");
 
-async function fetchVideoData(channel) {
-    const url = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${channel.id}&part=snippet&order=date&maxResults=1&type=video`;
-
-    try {
-        const res = await fetch(url);
-        const data = await res.json();
-
-        // APIエラー（キーが無効、制限超えなど）の判定
-        if (data.error) {
-            console.error(`${channel.name}の取得エラー:`, data.error.message);
-            return { error: data.error.message };
-        }
-
-        if (data.items && data.items.length > 0) {
-            const item = data.items[0];
-            const videoId = item.id.videoId;
-            const title = item.snippet.title;
-            const thumb = item.snippet.thumbnails.high.url;
-            const liveStatus = item.snippet.liveBroadcastContent;
-
-            return {
-                isLive: liveStatus === 'live',
-                html: `
-                <div class="card">
-                    <a href="https://youtube.com/watch?v=${videoId}" target="_blank">
-                        <img class="thumb" src="${thumb}" alt="${channel.name}">
-                        <div class="info">
-                            <span class="live-badge">${liveStatus === 'live' ? '● ライブ配信中' : ''}</span>
-                            <div class="name">${channel.name}</div>
-                            <div class="title">${title}</div>
-                        </div>
-                    </a>
-                </div>`
-            };
-        }
-    } catch (e) {
-        return null;
-    }
-    return null;
-}
-
 async function loadPortal() {
     grid.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>最新情報を取得中...</p>";
-    
-    const results = await Promise.all(channels.map(ch => fetchVideoData(ch)));
-    
-    // エラーメッセージがあるか確認
-    const firstError = results.find(r => r && r.error);
-    if (firstError) {
-        grid.innerHTML = `<p style='text-align:center; grid-column:1/-1; color:#ff4444;'>APIエラーが発生しました: ${firstError.error}<br>Google Cloud Consoleの設定を確認してください。</p>`;
-        return;
+    let allCards = [];
+    let errorOccurred = null;
+
+    for (const ch of channels) {
+        try {
+            // クォータ節約のため「アップロード済みプレイリスト」を取得
+            // UC... を UU... に変えるとアップロード動画のプレイリストIDになる
+            const uploadsPlaylistId = ch.id.replace(/^UC/, 'UU');
+            const url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${uploadsPlaylistId}&part=snippet&maxResults=1`;
+
+            const res = await fetch(url);
+            const data = await res.json();
+
+            if (data.error) {
+                errorOccurred = data.error.message;
+                break; // エラーが出たらループ中断
+            }
+
+            if (data.items && data.items.length > 0) {
+                const item = data.items[0].snippet;
+                const videoId = item.resourceId.videoId;
+                const thumb = item.thumbnails.high ? item.thumbnails.high.url : item.thumbnails.default.url;
+
+                allCards.push(`
+                    <div class="card">
+                        <a href="https://youtube.com/watch?v=${videoId}" target="_blank">
+                            <img class="thumb" src="${thumb}" alt="${ch.name}">
+                            <div class="info">
+                                <div class="name">${ch.name}</div>
+                                <div class="title">${item.title}</div>
+                            </div>
+                        </a>
+                    </div>
+                `);
+            }
+        } catch (e) {
+            console.warn(ch.name + " の取得に失敗");
+        }
     }
 
-    const validResults = results.filter(r => r && r.html);
-    // ライブ中を上に
-    validResults.sort((a, b) => b.isLive - a.isLive);
-
-    grid.innerHTML = validResults.map(r => r.html).join("");
-    document.getElementById("count").textContent = validResults.length;
+    if (errorOccurred) {
+        grid.innerHTML = `<div class="error-msg">APIエラー: ${errorOccurred}<br>※利用制限中のため、リセットされるまで表示されません。</div>`;
+    } else {
+        grid.innerHTML = allCards.join("");
+        document.getElementById("count").textContent = allCards.length;
+    }
 }
 
+// 初期読み込み
 loadPortal();
 
+// 検索機能
 document.getElementById("search").addEventListener("input", function() {
     const word = this.value.toLowerCase();
     document.querySelectorAll(".card").forEach(card => {
@@ -142,3 +133,6 @@ document.getElementById("search").addEventListener("input", function() {
     });
 });
 </script>
+
+</body>
+</html>
