@@ -14,22 +14,63 @@
 
 <style>
     body { margin: 0; font-family: sans-serif; background: #0f0f0f; color: white; padding-bottom: 50px; }
-    header { background: #1f1f1f; padding: 10px 20px; text-align: center; border-bottom: 2px solid #333; height: 50px; display: flex; justify-content: center; align-items: center; }
-    .header-logo { max-height: 100%; width: auto; }
+    
+    /* ヘッダー全体のレイアウト調整 */
+    header { 
+        background: #1f1f1f; 
+        padding: 0 15px; 
+        border-bottom: 2px solid #333; 
+        height: 60px; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
 
-    /* プログレスバーのスタイル */
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        height: 100%;
+    }
+
+    .header-logo { height: 32px; width: auto; }
+
+    /* ヘッダー用更新ボタン */
+    .btn-refresh-header {
+        background: #28a745;
+        color: #fff;
+        border: none;
+        padding: 5px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+        white-space: nowrap;
+    }
+    .btn-refresh-header:hover { background: #218838; }
+    .btn-refresh-header:active { transform: translateY(1px); }
+    .btn-refresh-header:disabled { background: #444; cursor: not-allowed; }
+
+    /* タイマー表示 */
+    #timer { 
+        font-size: 11px; 
+        color: #888; 
+        font-family: monospace; 
+        text-align: right;
+    }
+
+    /* プログレスバー */
     .progress-container { width: 100%; height: 3px; background: #333; position: relative; overflow: hidden; }
     #progress-bar { width: 100%; height: 100%; background: #28a745; transition: width 1s linear; }
 
-    /* 追加フォームのスタイル */
+    /* 管理パネル */
     .admin-panel { max-width: 1400px; margin: 20px auto; padding: 15px; background: #1a1a1a; border-radius: 8px; border: 1px solid #333; }
     .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .admin-panel h3 { margin: 0; font-size: 14px; color: #888; }
-    .timer-area { display: flex; align-items: center; }
-    .btn-refresh { background: #444; color: #fff; border: 1px solid #555; padding: 4px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; margin-right: 12px; transition: 0.2s; }
-    .btn-refresh:hover { background: #555; }
-    .btn-refresh:disabled { opacity: 0.5; cursor: not-allowed; }
-    #timer { font-size: 11px; color: #888; font-family: monospace; }
 
     .input-group { display: flex; flex-wrap: wrap; gap: 8px; }
     .input-group input { background: #222; border: 1px solid #444; color: white; padding: 8px; border-radius: 4px; flex: 1; min-width: 140px; font-size: 12px; }
@@ -37,6 +78,7 @@
     .btn-reset { background: transparent; color: #555; border: 1px solid #333; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; margin-top: 10px; transition: 0.3s; }
     .btn-reset:hover { color: #ff4444; border-color: #ff4444; }
 
+    /* グリッドレイアウト */
     .section-title { max-width: 1400px; margin: 20px auto 10px; padding: 0 10px; font-size: 14px; font-weight: bold; }
     .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 0 8px 20px; max-width: 1400px; margin: auto; }
     
@@ -71,7 +113,13 @@
 </head>
 <body>
 
-<header><img src="logo.png" alt="homeクラ" class="header-logo"></header>
+<header>
+    <div class="header-left">
+        <img src="logo.png" alt="homeクラ" class="header-logo">
+        <button id="refresh-btn" class="btn-refresh-header" onclick="manualRefresh()">更新</button>
+    </div>
+    <div id="timer">Next Update: --:--</div>
+</header>
 
 <div class="progress-container">
     <div id="progress-bar"></div>
@@ -87,10 +135,6 @@
 <div class="admin-panel">
     <div class="admin-header">
         <h3>➕ 配信者を追加する</h3>
-        <div class="timer-area">
-            <button id="refresh-btn" class="btn-refresh" onclick="manualRefresh()">今すぐ更新</button>
-            <span id="timer">Next Update: --:--</span>
-        </div>
     </div>
     <div class="input-group">
         <input type="text" id="new-name" placeholder="名前 (例: HIKAKIN)">
@@ -265,14 +309,14 @@ function updateTimerDisplay() {
 // 手動更新
 async function manualRefresh() {
     const btn = document.getElementById('refresh-btn');
-    btn.innerText = "更新中...";
+    btn.innerText = "更新中";
     btn.disabled = true;
 
     await loadPortal();
     
     timeLeft = UPDATE_INTERVAL;
     updateTimerDisplay();
-    btn.innerText = "今すぐ更新";
+    btn.innerText = "更新";
     btn.disabled = false;
 }
 
