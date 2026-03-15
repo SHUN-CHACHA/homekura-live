@@ -18,34 +18,32 @@
     /* ヘッダー全体のレイアウト調整 */
     header { 
         background: #1f1f1f; 
-        padding: 0 15px; 
+        padding: 15px; 
         border-bottom: 2px solid #333; 
-        height: 60px; 
         display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
+        flex-direction: column; /* 縦並び */
+        align-items: center; /* 中央揃え */
         position: sticky;
         top: 0;
         z-index: 1000;
     }
 
-    .header-left {
+    .header-logo { height: 48px; width: auto; margin-bottom: 10px; } /* ロゴを大きくして下に余白 */
+
+    .header-controls { /* 更新ボタンとタイマーを横並びに */
         display: flex;
         align-items: center;
-        gap: 12px;
-        height: 100%;
+        gap: 15px;
     }
-
-    .header-logo { height: 32px; width: auto; }
 
     /* ヘッダー用更新ボタン */
     .btn-refresh-header {
         background: #28a745;
         color: #fff;
         border: none;
-        padding: 5px 12px;
+        padding: 6px 15px;
         border-radius: 4px;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: bold;
         cursor: pointer;
         transition: 0.2s;
@@ -57,10 +55,9 @@
 
     /* タイマー表示 */
     #timer { 
-        font-size: 11px; 
+        font-size: 12px; 
         color: #888; 
         font-family: monospace; 
-        text-align: right;
     }
 
     /* プログレスバー */
@@ -114,11 +111,11 @@
 <body>
 
 <header>
-    <div class="header-left">
-        <img src="logo.png" alt="homeクラ" class="header-logo">
+    <img src="logo.png" alt="homeクラ" class="header-logo">
+    <div class="header-controls">
         <button id="refresh-btn" class="btn-refresh-header" onclick="manualRefresh()">更新</button>
+        <div id="timer">Next Update: --:--</div>
     </div>
-    <div id="timer">Next Update: --:--</div>
 </header>
 
 <div class="progress-container">
