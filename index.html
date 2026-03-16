@@ -45,59 +45,65 @@
         font-weight: bold;
         cursor: pointer;
         transition: 0.2s;
-        white-space: nowrap;
-    }
-    .btn-refresh-header:hover { background: #218838; }
-    .btn-refresh-header:active { transform: translateY(1px); }
-    .btn-refresh-header:disabled { background: #444; cursor: not-allowed; }
-
-    #timer { 
-        font-size: 12px; 
-        color: #888; 
-        font-family: monospace; 
     }
 
+    #timer { font-size: 12px; color: #888; font-family: monospace; }
     .progress-container { width: 100%; height: 3px; background: #333; position: relative; overflow: hidden; }
     #progress-bar { width: 100%; height: 100%; background: #28a745; transition: width 1s linear; }
 
-    .admin-panel { max-width: 1400px; margin: 20px auto; padding: 15px; background: #1a1a1a; border-radius: 8px; border: 1px solid #333; }
-    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .admin-panel h3 { margin: 0; font-size: 14px; color: #888; }
+    /* アニメーション */
+    @keyframes blink { 50% { opacity: 0.3; } }
+    @keyframes pulse-green {
+        0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+    }
 
-    .input-group { display: flex; flex-wrap: wrap; gap: 8px; }
-    .input-group input { background: #222; border: 1px solid #444; color: white; padding: 8px; border-radius: 4px; flex: 1; min-width: 140px; font-size: 12px; }
-    .btn-add { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-    .btn-reset { background: transparent; color: #555; border: 1px solid #333; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; margin-top: 10px; transition: 0.3s; }
-    .btn-reset:hover { color: #ff4444; border-color: #ff4444; }
+    .live-badge {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        background: #28a745;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: bold;
+        z-index: 10;
+        animation: blink 1s infinite;
+    }
 
     .section-title { max-width: 1400px; margin: 20px auto 10px; padding: 0 10px; font-size: 14px; font-weight: bold; }
     .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 0 8px 20px; max-width: 1400px; margin: auto; }
     
     .card { background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; position: relative; }
-    .card.is-live { box-shadow: 0 0 15px rgba(255,255,255,0.1); z-index: 5; }
+    .card.is-live { border-color: #28a745 !important; animation: pulse-green 2s infinite; }
 
-    .delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6); color: #888; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; }
-    .delete-btn:hover { background: #ff4444; color: white; }
+    .delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6); color: #888; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; cursor: pointer; z-index: 11; }
 
-    .thumb-wrap { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; text-decoration: none; }
-    .thumb-bg { position: absolute; width: 100%; height: 100%; opacity: 0.3; filter: blur(20px); }
-    .thumb-profile { width: 45%; height: auto; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5); position: relative; z-index: 2; }
+    .thumb-wrap { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .thumb { width: 100%; height: 100%; object-fit: cover; }
+    .thumb-bg { position: absolute; width: 100%; height: 100%; opacity: 0.3; filter: blur(20px); }
+    .thumb-profile { width: 45%; height: auto; border-radius: 50%; position: relative; z-index: 2; border: 2px solid rgba(255,255,255,0.2); }
     
-    .info { padding: 6px; }
-    .name { font-weight: bold; font-size: 10px; margin-bottom: 2px; }
-    .title { font-size: 10px; line-height: 1.2; height: 2.4em; overflow: hidden; color: #eee; }
-    .video-link { text-decoration: none; color: inherit; }
+    .info { padding: 8px; }
+    .name { font-weight: bold; font-size: 11px; margin-bottom: 2px; }
+    .title { font-size: 11px; line-height: 1.2; height: 2.4em; overflow: hidden; color: #eee; }
 
-    .btn-area { padding: 0 6px 8px 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-    .btn { display: block; text-align: center; text-decoration: none; font-size: 9px; padding: 4px 0; border-radius: 4px; color: white; background: #333; }
+    .btn-area { padding: 0 8px 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+    .btn { display: block; text-align: center; text-decoration: none; font-size: 10px; padding: 5px 0; border-radius: 4px; color: white; background: #333; }
     .btn-yt { background: #c00; }
-    .btn-x { background: #000; border: 1px solid #333; }
+    .btn-reserve { background: #555; cursor: pointer; border: none; font-family: inherit; }
+    .btn-reserve.active { background: #ffcc00; color: #000; font-weight: bold; }
+
+    .admin-panel { max-width: 1400px; margin: 20px auto; padding: 15px; background: #1a1a1a; border-radius: 8px; border: 1px solid #333; }
+    .input-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .input-group input { background: #222; border: 1px solid #444; color: white; padding: 8px; border-radius: 4px; flex: 1; min-width: 140px; }
+    .btn-add { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
     @media (min-width: 768px) {
         .grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .name { font-size: 14px; }
-        .title { font-size: 14px; }
+        .name, .title { font-size: 14px; }
         .btn { font-size: 12px; }
     }
 </style>
@@ -117,7 +123,7 @@
 </div>
 
 <div id="liveSection" style="display: none;">
-    <div class="section-title" style="color:#ff4444">🔴 配信中のメンバー</div>
+    <div class="section-title" style="color:#28a745">🟢 配信中のメンバー</div>
     <div id="liveGrid" class="grid"></div>
 </div>
 
@@ -129,17 +135,15 @@
 <hr style="border: 0; border-top: 1px solid #222; margin: 20px 0;">
 
 <div class="admin-panel">
-    <div class="admin-header">
-        <h3>➕ 配信者を追加する</h3>
-    </div>
+    <div class="admin-header"><h3>➕ 配信者を追加する</h3></div>
     <div class="input-group">
-        <input type="text" id="new-name" placeholder="名前 (例: HIKAKIN)">
-        <input type="text" id="new-id" placeholder="チャンネルID (UC...)">
-        <input type="text" id="new-twitter" placeholder="X ID (Twitter)">
-        <input type="color" id="new-color" value="#ffffff" style="width: 40px; height: 35px; border: none; padding: 0; cursor: pointer;">
+        <input type="text" id="new-name" placeholder="名前">
+        <input type="text" id="new-id" placeholder="チャンネルID">
+        <input type="text" id="new-twitter" placeholder="X ID">
+        <input type="color" id="new-color" value="#ffffff" style="width: 40px;">
         <button class="btn-add" onclick="addChannel()">追加</button>
     </div>
-    <button class="btn-reset" onclick="resetChannels()">初期メンバーに戻す</button>
+    <button style="background:none; border:none; color:#555; cursor:pointer; font-size:10px; margin-top:10px;" onclick="resetChannels()">初期状態に戻す</button>
 </div>
 
 <div class="section-title" style="color:#aaa">👥 メンバー一覧</div>
@@ -175,6 +179,7 @@ const defaultChannels = [
 ];
 
 let channels = [];
+let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 const UPDATE_INTERVAL = 600; 
 let timeLeft = UPDATE_INTERVAL;
 
@@ -183,37 +188,32 @@ function initChannels() {
     channels = saved ? JSON.parse(saved) : [...defaultChannels];
 }
 
-function addChannel() {
-    const name = document.getElementById('new-name').value;
-    const id = document.getElementById('new-id').value;
-    const twitterId = document.getElementById('new-twitter').value;
-    const color = document.getElementById('new-color').value;
-
-    if (!name || !id) { alert("名前とチャンネルIDは必須です"); return; }
-    
-    channels.push({ name, id, twitterId, color });
-    localStorage.setItem('custom_channels', JSON.stringify(channels));
-    
-    document.getElementById('new-name').value = "";
-    document.getElementById('new-id').value = "";
-    document.getElementById('new-twitter').value = "";
+function toggleReserve(videoId, channelName) {
+    if (Notification.permission !== "granted") {
+        Notification.requestPermission();
+    }
+    const index = reservedVideos.indexOf(videoId);
+    if (index > -1) {
+        reservedVideos.splice(index, 1);
+    } else {
+        reservedVideos.push(videoId);
+    }
+    localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
     loadPortal();
 }
 
-function deleteChannel(id) {
-    if(confirm("この配信者を削除しますか？")) {
-        channels = channels.filter(ch => ch.id !== id);
-        localStorage.setItem('custom_channels', JSON.stringify(channels));
-        loadPortal();
-    }
-}
-
-function resetChannels() {
-    if(confirm("追加したメンバーを削除して初期状態に戻しますか？")) {
-        localStorage.removeItem('custom_channels');
-        channels = [...defaultChannels];
-        loadPortal();
-    }
+function checkNotifications(vData) {
+    vData.items.forEach(v => {
+        if (v.snippet.liveBroadcastContent === 'live' && reservedVideos.includes(v.id)) {
+            new Notification("配信開始！", {
+                body: `${v.snippet.channelTitle}さんの配信が始まりました！`,
+                icon: v.snippet.thumbnails.default.url
+            });
+            // 通知したらリストから消す
+            reservedVideos = reservedVideos.filter(id => id !== v.id);
+            localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
+        }
+    });
 }
 
 async function loadPortal() {
@@ -225,11 +225,7 @@ async function loadPortal() {
     try {
         const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${channelIds}&part=snippet`);
         const chData = await chRes.json();
-        if (chData.items) {
-            chData.items.forEach(item => {
-                channelInfoMap[item.id] = { icon: item.snippet.thumbnails.medium.url };
-            });
-        }
+        chData.items.forEach(item => channelInfoMap[item.id] = { icon: item.snippet.thumbnails.medium.url });
 
         for (const ch of channels) {
             const playlistId = ch.id.replace(/^UC/, 'UU');
@@ -245,55 +241,48 @@ async function loadPortal() {
         const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
         const vData = await vRes.json();
         
+        // 通知チェック
+        checkNotifications(vData);
+
         let liveHtml = "", upcomingHtml = "", allHtml = "";
         let liveCount = 0, upcomingCount = 0;
 
         channels.forEach(ch => {
             const chInfo = channelInfoMap[ch.id];
             if (!chInfo) return;
-
-            const videoItem = vData.items.find(v => v.id === chInfo.lastVideoId);
-            const status = videoItem ? videoItem.snippet.liveBroadcastContent : 'none';
+            const vItem = vData.items.find(v => v.id === chInfo.lastVideoId);
+            const status = vItem ? vItem.snippet.liveBroadcastContent : 'none';
             const isLive = status === 'live';
             const isUpcoming = status === 'upcoming';
-            
-            // 配信予約時刻の取得
-            let scheduledTimeStr = "";
-            if (isUpcoming && videoItem.liveStreamingDetails?.scheduledStartTime) {
-                const date = new Date(videoItem.liveStreamingDetails.scheduledStartTime);
-                const month = date.getMonth() + 1;
-                const day = date.getDate();
-                const hours = date.getHours();
-                const minutes = String(date.getMinutes()).padStart(2, '0');
-                scheduledTimeStr = `${month}/${day} ${hours}:${minutes}～`;
+            const isReserved = reservedVideos.includes(chInfo.lastVideoId);
+
+            let timeStr = "OFFLINE";
+            if (isLive) timeStr = vItem.snippet.title;
+            else if (isUpcoming) {
+                const d = new Date(vItem.liveStreamingDetails.scheduledStartTime);
+                timeStr = `🕒 ${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}～`;
             }
 
-            const borderStyle = isLive ? `style="border-color: ${ch.color}; box-shadow: 0 0 10px ${ch.color}55;"` : '';
-            const nameStyle = `style="color: ${ch.color}"`;
-
-            // サムネイルの判定
             const mediaHtml = (isLive || isUpcoming) 
-                ? `<img class="thumb" src="${videoItem.snippet.thumbnails.medium.url}">`
+                ? `${isLive ? '<div class="live-badge">LIVE</div>' : ''}<img class="thumb" src="${vItem.snippet.thumbnails.medium.url}">`
                 : `<div class="thumb-bg" style="background: ${ch.color}"></div><img class="thumb-profile" src="${chInfo.icon}">`;
 
-            // タイトルの表示
-            let statusTitle = "OFFLINE";
-            if (isLive) statusTitle = videoItem.snippet.title;
-            else if (isUpcoming) statusTitle = "🕒 " + scheduledTimeStr;
-
             const cardHtml = `
-            <div class="card ${isLive ? 'is-live' : ''}" ${borderStyle}>
-                <button class="delete-btn" onclick="deleteChannel('${ch.id}')" title="削除">×</button>
-                <a href="https://youtube.com/watch?v=${chInfo.lastVideoId}" target="_blank" class="video-link">
+            <div class="card ${isLive ? 'is-live' : ''}">
+                <button class="delete-btn" onclick="deleteChannel('${ch.id}')">×</button>
+                <a href="https://youtube.com/watch?v=${chInfo.lastVideoId}" target="_blank" style="text-decoration:none; color:inherit;">
                     <div class="thumb-wrap">${mediaHtml}</div>
                     <div class="info">
-                        <div class="name" ${nameStyle}>${ch.name}</div>
-                        <div class="title">${statusTitle}</div>
+                        <div class="name" style="color:${ch.color}">${ch.name}</div>
+                        <div class="title">${timeStr}</div>
                     </div>
                 </a>
                 <div class="btn-area">
                     <a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>
-                    <a href="https://x.com/${ch.twitterId}" target="_blank" class="btn btn-x">X</a>
+                    ${isUpcoming ? 
+                        `<button class="btn btn-reserve ${isReserved ? 'active' : ''}" onclick="toggleReserve('${chInfo.lastVideoId}', '${ch.name}')">${isReserved ? '🔔 予約中' : '🔔 通知予約'}</button>` : 
+                        `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X(Twitter)</a>`
+                    }
                 </div>
             </div>`;
             
@@ -304,51 +293,58 @@ async function loadPortal() {
 
         document.getElementById("liveSection").style.display = liveCount > 0 ? "block" : "none";
         document.getElementById("liveGrid").innerHTML = liveHtml;
-
         document.getElementById("upcomingSection").style.display = upcomingCount > 0 ? "block" : "none";
         document.getElementById("upcomingGrid").innerHTML = upcomingHtml;
-
         document.getElementById("allGrid").innerHTML = allHtml;
-
     } catch (e) { console.error(e); }
 }
 
-function updateTimerDisplay() {
-    const timerElement = document.getElementById('timer');
-    const barElement = document.getElementById('progress-bar');
-    
-    const m = Math.floor(timeLeft / 60);
-    const s = timeLeft % 60;
-    timerElement.innerText = `Next Update: ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-    
-    const percentage = (timeLeft / UPDATE_INTERVAL) * 100;
-    barElement.style.width = `${percentage}%`;
-    barElement.style.background = timeLeft < 60 ? "#ff4444" : "#28a745";
+// -- 以下、共通管理関数 (add, delete, manualRefresh, timer) --
+function addChannel() {
+    const name = document.getElementById('new-name').value;
+    const id = document.getElementById('new-id').value;
+    const twitterId = document.getElementById('new-twitter').value;
+    const color = document.getElementById('new-color').value;
+    if (!name || !id) return;
+    channels.push({ name, id, twitterId, color });
+    localStorage.setItem('custom_channels', JSON.stringify(channels));
+    loadPortal();
 }
-
+function deleteChannel(id) {
+    if(confirm("削除しますか？")) {
+        channels = channels.filter(ch => ch.id !== id);
+        localStorage.setItem('custom_channels', JSON.stringify(channels));
+        loadPortal();
+    }
+}
+function resetChannels() {
+    if(confirm("リセットしますか？")) {
+        localStorage.removeItem('custom_channels');
+        channels = [...defaultChannels];
+        loadPortal();
+    }
+}
 async function manualRefresh() {
     const btn = document.getElementById('refresh-btn');
-    btn.innerText = "更新中";
     btn.disabled = true;
-
     await loadPortal();
-    
     timeLeft = UPDATE_INTERVAL;
-    updateTimerDisplay();
-    btn.innerText = "更新";
     btn.disabled = false;
+}
+function updateTimerDisplay() {
+    const barElement = document.getElementById('progress-bar');
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    document.getElementById('timer').innerText = `Next Update: ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    barElement.style.width = `${(timeLeft / UPDATE_INTERVAL) * 100}%`;
+    barElement.style.background = timeLeft < 60 ? "#1e7e34" : "#28a745";
 }
 
 initChannels();
 loadPortal();
-updateTimerDisplay();
-
 setInterval(() => {
     timeLeft--;
-    if (timeLeft < 0) {
-        loadPortal();
-        timeLeft = UPDATE_INTERVAL;
-    }
+    if (timeLeft < 0) { loadPortal(); timeLeft = UPDATE_INTERVAL; }
     updateTimerDisplay();
 }, 1000);
 </script>
