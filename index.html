@@ -15,28 +15,26 @@
 <style>
     body { margin: 0; font-family: sans-serif; background: #0f0f0f; color: white; padding-bottom: 50px; }
     
-    /* ヘッダー全体のレイアウト調整 */
     header { 
         background: #1f1f1f; 
         padding: 15px; 
         border-bottom: 2px solid #333; 
         display: flex; 
-        flex-direction: column; /* 縦並び */
-        align-items: center; /* 中央揃え */
+        flex-direction: column; 
+        align-items: center; 
         position: sticky;
         top: 0;
         z-index: 1000;
     }
 
-    .header-logo { height: 48px; width: auto; margin-bottom: 10px; } /* ロゴを大きくして下に余白 */
+    .header-logo { height: 48px; width: auto; margin-bottom: 10px; }
 
-    .header-controls { /* 更新ボタンとタイマーを横並びに */
+    .header-controls {
         display: flex;
         align-items: center;
         gap: 15px;
     }
 
-    /* ヘッダー用更新ボタン */
     .btn-refresh-header {
         background: #28a745;
         color: #fff;
@@ -53,18 +51,15 @@
     .btn-refresh-header:active { transform: translateY(1px); }
     .btn-refresh-header:disabled { background: #444; cursor: not-allowed; }
 
-    /* タイマー表示 */
     #timer { 
         font-size: 12px; 
         color: #888; 
         font-family: monospace; 
     }
 
-    /* プログレスバー */
     .progress-container { width: 100%; height: 3px; background: #333; position: relative; overflow: hidden; }
     #progress-bar { width: 100%; height: 100%; background: #28a745; transition: width 1s linear; }
 
-    /* 管理パネル */
     .admin-panel { max-width: 1400px; margin: 20px auto; padding: 15px; background: #1a1a1a; border-radius: 8px; border: 1px solid #333; }
     .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .admin-panel h3 { margin: 0; font-size: 14px; color: #888; }
@@ -75,7 +70,6 @@
     .btn-reset { background: transparent; color: #555; border: 1px solid #333; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; margin-top: 10px; transition: 0.3s; }
     .btn-reset:hover { color: #ff4444; border-color: #ff4444; }
 
-    /* グリッドレイアウト */
     .section-title { max-width: 1400px; margin: 20px auto 10px; padding: 0 10px; font-size: 14px; font-weight: bold; }
     .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 0 8px 20px; max-width: 1400px; margin: auto; }
     
@@ -127,6 +121,11 @@
     <div id="liveGrid" class="grid"></div>
 </div>
 
+<div id="upcomingSection" style="display: none;">
+    <div class="section-title" style="color:#ffcc00">🟡 配信予定のメンバー</div>
+    <div id="upcomingGrid" class="grid"></div>
+</div>
+
 <hr style="border: 0; border-top: 1px solid #222; margin: 20px 0;">
 
 <div class="admin-panel">
@@ -176,7 +175,7 @@ const defaultChannels = [
 ];
 
 let channels = [];
-const UPDATE_INTERVAL = 600; // 10分
+const UPDATE_INTERVAL = 600; 
 let timeLeft = UPDATE_INTERVAL;
 
 function initChannels() {
@@ -246,21 +245,41 @@ async function loadPortal() {
         const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
         const vData = await vRes.json();
         
-        let liveHtml = "", allHtml = "", liveCount = 0;
+        let liveHtml = "", upcomingHtml = "", allHtml = "";
+        let liveCount = 0, upcomingCount = 0;
 
         channels.forEach(ch => {
             const chInfo = channelInfoMap[ch.id];
             if (!chInfo) return;
 
             const videoItem = vData.items.find(v => v.id === chInfo.lastVideoId);
-            const isLive = videoItem && videoItem.snippet.liveBroadcastContent === 'live';
+            const status = videoItem ? videoItem.snippet.liveBroadcastContent : 'none';
+            const isLive = status === 'live';
+            const isUpcoming = status === 'upcoming';
             
+            // 配信予約時刻の取得
+            let scheduledTimeStr = "";
+            if (isUpcoming && videoItem.liveStreamingDetails?.scheduledStartTime) {
+                const date = new Date(videoItem.liveStreamingDetails.scheduledStartTime);
+                const month = date.getMonth() + 1;
+                const day = date.getDate();
+                const hours = date.getHours();
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                scheduledTimeStr = `${month}/${day} ${hours}:${minutes}～`;
+            }
+
             const borderStyle = isLive ? `style="border-color: ${ch.color}; box-shadow: 0 0 10px ${ch.color}55;"` : '';
             const nameStyle = `style="color: ${ch.color}"`;
 
-            const mediaHtml = isLive 
+            // サムネイルの判定
+            const mediaHtml = (isLive || isUpcoming) 
                 ? `<img class="thumb" src="${videoItem.snippet.thumbnails.medium.url}">`
                 : `<div class="thumb-bg" style="background: ${ch.color}"></div><img class="thumb-profile" src="${chInfo.icon}">`;
+
+            // タイトルの表示
+            let statusTitle = "OFFLINE";
+            if (isLive) statusTitle = videoItem.snippet.title;
+            else if (isUpcoming) statusTitle = "🕒 " + scheduledTimeStr;
 
             const cardHtml = `
             <div class="card ${isLive ? 'is-live' : ''}" ${borderStyle}>
@@ -269,7 +288,7 @@ async function loadPortal() {
                     <div class="thumb-wrap">${mediaHtml}</div>
                     <div class="info">
                         <div class="name" ${nameStyle}>${ch.name}</div>
-                        <div class="title">${isLive ? videoItem.snippet.title : 'OFFLINE'}</div>
+                        <div class="title">${statusTitle}</div>
                     </div>
                 </a>
                 <div class="btn-area">
@@ -279,17 +298,21 @@ async function loadPortal() {
             </div>`;
             
             if (isLive) { liveHtml += cardHtml; liveCount++; }
+            else if (isUpcoming) { upcomingHtml += cardHtml; upcomingCount++; }
             allHtml += cardHtml;
         });
 
         document.getElementById("liveSection").style.display = liveCount > 0 ? "block" : "none";
         document.getElementById("liveGrid").innerHTML = liveHtml;
+
+        document.getElementById("upcomingSection").style.display = upcomingCount > 0 ? "block" : "none";
+        document.getElementById("upcomingGrid").innerHTML = upcomingHtml;
+
         document.getElementById("allGrid").innerHTML = allHtml;
 
     } catch (e) { console.error(e); }
 }
 
-// カウントダウンとバーの表示更新
 function updateTimerDisplay() {
     const timerElement = document.getElementById('timer');
     const barElement = document.getElementById('progress-bar');
@@ -303,7 +326,6 @@ function updateTimerDisplay() {
     barElement.style.background = timeLeft < 60 ? "#ff4444" : "#28a745";
 }
 
-// 手動更新
 async function manualRefresh() {
     const btn = document.getElementById('refresh-btn');
     btn.innerText = "更新中";
@@ -317,7 +339,6 @@ async function manualRefresh() {
     btn.disabled = false;
 }
 
-// 初期化とループ開始
 initChannels();
 loadPortal();
 updateTimerDisplay();
