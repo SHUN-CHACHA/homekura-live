@@ -93,8 +93,10 @@
     .btn-area { padding: 0 8px 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
     .btn { display: block; text-align: center; text-decoration: none; font-size: 10px; padding: 5px 0; border-radius: 4px; color: white; background: #333; }
     .btn-yt { background: #c00; }
-    .btn-tw { background: #9146FF; } /* Twitchカラー */
-    .btn-dc { background: #5865F2; } /* Discordカラー */
+    .btn-tw { background: #9146FF; } /* Twitch */
+    .btn-dc { background: #5865F2; } /* Discord */
+    .btn-tk { background: #010101; border: 1px solid #333; } /* TikTok */
+    .btn-ig { background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); } /* Instagram */
     .btn-reserve { background: #555; cursor: pointer; border: none; font-family: inherit; }
     .btn-reserve.active { background: #ffcc00; color: #000; font-weight: bold; }
 
@@ -140,9 +142,11 @@
     <div class="admin-header"><h3>➕ 配信者を追加する</h3></div>
     <div class="input-group">
         <input type="text" id="new-name" placeholder="名前">
-        <input type="text" id="new-id" placeholder="YouTubeチャンネルID">
+        <input type="text" id="new-id" placeholder="YouTube ID">
         <input type="text" id="new-twitter" placeholder="X ID">
         <input type="text" id="new-twitch" placeholder="Twitch ID">
+        <input type="text" id="new-tiktok" placeholder="TikTok ID">
+        <input type="text" id="new-insta" placeholder="Instagram ID">
         <input type="text" id="new-discord" placeholder="Discord URL">
         <input type="color" id="new-color" value="#ffffff" style="width: 40px;">
         <button class="btn-add" onclick="addChannel()">追加</button>
@@ -154,33 +158,32 @@
 <div id="allGrid" class="grid"></div>
 
 <script>
-// --- 注意: 自分のAPIキーに差し替えてください ---
 const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY'; 
 
 const defaultChannels = [
-    {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29", twitchId:"maguro29game", discordUrl:"YabfK2buHm", color:"#ff9900"},
-    {name:"じゃじゃーん菊地", id:"UCi2kiw8hMo0vMAh5lXiafug", twitterId:"kikuchidaisuke", twitchId:"", discordUrl:"", color:"#ffff00"},
-    {name:"さかいさんだー", id:"UCuk8ABJTVWiApYlEojW_QrA", twitterId:"Sakai_Thunder", twitchId:"", discordUrl:"", color:"#ff00ff"},
-    {name:"Ｍさん", id:"UCGK0iFuXhfA5VnL64xiKEmQ", twitterId:"maikura_souti", twitchId:"", discordUrl:"", color:"#00ffff"},
-    {name:"タツナミ先生", id:"UCedenULTLYf3DanflEXdRCQ", twitterId:"tatsunami", twitchId:"", discordUrl:"", color:"#00ff00"},
-    {name:"神近", id:"UCdLe2q91fJkN9GEyDvItp-w", twitterId:"t_kamichika", twitchId:"", discordUrl:"", color:"#ffffff"},
-    {name:"しろくる", id:"UCle3bhQ-tZty8KNcACbUBZQ", twitterId:"sirokuru_", twitchId:"sirokuru", discordUrl:"", color:"#ffffff"},
-    {name:"たにし", id:"UCiC8VCiSLD3mxoO-QFKQnBQ", twitterId:"tanishi_manbo", twitchId:"", discordUrl:"", color:"#0000ff"},
-    {name:"凸もり", id:"UCdN9GjPrqhcrzE27eWNNjxg", twitterId:"mk_2_totsu", twitchId:"totsumori", discordUrl:"", color:"#888888"},
-    {name:"神宮寺ちゃんねる", id:"UCou8IVB8jJPk56H0farYQdA", twitterId:"jinguji777ch", twitchId:"jingujich777", discordUrl:"", color:"#ff0000"},
-    {name:"カズクラ", id:"UCu3Mp1ZimtNvyA-bcfo9VrQ", twitterId:"kazuch0924", twitchId:"", discordUrl:"", color:"#ff0000"},
-    {name:"たいたい", id:"UCds-nvoKCcvixVXJ_54QcbQ", twitterId:"taitaiMEN1997", twitchId:"", discordUrl:"", color:"#00ccff"},
-    {name:"岐阜のこみちん", id:"UCw4frqkotySLjJ_CFZR5-7w", twitterId:"komichin0704", twitchId:"komichin0704", discordUrl:"", color:"#ffcc00"},
-    {name:"ナナホシナナ", id:"UCncsOsnMBAAaYb6WidBYIDw", twitterId:"nanahoshinana77", twitchId:"", discordUrl:"", color:"#ff33ff"},
-    {name:"月成るくす", id:"UCP9rcDSyTRtnu8EsG2CmLMg", twitterId:"Tsukinari_Lux_", twitchId:"", discordUrl:"", color:"#ffffcc"},
-    {name:"メッス", id:"UCkJeBcOPRBs5bri5B3sFgVg", twitterId:"messu_009", twitchId:"", discordUrl:"", color:"#333333"},
-    {name:"よいよい", id:"UCzk-vAIbo3iVBGTNaJQS2qQ", twitterId:"yoiy0i", twitchId:"", discordUrl:"", color:"#ccff00"},
-    {name:"うえまさ", id:"UCIBDdDXnViOgN5tCpfX7NOA", twitterId:"uema5aCh", twitchId:"", discordUrl:"", color:"#9900ff"},
-    {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA", twitterId:"Kunashiki_Lin_", twitchId:"", discordUrl:"", color:"#ffffff"},
-    {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"VT_InunoHaru", twitchId:"", discordUrl:"", color:"#ccffcc"},
-    {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ", twitterId:"komari_yuki", twitchId:"", discordUrl:"", color:"#ffffff"},
-    {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA", twitterId:"pokonyan1185", twitchId:"", discordUrl:"", color:"#00ff00"},
-    {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"HAOKtR", twitchId:"haoch_ktr", discordUrl:"", color:"#3399ff"}
+    {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29", twitchId:"maguro29", tiktokId:"", instaId:"", discordUrl:"YabfK2buHm", color:"#ff9900"},
+    {name:"じゃじゃーん菊地", id:"UCi2kiw8hMo0vMAh5lXiafug", twitterId:"kikuchidaisuke", twitchId:"", tiktokId:"@jajakiku?lang=ja-JP", instaId:"", discordUrl:"", color:"#ffff00"},
+    {name:"さかいさんだー", id:"UCuk8ABJTVWiApYlEojW_QrA", twitterId:"Sakai_Thunder", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ff00ff"},
+    {name:"Ｍさん", id:"UCGK0iFuXhfA5VnL64xiKEmQ", twitterId:"maikura_souti", twitchId:"msan_no_nitizyou", tiktokId:"@msan_official?is_from_webapp=1&sender_device=pc", instaId:"", discordUrl:"", color:"#00ffff"},
+    {name:"タツナミ先生", id:"UCedenULTLYf3DanflEXdRCQ", twitterId:"tatsunami", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#00ff00"},
+    {name:"神近", id:"UCdLe2q91fJkN9GEyDvItp-w", twitterId:"t_kamichika", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
+    {name:"しろくる", id:"UCle3bhQ-tZty8KNcACbUBZQ", twitterId:"sirokuru_", twitchId:"sirokuru", tiktokId:"@sirokuru", instaId:"", discordUrl:"", color:"#ffffff"},
+    {name:"たにし", id:"UCiC8VCiSLD3mxoO-QFKQnBQ", twitterId:"tanishi_manbo", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#0000ff"},
+    {name:"凸もり", id:"UCdN9GjPrqhcrzE27eWNNjxg", twitterId:"mk_2_totsu", twitchId:"totsumori/home", tiktokId:"", instaId:"", discordUrl:"", color:"#888888"},
+    {name:"神宮寺ちゃんねる", id:"UCou8IVB8jJPk56H0farYQdA", twitterId:"jinguji777ch", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ff0000"},
+    {name:"カズクラ", id:"UCu3Mp1ZimtNvyA-bcfo9VrQ", twitterId:"kazuch0924", twitterId:"", tiktokId:"@super_kazukura?is_from_webapp=1&sender_device=pc", instaId:"kazuch0924", discordUrl:"", color:"#ff0000"},
+    {name:"たいたい", id:"UCds-nvoKCcvixVXJ_54QcbQ", twitterId:"taitaiMEN1997", twitchId:"u/taitai19970904/stream-manager", tiktokId:"", instaId:"", discordUrl:"", color:"#00ccff"},
+    {name:"岐阜のこみちん", id:"UCw4frqkotySLjJ_CFZR5-7w", twitterId:"komichin0704", twitchId:"", tiktokId:"", instaId:"komichin0704?igshid=OGQ5ZDc2ODk2ZA==", discordUrl:"", color:"#ffcc00"},
+    {name:"ナナホシナナ", id:"UCncsOsnMBAAaYb6WidBYIDw", twitterId:"nanahoshinana77", twitchId:"nanahoshinana77", tiktokId:"", instaId:"", discordUrl:"", color:"#ff33ff"},
+    {name:"月成るくす", id:"UCP9rcDSyTRtnu8EsG2CmLMg", twitterId:"Tsukinari_Lux_", twitchId:"", tiktokId:"", instaId:"tsukinarilux", discordUrl:"", color:"#ffffcc"},
+    {name:"メッス", id:"UCkJeBcOPRBs5bri5B3sFgVg", twitterId:"messu_009", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#333333"},
+    {name:"よいよい", id:"UCzk-vAIbo3iVBGTNaJQS2qQ", twitterId:"yoiy0i", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccff00"},
+    {name:"うえまさ", id:"UCIBDdDXnViOgN5tCpfX7NOA", twitterId:"uema5aCh", twitchId:"", tiktokId:"", instaId:"uema5a", discordUrl:"", color:"#9900ff"},
+    {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA", twitterId:"Kunashiki_Lin_", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
+    {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"VT_InunoHaru", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccffcc"},
+    {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ", twitterId:"komari_yuki", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
+    {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA", twitterId:"pokonyan1185", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#00ff00"},
+    {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"HAOKtR", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#3399ff"}
 ];
 
 let channels = [];
@@ -270,7 +273,6 @@ async function loadPortal() {
                 ? `${isLive ? '<div class="live-badge">LIVE</div>' : ''}<img class="thumb" src="${vItem.snippet.thumbnails.medium.url}">`
                 : `<div class="thumb-bg" style="background: ${ch.color}"></div><img class="thumb-profile" src="${chInfo.icon}">`;
 
-            // ボタンエリアの構築 (TwitchとDiscordを追加)
             const cardHtml = `
             <div class="card ${isLive ? 'is-live' : ''}">
                 <button class="delete-btn" onclick="deleteChannel('${ch.id}')">×</button>
@@ -283,8 +285,10 @@ async function loadPortal() {
                 </a>
                 <div class="btn-area">
                     <a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>
-                    <a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X(Twitter)</a>
+                    <a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>
                     ${ch.twitchId ? `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-tw">Twitch</a>` : ''}
+                    ${ch.tiktokId ? `<a href="https://tiktok.com/@${ch.tiktokId}" target="_blank" class="btn btn-tk">TikTok</a>` : ''}
+                    ${ch.instaId ? `<a href="https://instagram.com/${ch.instaId}" target="_blank" class="btn btn-ig">Insta</a>` : ''}
                     ${ch.discordUrl ? `<a href="${ch.discordUrl}" target="_blank" class="btn btn-dc">Discord</a>` : ''}
                     ${isUpcoming ? 
                         `<button class="btn btn-reserve ${isReserved ? 'active' : ''}" style="grid-column: span 2;" onclick="toggleReserve('${chInfo.lastVideoId}', '${ch.name}')">${isReserved ? '🔔 予約中' : '🔔 通知予約'}</button>` : ''
@@ -310,17 +314,21 @@ function addChannel() {
     const id = document.getElementById('new-id').value;
     const twitterId = document.getElementById('new-twitter').value;
     const twitchId = document.getElementById('new-twitch').value;
+    const tiktokId = document.getElementById('new-tiktok').value;
+    const instaId = document.getElementById('new-insta').value;
     const discordUrl = document.getElementById('new-discord').value;
     const color = document.getElementById('new-color').value;
     if (!name || !id) return;
-    channels.push({ name, id, twitterId, twitchId, discordUrl, color });
+    channels.push({ name, id, twitterId, twitchId, tiktokId, instaId, discordUrl, color });
     localStorage.setItem('custom_channels', JSON.stringify(channels));
     loadPortal();
-    // フォームクリア
+    // クリア
     document.getElementById('new-name').value = "";
     document.getElementById('new-id').value = "";
     document.getElementById('new-twitter').value = "";
     document.getElementById('new-twitch').value = "";
+    document.getElementById('new-tiktok').value = "";
+    document.getElementById('new-insta').value = "";
     document.getElementById('new-discord').value = "";
 }
 
