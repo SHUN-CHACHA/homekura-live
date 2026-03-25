@@ -5,98 +5,112 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>homeクラ 配信ポータル　＠旬茶</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <link rel="icon" href="https://shun-chacha.github.io/homekura-live/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="https://shun-chacha.github.io/homekura-live/icon.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/apple-touch-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="homeクラ">
+    <meta name="theme-color" content="#1f1f1f">
 
     <style>
-        :root {
-            --bg-color: #0f0f0f;
-            --header-bg: #1f1f1f;
-            --card-bg: #1a1a1a;
-            --text-color: #ffffff;
-            --border-color: #333;
-            --accent-green: #28a745;
-        }
-
-        [data-theme="light"] {
-            --bg-color: #f0f2f5;
-            --header-bg: #ffffff;
-            --card-bg: #ffffff;
-            --text-color: #1c1e21;
-            --border-color: #ddd;
-            --accent-green: #24b344;
-        }
-
-        body { margin: 0; font-family: sans-serif; background: var(--bg-color); color: var(--text-color); padding-bottom: 50px; transition: 0.3s; }
+        body { margin: 0; font-family: sans-serif; background: #0f0f0f; color: white; padding-bottom: 50px; }
         
         header { 
-            background: var(--header-bg); 
+            background: #1f1f1f; 
             padding: 15px; 
-            border-bottom: 2px solid var(--border-color); 
+            border-bottom: 2px solid #333; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            position: sticky; top: 0; z-index: 1000;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .header-logo { height: 48px; width: auto; margin-bottom: 10px; }
 
-        .header-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; }
-
-        .btn-tool {
-            background: var(--accent-green);
-            color: #fff; border: none; padding: 6px 12px; border-radius: 4px;
-            font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s;
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
-        .btn-tool:disabled { background: #555; opacity: 0.7; }
-        .btn-theme { background: #555; }
+
+        .btn-refresh-header {
+            background: #28a745;
+            color: #fff;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-refresh-header:disabled { background: #555; opacity: 0.7; }
 
         #timer { font-size: 12px; color: #888; font-family: monospace; }
-        .progress-container { width: 100%; height: 3px; background: var(--border-color); position: relative; overflow: hidden; }
-        #progress-bar { width: 100%; height: 100%; background: var(--accent-green); transition: width 1s linear; }
+        .progress-container { width: 100%; height: 3px; background: #333; position: relative; overflow: hidden; }
+        #progress-bar { width: 100%; height: 100%; background: #28a745; transition: width 1s linear; }
 
-        /* カードとグリッド */
-        .section-title { max-width: 1400px; margin: 20px auto 10px; padding: 0 10px; font-size: 14px; font-weight: bold; }
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 8px 20px; max-width: 1400px; margin: auto; }
-        
-        .card { 
-            background: var(--card-bg); border-radius: 8px; overflow: hidden; 
-            border: 1px solid var(--border-color); display: flex; flex-direction: column; 
-            position: relative; transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .is-live { border-color: var(--accent-green) !important; animation: pulse-green 2s infinite; }
-        .sortable-ghost { opacity: 0.4; background: #28a745; }
-
-        .delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; z-index: 11; }
-
-        .thumb-wrap { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000; }
-        .thumb { width: 100%; height: 100%; object-fit: cover; }
-        .thumb-bg { position: absolute; width: 100%; height: 100%; opacity: 0.3; filter: blur(20px); }
-        .thumb-profile { width: 45%; height: auto; border-radius: 50%; position: relative; z-index: 2; border: 2px solid rgba(255,255,255,0.2); }
-        
-        .info { padding: 8px; flex-grow: 1; }
-        .name { font-weight: bold; font-size: 12px; margin-bottom: 2px; }
-        .title { font-size: 11px; line-height: 1.2; height: 2.4em; overflow: hidden; color: var(--text-color); opacity: 0.8; }
-
-        .btn-area { padding: 0 8px 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-        .btn { display: block; text-align: center; text-decoration: none; font-size: 10px; padding: 6px 0; border-radius: 4px; color: white; background: #444; }
-        .btn-yt { background: #c00; }
-        .btn-tw { background: #9146FF; }
-        .btn-reserve { background: #555; grid-column: span 2; border: none; color: white; cursor: pointer; }
-        .btn-reserve.active { background: #ffcc00; color: #000; font-weight: bold; }
-
-        /* 管理パネル */
-        .admin-panel { max-width: 1400px; margin: 20px auto; padding: 15px; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color); }
-        .input-group { display: flex; flex-wrap: wrap; gap: 8px; }
-        .input-group input { background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-color); padding: 8px; border-radius: 4px; flex: 1; min-width: 140px; }
-        
+        /* アニメーション */
+        @keyframes blink { 50% { opacity: 0.3; } }
         @keyframes pulse-green {
             0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4); }
             70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
             100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
         }
 
+        .live-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #28a745;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            z-index: 10;
+            animation: blink 1s infinite;
+        }
+
+        .section-title { max-width: 1400px; margin: 20px auto 10px; padding: 0 10px; font-size: 14px; font-weight: bold; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 0 8px 20px; max-width: 1400px; margin: auto; }
+        
+        .card { background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; position: relative; }
+        .card.is-live { border-color: #28a745 !important; animation: pulse-green 2s infinite; }
+
+        .delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6); color: #888; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; cursor: pointer; z-index: 11; }
+
+        .thumb-wrap { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .thumb { width: 100%; height: 100%; object-fit: cover; }
+        .thumb-bg { position: absolute; width: 100%; height: 100%; opacity: 0.3; filter: blur(20px); }
+        .thumb-profile { width: 45%; height: auto; border-radius: 50%; position: relative; z-index: 2; border: 2px solid rgba(255,255,255,0.2); }
+        
+        .info { padding: 8px; }
+        .name { font-weight: bold; font-size: 11px; margin-bottom: 2px; }
+        .title { font-size: 11px; line-height: 1.2; height: 2.4em; overflow: hidden; color: #eee; }
+
+        .btn-area { padding: 0 8px 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+        .btn { display: block; text-align: center; text-decoration: none; font-size: 10px; padding: 5px 0; border-radius: 4px; color: white; background: #333; transition: 0.2s; }
+        .btn:hover { opacity: 0.8; }
+        .btn-yt { background: #c00; }
+        .btn-tw { background: #9146FF; }
+        .btn-dc { background: #5865F2; }
+        .btn-tk { background: #010101; border: 1px solid #333; }
+        .btn-ig { background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); }
+        .btn-reserve { background: #555; cursor: pointer; border: none; font-family: inherit; }
+        .btn-reserve.active { background: #ffcc00; color: #000; font-weight: bold; }
+
+        .admin-panel { max-width: 1400px; margin: 20px auto; padding: 15px; background: #1a1a1a; border-radius: 8px; border: 1px solid #333; }
+        .input-group { display: flex; flex-wrap: wrap; gap: 8px; }
+        .input-group input { background: #222; border: 1px solid #444; color: white; padding: 8px; border-radius: 4px; flex: 1; min-width: 140px; }
+        .btn-add { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+
         @media (min-width: 768px) {
-            .grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+            .name, .title { font-size: 14px; }
+            .btn { font-size: 12px; }
         }
     </style>
 </head>
@@ -105,8 +119,7 @@
 <header>
     <img src="logo.png" alt="homeクラ" class="header-logo">
     <div class="header-controls">
-        <button id="refresh-btn" class="btn-tool" onclick="manualRefresh()">更新</button>
-        <button class="btn-tool btn-theme" onclick="toggleTheme()">🌓 テーマ切替</button>
+        <button id="refresh-btn" class="btn-refresh-header" onclick="manualRefresh()">更新</button>
         <div id="timer">Next Update: --:--</div>
     </div>
 </header>
@@ -116,34 +129,38 @@
 </div>
 
 <div id="liveSection" style="display: none;">
-    <div class="section-title" style="color:#28a745">🟢 配信中</div>
+    <div class="section-title" style="color:#28a745">🟢 配信中のメンバー</div>
     <div id="liveGrid" class="grid"></div>
 </div>
 
 <div id="upcomingSection" style="display: none;">
-    <div class="section-title" style="color:#ffcc00">🟡 配信予定</div>
+    <div class="section-title" style="color:#ffcc00">🟡 配信予定のメンバー</div>
     <div id="upcomingGrid" class="grid"></div>
 </div>
 
-<div class="section-title" style="color:#888">👥 メンバー一覧 (ドラッグで並び替え)</div>
-<div id="allGrid" class="grid"></div>
+<hr style="border: 0; border-top: 1px solid #222; margin: 20px 0;">
 
 <div class="admin-panel">
-    <h3>➕ 配信者を追加</h3>
+    <div class="admin-header"><h3>➕ 配信者を追加する</h3></div>
     <div class="input-group">
         <input type="text" id="new-name" placeholder="名前">
         <input type="text" id="new-id" placeholder="YouTube ID">
         <input type="text" id="new-twitter" placeholder="X ID">
         <input type="text" id="new-twitch" placeholder="Twitch ID">
-        <input type="color" id="new-color" value="#28a745" style="width:40px; height:35px; padding:0; border:none;">
-        <button class="btn-tool" onclick="addChannel()">追加</button>
+        <input type="text" id="new-tiktok" placeholder="TikTok ID">
+        <input type="text" id="new-insta" placeholder="Instagram ID">
+        <input type="text" id="new-discord" placeholder="Discord URL">
+        <input type="color" id="new-color" value="#ffffff" style="width: 40px; height: 35px; border: none; cursor: pointer;">
+        <button class="btn-add" onclick="addChannel()">追加</button>
     </div>
     <button style="background:none; border:none; color:#555; cursor:pointer; font-size:10px; margin-top:10px;" onclick="resetChannels()">初期状態に戻す</button>
 </div>
 
+<div class="section-title" style="color:#aaa">👥 メンバー一覧</div>
+<div id="allGrid" class="grid"></div>
+
 <script>
 const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY';
-const NOTIFY_SOUND = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'); // 通知音
 
 const defaultChannels = [
     {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29", twitchId:"maguro29game", tiktokId:"", instaId:"", discordUrl:"https://discord.gg/bRuT74X7sS", color:"#ff9900"},
@@ -168,197 +185,219 @@ const defaultChannels = [
     {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"VT_InunoHaru", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccffcc"},
     {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ", twitterId:"komari_yuki", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
     {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA", twitterId:"pokonyan1185", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#00ff00"},
-    {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"HAOKtR", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#3399ff"},
-    // ... 他のメンバーも同様に追加可能
+    {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"HAOKtR", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#3399ff"}
 ];
 
 let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
-let timeLeft = 600;
+const UPDATE_INTERVAL = 600;
+let timeLeft = UPDATE_INTERVAL;
 
 function escapeHtml(str) {
     if (!str) return '';
-    return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-// --- テーマ切り替え ---
-function toggleTheme() {
-    const current = document.documentElement.getAttribute('data-theme');
-    const target = current === 'light' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', target);
-    localStorage.setItem('theme', target);
-}
-
-// --- 初期化 ---
-function init() {
-    // テーマ反映
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-
-    // チャンネル読み込み
+function initChannels() {
     const saved = localStorage.getItem('custom_channels');
     channels = saved ? JSON.parse(saved) : [...defaultChannels];
+}
 
-    // Sortable.js 設定
-    new Sortable(document.getElementById('allGrid'), {
-        animation: 150,
-        ghostClass: 'sortable-ghost',
-        onEnd: function() {
-            const newOrder = [];
-            document.querySelectorAll('#allGrid .card').forEach(el => {
-                const id = el.getAttribute('data-id');
-                const ch = channels.find(c => c.id === id);
-                if (ch) newOrder.push(ch);
+function toggleReserve(videoId, channelName) {
+    if (Notification.permission !== "granted") Notification.requestPermission();
+    const index = reservedVideos.indexOf(videoId);
+    if (index > -1) reservedVideos.splice(index, 1);
+    else reservedVideos.push(videoId);
+    localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
+    loadPortal();
+}
+
+function checkNotifications(vData) {
+    if (!vData.items) return;
+    vData.items.forEach(v => {
+        if (v.snippet.liveBroadcastContent === 'live' && reservedVideos.includes(v.id)) {
+            new Notification("配信開始！", {
+                body: `${v.snippet.channelTitle}さんの配信が始まりました！`,
+                icon: v.snippet.thumbnails.default.url
             });
-            channels = newOrder;
-            localStorage.setItem('custom_channels', JSON.stringify(channels));
+            reservedVideos = reservedVideos.filter(id => id !== v.id);
+            localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
         }
     });
+}
 
-    loadPortal();
+// SNSボタン生成の共通ロジック
+function getSnsButtonsHtml(ch) {
+    const snsConfigs = [
+        { key: 'twitterId', url: 'https://x.com/', label: 'X', class: '' },
+        { key: 'twitchId', url: 'https://twitch.tv/', label: 'Twitch', class: 'btn-tw' },
+        { key: 'tiktokId', url: 'https://tiktok.com/', label: 'TikTok', class: 'btn-tk', prefix: '@' },
+        { key: 'instaId', url: 'https://instagram.com/', label: 'Insta', class: 'btn-ig' },
+        { key: 'discordUrl', url: '', label: 'Discord', class: 'btn-dc', isFull: true }
+    ];
+
+    return snsConfigs.map(sns => {
+        let val = ch[sns.key];
+        if (!val) return '';
+        if (sns.key === 'tiktokId' && !val.startsWith('@')) val = '@' + val;
+        const href = sns.isFull ? val : sns.url + val;
+        return `<a href="${escapeHtml(href)}" target="_blank" class="btn ${sns.class}">${sns.label}</a>`;
+    }).join('');
 }
 
 async function loadPortal() {
     if (channels.length === 0) return;
+    let channelInfoMap = {};
     const channelIds = channels.map(c => c.id).join(',');
-    
+
     try {
         const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${channelIds}&part=snippet`);
         const chData = await chRes.json();
-        const chInfoMap = {};
-        chData.items?.forEach(i => chInfoMap[i.id] = i.snippet.thumbnails.medium.url);
+        if (chData.items) {
+            chData.items.forEach(item => {
+                channelInfoMap[item.id] = { icon: item.snippet.thumbnails.medium.url };
+            });
+        }
 
-        const videoPromises = channels.map(ch => {
-            const pId = ch.id.replace(/^UC/, 'UU');
-            return fetch(`https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${pId}&part=snippet&maxResults=1`)
-                .then(r => r.json()).catch(() => null);
-        });
+        const playlistResults = await Promise.all(
+            channels.map(ch => {
+                const playlistId = ch.id.replace(/^UC/, 'UU');
+                return fetch(`https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${playlistId}&part=snippet&maxResults=1`)
+                    .then(r => r.json())
+                    .then(data => ({ chId: ch.id, data }))
+                    .catch(() => ({ chId: ch.id, data: null }));
+            })
+        );
 
-        const vResults = await Promise.all(videoPromises);
-        const vIds = vResults.map(r => r?.items?.[0]?.snippet.resourceId.videoId).filter(Boolean);
-        
-        const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${vIds.join(',')}&part=snippet,liveStreamingDetails`);
-        const vData = await vRes.json();
-
-        // 音声通知チェック
-        vData.items?.forEach(v => {
-            if (v.snippet.liveBroadcastContent === 'live' && reservedVideos.includes(v.id)) {
-                NOTIFY_SOUND.play().catch(() => {}); // 音声を鳴らす
-                new Notification("配信開始！", { body: v.snippet.channelTitle + "さんが開始しました" });
-                reservedVideos = reservedVideos.filter(id => id !== v.id);
-                localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
+        const videoIds = [];
+        playlistResults.forEach(({ chId, data }) => {
+            if (data && data.items && data.items.length > 0) {
+                const vId = data.items[0].snippet.resourceId.videoId;
+                videoIds.push(vId);
+                if (channelInfoMap[chId]) channelInfoMap[chId].lastVideoId = vId;
             }
         });
 
-        renderGrids(chInfoMap, vData.items || []);
-    } catch (e) { console.error(e); }
-}
+        const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
+        const vData = await vRes.json();
+        checkNotifications(vData);
 
-function renderGrids(chInfoMap, vItems) {
-    let htmls = { live: "", upcoming: "", all: "" };
-    let counts = { live: 0, upcoming: 0 };
+        let liveHtml = "", upcomingHtml = "", allHtml = "";
+        let liveCount = 0, upcomingCount = 0;
 
-    channels.forEach(ch => {
-        const lastVId = vItems.find(v => v.snippet.channelId === ch.id);
-        const status = lastVId?.snippet.liveBroadcastContent || 'none';
-        const isLive = status === 'live';
-        const isUpcoming = status === 'upcoming';
-        const isReserved = reservedVideos.includes(lastVId?.id);
+        channels.forEach(ch => {
+            const chInfo = channelInfoMap[ch.id];
+            if (!chInfo) return;
 
-        let timeStr = "OFFLINE";
-        if (isLive) timeStr = "🔴 LIVE: " + lastVId.snippet.title;
-        else if (isUpcoming) {
-            const d = new Date(lastVId.liveStreamingDetails.scheduledStartTime);
-            timeStr = `🕒 ${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}～`;
-        }
+            const vItem = vData.items ? vData.items.find(v => v.id === chInfo.lastVideoId) : null;
+            const status = vItem ? vItem.snippet.liveBroadcastContent : 'none';
+            const isLive = status === 'live';
+            const isUpcoming = status === 'upcoming';
+            const isReserved = reservedVideos.includes(chInfo.lastVideoId);
 
-        const media = (isLive || isUpcoming) 
-            ? `<img class="thumb" src="${lastVId.snippet.thumbnails.medium.url}">`
-            : `<div class="thumb-bg" style="background:${ch.color}"></div><img class="thumb-profile" src="${chInfoMap[ch.id]}">`;
+            let timeStr = "OFFLINE";
+            if (isLive) timeStr = escapeHtml(vItem.snippet.title);
+            else if (isUpcoming) {
+                const d = new Date(vItem.liveStreamingDetails.scheduledStartTime);
+                timeStr = `🕒 ${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}～`;
+            }
 
-        const card = `
-        <div class="card ${isLive?'is-live':''}" data-id="${ch.id}">
-            <button class="delete-btn" onclick="deleteChannel('${ch.id}')">×</button>
-            <a href="https://youtube.com/watch?v=${lastVId?.id||''}" target="_blank" style="text-decoration:none; color:inherit;">
-                <div class="thumb-wrap">${media}</div>
-                <div class="info">
-                    <div class="name" style="color:${ch.color}">${escapeHtml(ch.name)}</div>
-                    <div class="title">${escapeHtml(timeStr)}</div>
+            const mediaHtml = (isLive || isUpcoming)
+                ? `${isLive ? '<div class="live-badge">LIVE</div>' : ''}<img class="thumb" src="${escapeHtml(vItem.snippet.thumbnails.medium.url)}">`
+                : `<div class="thumb-bg" style="background: ${escapeHtml(ch.color)}"></div><img class="thumb-profile" src="${escapeHtml(chInfo.icon)}">`;
+
+            const cardHtml = `
+            <div class="card ${isLive ? 'is-live' : ''}">
+                <button class="delete-btn" onclick="deleteChannel('${escapeHtml(ch.id)}')">×</button>
+                <a href="https://youtube.com/watch?v=${escapeHtml(chInfo.lastVideoId || '')}" target="_blank" style="text-decoration:none; color:inherit;">
+                    <div class="thumb-wrap">${mediaHtml}</div>
+                    <div class="info">
+                        <div class="name" style="color:${escapeHtml(ch.color)}">${escapeHtml(ch.name)}</div>
+                        <div class="title">${timeStr}</div>
+                    </div>
+                </a>
+                <div class="btn-area">
+                    <a href="https://youtube.com/channel/${escapeHtml(ch.id)}" target="_blank" class="btn btn-yt">YouTube</a>
+                    ${getSnsButtonsHtml(ch)}
+                    ${isUpcoming ? `<button class="btn btn-reserve ${isReserved ? 'active' : ''}" style="grid-column: span 2;" onclick="toggleReserve('${escapeHtml(chInfo.lastVideoId)}', '${escapeHtml(ch.name)}')">${isReserved ? '🔔 予約中' : '🔔 通知予約'}</button>` : ''}
                 </div>
-            </a>
-            <div class="btn-area">
-                <a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>
-                ${ch.twitterId ? `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>` : ''}
-                ${isUpcoming ? `<button class="btn btn-reserve ${isReserved?'active':''}" onclick="toggleReserve('${lastVId.id}')">${isReserved?'🔔 予約中':'🔔 通知予約'}</button>` : ''}
-            </div>
-        </div>`;
+            </div>`;
 
-        if (isLive) { htmls.live += card; counts.live++; }
-        if (isUpcoming) { htmls.upcoming += card; counts.upcoming++; }
-        htmls.all += card;
-    });
+            if (isLive) { liveHtml += cardHtml; liveCount++; }
+            else if (isUpcoming) { upcomingHtml += cardHtml; upcomingCount++; }
+            allHtml += cardHtml;
+        });
 
-    document.getElementById("liveSection").style.display = counts.live ? "block" : "none";
-    document.getElementById("liveGrid").innerHTML = htmls.live;
-    document.getElementById("upcomingSection").style.display = counts.upcoming ? "block" : "none";
-    document.getElementById("upcomingGrid").innerHTML = htmls.upcoming;
-    document.getElementById("allGrid").innerHTML = htmls.all;
+        document.getElementById("liveSection").style.display = liveCount > 0 ? "block" : "none";
+        document.getElementById("liveGrid").innerHTML = liveHtml;
+        document.getElementById("upcomingSection").style.display = upcomingCount > 0 ? "block" : "none";
+        document.getElementById("upcomingGrid").innerHTML = upcomingHtml;
+        document.getElementById("allGrid").innerHTML = allHtml;
+
+    } catch (e) { console.error("Error loading portal:", e); }
 }
 
 function addChannel() {
-    const name = document.getElementById('new-name').value;
-    const id = document.getElementById('new-id').value;
+    const getVal = (id) => document.getElementById(id).value.trim();
+    const name = getVal('new-name'), id = getVal('new-id');
     if (!name || !id) return;
+
     channels.push({
-        name, id,
-        twitterId: document.getElementById('new-twitter').value,
-        twitchId: document.getElementById('new-twitch').value,
+        name, id, 
+        twitterId: getVal('new-twitter'), 
+        twitchId: getVal('new-twitch'), 
+        tiktokId: getVal('new-tiktok'), 
+        instaId: getVal('new-insta'), 
+        discordUrl: getVal('new-discord'), 
         color: document.getElementById('new-color').value
     });
+
     localStorage.setItem('custom_channels', JSON.stringify(channels));
-    location.reload(); 
+    loadPortal();
+
+    ['new-name', 'new-id', 'new-twitter', 'new-twitch', 'new-tiktok', 'new-insta', 'new-discord'].forEach(id => document.getElementById(id).value = "");
+    document.getElementById('new-color').value = "#ffffff";
 }
 
 function deleteChannel(id) {
     if (confirm("削除しますか？")) {
-        channels = channels.filter(c => c.id !== id);
+        channels = channels.filter(ch => ch.id !== id);
         localStorage.setItem('custom_channels', JSON.stringify(channels));
         loadPortal();
     }
 }
 
 function resetChannels() {
-    if (confirm("初期化しますか？")) {
+    if (confirm("リセットしますか？")) {
         localStorage.removeItem('custom_channels');
-        location.reload();
+        channels = [...defaultChannels];
+        loadPortal();
     }
 }
 
-function toggleReserve(id) {
-    if (Notification.permission !== "granted") Notification.requestPermission();
-    const idx = reservedVideos.indexOf(id);
-    if (idx > -1) reservedVideos.splice(idx, 1);
-    else reservedVideos.push(id);
-    localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
-    loadPortal();
-}
-
 async function manualRefresh() {
-    document.getElementById('refresh-btn').disabled = true;
+    const btn = document.getElementById('refresh-btn');
+    btn.disabled = true;
     await loadPortal();
-    timeLeft = 600;
-    document.getElementById('refresh-btn').disabled = false;
+    timeLeft = UPDATE_INTERVAL;
+    btn.disabled = false;
 }
 
+function updateTimerDisplay() {
+    const bar = document.getElementById('progress-bar');
+    const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+    document.getElementById('timer').innerText = `Next Update: ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    bar.style.width = `${(timeLeft / UPDATE_INTERVAL) * 100}%`;
+    bar.style.background = timeLeft < 60 ? "#1e7e34" : "#28a745";
+}
+
+initChannels();
+loadPortal();
 setInterval(() => {
     timeLeft--;
-    if (timeLeft < 0) { loadPortal(); timeLeft = 600; }
-    const m = Math.floor(timeLeft/60), s = timeLeft%60;
-    document.getElementById('timer').innerText = `Next Update: ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    document.getElementById('progress-bar').style.width = (timeLeft/600)*100 + "%";
+    if (timeLeft < 0) { loadPortal(); timeLeft = UPDATE_INTERVAL; }
+    updateTimerDisplay();
 }, 1000);
-
-init();
 </script>
 </body>
 </html>
