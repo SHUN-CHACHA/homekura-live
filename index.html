@@ -8,34 +8,38 @@
     <link rel="icon" href="https://shun-chacha.github.io/homekura-live/favicon.ico" type="image/x-icon">
     <link rel="icon" href="https://shun-chacha.github.io/homekura-live/icon.png" type="image/png" sizes="192x192">
     <link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/apple-touch-icon.png">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="homeクラ">
 
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
     <style>
         :root {
             --bg-color: #0f0f0f;
-            --header-bg: #1f1f1f;
-            --card-bg: #1a1a1a;
+            --header-bg: rgba(31, 31, 31, 0.7);
+            --card-bg: rgba(26, 26, 26, 0.85);
             --text-color: #ffffff;
             --border-color: #333;
             --accent-green: #28a745;
             --secondary-text: #888;
+            --bg-image: none;
         }
 
-        [data-theme="light"] {
-            --bg-color: #f0f2f5;
-            --header-bg: #ffffff;
-            --card-bg: #ffffff;
-            --text-color: #1c1e21;
-            --border-color: #ddd;
-            --accent-green: #24b344;
-            --secondary-text: #666;
+        body { 
+            margin: 0; font-family: sans-serif; 
+            background-color: var(--bg-color);
+            background-image: var(--bg-image);
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            color: var(--text-color); 
+            padding-bottom: 50px; 
+            transition: background 0.3s; 
         }
-
-        body { margin: 0; font-family: sans-serif; background: var(--bg-color); color: var(--text-color); padding-bottom: 50px; transition: background 0.3s; }
         
+        .content-overlay {
+            min-height: 100vh;
+            background: rgba(0, 0, 0, 0.2); 
+        }
+
         header { 
             background: var(--header-bg); 
             padding: 15px; 
@@ -44,6 +48,7 @@
             flex-direction: column; 
             align-items: center; 
             position: sticky; top: 0; z-index: 1000;
+            backdrop-filter: blur(10px);
         }
 
         .header-logo { height: 48px; width: auto; margin-bottom: 10px; }
@@ -54,38 +59,26 @@
             color: #fff; border: none; padding: 6px 15px; border-radius: 4px;
             font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s;
         }
-        .btn-theme { background: #555; }
 
         #timer { font-size: 12px; color: var(--secondary-text); font-family: monospace; }
         .progress-container { width: 100%; height: 3px; background: var(--border-color); position: relative; overflow: hidden; }
         #progress-bar { width: 100%; height: 100%; background: var(--accent-green); transition: width 1s linear; }
 
-        @keyframes blink { 50% { opacity: 0.3; } }
-        @keyframes pulse-green {
-            0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+        .section-title { 
+            max-width: 1400px; margin: 20px auto 10px; padding: 0 10px; font-size: 14px; font-weight: bold; 
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
         }
-
-        .live-badge {
-            position: absolute; top: 8px; left: 40px; background: #28a745; color: white;
-            padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold;
-            z-index: 10; animation: blink 1s infinite;
-        }
-
-        .section-title { max-width: 1400px; margin: 20px auto 10px; padding: 0 10px; font-size: 14px; font-weight: bold; }
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 0 8px 20px; max-width: 1400px; margin: auto; }
         
         .card { 
             background: var(--card-bg); border-radius: 8px; overflow: hidden; 
             border: 1px solid var(--border-color); display: flex; flex-direction: column; 
             position: relative; transition: transform 0.2s;
-            touch-action: pan-y; /* 上下スクロールを許可 */
+            touch-action: pan-y;
+            backdrop-filter: blur(5px);
         }
-        .card.is-live { border-color: #28a745 !important; animation: pulse-green 2s infinite; }
-        .sortable-ghost { opacity: 0.3; background: #28a745; }
+        .card.is-live { border-color: #28a745 !important; box-shadow: 0 0 15px rgba(40,167,69,0.3); }
 
-        /* ハンドル(≡)の設定 */
         .drag-handle {
             position: absolute; top: 5px; left: 5px; width: 30px; height: 30px;
             display: flex; align-items: center; justify-content: center;
@@ -107,16 +100,15 @@
         .btn-area { padding: 0 8px 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
         .btn { display: block; text-align: center; text-decoration: none; font-size: 10px; padding: 5px 0; border-radius: 4px; color: white; background: #333; }
         .btn-yt { background: #c00; }
-        .btn-tw { background: #9146FF; }
-        .btn-dc { background: #5865F2; }
-        .btn-tk { background: #010101; border: 1px solid #444; }
-        .btn-ig { background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); }
-        .btn-reserve { background: #555; cursor: pointer; border: none; font-family: inherit; }
+        .btn-tw { background: #6441a5; }
+        .btn-insta { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
+        .btn-tiktok { background: #000; border: 1px solid #444; }
+        .btn-discord { background: #5865F2; }
         .btn-reserve.active { background: #ffcc00; color: #000; font-weight: bold; }
 
-        .admin-panel { max-width: 1400px; margin: 20px auto; padding: 15px; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color); }
-        .input-group { display: flex; flex-wrap: wrap; gap: 8px; }
-        .input-group input { background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-color); padding: 8px; border-radius: 4px; flex: 1; min-width: 140px; }
+        .admin-panel { max-width: 1400px; margin: 30px auto; padding: 15px; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color); backdrop-filter: blur(10px); }
+        .input-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; align-items: center; }
+        .input-group input[type="text"], .input-group input[type="file"] { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-color); padding: 8px; border-radius: 4px; flex: 1; min-width: 120px; font-size: 13px; }
 
         @media (min-width: 768px) {
             .grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
@@ -127,11 +119,11 @@
 </head>
 <body>
 
+<div class="content-overlay">
 <header>
     <img src="logo.png" alt="homeクラ" class="header-logo">
     <div class="header-controls">
         <button id="refresh-btn" class="btn-tool" onclick="manualRefresh()">更新</button>
-        <button class="btn-tool btn-theme" onclick="toggleTheme()">🌓 テーマ切替</button>
         <div id="timer">Next Update: --:--</div>
     </div>
 </header>
@@ -150,30 +142,45 @@
     <div id="upcomingGrid" class="grid"></div>
 </div>
 
-<hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
-
-<div class="section-title" style="color:var(--secondary-text)">👥 メンバー一覧 (⠿部分で並び替え)</div>
-<div id="allGrid" class="grid"></div>
-
 <div class="admin-panel">
-    <h3>➕ 配信者を追加する</h3>
+    <h3 style="font-size: 16px; margin-top: 0;">🎨 デザイン・配信者設定</h3>
+    
+    <div class="input-group">
+        <label style="font-size: 12px;">背景色: <input type="color" id="bg-color-picker" onchange="applyDesign()"></label>
+        <input type="file" id="bg-file-input" accept="image/*" onchange="handleFileSelect(this)">
+        <input type="text" id="bg-image-url" placeholder="画像URLで指定" onchange="applyDesign()">
+        <div style="display: flex; gap: 5px;">
+            <button class="btn-tool" style="background:#d9534f" onclick="clearBgImage()">背景画像を消す</button>
+            <button class="btn-tool" style="background:#555" onclick="resetDesign()">全リセット</button>
+        </div>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
+
+    <h4 style="font-size: 14px; margin-bottom: 10px;">➕ 配信者を追加</h4>
     <div class="input-group">
         <input type="text" id="new-name" placeholder="名前">
         <input type="text" id="new-id" placeholder="YouTube ID">
-        <input type="text" id="new-twitter" placeholder="X ID">
+        <input type="text" id="new-twitter" placeholder="X (旧Twitter) ID">
         <input type="text" id="new-twitch" placeholder="Twitch ID">
+    </div>
+    <div class="input-group">
         <input type="text" id="new-tiktok" placeholder="TikTok ID">
         <input type="text" id="new-insta" placeholder="Instagram ID">
-        <input type="text" id="new-discord" placeholder="Discord URL">
+        <input type="text" id="new-discord" placeholder="Discord 招待URL">
         <input type="color" id="new-color" value="#ffffff" style="width: 40px; height: 38px; border:none; padding:0; cursor:pointer;">
         <button class="btn-tool" onclick="addChannel()">追加</button>
     </div>
-    <button style="background:none; border:none; color:#555; cursor:pointer; font-size:10px; margin-top:10px;" onclick="resetChannels()">初期状態に戻す</button>
+</div>
+
+<hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
+<div class="section-title" style="color:var(--secondary-text)">👥 メンバー一覧 (⠿で並び替え)</div>
+<div id="allGrid" class="grid"></div>
+
 </div>
 
 <script>
 const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY';
-const NOTIFY_SOUND = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
 
 const defaultChannels = [
     {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29", twitchId:"maguro29game", tiktokId:"", instaId:"", discordUrl:"https://discord.gg/bRuT74X7sS", color:"#ff9900"},
@@ -188,7 +195,7 @@ const defaultChannels = [
     {name:"神宮寺ちゃんねる", id:"UCou8IVB8jJPk56H0farYQdA", twitterId:"jinguji777ch", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ff0000"},
     {name:"カズクラ", id:"UCu3Mp1ZimtNvyA-bcfo9VrQ", twitterId:"kazuch0924", twitchId:"", tiktokId:"super_kazukura", instaId:"kazuch0924", discordUrl:"", color:"#ff0000"},
     {name:"たいたい", id:"UCds-nvoKCcvixVXJ_54QcbQ", twitterId:"taitaiMEN1997", twitchId:"taitai19970904", tiktokId:"", instaId:"", discordUrl:"", color:"#00ccff"},
-    {name:"岐阜のこみちん", id:"UCw4frqkotySLjJ_CFZR5-7w", twitterId:"komichin0704", twitterId:"komichin0704", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffcc00"},
+    {name:"岐阜のこみちん", id:"UCw4frqkotySLjJ_CFZR5-7w", twitterId:"komichin0704", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffcc00"},
     {name:"ナナホシナナ", id:"UCncsOsnMBAAaYb6WidBYIDw", twitterId:"nanahoshinana77", twitchId:"nanahoshinana77", tiktokId:"", instaId:"", discordUrl:"", color:"#ff33ff"},
     {name:"月成るくす", id:"UCP9rcDSyTRtnu8EsG2CmLMg", twitterId:"Tsukinari_Lux_", twitchId:"", tiktokId:"", instaId:"tsukinarilux", discordUrl:"", color:"#ffffcc"},
     {name:"メッス", id:"UCkJeBcOPRBs5bri5B3sFgVg", twitterId:"messu_009", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#333333"},
@@ -205,30 +212,62 @@ let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 let timeLeft = 600;
 
-function escapeHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function handleFileSelect(input) {
+    const file = input.files[0];
+    if (file) {
+        if (file.size > 2 * 1024 * 1024) { alert("画像が大きすぎます(2MB以下推奨)。"); return; }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64Image = e.target.result;
+            document.documentElement.style.setProperty('--bg-image', `url('${base64Image}')`);
+            localStorage.setItem('custom_bg_image', base64Image);
+        };
+        reader.readAsDataURL(file);
+    }
 }
 
-function toggleTheme() {
-    const current = document.documentElement.getAttribute('data-theme');
-    const target = current === 'light' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', target);
-    localStorage.setItem('theme', target);
+function applyDesign() {
+    const color = document.getElementById('bg-color-picker').value;
+    const url = document.getElementById('bg-image-url').value.trim();
+    document.documentElement.style.setProperty('--bg-color', color);
+    localStorage.setItem('custom_bg_color', color);
+    if (url) {
+        document.documentElement.style.setProperty('--bg-image', `url('${url}')`);
+        localStorage.setItem('custom_bg_image', url);
+    }
+}
+
+// 背景画像だけを消去する新機能
+function clearBgImage() {
+    if (confirm("背景画像を取り除きますか？")) {
+        localStorage.removeItem('custom_bg_image');
+        document.documentElement.style.setProperty('--bg-image', 'none');
+        document.getElementById('bg-image-url').value = "";
+        document.getElementById('bg-file-input').value = "";
+    }
+}
+
+function resetDesign() {
+    if (confirm("すべてのデザイン（色と画像）をリセットしますか？")) {
+        localStorage.removeItem('custom_bg_color');
+        localStorage.removeItem('custom_bg_image');
+        location.reload();
+    }
 }
 
 function init() {
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-
+    const savedColor = localStorage.getItem('custom_bg_color') || '#0f0f0f';
+    const savedImage = localStorage.getItem('custom_bg_image') || '';
+    document.getElementById('bg-color-picker').value = savedColor;
+    document.documentElement.style.setProperty('--bg-color', savedColor);
+    if (savedImage) {
+        document.documentElement.style.setProperty('--bg-image', `url('${savedImage}')`);
+        if (savedImage.startsWith('http')) document.getElementById('bg-image-url').value = savedImage;
+    }
     const saved = localStorage.getItem('custom_channels');
     channels = saved ? JSON.parse(saved) : [...defaultChannels];
-
-    // ハンドル制(handleオプション)でSortableを初期化
     new Sortable(document.getElementById('allGrid'), {
-        animation: 150,
-        handle: '.drag-handle',
-        ghostClass: 'sortable-ghost',
+        animation: 150, handle: '.drag-handle',
         onEnd: function() {
             const newOrder = [];
             document.querySelectorAll('#allGrid .card').forEach(el => {
@@ -240,14 +279,12 @@ function init() {
             localStorage.setItem('custom_channels', JSON.stringify(channels));
         }
     });
-
     loadPortal();
 }
 
 async function loadPortal() {
     if (channels.length === 0) return;
     const channelIds = channels.map(c => c.id).join(',');
-
     try {
         const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${channelIds}&part=snippet`);
         const chData = await chRes.json();
@@ -262,20 +299,9 @@ async function loadPortal() {
                     .catch(() => ({ chId: ch.id, data: null }));
             })
         );
-
         const videoIds = playlistResults.map(r => r.data?.items?.[0]?.snippet.resourceId.videoId).filter(Boolean);
         const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
         const vData = await vRes.json();
-
-        vData.items?.forEach(v => {
-            if (v.snippet.liveBroadcastContent === 'live' && reservedVideos.includes(v.id)) {
-                NOTIFY_SOUND.play().catch(() => {});
-                new Notification("配信開始！", { body: v.snippet.channelTitle + "さんが配信を開始しました" });
-                reservedVideos = reservedVideos.filter(id => id !== v.id);
-                localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
-            }
-        });
-
         renderGrids(chInfoMap, vData.items || []);
     } catch (e) { console.error(e); }
 }
@@ -285,29 +311,24 @@ function renderGrids(chInfoMap, vItems) {
     let counts = { live: 0, upcoming: 0 };
 
     channels.forEach(ch => {
-        const chInfo = chInfoMap[ch.id];
-        if (!chInfo) return;
-        
+        const chInfo = chInfoMap[ch.id]; if (!chInfo) return;
         const lastV = vItems.find(v => v.snippet.channelId === ch.id);
         const status = lastV?.snippet.liveBroadcastContent || 'none';
         const isLive = status === 'live';
         const isUpcoming = status === 'upcoming';
         const isReserved = reservedVideos.includes(lastV?.id);
-
         let timeStr = "OFFLINE";
-        if (isLive) timeStr = escapeHtml(lastV.snippet.title);
+        if (isLive) timeStr = lastV.snippet.title;
         else if (isUpcoming) {
             const d = new Date(lastV.liveStreamingDetails.scheduledStartTime);
             timeStr = `🕒 ${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}～`;
         }
-
-        const safeTkId = ch.tiktokId ? (ch.tiktokId.startsWith('@') ? ch.tiktokId : '@' + ch.tiktokId) : '';
-
         const media = (isLive || isUpcoming)
-            ? `${isLive ? '<div class="live-badge">LIVE</div>' : ''}<img class="thumb" src="${lastV.snippet.thumbnails.medium.url}">`
+            ? `${isLive ? '<div style="position:absolute;top:8px;left:40px;background:#28a745;color:white;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:bold;z-index:10;">LIVE</div>' : ''}<img class="thumb" src="${lastV.snippet.thumbnails.medium.url}">`
             : `<div class="thumb-bg" style="background:${ch.color}"></div><img class="thumb-profile" src="${chInfo.icon}">`;
 
-        // メンバー一覧のみハンドルを表示
+        const tiktokUrl = ch.tiktokId ? `https://www.tiktok.com/${ch.tiktokId.startsWith('@') ? ch.tiktokId : '@' + ch.tiktokId}` : '';
+
         const card = `
         <div class="card ${isLive?'is-live':''}" data-id="${ch.id}">
             <div class="drag-handle">⠿</div>
@@ -315,7 +336,7 @@ function renderGrids(chInfoMap, vItems) {
             <a href="https://youtube.com/watch?v=${lastV?.id || ''}" target="_blank" style="text-decoration:none; color:inherit;">
                 <div class="thumb-wrap">${media}</div>
                 <div class="info">
-                    <div class="name" style="color:${ch.color}">${escapeHtml(ch.name)}</div>
+                    <div class="name" style="color:${ch.color}">${ch.name}</div>
                     <div class="title">${timeStr}</div>
                 </div>
             </a>
@@ -323,18 +344,16 @@ function renderGrids(chInfoMap, vItems) {
                 <a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>
                 ${ch.twitterId ? `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>` : ''}
                 ${ch.twitchId ? `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-tw">Twitch</a>` : ''}
-                ${ch.tiktokId ? `<a href="https://tiktok.com/${safeTkId}" target="_blank" class="btn btn-tk">TikTok</a>` : ''}
-                ${ch.instaId ? `<a href="https://instagram.com/${ch.instaId}" target="_blank" class="btn btn-ig">Insta</a>` : ''}
-                ${ch.discordUrl ? `<a href="${ch.discordUrl}" target="_blank" class="btn btn-dc">Discord</a>` : ''}
+                ${ch.instaId ? `<a href="https://instagram.com/${ch.instaId}" target="_blank" class="btn btn-insta">Insta</a>` : ''}
+                ${ch.tiktokId ? `<a href="${tiktokUrl}" target="_blank" class="btn btn-tiktok">TikTok</a>` : ''}
+                ${ch.discordUrl ? `<a href="${ch.discordUrl}" target="_blank" class="btn btn-discord">Discord</a>` : ''}
                 ${isUpcoming ? `<button class="btn btn-reserve ${isReserved?'active':''}" style="grid-column:span 2" onclick="toggleReserve('${lastV.id}')">${isReserved?'🔔 予約中':'🔔 通知予約'}</button>` : ''}
             </div>
         </div>`;
-
         if (isLive) { htmls.live += card; counts.live++; }
         else if (isUpcoming) { htmls.upcoming += card; counts.upcoming++; }
         htmls.all += card;
     });
-
     document.getElementById("liveSection").style.display = counts.live ? "block" : "none";
     document.getElementById("liveGrid").innerHTML = htmls.live;
     document.getElementById("upcomingSection").style.display = counts.upcoming ? "block" : "none";
@@ -348,8 +367,8 @@ function addChannel() {
     if (!name || !id) return;
     channels.push({
         name, id, twitterId: getVal('new-twitter'), twitchId: getVal('new-twitch'),
-        tiktokId: getVal('new-tiktok'), instaId: getVal('new-insta'),
-        discordUrl: getVal('new-discord'), color: document.getElementById('new-color').value
+        tiktokId: getVal('new-tiktok'), instaId: getVal('new-insta'), discordUrl: getVal('new-discord'),
+        color: document.getElementById('new-color').value
     });
     localStorage.setItem('custom_channels', JSON.stringify(channels));
     location.reload();
@@ -363,33 +382,9 @@ function deleteChannel(id) {
     }
 }
 
-function resetChannels() {
-    if (confirm("リセットしますか？")) {
-        localStorage.removeItem('custom_channels');
-        location.reload();
-    }
-}
-
-function toggleReserve(id) {
-    if (Notification.permission !== "granted") Notification.requestPermission();
-    const idx = reservedVideos.indexOf(id);
-    if (idx > -1) reservedVideos.splice(idx, 1);
-    else reservedVideos.push(id);
-    localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
-    loadPortal();
-}
-
-async function manualRefresh() {
-    const btn = document.getElementById('refresh-btn');
-    btn.disabled = true;
-    await loadPortal();
-    timeLeft = 600;
-    btn.disabled = false;
-}
-
+function manualRefresh() { location.reload(); }
 setInterval(() => {
-    timeLeft--;
-    if (timeLeft < 0) { loadPortal(); timeLeft = 600; }
+    timeLeft--; if (timeLeft < 0) location.reload();
     const m = Math.floor(timeLeft/60), s = timeLeft%60;
     document.getElementById('timer').innerText = `Next Update: ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
     document.getElementById('progress-bar').style.width = (timeLeft/600)*100 + "%";
