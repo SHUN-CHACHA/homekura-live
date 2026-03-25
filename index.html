@@ -158,7 +158,9 @@
 <div id="allGrid" class="grid"></div>
 
 <script>
-const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY'; 
+const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY';
+// ⚠️ 注意: Google Cloud ConsoleでこのAPIキーに対してHTTPリファラー制限を設定してください。
+// 設定場所: APIs & Services > Credentials > キーを選択 > Application restrictions > HTTP referrers
 
 const defaultChannels = [
     {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29", twitchId:"maguro29game", tiktokId:"", instaId:"", discordUrl:"https://discord.gg/bRuT74X7sS", color:"#ff9900"},
@@ -188,8 +190,19 @@ const defaultChannels = [
 
 let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
-const UPDATE_INTERVAL = 600; 
+const UPDATE_INTERVAL = 600;
 let timeLeft = UPDATE_INTERVAL;
+
+// ----- ユーティリティ: XSS対策のエスケープ関数 -----
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
 
 function initChannels() {
     const saved = localStorage.getItem('custom_channels');
@@ -211,6 +224,7 @@ function toggleReserve(videoId, channelName) {
 }
 
 function checkNotifications(vData) {
+    if (!vData.items) return;
     vData.items.forEach(v => {
         if (v.snippet.liveBroadcastContent === 'live' && reservedVideos.includes(v.id)) {
             new Notification("配信開始！", {
@@ -225,31 +239,44 @@ function checkNotifications(vData) {
 
 async function loadPortal() {
     if (channels.length === 0) return;
-    let videoIds = [];
+
     let channelInfoMap = {};
     const channelIds = channels.map(c => c.id).join(',');
 
     try {
+        // ① チャンネル情報を一括取得
         const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${channelIds}&part=snippet`);
         const chData = await chRes.json();
-        if(chData.items) {
-            chData.items.forEach(item => channelInfoMap[item.id] = { icon: item.snippet.thumbnails.medium.url });
+        if (chData.items) {
+            chData.items.forEach(item => {
+                channelInfoMap[item.id] = { icon: item.snippet.thumbnails.medium.url };
+            });
         }
 
-        for (const ch of channels) {
-            const playlistId = ch.id.replace(/^UC/, 'UU');
-            const res = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${playlistId}&part=snippet&maxResults=1`);
-            const data = await res.json();
-            if (data.items && data.items.length > 0) {
+        // ② プレイリスト取得を Promise.all で並列化（逐次→並列）
+        const playlistResults = await Promise.all(
+            channels.map(ch => {
+                const playlistId = ch.id.replace(/^UC/, 'UU');
+                return fetch(`https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${playlistId}&part=snippet&maxResults=1`)
+                    .then(r => r.json())
+                    .then(data => ({ chId: ch.id, data }))
+                    .catch(() => ({ chId: ch.id, data: null }));
+            })
+        );
+
+        const videoIds = [];
+        playlistResults.forEach(({ chId, data }) => {
+            if (data && data.items && data.items.length > 0) {
                 const vId = data.items[0].snippet.resourceId.videoId;
                 videoIds.push(vId);
-                if (channelInfoMap[ch.id]) Object.assign(channelInfoMap[ch.id], { lastVideoId: vId });
+                if (channelInfoMap[chId]) channelInfoMap[chId].lastVideoId = vId;
             }
-        }
+        });
 
+        // ③ 動画情報を一括取得
         const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
         const vData = await vRes.json();
-        
+
         checkNotifications(vData);
 
         let liveHtml = "", upcomingHtml = "", allHtml = "";
@@ -258,87 +285,112 @@ async function loadPortal() {
         channels.forEach(ch => {
             const chInfo = channelInfoMap[ch.id];
             if (!chInfo) return;
-            const vItem = vData.items.find(v => v.id === chInfo.lastVideoId);
+
+            const vItem = vData.items ? vData.items.find(v => v.id === chInfo.lastVideoId) : null;
             const status = vItem ? vItem.snippet.liveBroadcastContent : 'none';
             const isLive = status === 'live';
             const isUpcoming = status === 'upcoming';
             const isReserved = reservedVideos.includes(chInfo.lastVideoId);
 
+            // XSS対策: タイトルなど動的文字列はすべてエスケープ
             let timeStr = "OFFLINE";
-            if (isLive) timeStr = vItem.snippet.title;
+            if (isLive) timeStr = escapeHtml(vItem.snippet.title);
             else if (isUpcoming) {
                 const d = new Date(vItem.liveStreamingDetails.scheduledStartTime);
                 timeStr = `🕒 ${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}～`;
             }
 
-            const mediaHtml = (isLive || isUpcoming) 
-                ? `${isLive ? '<div class="live-badge">LIVE</div>' : ''}<img class="thumb" src="${vItem.snippet.thumbnails.medium.url}">`
-                : `<div class="thumb-bg" style="background: ${ch.color}"></div><img class="thumb-profile" src="${chInfo.icon}">`;
+            const safeName     = escapeHtml(ch.name);
+            const safeColor    = escapeHtml(ch.color);
+            const safeChId     = escapeHtml(ch.id);
+            const safeVideoId  = chInfo.lastVideoId ? escapeHtml(chInfo.lastVideoId) : '';
+            const safeIcon     = escapeHtml(chInfo.icon);
+            const safeTwId     = escapeHtml(ch.twitterId);
+            const safeTwchId   = escapeHtml(ch.twitchId);
+            const safeThumb    = vItem ? escapeHtml(vItem.snippet.thumbnails.medium.url) : '';
 
-            // 各SNSリンクの生成（IDに@がついていてもいなくても対応）
-            const tkId = ch.tiktokId ? (ch.tiktokId.startsWith('@') ? ch.tiktokId : '@' + ch.tiktokId) : '';
+            // TikTok IDの@処理
+            const rawTkId = ch.tiktokId ? (ch.tiktokId.startsWith('@') ? ch.tiktokId : '@' + ch.tiktokId) : '';
+            const safeTkId = escapeHtml(rawTkId);
+            const safeInstaId  = escapeHtml(ch.instaId);
+            const safeDiscord  = escapeHtml(ch.discordUrl);
+
+            const mediaHtml = (isLive || isUpcoming)
+                ? `${isLive ? '<div class="live-badge">LIVE</div>' : ''}<img class="thumb" src="${safeThumb}">`
+                : `<div class="thumb-bg" style="background: ${safeColor}"></div><img class="thumb-profile" src="${safeIcon}">`;
+
+            // 修正: twitterId が空の場合はXリンクを表示しない
+            const twitterBtnHtml = safeTwId
+                ? `<a href="https://x.com/${safeTwId}" target="_blank" class="btn">X</a>`
+                : '';
 
             const cardHtml = `
             <div class="card ${isLive ? 'is-live' : ''}">
-                <button class="delete-btn" onclick="deleteChannel('${ch.id}')">×</button>
-                <a href="https://youtube.com/watch?v=${chInfo.lastVideoId}" target="_blank" style="text-decoration:none; color:inherit;">
+                <button class="delete-btn" onclick="deleteChannel('${safeChId}')">×</button>
+                <a href="https://youtube.com/watch?v=${safeVideoId}" target="_blank" style="text-decoration:none; color:inherit;">
                     <div class="thumb-wrap">${mediaHtml}</div>
                     <div class="info">
-                        <div class="name" style="color:${ch.color}">${ch.name}</div>
+                        <div class="name" style="color:${safeColor}">${safeName}</div>
                         <div class="title">${timeStr}</div>
                     </div>
                 </a>
                 <div class="btn-area">
-                    <a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>
-                    <a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>
-                    ${ch.twitchId ? `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-tw">Twitch</a>` : ''}
-                    ${ch.tiktokId ? `<a href="https://tiktok.com/${tkId}" target="_blank" class="btn btn-tk">TikTok</a>` : ''}
-                    ${ch.instaId ? `<a href="https://instagram.com/${ch.instaId}" target="_blank" class="btn btn-ig">Insta</a>` : ''}
-                    ${ch.discordUrl ? `<a href="${ch.discordUrl}" target="_blank" class="btn btn-dc">Discord</a>` : ''}
-                    ${isUpcoming ? 
-                        `<button class="btn btn-reserve ${isReserved ? 'active' : ''}" style="grid-column: span 2;" onclick="toggleReserve('${chInfo.lastVideoId}', '${ch.name}')">${isReserved ? '🔔 予約中' : '🔔 通知予約'}</button>` : ''
+                    <a href="https://youtube.com/channel/${safeChId}" target="_blank" class="btn btn-yt">YouTube</a>
+                    ${twitterBtnHtml}
+                    ${safeTwchId ? `<a href="https://twitch.tv/${safeTwchId}" target="_blank" class="btn btn-tw">Twitch</a>` : ''}
+                    ${safeTkId  ? `<a href="https://tiktok.com/${safeTkId}" target="_blank" class="btn btn-tk">TikTok</a>` : ''}
+                    ${safeInstaId ? `<a href="https://instagram.com/${safeInstaId}" target="_blank" class="btn btn-ig">Insta</a>` : ''}
+                    ${safeDiscord ? `<a href="${safeDiscord}" target="_blank" class="btn btn-dc">Discord</a>` : ''}
+                    ${isUpcoming
+                        ? `<button class="btn btn-reserve ${isReserved ? 'active' : ''}" style="grid-column: span 2;" onclick="toggleReserve('${safeVideoId}', '${safeName}')">${isReserved ? '🔔 予約中' : '🔔 通知予約'}</button>`
+                        : ''
                     }
                 </div>
             </div>`;
-            
-            if (isLive) { liveHtml += cardHtml; liveCount++; }
+
+            if (isLive)     { liveHtml     += cardHtml; liveCount++; }
             else if (isUpcoming) { upcomingHtml += cardHtml; upcomingCount++; }
             allHtml += cardHtml;
         });
 
-        document.getElementById("liveSection").style.display = liveCount > 0 ? "block" : "none";
-        document.getElementById("liveGrid").innerHTML = liveHtml;
+        document.getElementById("liveSection").style.display    = liveCount > 0     ? "block" : "none";
+        document.getElementById("liveGrid").innerHTML           = liveHtml;
         document.getElementById("upcomingSection").style.display = upcomingCount > 0 ? "block" : "none";
-        document.getElementById("upcomingGrid").innerHTML = upcomingHtml;
-        document.getElementById("allGrid").innerHTML = allHtml;
+        document.getElementById("upcomingGrid").innerHTML       = upcomingHtml;
+        document.getElementById("allGrid").innerHTML            = allHtml;
+
     } catch (e) { console.error(e); }
 }
 
 function addChannel() {
-    const name = document.getElementById('new-name').value;
-    const id = document.getElementById('new-id').value;
-    const twitterId = document.getElementById('new-twitter').value;
-    const twitchId = document.getElementById('new-twitch').value;
-    const tiktokId = document.getElementById('new-tiktok').value;
-    const instaId = document.getElementById('new-insta').value;
-    const discordUrl = document.getElementById('new-discord').value;
-    const color = document.getElementById('new-color').value;
+    const name       = document.getElementById('new-name').value.trim();
+    const id         = document.getElementById('new-id').value.trim();
+    const twitterId  = document.getElementById('new-twitter').value.trim();
+    const twitchId   = document.getElementById('new-twitch').value.trim();
+    const tiktokId   = document.getElementById('new-tiktok').value.trim();
+    const instaId    = document.getElementById('new-insta').value.trim();
+    const discordUrl = document.getElementById('new-discord').value.trim();
+    const color      = document.getElementById('new-color').value;
+
     if (!name || !id) return;
+
     channels.push({ name, id, twitterId, twitchId, tiktokId, instaId, discordUrl, color });
     localStorage.setItem('custom_channels', JSON.stringify(channels));
     loadPortal();
-    // クリア
-    document.getElementById('new-name').value = "";
-    document.getElementById('new-id').value = "";
+
+    // 入力フィールドを全てクリア（カラーピッカーも含む）
+    document.getElementById('new-name').value    = "";
+    document.getElementById('new-id').value      = "";
     document.getElementById('new-twitter').value = "";
-    document.getElementById('new-twitch').value = "";
-    document.getElementById('new-tiktok').value = "";
-    document.getElementById('new-insta').value = "";
+    document.getElementById('new-twitch').value  = "";
+    document.getElementById('new-tiktok').value  = "";
+    document.getElementById('new-insta').value   = "";
     document.getElementById('new-discord').value = "";
+    document.getElementById('new-color').value   = "#ffffff"; // ✅ 修正: カラーもリセット
 }
 
 function deleteChannel(id) {
-    if(confirm("削除しますか？")) {
+    if (confirm("削除しますか？")) {
         channels = channels.filter(ch => ch.id !== id);
         localStorage.setItem('custom_channels', JSON.stringify(channels));
         loadPortal();
@@ -346,7 +398,7 @@ function deleteChannel(id) {
 }
 
 function resetChannels() {
-    if(confirm("リセットしますか？")) {
+    if (confirm("リセットしますか？")) {
         localStorage.removeItem('custom_channels');
         channels = [...defaultChannels];
         loadPortal();
