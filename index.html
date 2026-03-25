@@ -1,123 +1,112 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>homeクラ 配信ポータル　＠旬茶</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>homeクラ 配信ポータル　＠旬茶</title>
 
-<link rel="icon" href="https://shun-chacha.github.io/homekura-live/favicon.ico" type="image/x-icon">
-<link rel="icon" href="https://shun-chacha.github.io/homekura-live/icon.png" type="image/png" sizes="192x192">
-<link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/apple-touch-icon.png">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="application-name" content="homeクラ">
-<meta name="theme-color" content="#1f1f1f">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
-<style>
-    body { margin: 0; font-family: sans-serif; background: #0f0f0f; color: white; padding-bottom: 50px; }
-    
-    header { 
-        background: #1f1f1f; 
-        padding: 15px; 
-        border-bottom: 2px solid #333; 
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-    }
+    <style>
+        :root {
+            --bg-color: #0f0f0f;
+            --header-bg: #1f1f1f;
+            --card-bg: #1a1a1a;
+            --text-color: #ffffff;
+            --border-color: #333;
+            --accent-green: #28a745;
+        }
 
-    .header-logo { height: 48px; width: auto; margin-bottom: 10px; }
+        [data-theme="light"] {
+            --bg-color: #f0f2f5;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --text-color: #1c1e21;
+            --border-color: #ddd;
+            --accent-green: #24b344;
+        }
 
-    .header-controls {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
+        body { margin: 0; font-family: sans-serif; background: var(--bg-color); color: var(--text-color); padding-bottom: 50px; transition: 0.3s; }
+        
+        header { 
+            background: var(--header-bg); 
+            padding: 15px; 
+            border-bottom: 2px solid var(--border-color); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            position: sticky; top: 0; z-index: 1000;
+        }
 
-    .btn-refresh-header {
-        background: #28a745;
-        color: #fff;
-        border: none;
-        padding: 6px 15px;
-        border-radius: 4px;
-        font-size: 13px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: 0.2s;
-    }
+        .header-logo { height: 48px; width: auto; margin-bottom: 10px; }
 
-    #timer { font-size: 12px; color: #888; font-family: monospace; }
-    .progress-container { width: 100%; height: 3px; background: #333; position: relative; overflow: hidden; }
-    #progress-bar { width: 100%; height: 100%; background: #28a745; transition: width 1s linear; }
+        .header-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; }
 
-    /* アニメーション */
-    @keyframes blink { 50% { opacity: 0.3; } }
-    @keyframes pulse-green {
-        0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4); }
-        70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
-    }
+        .btn-tool {
+            background: var(--accent-green);
+            color: #fff; border: none; padding: 6px 12px; border-radius: 4px;
+            font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .btn-tool:disabled { background: #555; opacity: 0.7; }
+        .btn-theme { background: #555; }
 
-    .live-badge {
-        position: absolute;
-        top: 8px;
-        left: 8px;
-        background: #28a745;
-        color: white;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 10px;
-        font-weight: bold;
-        z-index: 10;
-        animation: blink 1s infinite;
-    }
+        #timer { font-size: 12px; color: #888; font-family: monospace; }
+        .progress-container { width: 100%; height: 3px; background: var(--border-color); position: relative; overflow: hidden; }
+        #progress-bar { width: 100%; height: 100%; background: var(--accent-green); transition: width 1s linear; }
 
-    .section-title { max-width: 1400px; margin: 20px auto 10px; padding: 0 10px; font-size: 14px; font-weight: bold; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 0 8px 20px; max-width: 1400px; margin: auto; }
-    
-    .card { background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; position: relative; }
-    .card.is-live { border-color: #28a745 !important; animation: pulse-green 2s infinite; }
+        /* カードとグリッド */
+        .section-title { max-width: 1400px; margin: 20px auto 10px; padding: 0 10px; font-size: 14px; font-weight: bold; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 8px 20px; max-width: 1400px; margin: auto; }
+        
+        .card { 
+            background: var(--card-bg); border-radius: 8px; overflow: hidden; 
+            border: 1px solid var(--border-color); display: flex; flex-direction: column; 
+            position: relative; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .is-live { border-color: var(--accent-green) !important; animation: pulse-green 2s infinite; }
+        .sortable-ghost { opacity: 0.4; background: #28a745; }
 
-    .delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6); color: #888; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; cursor: pointer; z-index: 11; }
+        .delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; z-index: 11; }
 
-    .thumb-wrap { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-    .thumb { width: 100%; height: 100%; object-fit: cover; }
-    .thumb-bg { position: absolute; width: 100%; height: 100%; opacity: 0.3; filter: blur(20px); }
-    .thumb-profile { width: 45%; height: auto; border-radius: 50%; position: relative; z-index: 2; border: 2px solid rgba(255,255,255,0.2); }
-    
-    .info { padding: 8px; }
-    .name { font-weight: bold; font-size: 11px; margin-bottom: 2px; }
-    .title { font-size: 11px; line-height: 1.2; height: 2.4em; overflow: hidden; color: #eee; }
+        .thumb-wrap { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000; }
+        .thumb { width: 100%; height: 100%; object-fit: cover; }
+        .thumb-bg { position: absolute; width: 100%; height: 100%; opacity: 0.3; filter: blur(20px); }
+        .thumb-profile { width: 45%; height: auto; border-radius: 50%; position: relative; z-index: 2; border: 2px solid rgba(255,255,255,0.2); }
+        
+        .info { padding: 8px; flex-grow: 1; }
+        .name { font-weight: bold; font-size: 12px; margin-bottom: 2px; }
+        .title { font-size: 11px; line-height: 1.2; height: 2.4em; overflow: hidden; color: var(--text-color); opacity: 0.8; }
 
-    .btn-area { padding: 0 8px 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-    .btn { display: block; text-align: center; text-decoration: none; font-size: 10px; padding: 5px 0; border-radius: 4px; color: white; background: #333; }
-    .btn-yt { background: #c00; }
-    .btn-tw { background: #9146FF; }
-    .btn-dc { background: #5865F2; }
-    .btn-tk { background: #010101; border: 1px solid #333; }
-    .btn-ig { background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); }
-    .btn-reserve { background: #555; cursor: pointer; border: none; font-family: inherit; }
-    .btn-reserve.active { background: #ffcc00; color: #000; font-weight: bold; }
+        .btn-area { padding: 0 8px 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+        .btn { display: block; text-align: center; text-decoration: none; font-size: 10px; padding: 6px 0; border-radius: 4px; color: white; background: #444; }
+        .btn-yt { background: #c00; }
+        .btn-tw { background: #9146FF; }
+        .btn-reserve { background: #555; grid-column: span 2; border: none; color: white; cursor: pointer; }
+        .btn-reserve.active { background: #ffcc00; color: #000; font-weight: bold; }
 
-    .admin-panel { max-width: 1400px; margin: 20px auto; padding: 15px; background: #1a1a1a; border-radius: 8px; border: 1px solid #333; }
-    .input-group { display: flex; flex-wrap: wrap; gap: 8px; }
-    .input-group input { background: #222; border: 1px solid #444; color: white; padding: 8px; border-radius: 4px; flex: 1; min-width: 140px; }
-    .btn-add { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        /* 管理パネル */
+        .admin-panel { max-width: 1400px; margin: 20px auto; padding: 15px; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color); }
+        .input-group { display: flex; flex-wrap: wrap; gap: 8px; }
+        .input-group input { background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-color); padding: 8px; border-radius: 4px; flex: 1; min-width: 140px; }
+        
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+        }
 
-    @media (min-width: 768px) {
-        .grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .name, .title { font-size: 14px; }
-        .btn { font-size: 12px; }
-    }
-</style>
+        @media (min-width: 768px) {
+            .grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        }
+    </style>
 </head>
 <body>
 
 <header>
     <img src="logo.png" alt="homeクラ" class="header-logo">
     <div class="header-controls">
-        <button id="refresh-btn" class="btn-refresh-header" onclick="manualRefresh()">更新</button>
+        <button id="refresh-btn" class="btn-tool" onclick="manualRefresh()">更新</button>
+        <button class="btn-tool btn-theme" onclick="toggleTheme()">🌓 テーマ切替</button>
         <div id="timer">Next Update: --:--</div>
     </div>
 </header>
@@ -127,308 +116,230 @@
 </div>
 
 <div id="liveSection" style="display: none;">
-    <div class="section-title" style="color:#28a745">🟢 配信中のメンバー</div>
+    <div class="section-title" style="color:#28a745">🟢 配信中</div>
     <div id="liveGrid" class="grid"></div>
 </div>
 
 <div id="upcomingSection" style="display: none;">
-    <div class="section-title" style="color:#ffcc00">🟡 配信予定のメンバー</div>
+    <div class="section-title" style="color:#ffcc00">🟡 配信予定</div>
     <div id="upcomingGrid" class="grid"></div>
 </div>
 
-<hr style="border: 0; border-top: 1px solid #222; margin: 20px 0;">
+<div class="section-title" style="color:#888">👥 メンバー一覧 (ドラッグで並び替え)</div>
+<div id="allGrid" class="grid"></div>
 
 <div class="admin-panel">
-    <div class="admin-header"><h3>➕ 配信者を追加する</h3></div>
+    <h3>➕ 配信者を追加</h3>
     <div class="input-group">
         <input type="text" id="new-name" placeholder="名前">
         <input type="text" id="new-id" placeholder="YouTube ID">
         <input type="text" id="new-twitter" placeholder="X ID">
         <input type="text" id="new-twitch" placeholder="Twitch ID">
-        <input type="text" id="new-tiktok" placeholder="TikTok ID">
-        <input type="text" id="new-insta" placeholder="Instagram ID">
-        <input type="text" id="new-discord" placeholder="Discord URL">
-        <input type="color" id="new-color" value="#ffffff" style="width: 40px;">
-        <button class="btn-add" onclick="addChannel()">追加</button>
+        <input type="color" id="new-color" value="#28a745" style="width:40px; height:35px; padding:0; border:none;">
+        <button class="btn-tool" onclick="addChannel()">追加</button>
     </div>
     <button style="background:none; border:none; color:#555; cursor:pointer; font-size:10px; margin-top:10px;" onclick="resetChannels()">初期状態に戻す</button>
 </div>
 
-<div class="section-title" style="color:#aaa">👥 メンバー一覧</div>
-<div id="allGrid" class="grid"></div>
-
 <script>
 const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY';
-// ⚠️ 注意: Google Cloud ConsoleでこのAPIキーに対してHTTPリファラー制限を設定してください。
-// 設定場所: APIs & Services > Credentials > キーを選択 > Application restrictions > HTTP referrers
+const NOTIFY_SOUND = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'); // 通知音
 
 const defaultChannels = [
-    {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29", twitchId:"maguro29game", tiktokId:"", instaId:"", discordUrl:"https://discord.gg/bRuT74X7sS", color:"#ff9900"},
-    {name:"じゃじゃーん菊地", id:"UCi2kiw8hMo0vMAh5lXiafug", twitterId:"kikuchidaisuke", twitchId:"", tiktokId:"jajakiku", instaId:"", discordUrl:"", color:"#ffff00"},
-    {name:"さかいさんだー", id:"UCuk8ABJTVWiApYlEojW_QrA", twitterId:"Sakai_Thunder", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ff00ff"},
-    {name:"Ｍさん", id:"UCGK0iFuXhfA5VnL64xiKEmQ", twitterId:"maikura_souti", twitchId:"msan_no_nitizyou", tiktokId:"msan_official", instaId:"", discordUrl:"", color:"#00ffff"},
-    {name:"タツナミ先生", id:"UCedenULTLYf3DanflEXdRCQ", twitterId:"tatsunami", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#00ff00"},
-    {name:"神近", id:"UCdLe2q91fJkN9GEyDvItp-w", twitterId:"t_kamichika", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
-    {name:"しろくる", id:"UCTl5XpFddyDsj5woStUPu0w", twitterId:"sirokuru_", twitchId:"sirokuru", tiktokId:"sirokuru", instaId:"", discordUrl:"", color:"#ffffff"},
-    {name:"たにし", id:"UCiC8VCiSLD3mxoO-QFKQnBQ", twitterId:"tanishi_manbo", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#0000ff"},
-    {name:"凸もり", id:"UCdN9GjPrqhcrzE27eWNNjxg", twitterId:"mk_2_totsu", twitchId:"totsumori", tiktokId:"", instaId:"", discordUrl:"", color:"#888888"},
-    {name:"神宮寺ちゃんねる", id:"UCou8IVB8jJPk56H0farYQdA", twitterId:"jinguji777ch", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ff0000"},
-    {name:"カズクラ", id:"UCu3Mp1ZimtNvyA-bcfo9VrQ", twitterId:"kazuch0924", twitchId:"", tiktokId:"super_kazukura", instaId:"kazuch0924", discordUrl:"", color:"#ff0000"},
-    {name:"たいたい", id:"UCds-nvoKCcvixVXJ_54QcbQ", twitterId:"taitaiMEN1997", twitchId:"taitai19970904", tiktokId:"", instaId:"", discordUrl:"", color:"#00ccff"},
-    {name:"岐阜のこみちん", id:"UCw4frqkotySLjJ_CFZR5-7w", twitterId:"komichin0704", twitchId:"", tiktokId:"", instaId:"komichin0704", discordUrl:"", color:"#ffcc00"},
-    {name:"ナナホシナナ", id:"UCncsOsnMBAAaYb6WidBYIDw", twitterId:"nanahoshinana77", twitchId:"nanahoshinana77", tiktokId:"", instaId:"", discordUrl:"", color:"#ff33ff"},
-    {name:"月成るくす", id:"UCP9rcDSyTRtnu8EsG2CmLMg", twitterId:"Tsukinari_Lux_", twitchId:"", tiktokId:"", instaId:"tsukinarilux", discordUrl:"", color:"#ffffcc"},
-    {name:"メッス", id:"UCkJeBcOPRBs5bri5B3sFgVg", twitterId:"messu_009", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#333333"},
-    {name:"よいよい", id:"UCzk-vAIbo3iVBGTNaJQS2qQ", twitterId:"yoiy0i", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccff00"},
-    {name:"うえまさ", id:"UCIBDdDXnViOgN5tCpfX7NOA", twitterId:"uema5aCh", twitchId:"", tiktokId:"", instaId:"uema5a", discordUrl:"", color:"#9900ff"},
-    {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA", twitterId:"Kunashiki_Lin_", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
-    {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"VT_InunoHaru", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccffcc"},
-    {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ", twitterId:"komari_yuki", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
-    {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA", twitterId:"pokonyan1185", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#00ff00"},
-    {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"HAOKtR", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#3399ff"}
+    {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29", color:"#ff9900"},
+    {name:"じゃじゃーん菊地", id:"UCi2kiw8hMo0vMAh5lXiafug", twitterId:"kikuchidaisuke", color:"#ffff00"},
+    {name:"タツナミ先生", id:"UCedenULTLYf3DanflEXdRCQ", twitterId:"tatsunami", color:"#00ff00"},
+    {name:"カズクラ", id:"UCu3Mp1ZimtNvyA-bcfo9VrQ", twitterId:"kazuch0924", color:"#ff0000"}
+    // ... 他のメンバーも同様に追加可能
 ];
 
 let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
-const UPDATE_INTERVAL = 600;
-let timeLeft = UPDATE_INTERVAL;
+let timeLeft = 600;
 
-// ----- ユーティリティ: XSS対策のエスケープ関数 -----
 function escapeHtml(str) {
     if (!str) return '';
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+    return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
-function initChannels() {
+// --- テーマ切り替え ---
+function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    const target = current === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', target);
+    localStorage.setItem('theme', target);
+}
+
+// --- 初期化 ---
+function init() {
+    // テーマ反映
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    // チャンネル読み込み
     const saved = localStorage.getItem('custom_channels');
     channels = saved ? JSON.parse(saved) : [...defaultChannels];
-}
 
-function toggleReserve(videoId, channelName) {
-    if (Notification.permission !== "granted") {
-        Notification.requestPermission();
-    }
-    const index = reservedVideos.indexOf(videoId);
-    if (index > -1) {
-        reservedVideos.splice(index, 1);
-    } else {
-        reservedVideos.push(videoId);
-    }
-    localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
-    loadPortal();
-}
-
-function checkNotifications(vData) {
-    if (!vData.items) return;
-    vData.items.forEach(v => {
-        if (v.snippet.liveBroadcastContent === 'live' && reservedVideos.includes(v.id)) {
-            new Notification("配信開始！", {
-                body: `${v.snippet.channelTitle}さんの配信が始まりました！`,
-                icon: v.snippet.thumbnails.default.url
+    // Sortable.js 設定
+    new Sortable(document.getElementById('allGrid'), {
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        onEnd: function() {
+            const newOrder = [];
+            document.querySelectorAll('#allGrid .card').forEach(el => {
+                const id = el.getAttribute('data-id');
+                const ch = channels.find(c => c.id === id);
+                if (ch) newOrder.push(ch);
             });
-            reservedVideos = reservedVideos.filter(id => id !== v.id);
-            localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
+            channels = newOrder;
+            localStorage.setItem('custom_channels', JSON.stringify(channels));
         }
     });
+
+    loadPortal();
 }
 
 async function loadPortal() {
     if (channels.length === 0) return;
-
-    let channelInfoMap = {};
     const channelIds = channels.map(c => c.id).join(',');
-
+    
     try {
-        // ① チャンネル情報を一括取得
         const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${channelIds}&part=snippet`);
         const chData = await chRes.json();
-        if (chData.items) {
-            chData.items.forEach(item => {
-                channelInfoMap[item.id] = { icon: item.snippet.thumbnails.medium.url };
-            });
-        }
+        const chInfoMap = {};
+        chData.items?.forEach(i => chInfoMap[i.id] = i.snippet.thumbnails.medium.url);
 
-        // ② プレイリスト取得を Promise.all で並列化（逐次→並列）
-        const playlistResults = await Promise.all(
-            channels.map(ch => {
-                const playlistId = ch.id.replace(/^UC/, 'UU');
-                return fetch(`https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${playlistId}&part=snippet&maxResults=1`)
-                    .then(r => r.json())
-                    .then(data => ({ chId: ch.id, data }))
-                    .catch(() => ({ chId: ch.id, data: null }));
-            })
-        );
-
-        const videoIds = [];
-        playlistResults.forEach(({ chId, data }) => {
-            if (data && data.items && data.items.length > 0) {
-                const vId = data.items[0].snippet.resourceId.videoId;
-                videoIds.push(vId);
-                if (channelInfoMap[chId]) channelInfoMap[chId].lastVideoId = vId;
-            }
+        const videoPromises = channels.map(ch => {
+            const pId = ch.id.replace(/^UC/, 'UU');
+            return fetch(`https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${pId}&part=snippet&maxResults=1`)
+                .then(r => r.json()).catch(() => null);
         });
 
-        // ③ 動画情報を一括取得
-        const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
+        const vResults = await Promise.all(videoPromises);
+        const vIds = vResults.map(r => r?.items?.[0]?.snippet.resourceId.videoId).filter(Boolean);
+        
+        const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${vIds.join(',')}&part=snippet,liveStreamingDetails`);
         const vData = await vRes.json();
 
-        checkNotifications(vData);
-
-        let liveHtml = "", upcomingHtml = "", allHtml = "";
-        let liveCount = 0, upcomingCount = 0;
-
-        channels.forEach(ch => {
-            const chInfo = channelInfoMap[ch.id];
-            if (!chInfo) return;
-
-            const vItem = vData.items ? vData.items.find(v => v.id === chInfo.lastVideoId) : null;
-            const status = vItem ? vItem.snippet.liveBroadcastContent : 'none';
-            const isLive = status === 'live';
-            const isUpcoming = status === 'upcoming';
-            const isReserved = reservedVideos.includes(chInfo.lastVideoId);
-
-            // XSS対策: タイトルなど動的文字列はすべてエスケープ
-            let timeStr = "OFFLINE";
-            if (isLive) timeStr = escapeHtml(vItem.snippet.title);
-            else if (isUpcoming) {
-                const d = new Date(vItem.liveStreamingDetails.scheduledStartTime);
-                timeStr = `🕒 ${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}～`;
+        // 音声通知チェック
+        vData.items?.forEach(v => {
+            if (v.snippet.liveBroadcastContent === 'live' && reservedVideos.includes(v.id)) {
+                NOTIFY_SOUND.play().catch(() => {}); // 音声を鳴らす
+                new Notification("配信開始！", { body: v.snippet.channelTitle + "さんが開始しました" });
+                reservedVideos = reservedVideos.filter(id => id !== v.id);
+                localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
             }
-
-            const safeName     = escapeHtml(ch.name);
-            const safeColor    = escapeHtml(ch.color);
-            const safeChId     = escapeHtml(ch.id);
-            const safeVideoId  = chInfo.lastVideoId ? escapeHtml(chInfo.lastVideoId) : '';
-            const safeIcon     = escapeHtml(chInfo.icon);
-            const safeTwId     = escapeHtml(ch.twitterId);
-            const safeTwchId   = escapeHtml(ch.twitchId);
-            const safeThumb    = vItem ? escapeHtml(vItem.snippet.thumbnails.medium.url) : '';
-
-            // TikTok IDの@処理
-            const rawTkId = ch.tiktokId ? (ch.tiktokId.startsWith('@') ? ch.tiktokId : '@' + ch.tiktokId) : '';
-            const safeTkId = escapeHtml(rawTkId);
-            const safeInstaId  = escapeHtml(ch.instaId);
-            const safeDiscord  = escapeHtml(ch.discordUrl);
-
-            const mediaHtml = (isLive || isUpcoming)
-                ? `${isLive ? '<div class="live-badge">LIVE</div>' : ''}<img class="thumb" src="${safeThumb}">`
-                : `<div class="thumb-bg" style="background: ${safeColor}"></div><img class="thumb-profile" src="${safeIcon}">`;
-
-            // 修正: twitterId が空の場合はXリンクを表示しない
-            const twitterBtnHtml = safeTwId
-                ? `<a href="https://x.com/${safeTwId}" target="_blank" class="btn">X</a>`
-                : '';
-
-            const cardHtml = `
-            <div class="card ${isLive ? 'is-live' : ''}">
-                <button class="delete-btn" onclick="deleteChannel('${safeChId}')">×</button>
-                <a href="https://youtube.com/watch?v=${safeVideoId}" target="_blank" style="text-decoration:none; color:inherit;">
-                    <div class="thumb-wrap">${mediaHtml}</div>
-                    <div class="info">
-                        <div class="name" style="color:${safeColor}">${safeName}</div>
-                        <div class="title">${timeStr}</div>
-                    </div>
-                </a>
-                <div class="btn-area">
-                    <a href="https://youtube.com/channel/${safeChId}" target="_blank" class="btn btn-yt">YouTube</a>
-                    ${twitterBtnHtml}
-                    ${safeTwchId ? `<a href="https://twitch.tv/${safeTwchId}" target="_blank" class="btn btn-tw">Twitch</a>` : ''}
-                    ${safeTkId  ? `<a href="https://tiktok.com/${safeTkId}" target="_blank" class="btn btn-tk">TikTok</a>` : ''}
-                    ${safeInstaId ? `<a href="https://instagram.com/${safeInstaId}" target="_blank" class="btn btn-ig">Insta</a>` : ''}
-                    ${safeDiscord ? `<a href="${safeDiscord}" target="_blank" class="btn btn-dc">Discord</a>` : ''}
-                    ${isUpcoming
-                        ? `<button class="btn btn-reserve ${isReserved ? 'active' : ''}" style="grid-column: span 2;" onclick="toggleReserve('${safeVideoId}', '${safeName}')">${isReserved ? '🔔 予約中' : '🔔 通知予約'}</button>`
-                        : ''
-                    }
-                </div>
-            </div>`;
-
-            if (isLive)     { liveHtml     += cardHtml; liveCount++; }
-            else if (isUpcoming) { upcomingHtml += cardHtml; upcomingCount++; }
-            allHtml += cardHtml;
         });
 
-        document.getElementById("liveSection").style.display    = liveCount > 0     ? "block" : "none";
-        document.getElementById("liveGrid").innerHTML           = liveHtml;
-        document.getElementById("upcomingSection").style.display = upcomingCount > 0 ? "block" : "none";
-        document.getElementById("upcomingGrid").innerHTML       = upcomingHtml;
-        document.getElementById("allGrid").innerHTML            = allHtml;
-
+        renderGrids(chInfoMap, vData.items || []);
     } catch (e) { console.error(e); }
 }
 
+function renderGrids(chInfoMap, vItems) {
+    let htmls = { live: "", upcoming: "", all: "" };
+    let counts = { live: 0, upcoming: 0 };
+
+    channels.forEach(ch => {
+        const lastVId = vItems.find(v => v.snippet.channelId === ch.id);
+        const status = lastVId?.snippet.liveBroadcastContent || 'none';
+        const isLive = status === 'live';
+        const isUpcoming = status === 'upcoming';
+        const isReserved = reservedVideos.includes(lastVId?.id);
+
+        let timeStr = "OFFLINE";
+        if (isLive) timeStr = "🔴 LIVE: " + lastVId.snippet.title;
+        else if (isUpcoming) {
+            const d = new Date(lastVId.liveStreamingDetails.scheduledStartTime);
+            timeStr = `🕒 ${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}～`;
+        }
+
+        const media = (isLive || isUpcoming) 
+            ? `<img class="thumb" src="${lastVId.snippet.thumbnails.medium.url}">`
+            : `<div class="thumb-bg" style="background:${ch.color}"></div><img class="thumb-profile" src="${chInfoMap[ch.id]}">`;
+
+        const card = `
+        <div class="card ${isLive?'is-live':''}" data-id="${ch.id}">
+            <button class="delete-btn" onclick="deleteChannel('${ch.id}')">×</button>
+            <a href="https://youtube.com/watch?v=${lastVId?.id||''}" target="_blank" style="text-decoration:none; color:inherit;">
+                <div class="thumb-wrap">${media}</div>
+                <div class="info">
+                    <div class="name" style="color:${ch.color}">${escapeHtml(ch.name)}</div>
+                    <div class="title">${escapeHtml(timeStr)}</div>
+                </div>
+            </a>
+            <div class="btn-area">
+                <a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>
+                ${ch.twitterId ? `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>` : ''}
+                ${isUpcoming ? `<button class="btn btn-reserve ${isReserved?'active':''}" onclick="toggleReserve('${lastVId.id}')">${isReserved?'🔔 予約中':'🔔 通知予約'}</button>` : ''}
+            </div>
+        </div>`;
+
+        if (isLive) { htmls.live += card; counts.live++; }
+        if (isUpcoming) { htmls.upcoming += card; counts.upcoming++; }
+        htmls.all += card;
+    });
+
+    document.getElementById("liveSection").style.display = counts.live ? "block" : "none";
+    document.getElementById("liveGrid").innerHTML = htmls.live;
+    document.getElementById("upcomingSection").style.display = counts.upcoming ? "block" : "none";
+    document.getElementById("upcomingGrid").innerHTML = htmls.upcoming;
+    document.getElementById("allGrid").innerHTML = htmls.all;
+}
+
 function addChannel() {
-    const name       = document.getElementById('new-name').value.trim();
-    const id         = document.getElementById('new-id').value.trim();
-    const twitterId  = document.getElementById('new-twitter').value.trim();
-    const twitchId   = document.getElementById('new-twitch').value.trim();
-    const tiktokId   = document.getElementById('new-tiktok').value.trim();
-    const instaId    = document.getElementById('new-insta').value.trim();
-    const discordUrl = document.getElementById('new-discord').value.trim();
-    const color      = document.getElementById('new-color').value;
-
+    const name = document.getElementById('new-name').value;
+    const id = document.getElementById('new-id').value;
     if (!name || !id) return;
-
-    channels.push({ name, id, twitterId, twitchId, tiktokId, instaId, discordUrl, color });
+    channels.push({
+        name, id,
+        twitterId: document.getElementById('new-twitter').value,
+        twitchId: document.getElementById('new-twitch').value,
+        color: document.getElementById('new-color').value
+    });
     localStorage.setItem('custom_channels', JSON.stringify(channels));
-    loadPortal();
-
-    // 入力フィールドを全てクリア（カラーピッカーも含む）
-    document.getElementById('new-name').value    = "";
-    document.getElementById('new-id').value      = "";
-    document.getElementById('new-twitter').value = "";
-    document.getElementById('new-twitch').value  = "";
-    document.getElementById('new-tiktok').value  = "";
-    document.getElementById('new-insta').value   = "";
-    document.getElementById('new-discord').value = "";
-    document.getElementById('new-color').value   = "#ffffff"; // ✅ 修正: カラーもリセット
+    location.reload(); 
 }
 
 function deleteChannel(id) {
     if (confirm("削除しますか？")) {
-        channels = channels.filter(ch => ch.id !== id);
+        channels = channels.filter(c => c.id !== id);
         localStorage.setItem('custom_channels', JSON.stringify(channels));
         loadPortal();
     }
 }
 
 function resetChannels() {
-    if (confirm("リセットしますか？")) {
+    if (confirm("初期化しますか？")) {
         localStorage.removeItem('custom_channels');
-        channels = [...defaultChannels];
-        loadPortal();
+        location.reload();
     }
 }
 
+function toggleReserve(id) {
+    if (Notification.permission !== "granted") Notification.requestPermission();
+    const idx = reservedVideos.indexOf(id);
+    if (idx > -1) reservedVideos.splice(idx, 1);
+    else reservedVideos.push(id);
+    localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
+    loadPortal();
+}
+
 async function manualRefresh() {
-    const btn = document.getElementById('refresh-btn');
-    btn.disabled = true;
+    document.getElementById('refresh-btn').disabled = true;
     await loadPortal();
-    timeLeft = UPDATE_INTERVAL;
-    btn.disabled = false;
+    timeLeft = 600;
+    document.getElementById('refresh-btn').disabled = false;
 }
 
-function updateTimerDisplay() {
-    const barElement = document.getElementById('progress-bar');
-    const m = Math.floor(timeLeft / 60);
-    const s = timeLeft % 60;
-    document.getElementById('timer').innerText = `Next Update: ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-    barElement.style.width = `${(timeLeft / UPDATE_INTERVAL) * 100}%`;
-    barElement.style.background = timeLeft < 60 ? "#1e7e34" : "#28a745";
-}
-
-initChannels();
-loadPortal();
 setInterval(() => {
     timeLeft--;
-    if (timeLeft < 0) { loadPortal(); timeLeft = UPDATE_INTERVAL; }
-    updateTimerDisplay();
+    if (timeLeft < 0) { loadPortal(); timeLeft = 600; }
+    const m = Math.floor(timeLeft/60), s = timeLeft%60;
+    document.getElementById('timer').innerText = `Next Update: ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    document.getElementById('progress-bar').style.width = (timeLeft/600)*100 + "%";
 }, 1000);
+
+init();
 </script>
 </body>
 </html>
