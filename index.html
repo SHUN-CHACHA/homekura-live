@@ -47,7 +47,6 @@
         }
 
         .header-logo { height: 48px; width: auto; margin-bottom: 10px; }
-
         .header-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; }
 
         .btn-tool {
@@ -69,7 +68,7 @@
         }
 
         .live-badge {
-            position: absolute; top: 8px; left: 8px; background: #28a745; color: white;
+            position: absolute; top: 8px; left: 40px; background: #28a745; color: white;
             padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold;
             z-index: 10; animation: blink 1s infinite;
         }
@@ -81,9 +80,18 @@
             background: var(--card-bg); border-radius: 8px; overflow: hidden; 
             border: 1px solid var(--border-color); display: flex; flex-direction: column; 
             position: relative; transition: transform 0.2s;
+            touch-action: pan-y; /* 上下スクロールを許可 */
         }
         .card.is-live { border-color: #28a745 !important; animation: pulse-green 2s infinite; }
         .sortable-ghost { opacity: 0.3; background: #28a745; }
+
+        /* ハンドル(≡)の設定 */
+        .drag-handle {
+            position: absolute; top: 5px; left: 5px; width: 30px; height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.5); color: #fff; border-radius: 4px;
+            cursor: grab; z-index: 20; font-size: 18px; user-select: none;
+        }
 
         .delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; z-index: 11; }
 
@@ -144,7 +152,7 @@
 
 <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
 
-<div class="section-title" style="color:var(--secondary-text)">👥 メンバー一覧 (ドラッグで並び替え)</div>
+<div class="section-title" style="color:var(--secondary-text)">👥 メンバー一覧 (⠿部分で並び替え)</div>
 <div id="allGrid" class="grid"></div>
 
 <div class="admin-panel">
@@ -164,7 +172,7 @@
 </div>
 
 <script>
-const API_KEY = 'AIzaSyA5kYu8QVV-7_We8sCgjVvYkxcFTQ_FeoU';
+const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY';
 const NOTIFY_SOUND = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
 
 const defaultChannels = [
@@ -180,7 +188,7 @@ const defaultChannels = [
     {name:"神宮寺ちゃんねる", id:"UCou8IVB8jJPk56H0farYQdA", twitterId:"jinguji777ch", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ff0000"},
     {name:"カズクラ", id:"UCu3Mp1ZimtNvyA-bcfo9VrQ", twitterId:"kazuch0924", twitchId:"", tiktokId:"super_kazukura", instaId:"kazuch0924", discordUrl:"", color:"#ff0000"},
     {name:"たいたい", id:"UCds-nvoKCcvixVXJ_54QcbQ", twitterId:"taitaiMEN1997", twitchId:"taitai19970904", tiktokId:"", instaId:"", discordUrl:"", color:"#00ccff"},
-    {name:"岐阜のこみちん", id:"UCw4frqkotySLjJ_CFZR5-7w", twitterId:"komichin0704", twitchId:"", tiktokId:"", instaId:"komichin0704", discordUrl:"", color:"#ffcc00"},
+    {name:"岐阜のこみちん", id:"UCw4frqkotySLjJ_CFZR5-7w", twitterId:"komichin0704", twitterId:"komichin0704", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffcc00"},
     {name:"ナナホシナナ", id:"UCncsOsnMBAAaYb6WidBYIDw", twitterId:"nanahoshinana77", twitchId:"nanahoshinana77", tiktokId:"", instaId:"", discordUrl:"", color:"#ff33ff"},
     {name:"月成るくす", id:"UCP9rcDSyTRtnu8EsG2CmLMg", twitterId:"Tsukinari_Lux_", twitchId:"", tiktokId:"", instaId:"tsukinarilux", discordUrl:"", color:"#ffffcc"},
     {name:"メッス", id:"UCkJeBcOPRBs5bri5B3sFgVg", twitterId:"messu_009", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#333333"},
@@ -216,8 +224,10 @@ function init() {
     const saved = localStorage.getItem('custom_channels');
     channels = saved ? JSON.parse(saved) : [...defaultChannels];
 
+    // ハンドル制(handleオプション)でSortableを初期化
     new Sortable(document.getElementById('allGrid'), {
         animation: 150,
+        handle: '.drag-handle',
         ghostClass: 'sortable-ghost',
         onEnd: function() {
             const newOrder = [];
@@ -297,8 +307,10 @@ function renderGrids(chInfoMap, vItems) {
             ? `${isLive ? '<div class="live-badge">LIVE</div>' : ''}<img class="thumb" src="${lastV.snippet.thumbnails.medium.url}">`
             : `<div class="thumb-bg" style="background:${ch.color}"></div><img class="thumb-profile" src="${chInfo.icon}">`;
 
+        // メンバー一覧のみハンドルを表示
         const card = `
         <div class="card ${isLive?'is-live':''}" data-id="${ch.id}">
+            <div class="drag-handle">⠿</div>
             <button class="delete-btn" onclick="deleteChannel('${ch.id}')">×</button>
             <a href="https://youtube.com/watch?v=${lastV?.id || ''}" target="_blank" style="text-decoration:none; color:inherit;">
                 <div class="thumb-wrap">${media}</div>
