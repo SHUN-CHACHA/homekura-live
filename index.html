@@ -65,7 +65,6 @@
         .progress-container { width: 100%; height: 3px; background: rgba(128,128,128,0.2); position: relative; overflow: hidden; }
         #progress-bar { width: 100%; height: 100%; background: var(--accent-green); transition: width 1s linear; }
 
-        /* セクションタイトル：影を追加して視認性をアップ */
         .section-title { 
             max-width: 1400px; margin: 20px auto 10px; padding: 0 10px; font-size: 14px; font-weight: bold; 
             text-shadow: 1px 1px 1px rgba(0,0,0,0.8), -1px -1px 1px rgba(0,0,0,0.8);
@@ -110,6 +109,9 @@
         .btn-reserve.active { background: var(--accent-yellow); color: #000 !important; font-weight: bold; }
 
         .admin-panel { max-width: 1400px; margin: 30px auto; padding: 15px; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color); backdrop-filter: blur(10px); color: inherit; }
+        .admin-panel h3 { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+        .admin-note { font-size: 11px; font-weight: normal; color: var(--secondary-text); }
+
         .input-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; align-items: center; }
         .input-group input[type="text"], .input-group input[type="file"] { background: rgba(128,128,128,0.1); border: 1px solid var(--border-color); color: inherit; padding: 8px; border-radius: 4px; flex: 1; min-width: 120px; font-size: 13px; }
 
@@ -146,7 +148,10 @@
 </div>
 
 <div class="admin-panel">
-    <h3 style="font-size: 16px; margin-top: 0;">🎨 デザイン・配信者設定</h3>
+    <h3 style="font-size: 16px; margin-top: 0;">
+        🎨 デザイン・配信者設定
+        <span class="admin-note">＊自分の好きな配信者を追加したり、この画面の色をカスタマイズできます。</span>
+    </h3>
     
     <div class="input-group">
         <label style="font-size: 12px;">背景色: <input type="color" id="bg-color-picker" oninput="applyDesign()"></label>
@@ -183,16 +188,16 @@
 </div>
 
 <script>
+// JavaScript部分は変更なし（中略）
 const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY';
 
-// デフォルトの配信者リスト（中略なしで維持）
 const defaultChannels = [
     {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29", twitchId:"maguro29game", tiktokId:"", instaId:"", discordUrl:"https://discord.gg/bRuT74X7sS", color:"#ff9900"},
     {name:"じゃじゃーん菊地", id:"UCi2kiw8hMo0vMAh5lXiafug", twitterId:"kikuchidaisuke", twitchId:"", tiktokId:"jajakiku", instaId:"", discordUrl:"", color:"#ffff00"},
     {name:"さかいさんだー", id:"UCuk8ABJTVWiApYlEojW_QrA", twitterId:"Sakai_Thunder", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ff00ff"},
     {name:"Ｍさん", id:"UCGK0iFuXhfA5VnL64xiKEmQ", twitterId:"maikura_souti", twitchId:"msan_no_nitizyou", tiktokId:"msan_official", instaId:"", discordUrl:"", color:"#00ffff"},
     {name:"タツナミ先生", id:"UCedenULTLYf3DanflEXdRCQ", twitterId:"tatsunami", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#00ff00"},
-    {name:"神近", id:"UCdLe2q91fJkN9GEyDvItp-w", twitterId:"t_kamichika", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
+    {name:"神近", id:"UCdLe2q91fJkN9GEyDvItp-w", twitterId:"t_kamichika", twitterId:"t_kamichika", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
     {name:"しろくる", id:"UCTl5XpFddyDsj5woStUPu0w", twitterId:"sirokuru_", twitchId:"sirokuru", tiktokId:"sirokuru", instaId:"", discordUrl:"", color:"#ffffff"},
     {name:"たにし", id:"UCiC8VCiSLD3mxoO-QFKQnBQ", twitterId:"tanishi_manbo", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#0000ff"},
     {name:"凸もり", id:"UCdN9GjPrqhcrzE27eWNNjxg", twitterId:"mk_2_totsu", twitchId:"totsumori", tiktokId:"", instaId:"", discordUrl:"", color:"#888888"},
@@ -205,7 +210,7 @@ const defaultChannels = [
     {name:"メッス", id:"UCkJeBcOPRBs5bri5B3sFgVg", twitterId:"messu_009", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#333333"},
     {name:"よいよい", id:"UCzk-vAIbo3iVBGTNaJQS2qQ", twitterId:"yoiy0i", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccff00"},
     {name:"うえまさ", id:"UCIBDdDXnViOgN5tCpfX7NOA", twitterId:"uema5aCh", twitchId:"", tiktokId:"", instaId:"uema5a", discordUrl:"", color:"#9900ff"},
-    {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA", twitterId:"Kunashiki_Lin_", twitterId:"Kunashiki_Lin_", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
+    {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA", twitterId:"Kunashiki_Lin_", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
     {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"VT_InunoHaru", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccffcc"},
     {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ", twitterId:"komari_yuki", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
     {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA", twitterId:"pokonyan1185", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#00ff00"},
