@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>久那式ルーレット - 究極完全版</title>
+    <style>
+        :root { --main-color: #ffcc00; }
+        body { font-family: 'Zen Maru Gothic', sans-serif; background: #fff5e6; margin: 0; padding: 0; color: #333; overflow: hidden; }
+        .main-layout { display: flex; height: 100vh; width: 100vw; }
+        
+        .section-base { 
+            height: 100%; display: flex; flex-direction: column; box-sizing: border-box; 
+            background-color: #ffffff; background-position: center; 
+            background-repeat: no-repeat; overflow-y: auto; transition: background 0.2s;
+        }
+
+        .list-section { width: 250px; flex-shrink: 0; padding: 25px; border-right: 4px dashed var(--main-color); }
+        textarea { flex-grow: 1; padding: 15px; border-radius: 15px; border: 3px solid var(--main-color); font-size: 20px; resize: none; width: 100%; box-sizing: border-box; font-weight: bold; outline: none; background: rgba(255,255,255,0.8); }
+        
+        .roulette-section { width: 500px; flex-shrink: 0; align-items: center; padding: 20px; border-right: 4px dashed var(--main-color); }
+        #displayTitle, #result { font-size: 32px; font-weight: 900; color: #ff5500; text-align: center; min-height: 50px; text-shadow: 2px 2px 0px #fff; margin-bottom: 20px; }
+        #result { margin-top: 20px; margin-bottom: 0; }
+
+        .roulette-container { text-align: center; position: relative; width: 400px; height: 400px; margin-bottom: 80px; }
+        canvas { border: 10px solid #333; border-radius: 50%; background: white; box-shadow: 0 10px 0px #222; }
+        .pointer { width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 35px solid #ff3300; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); z-index: 10; filter: drop-shadow(2px 2px 0px #fff); }
+        
+        button { cursor: pointer; border: none; border-radius: 50px; font-weight: 900; transition: 0.1s; box-shadow: 0 5px 0px rgba(0,0,0,0.1); }
+        button:active { transform: translateY(2px); box-shadow: 0 2px 0px rgba(0,0,0,0.1); }
+        .btn-start { background: #4CAF50; color: white; width: 100%; padding: 15px; font-size: 22px; margin-bottom: 10px; }
+        .btn-stop { background: #f44336; color: white; width: 100%; padding: 15px; font-size: 22px; }
+
+        .image-section { position: relative; flex-grow: 1; min-width: 300px; }
+        .resizer { position: absolute; left: 0; top: 0; width: 12px; height: 100%; background: var(--main-color); cursor: col-resize; z-index: 20; }
+        .preview-grid { display: flex; flex-wrap: wrap; gap: 15px; padding: 25px; }
+        
+        .image-card { position: relative; width: 120px; background: #fff; padding: 8px; border-radius: 12px; border: 3px solid #333; box-shadow: 5px 5px 0px #333; }
+        .image-card img { width: 100%; border-radius: 6px; display: block; }
+        .delete-btn { position: absolute; top: -10px; right: -10px; width: 28px; height: 28px; background: #ff4444; color: white; border: 3px solid #333; border-radius: 50%; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 30; }
+
+        .controls-group { position: fixed; right: 25px; bottom: 25px; z-index: 1000; display: flex; gap: 15px; }
+        .btn-wrapper { position: relative; }
+        .circle-btn { width: 60px; height: 60px; border-radius: 50%; border: 4px solid #333; box-shadow: 4px 4px 0px #333; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 30px; font-weight: bold; }
+        .help-btn { background: #44ccff; color: white; }
+        .settings-btn { background: var(--main-color); color: #333; }
+        .tooltip { visibility: hidden; background: #333; color: #fff; text-align: center; padding: 5px 10px; border-radius: 6px; position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%); opacity: 0; transition: 0.3s; font-size: 12px; white-space: nowrap; }
+        .btn-wrapper:hover .tooltip { visibility: visible; opacity: 1; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(3px); }
+        .modal-window { background: #fff; width: 650px; max-height: 85vh; border-radius: 30px; padding: 30px; border: 6px solid #333; overflow-y: auto; }
+        .tab-nav { display: flex; gap: 8px; margin-bottom: 15px; }
+        .tab-btn { padding: 8px 12px; font-size: 13px; background: #f0f0f0; border: 2px solid #333; border-radius: 10px; cursor: pointer; }
+        .tab-btn.active { background: var(--main-color); font-weight: bold; }
+        .tab-content { display: none; flex-direction: column; gap: 10px; }
+        .tab-content.active { display: flex; }
+        .setting-item { font-size: 13px; background: #fafafa; border-radius: 12px; padding: 12px; border: 2px solid #eee; margin-bottom: 5px; }
+        .color-code-input { width: 75px; padding: 4px; border: 2px solid #333; border-radius: 5px; font-family: monospace; }
+        
+        .guide-item { margin-bottom: 15px; border-bottom: 2px dashed #eee; padding-bottom: 10px; }
+        .guide-title { font-weight: 900; color: #ff5500; font-size: 16px; margin-bottom: 5px; }
+        .guide-text { font-size: 13px; line-height: 1.5; color: #444; }
+        .mini-btn-red { padding: 4px 10px; font-size: 11px; background: #ffaaaa; border: 1px solid #ff4444; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="main-layout">
+    <div id="listSection" class="section-base list-section">
+        <textarea id="names" oninput="saveAll(); drawWheel();">参加者A
+参加者B
+参加者C
+参加者D</textarea>
+    </div>
+
+    <div id="rouletteSection" class="section-base roulette-section">
+        <div id="displayTitle">久那式ルーレット</div>
+        <div class="roulette-container">
+            <div class="pointer"></div>
+            <canvas id="wheel" width="400" height="400"></canvas>
+        </div>
+        <button id="startBtn" class="btn-start" onclick="startSpin()">まわす！</button>
+        <button id="stopBtn" class="btn-stop" onclick="stopSpin()" disabled>とめる！</button>
+        <div id="result"></div>
+    </div>
+
+    <div id="imageSection" class="section-base image-section" ondragover="event.preventDefault()" ondrop="handleDrop(event)">
+        <div class="resizer" id="resizer"></div>
+        <div id="previewGrid" class="preview-grid"></div>
+    </div>
+</div>
+
+<div class="controls-group">
+    <div class="btn-wrapper">
+        <div class="circle-btn help-btn" onclick="toggleModal('helpModal', true)">？</div>
+        <span class="tooltip">機能説明を見る</span>
+    </div>
+    <div class="btn-wrapper">
+        <div class="circle-btn settings-btn" onclick="toggleModal('settingsModal', true)">⚙️</div>
+        <span class="tooltip">設定を開く</span>
+    </div>
+</div>
+
+<div id="settingsModal" class="modal-overlay" onclick="if(event.target==this) toggleModal('settingsModal', false)">
+    <div class="modal-window">
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab(event, 'titleTab')">タイトル</button>
+            <button class="tab-btn" onclick="switchTab(event, 'bgTab')">外観・色</button>
+            <button class="tab-btn" onclick="switchTab(event, 'soundTab')">音量・BGM</button>
+        </div>
+        <div id="titleTab" class="tab-content active">
+            <div class="setting-item">タイトル：<input type="text" id="titleInput" oninput="updateTitle(this.value)" style="width:100%; padding:8px; border:2px solid #333; border-radius:8px;"></div>
+        </div>
+        <div id="bgTab" class="tab-content">
+            <div class="setting-item">テーマカラー：<input type="color" id="themePicker" value="#ffcc00" oninput="syncThemeColor(this.value)"></div>
+            <div id="bgControls"></div>
+        </div>
+        <div id="soundTab" class="tab-content">
+            <div class="setting-item"><b>BGM設定</b><br>ファイル：<input type="file" id="bgmInput" accept="audio/*" onchange="loadBGM(this.files[0])"><br>音量：<input type="range" id="bgmVol" min="0" max="1" step="0.1" value="0.3" oninput="updateBgmVolume()"> <button class="mini-btn-red" onclick="clearBGM()">BGMを消す</button></div>
+            <div class="setting-item"><b>効果音設定</b><br>音量：<input type="range" id="winVol" min="0" max="1" step="0.1" value="0.6"></div>
+        </div>
+        <button onclick="toggleModal('settingsModal', false)" style="margin-top:10px; width:100%; padding:10px; background:#eee; border:2px solid #333; border-radius:10px; cursor:pointer; font-weight:bold;">設定を閉じる</button>
+    </div>
+</div>
+
+<div id="helpModal" class="modal-overlay" onclick="if(event.target==this) toggleModal('helpModal', false)">
+    <div class="modal-window">
+        <h2 style="text-align:center; color:#ff5500; font-size:24px;">📖 全機能ガイド</h2>
+        <div class="guide-item"><div class="guide-title">1. 参加者リスト（左側エリア）</div><div class="guide-text"><b>リアルタイム反映:</b> 名前を1行ずつ入力するだけで即座に反映。<br><b>自由な編集:</b> 追加・削除・書き換えが可能。</div></div>
+        <div class="guide-item"><div class="guide-title">2. ルーレット本体（中央エリア）</div><div class="guide-text"><b>スムーズな回転:</b> 「まわす！」で加速、「とめる！」で滑らかに停止。<br><b>針（ポインター）:</b> てっぺんの赤い針で当選を確認。<br><b>自動カラー生成:</b> 人数に合わせて自動で塗り分け。</div></div>
+        <div class="guide-item"><div class="guide-title">3. タイトル＆演出</div><div class="guide-text"><b>カスタムタイトル:</b> ⚙️から変更可能。白縁取りのインパクトデザイン。<br><b>特殊表示:</b> 抽選中は「抽選中...」、当選時はキラキラ（✨）付きでデカデカと表示。</div></div>
+        <div class="guide-item"><div class="guide-title">4. サウンド機能</div><div class="guide-text"><b>カチカチ音（Tick）:</b> 回転中に項目を通過するたびに臨場感ある音が鳴ります。<br><b>ファンファーレ:</b> 当選時にお祝いの和音が鳴ります。<br><b>音量個別調整:</b> ⚙️から効果音・BGMの音量を自由に変更可能。</div></div>
+        <div class="guide-item"><div class="guide-title">5. 画像ドラッグ＆ドロップ（右側エリア）</div><div class="guide-text"><b>簡単追加:</b> 画像をエリアにポイッとドロップしてカード形式で追加。<br><b>個別削除:</b> カード右上の「×」ボタンで消去。</div></div>
+        <div class="guide-item"><div class="guide-title">6. レイアウト調整機能</div><div class="guide-text"><b>リサイズ:</b> 黄色い仕切り線をマウスで掴んで、エリアの広さを自由に変更。</div></div>
+        <div class="guide-item"><div class="guide-title">7. 背景カスタマイズ</div><div class="guide-text"><b>エリア別設定:</b> 3エリア個別に背景色（カラーコード指定可）・画像を設定可能。<br><b>表示モード:</b> 中央・全画面・フィット・繰り返しから選択。<br><b>リセット:</b> 「消す」ボタンで元の白背景に戻せます。</div></div>
+        <div class="guide-item"><div class="guide-title">8. テーマ＆保存</div><div class="guide-text"><b>テーマカラー:</b> 全体のイメージカラーを一括変更。<br><b>自動セーブ:</b> 全ての設定はブラウザに保存され、次回も続きから使えます。</div></div>
+        <button onclick="toggleModal('helpModal', false)" style="width:100%; padding:15px; background:var(--main-color); border:4px solid #333; border-radius:15px; font-weight:900; cursor:pointer;">閉じる</button>
+    </div>
+</div>
+
+<script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let bgmBuffer = null, bgmSource = null, bgmGainNode = audioCtx.createGain();
+    bgmGainNode.connect(audioCtx.destination);
+
+    function loadBGM(file) { if(!file) return; const r = new FileReader(); r.onload = e => audioCtx.decodeAudioData(e.target.result, b => { bgmBuffer = b; }); r.readAsArrayBuffer(file); }
+    function playBGM() { if(bgmBuffer) { if(bgmSource) bgmSource.stop(); bgmSource = audioCtx.createBufferSource(); bgmSource.buffer = bgmBuffer; bgmSource.loop = true; bgmSource.connect(bgmGainNode); bgmSource.start(0); } }
+    function stopBGM() { if(bgmSource) { bgmSource.stop(); bgmSource = null; } }
+    function updateBgmVolume() { bgmGainNode.gain.value = document.getElementById('bgmVol').value; }
+    function clearBGM() { stopBGM(); bgmBuffer = null; document.getElementById('bgmInput').value = ""; }
+
+    function playTick() {
+        const v = document.getElementById('winVol').value * 0.15;
+        const osc = audioCtx.createOscillator(); const g = audioCtx.createGain();
+        osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
+        g.gain.setValueAtTime(v, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+        osc.connect(g); g.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+    }
+    
+    function playWinSound() {
+        const v = document.getElementById('winVol').value * 0.2;
+        [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+            const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+            o.frequency.setValueAtTime(f, audioCtx.currentTime + i * 0.1);
+            g.gain.setValueAtTime(0, audioCtx.currentTime + i * 0.1);
+            g.gain.linearRampToValueAtTime(v, audioCtx.currentTime + i * 0.1 + 0.05);
+            g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.1 + 0.8);
+            o.connect(g); g.connect(audioCtx.destination); o.start(audioCtx.currentTime + i * 0.1); o.stop(audioCtx.currentTime + i * 0.1 + 0.8);
+        });
+    }
+
+    const canvas = document.getElementById('wheel'), ctx = canvas.getContext('2d');
+    const textarea = document.getElementById('names'), resultDiv = document.getElementById('result');
+    let angle = 0, speed = 0, isSpinning = false, isStopping = false, lastSeg = -1;
+
+    function drawWheel() {
+        const names = textarea.value.split('\n').filter(n => n.trim() !== "");
+        ctx.clearRect(0, 0, 400, 400); if (names.length === 0) return;
+        const arc = (2 * Math.PI) / names.length;
+        ctx.save(); ctx.translate(200, 200); ctx.rotate(angle);
+        names.forEach((name, i) => {
+            ctx.fillStyle = `hsl(${(i * 360 / names.length)}, 75%, 65%)`;
+            ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, 190, i * arc, (i + 1) * arc); ctx.fill();
+            ctx.save(); ctx.rotate(i * arc + arc / 2); ctx.textAlign = "right";
+            ctx.font = "bold 18px sans-serif"; ctx.strokeStyle = "#000"; ctx.lineWidth = 4; ctx.strokeText(name, 175, 8); ctx.fillStyle = "#fff"; ctx.fillText(name, 175, 8);
+            ctx.restore();
+        }); ctx.restore();
+        const cur = Math.floor((((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)) / arc);
+        if (cur !== lastSeg && isSpinning) { playTick(); lastSeg = cur; }
+    }
+    
+    function rotate() { if (!isSpinning) return; angle += speed; if (isStopping) { speed *= 0.985; if (speed < 0.002) { speed = 0; isSpinning = false; isStopping = false; stopBGM(); playWinSound(); finishSpin(); return; } } drawWheel(); requestAnimationFrame(rotate); }
+    function startSpin() { if (audioCtx.state === 'suspended') audioCtx.resume(); isSpinning = true; isStopping = false; speed = 0.25; resultDiv.innerText = "抽選中..."; document.getElementById('startBtn').disabled = true; document.getElementById('stopBtn').disabled = false; playBGM(); rotate(); }
+    function stopSpin() { isStopping = true; document.getElementById('stopBtn').disabled = true; }
+    function finishSpin() {
+        const names = textarea.value.split('\n').filter(n => n.trim() !== "");
+        const idx = Math.floor((( (Math.PI * 1.5) - angle ) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) / (2 * Math.PI / names.length)) % names.length;
+        resultDiv.innerHTML = "✨ " + names[idx] + " ✨"; document.getElementById('startBtn').disabled = false;
+    }
+
+    function setBgStyle(id, prop, val) {
+        const el = document.getElementById(id);
+        if (prop === 'color') {
+            el.style.backgroundColor = val;
+            const p = document.getElementById(`cp_${id}`), t = document.getElementById(`ct_${id}`);
+            if(p) p.value = val; if(t) t.value = val.toUpperCase();
+        }
+        if (prop === 'image') el.style.backgroundImage = val ? `url(${URL.createObjectURL(val)})` : 'none';
+        if (prop === 'mode') {
+            const s = el.style;
+            if (val === 'cover') { s.backgroundSize = 'cover'; s.backgroundRepeat = 'no-repeat'; s.backgroundPosition = 'center'; }
+            else if (val === 'contain') { s.backgroundSize = 'contain'; s.backgroundRepeat = 'no-repeat'; s.backgroundPosition = 'center'; }
+            else if (val === 'repeat') { s.backgroundSize = 'auto'; s.backgroundRepeat = 'repeat'; s.backgroundPosition = 'top left'; }
+            else { s.backgroundSize = 'auto'; s.backgroundRepeat = 'no-repeat'; s.backgroundPosition = 'center'; }
+        }
+        saveAll();
+    }
+
+    function initBgControls() {
+        const container = document.getElementById('bgControls');
+        [{id:'listSection',n:'左'},{id:'rouletteSection',n:'中'},{id:'imageSection',n:'右'}].forEach(s=>{
+            const item = document.createElement('div'); item.className = 'setting-item';
+            item.innerHTML = `<b>${s.n}背景</b> 色: <input type="color" id="cp_${s.id}" value="#ffffff" oninput="setBgStyle('${s.id}','color',this.value)"> <input type="text" id="ct_${s.id}" class="color-code-input" value="#FFFFFF" onchange="setBgStyle('${s.id}','color',this.value)"><br>画像: <input type="file" onchange="setBgStyle('${s.id}','image',this.files[0])"> 表示: <select onchange="setBgStyle('${s.id}','mode',this.value)"><option value="center">中央</option><option value="cover">全画面</option><option value="contain">フィット</option><option value="repeat">繰り返し</option></select> <button class="mini-btn-red" onclick="setBgStyle('${s.id}','image',null)">消す</button>`;
+            container.appendChild(item);
+        });
+    }
+
+    function toggleModal(id, s) { document.getElementById(id).style.display = s ? 'flex' : 'none'; }
+    function switchTab(e, id) { document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(id).classList.add('active'); e.target.classList.add('active'); }
+    function updateTitle(val) { document.getElementById('displayTitle').innerText = val; saveAll(); }
+    function syncThemeColor(c) { document.documentElement.style.setProperty('--main-color', c); saveAll(); }
+    function handleDrop(e) { e.preventDefault(); Array.from(e.dataTransfer.files).forEach(f => {
+        const card = document.createElement('div'); card.className = 'image-card';
+        card.innerHTML = `<img src="${URL.createObjectURL(f)}"><div class="delete-btn" onclick="this.parentElement.remove()">×</div>`;
+        document.getElementById('previewGrid').appendChild(card);
+    }); }
+    function saveAll() { const d = { title: document.getElementById('displayTitle').innerText, names: textarea.value }; localStorage.setItem('kuna_final_v12', JSON.stringify(d)); }
+    function loadAll() { const saved = localStorage.getItem('kuna_final_v12'); if (saved) { const d = JSON.parse(saved); textarea.value = d.names; updateTitle(d.title); } drawWheel(); }
+
+    const imgSec = document.getElementById('imageSection'), resizer = document.getElementById('resizer');
+    let isResizing = false; resizer.onmousedown = () => isResizing = true; window.onmousemove = e => { if(isResizing) imgSec.style.width = (window.innerWidth - e.clientX) + 'px'; }; window.onmouseup = () => isResizing = false;
+
+    initBgControls(); loadAll(); updateBgmVolume();
+</script>
+</body>
+</html>
