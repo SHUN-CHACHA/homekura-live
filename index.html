@@ -52,7 +52,25 @@
             backdrop-filter: blur(10px);
         }
 
-        .header-logo { height: 48px; width: auto; margin-bottom: 10px; }
+        /* リンク追加のためのコンテナ */
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .header-logo { height: 48px; width: auto; }
+        
+        #roulette-link {
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--text-color);
+            transition: opacity 0.2s;
+        }
+        #roulette-link:hover { opacity: 0.7; }
+
         .header-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; }
 
         .btn-tool {
@@ -126,7 +144,10 @@
 
 <div class="content-overlay">
 <header>
-    <img src="logo.png" alt="homeクラ" class="header-logo">
+    <div class="header-top">
+        <img src="logo.png" alt="homeクラ" class="header-logo">
+        <a href="https://shun-chacha.github.io/homekura-live/roulette.html" id="roulette-link" target="_blank">旬茶作　ルーレット</a>
+    </div>
     <div class="header-controls">
         <button id="refresh-btn" class="btn-tool" onclick="manualRefresh()">更新</button>
         <div id="timer">Next Update: --:--</div>
@@ -188,7 +209,6 @@
 </div>
 
 <script>
-// JavaScript部分は変更なし（中略）
 const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY';
 
 const defaultChannels = [
@@ -197,7 +217,7 @@ const defaultChannels = [
     {name:"さかいさんだー", id:"UCuk8ABJTVWiApYlEojW_QrA", twitterId:"Sakai_Thunder", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ff00ff"},
     {name:"Ｍさん", id:"UCGK0iFuXhfA5VnL64xiKEmQ", twitterId:"maikura_souti", twitchId:"msan_no_nitizyou", tiktokId:"msan_official", instaId:"", discordUrl:"", color:"#00ffff"},
     {name:"タツナミ先生", id:"UCedenULTLYf3DanflEXdRCQ", twitterId:"tatsunami", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#00ff00"},
-    {name:"神近", id:"UCdLe2q91fJkN9GEyDvItp-w", twitterId:"t_kamichika", twitterId:"t_kamichika", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
+    {name:"神近", id:"UCdLe2q91fJkN9GEyDvItp-w", twitterId:"t_kamichika", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
     {name:"しろくる", id:"UCTl5XpFddyDsj5woStUPu0w", twitterId:"sirokuru_", twitchId:"sirokuru", tiktokId:"sirokuru", instaId:"", discordUrl:"", color:"#ffffff"},
     {name:"たにし", id:"UCiC8VCiSLD3mxoO-QFKQnBQ", twitterId:"tanishi_manbo", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#0000ff"},
     {name:"凸もり", id:"UCdN9GjPrqhcrzE27eWNNjxg", twitterId:"mk_2_totsu", twitchId:"totsumori", tiktokId:"", instaId:"", discordUrl:"", color:"#888888"},
