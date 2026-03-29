@@ -69,7 +69,11 @@
             text-shadow: 1px 1px 1px rgba(0,0,0,0.8), -1px -1px 1px rgba(0,0,0,0.8);
         }
         
+        /* カードグリッド (LIVE/新着用) */
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 0 8px 20px; max-width: 1400px; margin: auto; }
+        
+        /* メンバー一覧用スリムリスト */
+        .list-container { display: flex; flex-direction: column; gap: 4px; padding: 0 8px 20px; max-width: 1400px; margin: auto; }
         
         .card { 
             background: var(--card-bg); border-radius: 8px; overflow: hidden; 
@@ -79,13 +83,17 @@
         .card.is-live { border-color: var(--accent-green) !important; box-shadow: 0 0 15px rgba(40,167,69,0.3); }
         .card.is-new { border-color: var(--accent-blue) !important; }
 
-        .drag-handle {
-            position: absolute; top: 5px; left: 5px; width: 30px; height: 30px;
-            display: flex; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.5); color: #fff; border-radius: 4px; cursor: grab; z-index: 20; font-size: 18px;
+        /* スリム行スタイル */
+        .row-item {
+            background: var(--card-bg); border-radius: 6px; padding: 6px 10px;
+            display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-color);
+            position: relative; backdrop-filter: blur(5px);
         }
 
-        .delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; z-index: 11; }
+        .drag-handle {
+            width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.3); color: #fff; border-radius: 4px; cursor: grab; font-size: 16px;
+        }
 
         .thumb-wrap { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000; }
         .thumb-wrap.is-shorts { aspect-ratio: 9 / 16; max-height: 300px; margin: 0 auto; }
@@ -93,6 +101,10 @@
         .thumb-bg { position: absolute; width: 100%; height: 100%; opacity: 0.3; filter: blur(20px); }
         .thumb-profile { width: 45%; height: auto; border-radius: 50%; position: relative; z-index: 2; border: 2px solid rgba(255,255,255,0.2); }
         
+        /* リスト用ミニアイコン */
+        .mini-icon { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; }
+        .row-name { font-weight: bold; font-size: 13px; flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
         .badge-new { position: absolute; top: 8px; left: 40px; background: var(--accent-blue); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10; }
         .badge-live { position: absolute; top: 8px; left: 40px; background: var(--accent-green); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10; }
 
@@ -101,13 +113,16 @@
         .title { font-size: 11px; line-height: 1.2; height: 2.4em; overflow: hidden; color: inherit; }
 
         .btn-area { padding: 0 8px 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+        .row-btns { display: flex; gap: 4px; flex-shrink: 0; }
+        
         .btn { display: block; text-align: center; text-decoration: none; font-size: 10px; padding: 5px 0; border-radius: 4px; color: white !important; background: #333; }
+        .btn-mini { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; font-weight: bold; font-size: 11px; }
         .btn-yt { background: #c00; }
         .btn-tw { background: #6441a5; }
-        .btn-insta { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
         .btn-tiktok { background: #000; border: 1px solid #444; }
         .btn-discord { background: #5865F2; }
-        .btn-reserve.active { background: var(--accent-yellow); color: #000 !important; font-weight: bold; }
+
+        .delete-btn-row { background: rgba(217, 83, 79, 0.2); color: #fff; border: 1px solid #d9534f; border-radius: 4px; width: 24px; height: 32px; cursor: pointer; font-size: 16px; }
 
         .admin-panel { max-width: 1400px; margin: 30px auto; padding: 15px; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color); backdrop-filter: blur(10px); color: inherit; }
         .admin-panel h3 { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
@@ -118,8 +133,8 @@
 
         @media (min-width: 768px) {
             .grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-            .name, .title { font-size: 14px; }
-            .btn { font-size: 12px; }
+            .row-name { font-size: 15px; }
+            .btn-mini { width: 60px; font-size: 12px; }
         }
     </style>
 </head>
@@ -149,14 +164,14 @@
     <div id="liveGrid" class="grid"></div>
 </div>
 
-<div id="newSection" style="display: none;">
-    <div class="section-title" style="color:var(--accent-blue)">🎬 【24時間以内の新着（動画・ショート）】</div>
-    <div id="newGrid" class="grid"></div>
-</div>
-
 <div id="upcomingSection" style="display: none;">
     <div class="section-title" style="color:var(--accent-yellow)">🟡 配信予定のメンバー</div>
     <div id="upcomingGrid" class="grid"></div>
+</div>
+
+<div id="newSection" style="display: none;">
+    <div class="section-title" style="color:var(--accent-blue)">🎬 【24時間以内の新着（動画・ショート）】</div>
+    <div id="newGrid" class="grid"></div>
 </div>
 
 <div class="admin-panel">
@@ -179,20 +194,20 @@
     <div class="input-group">
         <input type="text" id="new-name" placeholder="名前">
         <input type="text" id="new-id" placeholder="YouTube ID">
-        <input type="text" id="new-twitter" placeholder="X (旧Twitter) ID">
+        <input type="text" id="new-twitter" placeholder="X ID">
         <input type="text" id="new-twitch" placeholder="Twitch ID">
     </div>
     <div class="input-group">
         <input type="text" id="new-tiktok" placeholder="TikTok ID">
         <input type="text" id="new-insta" placeholder="Instagram ID">
-        <input type="text" id="new-discord" placeholder="Discord 招待URL">
+        <input type="text" id="new-discord" placeholder="Discord URL">
         <input type="color" id="new-color" value="#ffffff" style="width: 40px; height: 38px; border:none; padding:0; cursor:pointer;">
         <button class="btn-tool" onclick="addChannel()">追加</button>
     </div>
 </div>
 
 <div class="section-title">👥 メンバー一覧 (⠿で並び替え)</div>
-<div id="allGrid" class="grid"></div>
+<div id="allList" class="list-container"></div>
 
 </div>
 
@@ -283,11 +298,11 @@ function init() {
 
     const saved = localStorage.getItem('custom_channels');
     channels = saved ? JSON.parse(saved) : [...defaultChannels];
-    new Sortable(document.getElementById('allGrid'), {
+    new Sortable(document.getElementById('allList'), {
         animation: 150, handle: '.drag-handle',
         onEnd: () => {
             const newOrder = [];
-            document.querySelectorAll('#allGrid .card').forEach(el => {
+            document.querySelectorAll('#allList .row-item').forEach(el => {
                 const ch = channels.find(c => c.id === el.getAttribute('data-id'));
                 if(ch) newOrder.push(ch);
             });
@@ -333,7 +348,6 @@ function renderGrids(chInfoMap, vItems) {
         const status = lastV?.snippet.liveBroadcastContent || 'none';
         const isLive = status === 'live';
         const isUpcoming = status === 'upcoming';
-        
         const pubDate = lastV ? new Date(lastV.snippet.publishedAt) : null;
         const isNew = lastV && !isLive && !isUpcoming && (now - pubDate < 24 * 60 * 60 * 1000);
         const isShorts = lastV && (lastV.snippet.title.includes('#Shorts') || lastV.snippet.description.includes('#Shorts'));
@@ -347,6 +361,7 @@ function renderGrids(chInfoMap, vItems) {
             timeStr = `🆕 新着: ${lastV.snippet.title}`;
         }
 
+        // --- セクション用のカードHTML ---
         const media = (isLive || isUpcoming || isNew)
             ? `${isLive ? '<div class="badge-live">LIVE</div>' : isNew ? '<div class="badge-new">NEW</div>' : ''}
                <img class="thumb" src="${lastV.snippet.thumbnails.maxres?.url || lastV.snippet.thumbnails.medium.url}">`
@@ -354,8 +369,7 @@ function renderGrids(chInfoMap, vItems) {
 
         const card = `
         <div class="card ${isLive?'is-live':''} ${isNew?'is-new':''}" data-id="${ch.id}">
-            <div class="drag-handle">⠿</div>
-            <button class="delete-btn" onclick="deleteChannel('${ch.id}')">×</button>
+            <div class="drag-handle" style="position:absolute; top:5px; left:5px; z-index:20;">⠿</div>
             <a href="https://youtube.com/watch?v=${lastV?.id || ''}" target="_blank" style="text-decoration:none; color:inherit;">
                 <div class="thumb-wrap ${isShorts?'is-shorts':''}">${media}</div>
                 <div class="info">
@@ -366,25 +380,38 @@ function renderGrids(chInfoMap, vItems) {
             <div class="btn-area">
                 <a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>
                 ${ch.twitterId ? `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>` : ''}
-                ${ch.twitchId ? `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-tw">Twitch</a>` : ''}
-                ${ch.tiktokId ? `<a href="https://www.tiktok.com/@${ch.tiktokId.replace('@','')}" target="_blank" class="btn btn-tiktok">TikTok</a>` : ''}
-                ${isUpcoming ? `<button class="btn btn-reserve ${reservedVideos.includes(lastV.id)?'active':''}" style="grid-column:span 2" onclick="toggleReserve('${lastV.id}')">🔔 通知予約</button>` : ''}
+                ${isUpcoming ? `<button class="btn btn-reserve ${reservedVideos.includes(lastV?.id)?'active':''}" style="grid-column:span 2" onclick="toggleReserve('${lastV.id}')">🔔 通知予約</button>` : ''}
+            </div>
+        </div>`;
+
+        // --- メンバー一覧用のスリム行HTML ---
+        const row = `
+        <div class="row-item" data-id="${ch.id}">
+            <div class="drag-handle">⠿</div>
+            <img class="mini-icon" src="${chInfo.icon}">
+            <div class="row-name" style="color:${ch.color}">${ch.name}</div>
+            <div class="row-btns">
+                <a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-mini btn-yt">YT</a>
+                ${ch.twitterId ? `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn btn-mini">X</a>` : ''}
+                ${ch.twitchId ? `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-mini btn-tw">Tw</a>` : ''}
+                ${ch.tiktokId ? `<a href="https://www.tiktok.com/@${ch.tiktokId.replace('@','')}" target="_blank" class="btn btn-mini btn-tiktok">Tk</a>` : ''}
+                <button class="delete-btn-row" onclick="deleteChannel('${ch.id}')">×</button>
             </div>
         </div>`;
 
         if (isLive) { htmls.live += card; counts.live++; }
         else if (isNew) { htmls.new += card; counts.new++; }
         else if (isUpcoming) { htmls.upcoming += card; counts.upcoming++; }
-        htmls.all += card;
+        htmls.all += row;
     });
 
     document.getElementById("liveSection").style.display = counts.live ? "block" : "none";
     document.getElementById("liveGrid").innerHTML = htmls.live;
-    document.getElementById("newSection").style.display = counts.new ? "block" : "none";
-    document.getElementById("newGrid").innerHTML = htmls.new;
     document.getElementById("upcomingSection").style.display = counts.upcoming ? "block" : "none";
     document.getElementById("upcomingGrid").innerHTML = htmls.upcoming;
-    document.getElementById("allGrid").innerHTML = htmls.all;
+    document.getElementById("newSection").style.display = counts.new ? "block" : "none";
+    document.getElementById("newGrid").innerHTML = htmls.new;
+    document.getElementById("allList").innerHTML = htmls.all;
 }
 
 function addChannel() {
@@ -406,6 +433,14 @@ function deleteChannel(id) {
         localStorage.setItem('custom_channels', JSON.stringify(channels));
         loadPortal();
     }
+}
+
+function toggleReserve(id) {
+    const idx = reservedVideos.indexOf(id);
+    if (idx > -1) reservedVideos.splice(idx, 1);
+    else reservedVideos.push(id);
+    localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
+    loadPortal();
 }
 
 function manualRefresh() { location.reload(); }
