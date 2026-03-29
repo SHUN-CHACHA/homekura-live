@@ -109,9 +109,12 @@
         .btn-discord { background: #5865F2; }
         .btn-reserve.active { background: var(--accent-yellow); color: #000 !important; font-weight: bold; }
 
-        .admin-panel { max-width: 1400px; margin: 30px auto; padding: 15px; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color); backdrop-filter: blur(10px); }
+        .admin-panel { max-width: 1400px; margin: 30px auto; padding: 15px; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color); backdrop-filter: blur(10px); color: inherit; }
+        .admin-panel h3 { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+        .admin-note { font-size: 11px; font-weight: normal; color: var(--secondary-text); }
+
         .input-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; align-items: center; }
-        .input-group input { background: rgba(128,128,128,0.1); border: 1px solid var(--border-color); color: inherit; padding: 8px; border-radius: 4px; flex: 1; min-width: 120px; font-size: 13px; }
+        .input-group input[type="text"], .input-group input[type="file"] { background: rgba(128,128,128,0.1); border: 1px solid var(--border-color); color: inherit; padding: 8px; border-radius: 4px; flex: 1; min-width: 120px; font-size: 13px; }
 
         @media (min-width: 768px) {
             .grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
@@ -157,13 +160,34 @@
 </div>
 
 <div class="admin-panel">
-    <h3 style="font-size: 16px; margin-top: 0;">🎨 デザイン・配信者設定</h3>
+    <h3 style="font-size: 16px; margin-top: 0;">
+        🎨 デザイン・配信者設定
+        <span class="admin-note">＊自分の好きな配信者を追加したり、カスタマイズできます。</span>
+    </h3>
+    
     <div class="input-group">
         <label style="font-size: 12px;">背景色: <input type="color" id="bg-color-picker" oninput="applyDesign()"></label>
         <input type="file" id="bg-file-input" accept="image/*" onchange="handleFileSelect(this)">
         <input type="text" id="bg-image-url" placeholder="画像URLで指定" onchange="applyDesign()">
         <button class="btn-tool" style="background:#d9534f" onclick="clearBgImage()">背景画像を消す</button>
         <button class="btn-tool" style="background:#555" onclick="resetDesign()">全リセット</button>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
+
+    <h4 style="font-size: 14px; margin-bottom: 10px;">➕ 配信者を追加</h4>
+    <div class="input-group">
+        <input type="text" id="new-name" placeholder="名前">
+        <input type="text" id="new-id" placeholder="YouTube ID">
+        <input type="text" id="new-twitter" placeholder="X (旧Twitter) ID">
+        <input type="text" id="new-twitch" placeholder="Twitch ID">
+    </div>
+    <div class="input-group">
+        <input type="text" id="new-tiktok" placeholder="TikTok ID">
+        <input type="text" id="new-insta" placeholder="Instagram ID">
+        <input type="text" id="new-discord" placeholder="Discord 招待URL">
+        <input type="color" id="new-color" value="#ffffff" style="width: 40px; height: 38px; border:none; padding:0; cursor:pointer;">
+        <button class="btn-tool" onclick="addChannel()">追加</button>
     </div>
 </div>
 
@@ -175,7 +199,6 @@
 <script>
 const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY';
 
-// チャンネルリストは既存のものを継承（省略表記）
 const defaultChannels = [
     {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29", twitchId:"maguro29game", tiktokId:"", instaId:"", discordUrl:"https://discord.gg/bRuT74X7sS", color:"#ff9900"},
     {name:"じゃじゃーん菊地", id:"UCi2kiw8hMo0vMAh5lXiafug", twitterId:"kikuchidaisuke", twitchId:"", tiktokId:"jajakiku", instaId:"", discordUrl:"", color:"#ffff00"},
@@ -195,7 +218,7 @@ const defaultChannels = [
     {name:"メッス", id:"UCkJeBcOPRBs5bri5B3sFgVg", twitterId:"messu_009", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#333333"},
     {name:"よいよい", id:"UCzk-vAIbo3iVBGTNaJQS2qQ", twitterId:"yoiy0i", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccff00"},
     {name:"うえまさ", id:"UCIBDdDXnViOgN5tCpfX7NOA", twitterId:"uema5aCh", twitchId:"", tiktokId:"", instaId:"uema5a", discordUrl:"", color:"#9900ff"},
-    {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA", twitterId:"Kunashiki_Lin_", twitterId:"Kunashiki_Lin_", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
+    {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA", twitterId:"Kunashiki_Lin_", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
     {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"VT_InunoHaru", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccffcc"},
     {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ", twitterId:"komari_yuki", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
     {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA", twitterId:"pokonyan1185", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#00ff00"},
@@ -311,11 +334,8 @@ function renderGrids(chInfoMap, vItems) {
         const isLive = status === 'live';
         const isUpcoming = status === 'upcoming';
         
-        // 新着判定 (24時間以内)
         const pubDate = lastV ? new Date(lastV.snippet.publishedAt) : null;
         const isNew = lastV && !isLive && !isUpcoming && (now - pubDate < 24 * 60 * 60 * 1000);
-        
-        // ショート判定 (簡易: タイトルや説明文に #Shorts があるか、または比率で判定したいがAPIではタイトルチェックが一般的)
         const isShorts = lastV && (lastV.snippet.title.includes('#Shorts') || lastV.snippet.description.includes('#Shorts'));
 
         let timeStr = "OFFLINE";
@@ -347,6 +367,7 @@ function renderGrids(chInfoMap, vItems) {
                 <a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>
                 ${ch.twitterId ? `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>` : ''}
                 ${ch.twitchId ? `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-tw">Twitch</a>` : ''}
+                ${ch.tiktokId ? `<a href="https://www.tiktok.com/@${ch.tiktokId.replace('@','')}" target="_blank" class="btn btn-tiktok">TikTok</a>` : ''}
                 ${isUpcoming ? `<button class="btn btn-reserve ${reservedVideos.includes(lastV.id)?'active':''}" style="grid-column:span 2" onclick="toggleReserve('${lastV.id}')">🔔 通知予約</button>` : ''}
             </div>
         </div>`;
@@ -364,6 +385,27 @@ function renderGrids(chInfoMap, vItems) {
     document.getElementById("upcomingSection").style.display = counts.upcoming ? "block" : "none";
     document.getElementById("upcomingGrid").innerHTML = htmls.upcoming;
     document.getElementById("allGrid").innerHTML = htmls.all;
+}
+
+function addChannel() {
+    const getVal = id => document.getElementById(id).value.trim();
+    const name = getVal('new-name'), id = getVal('new-id');
+    if (!name || !id) { alert("名前とYouTube IDは必須だよ！"); return; }
+    channels.push({
+        name, id, twitterId: getVal('new-twitter'), twitchId: getVal('new-twitch'),
+        tiktokId: getVal('new-tiktok'), instaId: getVal('new-insta'), discordUrl: getVal('new-discord'),
+        color: document.getElementById('new-color').value
+    });
+    localStorage.setItem('custom_channels', JSON.stringify(channels));
+    location.reload();
+}
+
+function deleteChannel(id) {
+    if (confirm("リストから削除するよ？")) {
+        channels = channels.filter(c => c.id !== id);
+        localStorage.setItem('custom_channels', JSON.stringify(channels));
+        loadPortal();
+    }
 }
 
 function manualRefresh() { location.reload(); }
