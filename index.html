@@ -70,7 +70,7 @@
         }
         
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 0 8px 20px; max-width: 1400px; margin: auto; }
-        .list-container { display: flex; flex-direction: column; gap: 4px; padding: 0 8px 20px; max-width: 1400px; margin: auto; }
+        .list-container { display: flex; flex-direction: column; gap: 8px; padding: 0 8px 20px; max-width: 1400px; margin: auto; }
         
         .card { 
             background: var(--card-bg); border-radius: 8px; overflow: hidden; 
@@ -80,11 +80,15 @@
         .card.is-live { border-color: var(--accent-green) !important; box-shadow: 0 0 15px rgba(40,167,69,0.3); }
         .card.is-new { border-color: var(--accent-blue) !important; }
 
+        /* リストアイテムを2段組に変更 */
         .row-item {
-            background: var(--card-bg); border-radius: 6px; padding: 6px 10px;
-            display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-color);
-            position: relative; backdrop-filter: blur(5px); overflow: hidden;
+            background: var(--card-bg); border-radius: 8px; padding: 10px;
+            display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--border-color);
+            position: relative; backdrop-filter: blur(5px);
         }
+
+        .row-top { display: flex; align-items: center; gap: 10px; }
+        .row-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 
         .drag-handle {
             width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
@@ -96,8 +100,8 @@
         .thumb-bg { position: absolute; width: 100%; height: 100%; opacity: 0.3; filter: blur(20px); }
         .thumb-profile { width: 45%; height: auto; border-radius: 50%; position: relative; z-index: 2; border: 2px solid rgba(255,255,255,0.2); }
         
-        .mini-icon { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; }
-        .row-name { font-weight: bold; font-size: 13px; flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mini-icon { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; }
+        .row-name { font-weight: bold; font-size: 15px; flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .badge-new { position: absolute; top: 8px; left: 40px; background: var(--accent-blue); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10; }
         .badge-live { position: absolute; top: 8px; left: 40px; background: var(--accent-green); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10; }
@@ -107,10 +111,10 @@
         .title { font-size: 11px; line-height: 1.2; height: 2.4em; overflow: hidden; color: inherit; }
 
         .btn-area { padding: 0 8px 8px; display: flex; flex-wrap: wrap; gap: 4px; }
-        .row-btns { display: flex; gap: 4px; flex-shrink: 0; align-items: center; }
+        .row-btns { display: flex; gap: 4px; flex-wrap: wrap; flex-grow: 1; }
         
         .btn { flex: 1; min-width: 60px; text-align: center; text-decoration: none; font-size: 10px; padding: 5px 0; border-radius: 4px; color: white !important; background: #333; }
-        .btn-mini { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; font-weight: bold; font-size: 11px; }
+        .btn-mini { min-width: 40px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0 8px; font-weight: bold; font-size: 11px; }
         .btn-yt { background: #c00; }
         .btn-tw { background: #6441a5; }
         .btn-insta { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
@@ -119,19 +123,17 @@
 
         .btn-reserve { flex-basis: 100%; }
 
-        .delete-btn-row { background: rgba(217, 83, 79, 0.2); color: #fff; border: 1px solid #d9534f; border-radius: 4px; width: 24px; height: 32px; cursor: pointer; font-size: 16px; flex-shrink: 0; }
+        .delete-btn-row { background: rgba(217, 83, 79, 0.2); color: #fff; border: 1px solid #d9534f; border-radius: 4px; width: 32px; height: 32px; cursor: pointer; font-size: 18px; flex-shrink: 0; }
 
         .admin-panel { max-width: 1400px; margin: 30px auto; padding: 15px; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color); backdrop-filter: blur(10px); color: inherit; }
         .admin-panel h3 { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-        .admin-note { font-size: 11px; font-weight: normal; color: var(--secondary-text); }
 
         .input-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; align-items: center; }
         .input-group input[type="text"], .input-group input[type="file"] { background: rgba(128,128,128,0.1); border: 1px solid var(--border-color); color: inherit; padding: 8px; border-radius: 4px; flex: 1; min-width: 120px; font-size: 13px; }
 
         @media (min-width: 768px) {
             .grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-            .row-name { font-size: 15px; }
-            .btn-mini { width: 45px; font-size: 12px; }
+            .btn-mini { min-width: 50px; font-size: 12px; }
         }
     </style>
 </head>
@@ -229,10 +231,10 @@ const defaultChannels = [
     {name:"よいよい", id:"UCzk-vAIbo3iVBGTNaJQS2qQ", twitterId:"yoiy0i", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccff00"},
     {name:"うえまさ", id:"UCIBDdDXnViOgN5tCpfX7NOA", twitterId:"uema5aCh", twitchId:"", tiktokId:"", instaId:"uema5a", discordUrl:"", color:"#9900ff"},
     {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA", twitterId:"Kunashiki_Lin_", twitterId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
-    {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"VT_InunoHaru", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccffcc"},
+    {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"VT_InunoHaru", twitterId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccffcc"},
     {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ", twitterId:"komari_yuki", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
-    {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA", twitterId:"pokonyan1185", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#00ff00"},
-    {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"HAOKtR", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#3399ff"}
+    {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA", twitterId:"pokonyan1185", twitterId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#00ff00"},
+    {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"HAOKtR", twitterId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#3399ff"}
 ];
 
 let channels = [];
@@ -365,7 +367,6 @@ function renderGrids(chInfoMap, vItems) {
             timeStr = `🆕 新着: ${lastV.snippet.title}`;
         }
 
-        // カード内のボタン用HTMLを生成
         let cardBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>`;
         if (ch.twitterId) cardBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>`;
         if (ch.twitchId) cardBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-tw">Twitch</a>`;
@@ -392,7 +393,6 @@ function renderGrids(chInfoMap, vItems) {
             </div>
         </div>`;
 
-        // メンバー一覧用のボタン
         let listBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-mini btn-yt" title="YouTube">YT</a>`;
         if (ch.twitterId) listBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn btn-mini" title="X">X</a>`;
         if (ch.twitchId) listBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-mini btn-tw" title="Twitch">Tw</a>`;
@@ -402,11 +402,15 @@ function renderGrids(chInfoMap, vItems) {
 
         const row = `
         <div class="row-item" data-id="${ch.id}">
-            <div class="drag-handle">⠿</div>
-            <img class="mini-icon" src="${chInfo.icon}">
-            <div class="row-name" style="color:${ch.color}">${ch.name}</div>
-            <div class="row-btns">
-                ${listBtnsHtml}
+            <div class="row-top">
+                <div class="drag-handle">⠿</div>
+                <img class="mini-icon" src="${chInfo.icon}">
+                <div class="row-name" style="color:${ch.color}">${ch.name}</div>
+            </div>
+            <div class="row-bottom">
+                <div class="row-btns">
+                    ${listBtnsHtml}
+                </div>
                 <button class="delete-btn-row" onclick="deleteChannel('${ch.id}')">×</button>
             </div>
         </div>`;
