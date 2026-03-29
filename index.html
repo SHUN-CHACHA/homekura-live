@@ -106,16 +106,18 @@
         .name { font-weight: bold; font-size: 11px; margin-bottom: 2px; }
         .title { font-size: 11px; line-height: 1.2; height: 2.4em; overflow: hidden; color: inherit; }
 
-        .btn-area { padding: 0 8px 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+        .btn-area { padding: 0 8px 8px; display: flex; flex-wrap: wrap; gap: 4px; }
         .row-btns { display: flex; gap: 4px; flex-shrink: 0; align-items: center; }
         
-        .btn { display: block; text-align: center; text-decoration: none; font-size: 10px; padding: 5px 0; border-radius: 4px; color: white !important; background: #333; }
+        .btn { flex: 1; min-width: 60px; text-align: center; text-decoration: none; font-size: 10px; padding: 5px 0; border-radius: 4px; color: white !important; background: #333; }
         .btn-mini { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; font-weight: bold; font-size: 11px; }
         .btn-yt { background: #c00; }
         .btn-tw { background: #6441a5; }
         .btn-insta { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
         .btn-tiktok { background: #000; border: 1px solid #444; }
         .btn-discord { background: #5865F2; }
+
+        .btn-reserve { flex-basis: 100%; }
 
         .delete-btn-row { background: rgba(217, 83, 79, 0.2); color: #fff; border: 1px solid #d9534f; border-radius: 4px; width: 24px; height: 32px; cursor: pointer; font-size: 16px; flex-shrink: 0; }
 
@@ -227,7 +229,7 @@ const defaultChannels = [
     {name:"よいよい", id:"UCzk-vAIbo3iVBGTNaJQS2qQ", twitterId:"yoiy0i", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccff00"},
     {name:"うえまさ", id:"UCIBDdDXnViOgN5tCpfX7NOA", twitterId:"uema5aCh", twitchId:"", tiktokId:"", instaId:"uema5a", discordUrl:"", color:"#9900ff"},
     {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA", twitterId:"Kunashiki_Lin_", twitterId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
-    {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"VT_InunoHaru", twitterId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccffcc"},
+    {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"VT_InunoHaru", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccffcc"},
     {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ", twitterId:"komari_yuki", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
     {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA", twitterId:"pokonyan1185", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#00ff00"},
     {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"HAOKtR", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#3399ff"}
@@ -280,20 +282,13 @@ function clearBgImage() {
     document.documentElement.style.setProperty('--bg-image', 'none');
 }
 
-// --- 配信者リストを保護するように修正 ---
 function resetDesign() { 
     if(confirm("デザイン設定をリセットしますか？（配信者リストは維持されます）")) { 
-        // 配信者リストと予約情報を一時退避
         const tempChannels = localStorage.getItem('custom_channels');
         const tempReserved = localStorage.getItem('reserved_videos');
-        
-        // 全消去
         localStorage.clear(); 
-        
-        // 配信者リストと予約情報を復元
         if (tempChannels) localStorage.setItem('custom_channels', tempChannels);
         if (tempReserved) localStorage.setItem('reserved_videos', tempReserved);
-        
         location.reload(); 
     } 
 }
@@ -370,6 +365,14 @@ function renderGrids(chInfoMap, vItems) {
             timeStr = `🆕 新着: ${lastV.snippet.title}`;
         }
 
+        // カード内のボタン用HTMLを生成
+        let cardBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>`;
+        if (ch.twitterId) cardBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>`;
+        if (ch.twitchId) cardBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-tw">Twitch</a>`;
+        if (ch.tiktokId) cardBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId.replace('@','')}" target="_blank" class="btn btn-tiktok">TikTok</a>`;
+        if (ch.instaId) cardBtnsHtml += `<a href="https://www.instagram.com/${ch.instaId}" target="_blank" class="btn btn-insta">Insta</a>`;
+        if (ch.discordUrl) cardBtnsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn btn-discord">Discord</a>`;
+
         const card = `
         <div class="card ${isLive?'is-live':''} ${isNew?'is-new':''}" data-id="${ch.id}">
             <div class="drag-handle" style="position:absolute; top:5px; left:5px; z-index:20;">⠿</div>
@@ -384,18 +387,18 @@ function renderGrids(chInfoMap, vItems) {
                 </div>
             </a>
             <div class="btn-area">
-                <a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>
-                ${ch.twitterId ? `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>` : ''}
-                ${isUpcoming ? `<button class="btn btn-reserve ${reservedVideos.includes(lastV?.id)?'active':''}" style="grid-column:span 2" onclick="toggleReserve('${lastV.id}')">通知予約</button>` : ''}
+                ${cardBtnsHtml}
+                ${isUpcoming ? `<button class="btn btn-reserve ${reservedVideos.includes(lastV?.id)?'active':''}" onclick="toggleReserve('${lastV.id}')">🔔 通知予約</button>` : ''}
             </div>
         </div>`;
 
-        let btnHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-mini btn-yt" title="YouTube">YT</a>`;
-        if (ch.twitterId) btnHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn btn-mini" title="X">X</a>`;
-        if (ch.twitchId) btnHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-mini btn-tw" title="Twitch">Tw</a>`;
-        if (ch.tiktokId) btnHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId.replace('@','')}" target="_blank" class="btn btn-mini btn-tiktok" title="TikTok">Tk</a>`;
-        if (ch.instaId) btnHtml += `<a href="https://www.instagram.com/${ch.instaId}" target="_blank" class="btn btn-mini btn-insta" title="Instagram">In</a>`;
-        if (ch.discordUrl) btnHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn btn-mini btn-discord" title="Discord">Dc</a>`;
+        // メンバー一覧用のボタン
+        let listBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-mini btn-yt" title="YouTube">YT</a>`;
+        if (ch.twitterId) listBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn btn-mini" title="X">X</a>`;
+        if (ch.twitchId) listBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-mini btn-tw" title="Twitch">Tw</a>`;
+        if (ch.tiktokId) listBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId.replace('@','')}" target="_blank" class="btn btn-mini btn-tiktok" title="TikTok">Tk</a>`;
+        if (ch.instaId) listBtnsHtml += `<a href="https://www.instagram.com/${ch.instaId}" target="_blank" class="btn btn-mini btn-insta" title="Instagram">In</a>`;
+        if (ch.discordUrl) listBtnsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn btn-mini btn-discord" title="Discord">Dc</a>`;
 
         const row = `
         <div class="row-item" data-id="${ch.id}">
@@ -403,7 +406,7 @@ function renderGrids(chInfoMap, vItems) {
             <img class="mini-icon" src="${chInfo.icon}">
             <div class="row-name" style="color:${ch.color}">${ch.name}</div>
             <div class="row-btns">
-                ${btnHtml}
+                ${listBtnsHtml}
                 <button class="delete-btn-row" onclick="deleteChannel('${ch.id}')">×</button>
             </div>
         </div>`;
