@@ -186,7 +186,7 @@
     <h4 style="font-size: 14px; margin-bottom: 10px;">➕ 配信者を追加</h4>
     <div class="input-group">
         <input type="text" id="new-name" placeholder="名前">
-        <input type="text" id="new-id" placeholder="YouTube ID">
+        <input type="text" id="new-id" placeholder="YouTube ID (UC〜)">
         <input type="text" id="new-twitter" placeholder="X ID">
         <input type="text" id="new-twitch" placeholder="Twitch ID">
     </div>
@@ -354,16 +354,14 @@ function renderGrids(chInfoMap, vItems) {
             timeStr = `🆕 新着: ${lastV.snippet.title}`;
         }
 
-        const media = (isLive || isUpcoming || isNew)
-            ? `${isLive ? '<div class="badge-live">LIVE</div>' : isNew ? '<div class="badge-new">NEW</div>' : ''}
-               <img class="thumb" src="${lastV.snippet.thumbnails.maxres?.url || lastV.snippet.thumbnails.medium.url}">`
-            : `<div class="thumb-bg" style="background:${ch.color}"></div><img class="thumb-profile" src="${chInfo.icon}">`;
-
         const card = `
         <div class="card ${isLive?'is-live':''} ${isNew?'is-new':''}" data-id="${ch.id}">
             <div class="drag-handle" style="position:absolute; top:5px; left:5px; z-index:20;">⠿</div>
             <a href="https://youtube.com/watch?v=${lastV?.id || ''}" target="_blank" style="text-decoration:none; color:inherit;">
-                <div class="thumb-wrap ${isShorts?'is-shorts':''}">${media}</div>
+                <div class="thumb-wrap ${isShorts?'is-shorts':''}">${(isLive || isUpcoming || isNew)
+                    ? `${isLive ? '<div class="badge-live">LIVE</div>' : isNew ? '<div class="badge-new">NEW</div>' : ''}
+                       <img class="thumb" src="${lastV.snippet.thumbnails.maxres?.url || lastV.snippet.thumbnails.medium.url}">`
+                    : `<div class="thumb-bg" style="background:${ch.color}"></div><img class="thumb-profile" src="${chInfo.icon}">`}</div>
                 <div class="info">
                     <div class="name" style="color:${ch.color}">${ch.name}</div>
                     <div class="title">${timeStr}</div>
@@ -376,7 +374,6 @@ function renderGrids(chInfoMap, vItems) {
             </div>
         </div>`;
 
-        // リンクボタンを動的に作成
         let btnHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-mini btn-yt" title="YouTube">YT</a>`;
         if (ch.twitterId) btnHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn btn-mini" title="X">X</a>`;
         if (ch.twitchId) btnHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-mini btn-tw" title="Twitch">Tw</a>`;
