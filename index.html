@@ -222,12 +222,12 @@ const defaultChannels = [
     {name:"たいたい", id:"UCds-nvoKCcvixVXJ_54QcbQ", twitterId:"taitaiMEN1997", twitchId:"taitai19970904", tiktokId:"", instaId:"", discordUrl:"", color:"#00ccff"},
     {name:"岐阜のこみちん", id:"UCw4frqkotySLjJ_CFZR5-7w", twitterId:"komichin0704", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffcc00"},
     {name:"ナナホシナナ", id:"UCncsOsnMBAAaYb6WidBYIDw", twitterId:"nanahoshinana77", twitchId:"nanahoshinana77", tiktokId:"", instaId:"", discordUrl:"", color:"#ff33ff"},
-    {name:"月成るくす", id:"UCP9rcDSyTRtnu8EsG2CmLMg", twitterId:"Tsukinari_Lux_", twitchId:"", tiktokId:"", instaId:"tsukinarilux", discordUrl:"", color:"#ffffcc"},
+    {name:"月成るくす", id:"UCP9rcDSyTRtnu8EsG2CmLMg", twitterId:"Tsukinari_Lux_", twitterId:"", tiktokId:"", instaId:"tsukinarilux", discordUrl:"", color:"#ffffcc"},
     {name:"メッス", id:"UCkJeBcOPRBs5bri5B3sFgVg", twitterId:"messu_009", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#333333"},
     {name:"よいよい", id:"UCzk-vAIbo3iVBGTNaJQS2qQ", twitterId:"yoiy0i", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccff00"},
     {name:"うえまさ", id:"UCIBDdDXnViOgN5tCpfX7NOA", twitterId:"uema5aCh", twitchId:"", tiktokId:"", instaId:"uema5a", discordUrl:"", color:"#9900ff"},
-    {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA", twitterId:"Kunashiki_Lin_", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
-    {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"VT_InunoHaru", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccffcc"},
+    {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA", twitterId:"Kunashiki_Lin_", twitterId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
+    {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"VT_InunoHaru", twitterId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccffcc"},
     {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ", twitterId:"komari_yuki", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
     {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA", twitterId:"pokonyan1185", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#00ff00"},
     {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"HAOKtR", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#3399ff"}
@@ -280,7 +280,23 @@ function clearBgImage() {
     document.documentElement.style.setProperty('--bg-image', 'none');
 }
 
-function resetDesign() { if(confirm("リセットしますか？")) { localStorage.clear(); location.reload(); } }
+// --- 配信者リストを保護するように修正 ---
+function resetDesign() { 
+    if(confirm("デザイン設定をリセットしますか？（配信者リストは維持されます）")) { 
+        // 配信者リストと予約情報を一時退避
+        const tempChannels = localStorage.getItem('custom_channels');
+        const tempReserved = localStorage.getItem('reserved_videos');
+        
+        // 全消去
+        localStorage.clear(); 
+        
+        // 配信者リストと予約情報を復元
+        if (tempChannels) localStorage.setItem('custom_channels', tempChannels);
+        if (tempReserved) localStorage.setItem('reserved_videos', tempReserved);
+        
+        location.reload(); 
+    } 
+}
 
 function init() {
     const savedColor = localStorage.getItem('custom_bg_color') || '#0f0f0f';
