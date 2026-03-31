@@ -400,7 +400,10 @@ function renderGrids(chInfoMap, vItems) {
         if (ch.twitterId && ch.twitterId.trim() !== "") {
             listBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn btn-mini" title="X">X</a>`;
         }
-        if (ch.twitchId && ch.twitchId.trim() !== "") listBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-mini btn-tw" title="Twitch">Tw</a>`;
+        // ↓ここを修正しました！ (ch.twitterId から ch.twitchId に)
+        if (ch.twitchId && ch.twitchId.trim() !== "") {
+            listBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-mini btn-tw" title="Twitch">Tw</a>`;
+        }
         if (ch.tiktokId && ch.tiktokId.trim() !== "") listBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId.replace('@','')}" target="_blank" class="btn btn-mini btn-tiktok" title="TikTok">Tk</a>`;
         if (ch.instaId && ch.instaId.trim() !== "") listBtnsHtml += `<a href="https://www.instagram.com/${ch.instaId}" target="_blank" class="btn btn-mini btn-insta" title="Instagram">In</a>`;
         if (ch.discordUrl && ch.discordUrl.trim() !== "") listBtnsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn btn-mini btn-discord" title="Discord">Dc</a>`;
@@ -476,4 +479,5 @@ setInterval(() => {
 init();
 </script>
 </body>
+</html>
 </html>
