@@ -346,12 +346,23 @@ function renderGrids(chInfoMap, vItems) {
         const isShorts = lastV && (lastV.snippet.title.includes('#Shorts') || lastV.snippet.description.includes('#Shorts'));
         let timeStr = "OFFLINE";
         let startTime = null;
-        if (isLive) timeStr = lastV.snippet.title;
-        else if (isUpcoming) {
-            startTime = lastV.liveStreamingDetails.scheduledStartTime;
-            const d = new Date(startTime);
-            timeStr = `🕒 ${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}～`;
-        } else if (isNew) timeStr = `🆕 新着: ${lastV.snippet.title}`;
+
+        if (isLive) {
+            timeStr = lastV.snippet.title;
+        } else if (isUpcoming) {
+            // 修正：予約枠はあるが開始時間が未設定の場合への対応
+            if (lastV.liveStreamingDetails && lastV.liveStreamingDetails.scheduledStartTime) {
+                startTime = lastV.liveStreamingDetails.scheduledStartTime;
+                const d = new Date(startTime);
+                timeStr = `🕒 ${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}～`;
+            } else {
+                timeStr = "🕒 配信予定（開始時間：未定）";
+                startTime = null;
+            }
+        } else if (isNew) {
+            timeStr = `🆕 新着: ${lastV.snippet.title}`;
+        }
+
         const isReserved = reservedVideos.some(rv => rv.id === lastV?.id);
         let cardBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>`;
         if (ch.twitterId) cardBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>`;
@@ -371,7 +382,7 @@ function renderGrids(chInfoMap, vItems) {
             </a>
             <div class="btn-area">
                 ${cardBtnsHtml}
-                ${isUpcoming ? `<button class="btn btn-reserve ${isReserved?'active':''}" onclick="toggleReserve('${lastV.id}', '${ch.name}', '${startTime}')">🔔 ${isReserved?'予約中':'通知予約'}</button>` : ''}
+                ${(isUpcoming && startTime) ? `<button class="btn btn-reserve ${isReserved?'active':''}" onclick="toggleReserve('${lastV.id}', '${ch.name}', '${startTime}')">🔔 ${isReserved?'予約中':'通知予約'}</button>` : (isUpcoming && !startTime) ? `<button class="btn btn-reserve" disabled style="opacity:0.5; cursor:not-allowed;">🔔 通知不可(時間未定)</button>` : ''}
             </div>
         </div>`;
         let listBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-mini btn-yt" title="YouTube">YT</a>`;
