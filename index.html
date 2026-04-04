@@ -212,19 +212,19 @@ const defaultChannels = [
     {name:"タツナミ先生", id:"UCedenULTLYf3DanflEXdRCQ", twitterId:"tatsunami", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#00ff00"},
     {name:"神近", id:"UCdLe2q91fJkN9GEyDvItp-w", twitterId:"t_kamichika", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
     {name:"しろくる", id:"UCTl5XpFddyDsj5woStUPu0w", twitterId:"sirokuru_", twitchId:"sirokuru", tiktokId:"sirokuru", instaId:"", discordUrl:"", color:"#ffffff"},
-    {name:"たにし", id:"UCiC8VCiSLD3mxoO-QFKQnBQ", twitterId:"tanishi_manbo", twitchId:"tanishi1200", tiktokId:"", instaId:"", discordUrl:"", color:"#0000ff"},
+    {name:"たにし", id:"UCiC8VCiSLD3mxoO-QFKQnBQ", twitterId:"tanishi_manbo", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#0000ff"},
     {name:"凸もり", id:"UCdN9GjPrqhcrzE27eWNNjxg", twitterId:"mk_2_totsu", twitchId:"totsumori", tiktokId:"", instaId:"", discordUrl:"", color:"#888888"},
     {name:"神宮寺ちゃんねる", id:"UCou8IVB8jJPk56H0farYQdA", twitterId:"jinguji777ch", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ff0000"},
     {name:"カズクラ", id:"UCu3Mp1ZimtNvyA-bcfo9VrQ", twitterId:"kazuch0924", twitchId:"", tiktokId:"super_kazukura", instaId:"kazuch0924", discordUrl:"", color:"#ff0000"},
     {name:"たいたい", id:"UCds-nvoKCcvixVXJ_54QcbQ", twitterId:"taitaiMEN1997", twitchId:"taitai19970904", tiktokId:"", instaId:"", discordUrl:"", color:"#00ccff"},
     {name:"岐阜のこみちん", id:"UCw4frqkotySLjJ_CFZR5-7w", twitterId:"komichin0704", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffcc00"},
     {name:"ナナホシナナ", id:"UCncsOsnMBAAaYb6WidBYIDw", twitterId:"nanahoshinana77", twitchId:"nanahoshinana77", tiktokId:"", instaId:"", discordUrl:"", color:"#ff33ff"},
-    {name:"月成るくす", id:"UCP9rcDSyTRtnu8EsG2CmLMg", twitterId:"Tsukinari_Lux_", twitterId:"", tiktokId:"", instaId:"tsukinarilux", discordUrl:"", color:"#ffffcc"},
+    {name:"月成るくす", id:"UCP9rcDSyTRtnu8EsG2CmLMg", twitterId:"Tsukinari_Lux_", twitchId:"", tiktokId:"", instaId:"tsukinarilux", discordUrl:"", color:"#ffffcc"},
     {name:"メッス", id:"UCkJeBcOPRBs5bri5B3sFgVg", twitterId:"messu_009", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#333333"},
     {name:"よいよい", id:"UCzk-vAIbo3iVBGTNaJQS2qQ", twitterId:"yoiy0i", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccff00"},
     {name:"うえまさ", id:"UCIBDdDXnViOgN5tCpfX7NOA", twitterId:"uema5aCh", twitchId:"", tiktokId:"", instaId:"uema5a", discordUrl:"", color:"#9900ff"},
-    {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA", twitterId:"Kunashiki_Lin_", twitterId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
-    {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"VT_InunoHaru", twitterId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccffcc"},
+    {name:"久那式リン", id:"UCPs7s2VlkwVWWpjcyjviINA", twitterId:"Kunashiki_Lin_", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
+    {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"VT_InunoHaru", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccffcc"},
     {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ", twitterId:"komari_yuki", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
     {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA", twitterId:"pokonyan1185", twitterId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#00ff00"},
     {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"HAOKtR", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#3399ff"}
@@ -350,7 +350,6 @@ function renderGrids(chInfoMap, vItems) {
         if (isLive) {
             timeStr = lastV.snippet.title;
         } else if (isUpcoming) {
-            // 修正：予約枠はあるが開始時間が未設定の場合への対応
             if (lastV.liveStreamingDetails && lastV.liveStreamingDetails.scheduledStartTime) {
                 startTime = lastV.liveStreamingDetails.scheduledStartTime;
                 const d = new Date(startTime);
@@ -365,11 +364,17 @@ function renderGrids(chInfoMap, vItems) {
 
         const isReserved = reservedVideos.some(rv => rv.id === lastV?.id);
         let cardBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>`;
-        if (ch.twitterId) cardBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>`;
+        
+        // 修正箇所： ch.twitterId を正しく判定してボタンを出す
+        if (ch.twitterId) {
+            cardBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>`;
+        }
+        
         if (ch.twitchId) cardBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-tw">Twitch</a>`;
         if (ch.tiktokId) cardBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId.replace('@','')}" target="_blank" class="btn btn-tiktok">TikTok</a>`;
         if (ch.instaId) cardBtnsHtml += `<a href="https://www.instagram.com/${ch.instaId}" target="_blank" class="btn btn-insta">Insta</a>`;
         if (ch.discordUrl) cardBtnsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn btn-discord">Discord</a>`;
+
         const card = `
         <div class="card ${isLive?'is-live':''} ${isNew?'is-new':''}" data-id="${ch.id}">
             <div class="drag-handle" style="position:absolute; top:5px; left:5px; z-index:20;">⠿</div>
@@ -385,13 +390,16 @@ function renderGrids(chInfoMap, vItems) {
                 ${(isUpcoming && startTime) ? `<button class="btn btn-reserve ${isReserved?'active':''}" onclick="toggleReserve('${lastV.id}', '${ch.name}', '${startTime}')">🔔 ${isReserved?'予約中':'通知予約'}</button>` : (isUpcoming && !startTime) ? `<button class="btn btn-reserve" disabled style="opacity:0.5; cursor:not-allowed;">🔔 通知不可(時間未定)</button>` : ''}
             </div>
         </div>`;
+
         let listBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-mini btn-yt" title="YouTube">YT</a>`;
         if (ch.twitterId) listBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn btn-mini" title="X">X</a>`;
         if (ch.twitchId) listBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-mini btn-tw" title="Twitch">Tw</a>`;
         if (ch.tiktokId) listBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId.replace('@','')}" target="_blank" class="btn btn-mini btn-tiktok" title="TikTok">Tk</a>`;
         if (ch.instaId) listBtnsHtml += `<a href="https://www.instagram.com/${ch.instaId}" target="_blank" class="btn btn-mini btn-insta" title="Instagram">In</a>`;
         if (ch.discordUrl) listBtnsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn btn-mini btn-discord" title="Discord">Dc</a>`;
+
         const row = `<div class="row-item" data-id="${ch.id}"><div class="row-top"><div class="drag-handle">⠿</div><img class="mini-icon" src="${chInfo.icon}"><div class="row-name" style="color:${ch.color}">${ch.name}</div></div><div class="row-bottom"><div class="row-btns">${listBtnsHtml}</div><button class="delete-btn-row" onclick="deleteChannel('${ch.id}')">×</button></div></div>`;
+        
         if (isLive) { htmls.live += card; counts.live++; }
         else if (isNew) { htmls.new += card; counts.new++; }
         else if (isUpcoming) { htmls.upcoming += card; counts.upcoming++; }
