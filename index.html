@@ -201,8 +201,9 @@
 <div id="allList" class="list-container"></div>
 </div>
 
+<script src="config.js"></script>
 <script>
-const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY';
+const API_KEY = CONFIG.YOUTUBE_API_KEY;
 
 const defaultChannels = [
     {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29", twitchId:"maguro29game", tiktokId:"", instaId:"", discordUrl:"https://discord.gg/bRuT74X7sS", color:"#ff9900"},
@@ -365,7 +366,6 @@ function renderGrids(chInfoMap, vItems) {
         const isReserved = reservedVideos.some(rv => rv.id === lastV?.id);
         let cardBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>`;
         
-        // 修正箇所： ch.twitterId を正しく判定してボタンを出す
         if (ch.twitterId) {
             cardBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>`;
         }
