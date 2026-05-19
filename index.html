@@ -60,7 +60,6 @@
             font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s;
         }
 
-        /* メンバー編集ボタン用のスタイル（既存のボタンスタイルに統一） */
         .btn-manage {
             background: #444; color: #fff !important; border: 1px solid var(--border-color); padding: 6px 15px; border-radius: 4px;
             font-size: 13px; font-weight: bold; cursor: pointer; text-decoration: none; transition: 0.2s;
@@ -188,7 +187,7 @@
         <button class="btn-tool" style="background:#d9534f" onclick="clearBgImage()">背景消去</button>
         <button class="btn-tool" style="background:#555" onclick="resetDesign()">全リセット</button>
     </div>
-    </div>
+</div>
 
 <div class="section-title">👥 メンバー一覧 (⠿で並び替え)</div>
 <div id="allList" class="list-container"></div>
@@ -221,7 +220,7 @@ const defaultChannels = [
     {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"VT_InunoHaru", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccffcc"},
     {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ", twitterId:"komari_yuki", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
     {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA", twitterId:"pokonyan1185", twitterId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#00ff00"},
-    {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"HAOKtR", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#3399ff"}
+    {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"HAOKtR", twitchId:"", tiktokId:"", instaId:"", discordUrl:", color:"#3399ff"}
 ];
 
 let channels = [];
@@ -229,223 +228,3 @@ let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]')
 let timeLeft = 600;
 
 function handleFileSelect(input) {
-    const file = input.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = e => {
-            const b64 = e.target.result;
-            document.documentElement.style.setProperty('--bg-image', `url('${b64}')`);
-            localStorage.setItem('custom_bg_image', b64);
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-function applyDesign() {
-    const color = document.getElementById('bg-color-picker').value;
-    const url = document.getElementById('bg-image-url').value.trim();
-    document.documentElement.style.setProperty('--bg-color', color);
-    const r = parseInt(color.substring(1,3), 16), g = parseInt(color.substring(3,5), 16), b = parseInt(color.substring(5,7), 16);
-    const textColor = (r*299 + g*587 + b*114) / 1000 > 128 ? '#000000' : '#ffffff';
-    document.documentElement.style.setProperty('--text-color', textColor);
-    const isDark = textColor === '#ffffff';
-    document.documentElement.style.setProperty('--secondary-text', isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)');
-    document.documentElement.style.setProperty('--border-color', isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)');
-    document.documentElement.style.setProperty('--header-bg', isDark ? 'rgba(31,31,31,0.7)' : 'rgba(255,255,255,0.7)');
-    document.documentElement.style.setProperty('--card-bg', isDark ? 'rgba(26,26,26,0.85)' : 'rgba(255,255,255,0.85)');
-    localStorage.setItem('custom_bg_color', color);
-    if (url) {
-        document.documentElement.style.setProperty('--bg-image', `url('${url}')`);
-        localStorage.setItem('custom_bg_image', url);
-    }
-}
-
-function clearBgImage() {
-    localStorage.removeItem('custom_bg_image');
-    document.documentElement.style.setProperty('--bg-image', 'none');
-}
-
-function resetDesign() { 
-    if(confirm("デザイン設定をリセットしますか？")) { 
-        const tempChannels = localStorage.getItem('custom_channels');
-        const tempReserved = localStorage.getItem('reserved_videos');
-        localStorage.clear(); 
-        if (tempChannels) localStorage.setItem('custom_channels', tempChannels);
-        if (tempReserved) localStorage.setItem('reserved_videos', tempReserved);
-        location.reload(); 
-    } 
-}
-
-function init() {
-    if ("Notification" in window && Notification.permission !== "granted") {
-        Notification.requestPermission();
-    }
-    const savedColor = localStorage.getItem('custom_bg_color') || '#0f0f0f';
-    const savedImage = localStorage.getItem('custom_bg_image') || '';
-    document.getElementById('bg-color-picker').value = savedColor;
-    applyDesign();
-    if(savedImage) document.documentElement.style.setProperty('--bg-image', `url('${savedImage}')`);
-    const saved = localStorage.getItem('custom_channels');
-    channels = saved ? JSON.parse(saved) : [...defaultChannels];
-    new Sortable(document.getElementById('allList'), {
-        animation: 150, handle: '.drag-handle',
-        onEnd: () => {
-            const newOrder = [];
-            document.querySelectorAll('#allList .row-item').forEach(el => {
-                const ch = channels.find(c => c.id === el.getAttribute('data-id'));
-                if(ch) newOrder.push(ch);
-            });
-            channels = newOrder;
-            localStorage.setItem('custom_channels', JSON.stringify(channels));
-        }
-    });
-    loadPortal();
-    setInterval(checkNotifications, 30000);
-}
-
-async function loadPortal() {
-    if (!channels.length) return;
-    const channelIds = channels.map(c => c.id).join(',');
-    try {
-        const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${channelIds}&part=snippet`);
-        const chData = await chRes.json();
-        const chInfoMap = {};
-        chData.items?.forEach(i => chInfoMap[i.id] = { icon: i.snippet.thumbnails.medium.url });
-        const playlistResults = await Promise.all(
-            channels.map(ch => {
-                const pId = ch.id.replace(/^UC/, 'UU');
-                return fetch(`https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${pId}&part=snippet&maxResults=1`)
-                    .then(r => r.json()).catch(() => null);
-            })
-        );
-        const videoIds = playlistResults.map(r => r?.items?.[0]?.snippet.resourceId.videoId).filter(Boolean);
-        const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
-        const vData = await vRes.json();
-        renderGrids(chInfoMap, vData.items || []);
-    } catch (e) { console.error(e); }
-}
-
-function renderGrids(chInfoMap, vItems) {
-    let htmls = { live: "", new: "", upcoming: "", all: "" };
-    let counts = { live: 0, new: 0, upcoming: 0 };
-    const now = new Date();
-    channels.forEach(ch => {
-        const chInfo = chInfoMap[ch.id]; if (!chInfo) return;
-        const lastV = vItems.find(v => v.snippet.channelId === ch.id);
-        const status = lastV?.snippet.liveBroadcastContent || 'none';
-        const isLive = status === 'live';
-        const isUpcoming = status === 'upcoming';
-        const pubDate = lastV ? new Date(lastV.snippet.publishedAt) : null;
-        const isNew = lastV && !isLive && !isUpcoming && (now - pubDate < 24 * 60 * 60 * 1000);
-        const isShorts = lastV && (lastV.snippet.title.includes('#Shorts') || lastV.snippet.description.includes('#Shorts'));
-        let timeStr = "OFFLINE";
-        let startTime = null;
-
-        if (isLive) {
-            timeStr = lastV.snippet.title;
-        } else if (isUpcoming) {
-            if (lastV.liveStreamingDetails && lastV.liveStreamingDetails.scheduledStartTime) {
-                startTime = lastV.liveStreamingDetails.scheduledStartTime;
-                const d = new Date(startTime);
-                timeStr = `🕒 ${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}～`;
-            } else {
-                timeStr = "🕒 配信予定（開始時間：未定）";
-                startTime = null;
-            }
-        } else if (isNew) {
-            timeStr = `🆕 新着: ${lastV.snippet.title}`;
-        }
-
-        const isReserved = reservedVideos.some(rv => rv.id === lastV?.id);
-        let cardBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>`;
-        
-        if (ch.twitterId) {
-            cardBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>`;
-        }
-        
-        if (ch.twitchId) cardBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-tw">Twitch</a>`;
-        if (ch.tiktokId) cardBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId.replace('@','')}" target="_blank" class="btn btn-tiktok">TikTok</a>`;
-        if (ch.instaId) cardBtnsHtml += `<a href="https://www.instagram.com/${ch.instaId}" target="_blank" class="btn btn-insta">Insta</a>`;
-        if (ch.discordUrl) cardBtnsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn btn-discord">Discord</a>`;
-
-        const card = `
-        <div class="card ${isLive?'is-live':''} ${isNew?'is-new':''}" data-id="${ch.id}">
-            <div class="drag-handle" style="position:absolute; top:5px; left:5px; z-index:20;">⠿</div>
-            <a href="https://youtube.com/watch?v=${lastV?.id || ''}" target="_blank" style="text-decoration:none; color:inherit;">
-                <div class="thumb-wrap ${isShorts?'is-shorts':''}">${(isLive || isUpcoming || isNew)
-                    ? `${isLive ? '<div class="badge-live">LIVE</div>' : isNew ? '<div class="badge-new">NEW</div>' : ''}
-                       <img class="thumb" src="${lastV.snippet.thumbnails.maxres?.url || lastV.snippet.thumbnails.medium.url}">`
-                    : `<div class="thumb-bg" style="background:${ch.color}"></div><img class="thumb-profile" src="${chInfo.icon}">`}</div>
-                <div class="info"><div class="name" style="color:${ch.color}">${ch.name}</div><div class="title">${timeStr}</div></div>
-            </a>
-            <div class="btn-area">
-                ${cardBtnsHtml}
-                ${(isUpcoming && startTime) ? `<button class="btn btn-reserve ${isReserved?'active':''}" onclick="toggleReserve('${lastV.id}', '${ch.name}', '${startTime}')">🔔 ${isReserved?'予約中':'通知予約'}</button>` : (isUpcoming && !startTime) ? `<button class="btn btn-reserve" disabled style="opacity:0.5; cursor:not-allowed;">🔔 通知不可(時間未定)</button>` : ''}
-            </div>
-        </div>`;
-
-        let listBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-mini btn-yt" title="YouTube">YT</a>`;
-        if (ch.twitterId) listBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn btn-mini" title="X">X</a>`;
-        if (ch.twitchId) listBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-mini btn-tw" title="Twitch">Tw</a>`;
-        if (ch.tiktokId) listBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId.replace('@','')}" target="_blank" class="btn btn-mini btn-tiktok" title="TikTok">Tk</a>`;
-        if (ch.instaId) listBtnsHtml += `<a href="https://www.instagram.com/${ch.instaId}" target="_blank" class="btn btn-mini btn-insta" title="Instagram">In</a>`;
-        if (ch.discordUrl) listBtnsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn btn-mini btn-discord" title="Discord">Dc</a>`;
-
-        const row = `<div class="row-item" data-id="${ch.id}"><div class="row-top"><div class="drag-handle">⠿</div><img class="mini-icon" src="${chInfo.icon}"><div class="row-name" style="color:${ch.color}">${ch.name}</div></div><div class="row-bottom"><div class="row-btns">${listBtnsHtml}</div><button class="delete-btn-row" onclick="deleteChannel('${ch.id}')">×</button></div></div>`;
-        
-        if (isLive) { htmls.live += card; counts.live++; }
-        else if (isNew) { htmls.new += card; counts.new++; }
-        else if (isUpcoming) { htmls.upcoming += card; counts.upcoming++; }
-        htmls.all += row;
-    });
-    document.getElementById("liveSection").style.display = counts.live ? "block" : "none";
-    document.getElementById("liveGrid").innerHTML = htmls.live;
-    document.getElementById("upcomingSection").style.display = counts.upcoming ? "block" : "none";
-    document.getElementById("upcomingGrid").innerHTML = htmls.upcoming;
-    document.getElementById("newSection").style.display = counts.new ? "block" : "none";
-    document.getElementById("newGrid").innerHTML = htmls.new;
-    document.getElementById("allList").innerHTML = htmls.all;
-}
-
-function toggleReserve(id, name, startTime) {
-    const idx = reservedVideos.findIndex(rv => rv.id === id);
-    if (idx > -1) reservedVideos.splice(idx, 1);
-    else {
-        reservedVideos.push({ id, name, startTime, notified: false });
-        if (Notification.permission !== "granted") Notification.requestPermission();
-    }
-    localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
-    loadPortal();
-}
-
-function checkNotifications() {
-    const now = new Date();
-    let changed = false;
-    reservedVideos.forEach(rv => {
-        if (!rv.notified && new Date(rv.startTime) <= now) {
-            new Notification("配信開始！", { body: `${rv.name}さんの配信が始まるよ！`, icon: "icon.png" });
-            rv.notified = true;
-            changed = true;
-        }
-    });
-    if (changed) localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
-}
-
-function deleteChannel(id) {
-    if (confirm("リストから削除するよ？")) {
-        channels = channels.filter(c => c.id !== id);
-        localStorage.setItem('custom_channels', JSON.stringify(channels));
-        loadPortal();
-    }
-}
-
-function manualRefresh() { location.reload(); }
-setInterval(() => {
-    timeLeft--; if (timeLeft < 0) location.reload();
-    document.getElementById('timer').innerText = `Next Update: ${String(Math.floor(timeLeft/60)).padStart(2,'0')}:${String(timeLeft%60).padStart(2,'0')}`;
-    document.getElementById('progress-bar').style.width = (timeLeft/600)*100 + "%";
-}, 1000);
-init();
-</script>
-</body>
-</html>
