@@ -60,12 +60,6 @@
             font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s;
         }
 
-        .btn-manage {
-            background: #444; color: #fff !important; border: 1px solid var(--border-color); padding: 6px 15px; border-radius: 4px;
-            font-size: 13px; font-weight: bold; cursor: pointer; text-decoration: none; transition: 0.2s;
-        }
-        .btn-manage:hover { background: #555; }
-
         #timer { font-size: 12px; color: inherit; opacity: 0.7; font-family: monospace; }
         .progress-container { width: 100%; height: 3px; background: rgba(128,128,128,0.2); position: relative; overflow: hidden; }
         #progress-bar { width: 100%; height: 100%; background: var(--accent-green); transition: width 1s linear; }
@@ -154,7 +148,6 @@
     </div>
     <div class="header-controls">
         <button id="refresh-btn" class="btn-tool" onclick="manualRefresh()">更新</button>
-        <a href="manage.html" class="btn-manage">メンバー編集</a>
         <div id="timer">Next Update: --:--</div>
     </div>
 </header>
@@ -187,15 +180,29 @@
         <button class="btn-tool" style="background:#d9534f" onclick="clearBgImage()">背景消去</button>
         <button class="btn-tool" style="background:#555" onclick="resetDesign()">全リセット</button>
     </div>
+    <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
+    <h4 style="font-size: 14px; margin-bottom: 10px;">➕ 配信者を追加</h4>
+    <div class="input-group">
+        <input type="text" id="new-name" placeholder="名前">
+        <input type="text" id="new-id" placeholder="YouTube ID (UC〜)">
+        <input type="text" id="new-twitter" placeholder="X ID">
+        <input type="text" id="new-twitch" placeholder="Twitch ID">
+    </div>
+    <div class="input-group">
+        <input type="text" id="new-tiktok" placeholder="TikTok ID">
+        <input type="text" id="new-insta" placeholder="Insta ID">
+        <input type="text" id="new-discord" placeholder="Discord URL">
+        <input type="color" id="new-color" value="#ffffff" style="width: 40px; height: 38px;">
+        <button class="btn-tool" onclick="addChannel()">追加</button>
+    </div>
 </div>
 
 <div class="section-title">👥 メンバー一覧 (⠿で並び替え)</div>
 <div id="allList" class="list-container"></div>
 </div>
 
-<script src="config.js"></script>
 <script>
-const API_KEY = CONFIG.YOUTUBE_API_KEY;
+const API_KEY = 'AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY';
 
 const defaultChannels = [
     {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29", twitchId:"maguro29game", tiktokId:"", instaId:"", discordUrl:"https://discord.gg/bRuT74X7sS", color:"#ff9900"},
@@ -322,7 +329,7 @@ async function loadPortal() {
         const vData = await vRes.json();
         renderGrids(chInfoMap, vData.items || []);
     } catch (e) { 
-        console.error(e);
+        console.error(e); 
         renderGrids({}, []);
     }
 }
@@ -331,8 +338,8 @@ function renderGrids(chInfoMap, vItems) {
     let htmls = { live: "", new: "", upcoming: "", all: "" };
     let counts = { live: 0, new: 0, upcoming: 0 };
     const now = new Date();
-    
     channels.forEach(ch => {
+        // 修正箇所：アイコンのマップが存在しない場合はデフォルトのアイコンを指定して処理を継続
         const chInfo = chInfoMap[ch.id] || { icon: "icon.png" };
         const lastV = vItems.find(v => v.snippet.channelId === ch.id);
         const status = lastV?.snippet.liveBroadcastContent || 'none';
@@ -362,7 +369,10 @@ function renderGrids(chInfoMap, vItems) {
         const isReserved = reservedVideos.some(rv => rv.id === lastV?.id);
         let cardBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>`;
         
-        if (ch.twitterId) cardBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>`;
+        if (ch.twitterId) {
+            cardBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>`;
+        }
+        
         if (ch.twitchId) cardBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-tw">Twitch</a>`;
         if (ch.tiktokId) cardBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId.replace('@','')}" target="_blank" class="btn btn-tiktok">TikTok</a>`;
         if (ch.instaId) cardBtnsHtml += `<a href="https://www.instagram.com/${ch.instaId}" target="_blank" class="btn btn-insta">Insta</a>`;
@@ -391,25 +401,13 @@ function renderGrids(chInfoMap, vItems) {
         if (ch.instaId) listBtnsHtml += `<a href="https://www.instagram.com/${ch.instaId}" target="_blank" class="btn btn-mini btn-insta" title="Instagram">In</a>`;
         if (ch.discordUrl) listBtnsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn btn-mini btn-discord" title="Discord">Dc</a>`;
 
-        const row = `
-        <div class="row-item" data-id="${ch.id}">
-            <div class="row-top">
-                <div class="drag-handle">⠿</div>
-                <img class="mini-icon" src="${chInfo.icon}">
-                <div class="row-name" style="color:${ch.color}">${ch.name}</div>
-            </div>
-            <div class="row-bottom">
-                <div class="row-btns">${listBtnsHtml}</div>
-                <button class="delete-btn-row" onclick="deleteChannel('${ch.id}')">×</button>
-            </div>
-        </div>`;
+        const row = `<div class="row-item" data-id="${ch.id}"><div class="row-top"><div class="drag-handle">⠿</div><img class="mini-icon" src="${chInfo.icon}"><div class="row-name" style="color:${ch.color}">${ch.name}</div></div><div class="row-bottom"><div class="row-btns">${listBtnsHtml}</div><button class="delete-btn-row" onclick="deleteChannel('${ch.id}')">×</button></div></div>`;
         
         if (isLive) { htmls.live += card; counts.live++; }
         else if (isNew) { htmls.new += card; counts.new++; }
         else if (isUpcoming) { htmls.upcoming += card; counts.upcoming++; }
         htmls.all += row;
     });
-
     document.getElementById("liveSection").style.display = counts.live ? "block" : "none";
     document.getElementById("liveGrid").innerHTML = htmls.live;
     document.getElementById("upcomingSection").style.display = counts.upcoming ? "block" : "none";
@@ -441,6 +439,15 @@ function checkNotifications() {
         }
     });
     if (changed) localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
+}
+
+function addChannel() {
+    const getVal = id => document.getElementById(id).value.trim();
+    const name = getVal('new-name'), id = getVal('new-id');
+    if (!name || !id) { alert("名前とYouTube IDは必須だよ！"); return; }
+    channels.push({ name, id, twitterId: getVal('new-twitter'), twitchId: getVal('new-twitch'), tiktokId: getVal('new-tiktok'), instaId: getVal('new-insta'), discordUrl: getVal('new-discord'), color: document.getElementById('new-color').value });
+    localStorage.setItem('custom_channels', JSON.stringify(channels));
+    location.reload();
 }
 
 function deleteChannel(id) {
