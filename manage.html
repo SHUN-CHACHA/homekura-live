@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>homeクラ 配信ポータル - メンバー管理</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #0f0f0f;
+            --card-bg: rgba(26, 26, 26, 0.85);
+            --text-color: #ffffff;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --accent-green: #28a745;
+            --accent-red: #dc3545;
+        }
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(at 50% 10%, rgba(0, 123, 255, 0.1) 0px, transparent 60%);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding-top: 20px;
+        }
+        h1, h2 {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            font-weight: 700;
+        }
+        .btn {
+            background: #333;
+            color: #fff;
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .btn:hover { background: #444; border-color: rgba(255,255,255,0.3); }
+        .btn-success { background: var(--accent-green); border: none; }
+        .btn-success:hover { background: #218838; }
+        .btn-danger { background: var(--accent-red); padding: 6px 12px; font-size: 12px; border: none; border-radius: 4px; }
+        .btn-danger:hover { background: #c82333; }
+        
+        .form-group {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 14px;
+            margin-bottom: 35px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .form-grid input {
+            background: #1a1a1a;
+            color: #fff;
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .form-grid input:focus {
+            border-color: rgba(255,255,255,0.4);
+            outline: none;
+        }
+        
+        .member-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .member-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 14px 20px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: grab;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: border-color 0.2s;
+        }
+        .member-item:hover { border-color: rgba(255,255,255,0.2); }
+        .member-item:active { cursor: grabbing; }
+        
+        .member-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .color-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 4px rgba(0,0,0,0.5);
+        }
+        .type-badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #444;
+            color: #ccc;
+            font-weight: bold;
+        }
+        .type-default { background: #0056b3; color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h1 style="margin:0; border:none; font-size: 26px;">メンバー管理</h1>
+            <a href="index.html" class="btn">ポータルに戻る</a>
+        </header>
+
+        <div class="form-group">
+            <h2 style="margin-top:0; font-size:18px;">新しいメンバーを追加する</h2>
+            <div class="form-grid">
+                <input type="text" id="new-name" placeholder="名前 (必須)">
+                <input type="text" id="new-id" placeholder="YouTube チャンネルID (必須)">
+                <input type="text" id="new-twitter" placeholder="Twitter ID">
+                <input type="text" id="new-twitch" placeholder="Twitch ID">
+                <input type="text" id="new-tiktok" placeholder="TikTok ID">
+                <input type="text" id="new-insta" placeholder="Instagram ID">
+                <input type="text" id="new-discord" placeholder="Discord URL">
+                <div style="display: flex; align-items: center; gap: 10px; background:#1a1a1a; padding:5px 10px; border-radius:6px; border:1px solid var(--border-color);">
+                    <label for="new-color" style="font-size: 13px; color:#aaa;">カラー:</label>
+                    <input type="color" id="new-color" value="#ffffff" style="padding:0; width:45px; height:28px; border:none; background:none; cursor:pointer;">
+                </div>
+            </div>
+            <button class="btn btn-success" onclick="addChannel()">メンバーを追加する</button>
+        </div>
+
+        <h2 style="font-size:18px;">登録メンバー一覧 (ドラッグして並び替え可能)</h2>
+        <ul id="member-list" class="member-list"></ul>
+    </div>
+
+    <script>
+        // index.html と同一のデフォルトメンバー定義
+        const defaultChannels = [
+            { name: "旬茶", id: "UC_D4p58p9v9vV0Y_1_custom", twitterId: "shun_chacha", color: "#ff8c00" },
+            { name: "九重なゆ", id: "UCV_7MhX_U2f-mYol96BvV9g", twitterId: "nayu_kokonoe", color: "#ffc0cb" },
+            { name: "猫宮ひなた", id: "UC1519PHn6RVPdk50UU9WVgQ", twitterId: "Nekomiya_Hinata", color: "#6f42c1" }
+        ];
+
+        let channels = [];
+
+        function loadMembers() {
+            const stored = JSON.parse(localStorage.getItem('custom_channels')) || [];
+            const savedOrder = JSON.parse(localStorage.getItem('channel_order'));
+            
+            if (savedOrder) {
+                const allChannels = [...defaultChannels, ...stored];
+                channels = savedOrder.map(id => allChannels.find(c => c.id === id)).filter(Boolean);
+                allChannels.forEach(c => {
+                    if (!channels.some(rc => rc.id === c.id)) channels.push(c);
+                });
+            } else {
+                channels = [...defaultChannels, ...stored];
+            }
+
+            renderList();
+        }
+
+        function renderList() {
+            const listEl = document.getElementById('member-list');
+            listEl.innerHTML = '';
+
+            channels.forEach(c => {
+                const isDefault = defaultChannels.some(dc => dc.id === c.id);
+                const li = document.createElement('li');
+                li.className = 'member-item';
+                li.setAttribute('data-id', c.id);
+
+                li.innerHTML = `
+                    <div class="member-info">
+                        <span class="color-indicator" style="background-color: ${c.color || '#fff'}"></span>
+                        <strong style="font-size:15px;">${c.name}</strong>
+                        <span class="type-badge ${isDefault ? 'type-default' : ''}">${isDefault ? '初期' : '追加'}</span>
+                    </div>
+                    <div>
+                        ${isDefault ? '' : `<button class="btn btn-danger" onclick="deleteChannel('${c.id}')">削除</button>`}
+                    </div>
+                `;
+                listEl.appendChild(li);
+            });
+        }
+
+        function addChannel() {
+            const getVal = id => document.getElementById(id).value.trim();
+            const name = getVal('new-name'), id = getVal('new-id');
+            if (!name || !id) { alert("名前とYouTube IDは必須項目だよ！"); return; }
+
+            let stored = JSON.parse(localStorage.getItem('custom_channels')) || [];
+            
+            if (defaultChannels.some(c => c.id === id) || stored.some(c => c.id === id)) {
+                alert("このチャンネルIDは既にリストに存在しているよ！");
+                return;
+            }
+
+            const newChan = {
+                name, id, 
+                twitterId: getVal('new-twitter'), 
+                twitchId: getVal('new-twitch'), 
+                tiktokId: getVal('new-tiktok'), 
+                instaId: getVal('new-insta'), 
+                discordUrl: getVal('new-discord'), 
+                color: document.getElementById('new-color').value
+            };
+
+            stored.push(newChan);
+            localStorage.setItem('custom_channels', JSON.stringify(stored));
+            
+            // フォームの入力欄を初期化
+            document.getElementById('new-name').value = '';
+            document.getElementById('new-id').value = '';
+            document.getElementById('new-twitter').value = '';
+            document.getElementById('new-twitch').value = '';
+            document.getElementById('new-tiktok').value = '';
+            document.getElementById('new-insta').value = '';
+            document.getElementById('new-discord').value = '';
+            document.getElementById('new-color').value = '#ffffff';
+            
+            saveCurrentOrder();
+            loadMembers();
+        }
+
+        function deleteChannel(id) {
+            if (confirm("このメンバーをリストから削除する？")) {
+                let stored = JSON.parse(localStorage.getItem('custom_channels')) || [];
+                stored = stored.filter(c => c.id !== id);
+                localStorage.setItem('custom_channels', JSON.stringify(stored));
+                
+                channels = channels.filter(c => c.id !== id);
+                saveCurrentOrder();
+                loadMembers();
+            }
+        }
+
+        function saveCurrentOrder() {
+            const order = Array.from(document.querySelectorAll('.member-item')).map(el => el.getAttribute('data-id'));
+            localStorage.setItem('channel_order', JSON.stringify(order));
+        }
+
+        // 管理画面内でのドラッグ順序入れ替えのセットアップ
+        const el = document.getElementById('member-list');
+        Sortable.create(el, {
+            animation: 150,
+            onEnd: function () {
+                saveCurrentOrder();
+                const order = Array.from(document.querySelectorAll('.member-item')).map(el => el.getAttribute('data-id'));
+                channels = order.map(id => channels.find(c => c.id === id)).filter(Boolean);
+            }
+        });
+
+        loadMembers();
+    </script>
+</body>
+</html>
