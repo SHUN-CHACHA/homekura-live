@@ -19,6 +19,10 @@
         .input-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
         input[type="text"] { background: #2a2a2a; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 4px; flex: 1; min-width: 150px; }
         
+        /* カラーピッカー・コード入力周りのスタイル */
+        .color-picker-wrapper { display: flex; align-items: center; gap: 5px; background: #2a2a2a; border: 1px solid #444; padding: 4px 8px; border-radius: 4px; }
+        .color-input-code { background: transparent !important; border: none !important; color: #fff; width: 80px !important; padding: 0 !important; font-family: monospace; font-size: 14px; outline: none; }
+        
         .btn { background: #28a745; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; }
         .btn-copy { background: #007bff; width: 100%; padding: 12px; font-size: 16px; margin-top: 10px; }
         .btn-edit { background: #ff9900; }
@@ -58,9 +62,13 @@
     </div>
     <div class="input-group">
         <input type="text" id="new-discord" placeholder="Discord 招待URL">
-        <label style="display:flex; align-items:center; gap:5px; font-size:13px;">
-            テーマカラー: <input type="color" id="new-color" value="#ffffff" style="width:40px; height:35px; border:none; background:none;">
-        </label>
+        
+        <div class="color-picker-wrapper">
+            <span style="font-size:12px; color:#aaa; user-select:none;">色:</span>
+            <input type="color" id="new-color" value="#ffffff" style="width:30px; height:25px; border:none; background:none; cursor:pointer;" oninput="syncColorCode(this.value)">
+            <input type="text" id="new-color-code" value="#ffffff" class="color-input-code" placeholder="#ffffff" maxlength="7" oninput="syncColorPalette(this.value)">
+        </div>
+
         <button class="btn" id="submitBtn" onclick="submitForm()">リストに追加</button>
         <button class="btn btn-cancel" id="cancelBtn" onclick="cancelEdit()">キャンセル</button>
     </div>
@@ -106,6 +114,19 @@ function init() {
     saveAndGenerate();
 }
 
+// パレットで色を選んだとき、テキストボックスに反映
+function syncColorCode(hex) {
+    document.getElementById('new-color-code').value = hex;
+}
+
+// テキストボックスに色コードを入れたとき、パレットに反映
+function syncColorPalette(hex) {
+    // 正しいHEXコードの形式（#付き6桁）のときだけパレット側を更新
+    if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+        document.getElementById('new-color').value = hex;
+    }
+}
+
 function saveAndGenerate() {
     localStorage.setItem('admin_channels', JSON.stringify(channels));
     renderList();
@@ -148,6 +169,14 @@ function submitForm() {
     if (!name || !id) { alert("名前とYouTube IDは必須だよ！"); return; }
     if (!id.startsWith("UC")) { alert("YouTube IDは「UC」から始まる文字列を入力してね！"); return; }
 
+    // カラーコードが正常か最終チェック（#の付け忘れなどの救済）
+    let colorVal = getVal('new-color-code');
+    if (!colorVal.startsWith('#')) colorVal = '#' + colorVal;
+    if (!/^#[0-9A-Fa-f]{6}$/.test(colorVal)) {
+        alert("テーマカラーの色コードが正しくないよ！ (#ff9900 の形式で入力してね)");
+        return;
+    }
+
     const channelData = {
         name, id,
         twitterId: getVal('new-twitter'),
@@ -155,14 +184,12 @@ function submitForm() {
         tiktokId: getVal('new-tiktok'),
         instaId: getVal('new-insta'),
         discordUrl: getVal('new-discord'),
-        color: document.getElementById('new-color').value
+        color: colorVal
     };
 
     if (editingChannelId !== null) {
         const idx = channels.findIndex(c => c.id === editingChannelId);
-        if (idx > -1) {
-            channels[idx] = channelData;
-        }
+        if (idx > -1) channels[idx] = channelData;
         editingChannelId = null;
     } else {
         if (channels.some(c => c.id === id)) { alert("そのYouTube IDは既に登録されているよ！"); return; }
@@ -186,7 +213,11 @@ function startEdit(id) {
     document.getElementById('new-tiktok').value = ch.tiktokId || '';
     document.getElementById('new-insta').value = ch.instaId || '';
     document.getElementById('new-discord').value = ch.discordUrl || '';
-    document.getElementById('new-color').value = ch.color || '#ffffff';
+    
+    // カラーの初期値をパレットとテキストボックスの両方にセット
+    const targetColor = ch.color || '#ffffff';
+    document.getElementById('new-color').value = targetColor;
+    document.getElementById('new-color-code').value = targetColor;
 
     document.getElementById('formPanel').classList.add('editing-mode');
     document.getElementById('formTitle').innerText = `📝 「${ch.name}」のデータを編集（再登録）`;
@@ -205,6 +236,7 @@ function cancelEdit() {
 function clearForm() {
     ['new-name', 'new-id', 'new-twitter', 'new-twitch', 'new-tiktok', 'new-insta', 'new-discord'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('new-color').value = '#ffffff';
+    document.getElementById('new-color-code').value = '#ffffff';
     
     document.getElementById('formPanel').classList.remove('editing-mode');
     document.getElementById('formTitle').innerText = `➕ 配信者の追加`;
