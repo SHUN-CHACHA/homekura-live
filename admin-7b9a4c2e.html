@@ -7,17 +7,25 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
         body { font-family: sans-serif; background: #121212; color: #fff; padding: 20px; max-width: 1000px; margin: auto; }
-        h1 { font-size: 20px; border-bottom: 2px solid #28a745; padding-bottom: 10px; color: #28a745; }
+        
+        /* ヘッダー周りのレイアウト調整 */
+        .admin-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #28a745; padding-bottom: 10px; margin-bottom: 5px; }
+        h1 { font-size: 20px; margin: 0; color: #28a745; }
+        .btn-to-index { background: #444; color: #fff; text-decoration: none; padding: 6px 14px; border-radius: 4px; font-size: 13px; font-weight: bold; transition: background 0.2s; border: 1px solid #555; }
+        .btn-to-index:hover { background: #555; }
+
         .panel { background: #1e1e1e; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px; transition: border-color 0.3s; }
         .panel.editing-mode { border-color: #ff9900; box-shadow: 0 0 10px rgba(255, 153, 0, 0.2); }
         .input-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
         input[type="text"] { background: #2a2a2a; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 4px; flex: 1; min-width: 150px; }
+        
         .btn { background: #28a745; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; }
         .btn-copy { background: #007bff; width: 100%; padding: 12px; font-size: 16px; margin-top: 10px; }
         .btn-edit { background: #ff9900; }
         .btn-danger { background: #d9534f; }
         .btn-reset { background: #666; }
         .btn-cancel { background: #555; display: none; }
+        
         .list-container { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
         .row-item { background: #222; border: 1px solid #333; border-radius: 6px; padding: 10px; display: flex; align-items: center; justify-content: space-between; touch-action: pan-y; }
         .row-left { display: flex; align-items: center; gap: 10px; flex-grow: 1; overflow: hidden; }
@@ -30,8 +38,11 @@
 </head>
 <body>
 
-<h1>🛠️ homeクラ ポータル メンバー編集管理画面</h1>
-<p style="font-size:13px; color:#ccc;">ここでメンバーを追加・削除・編集・並び替えしたあと、一番下の出力コードを <strong>config.js</strong> にそのままコピペして上書きしてください。</p>
+<div class="admin-header">
+    <h1>🛠️ homeクラ ポータル メンバー編集管理画面</h1>
+    <a href="index.html" class="btn-to-index">💻 公開画面(index)へ戻る</a>
+</div>
+<p style="font-size:13px; color:#ccc; margin-top: 5px;">ここでメンバーを追加・削除・編集・並び替えしたあと、一番下の出力コードを <strong>config.js</strong> にそのままコピペして上書きしてください。</p>
 
 <div class="panel" id="formPanel">
     <h3 style="margin-top:0; font-size:15px;" id="formTitle">➕ 配信者の追加</h3>
@@ -72,13 +83,12 @@
 <script src="config.js"></script>
 <script>
 let channels = [];
-let editingChannelId = null; // 現在編集中のメンバーのYouTube IDを保持する用
+let editingChannelId = null;
 
 function init() {
     const saved = localStorage.getItem('admin_channels');
     channels = saved ? JSON.parse(saved) : [...CONFIG.DEFAULT_CHANNELS];
     
-    // SortableJS によるドラッグ＆ドロップ並び替え
     new Sortable(document.getElementById('allList'), {
         animation: 150,
         handle: '.drag-handle',
@@ -105,7 +115,6 @@ function saveAndGenerate() {
 function renderList() {
     let html = "";
     channels.forEach(ch => {
-        // 各項目のデータが存在する場合だけ、分かりやすく後ろにテキストでバッジ風に表示
         let details = `[YT: ${ch.id}]`;
         if (ch.twitterId) details += ` [X: ${ch.twitterId}]`;
         if (ch.twitchId) details += ` [Twitch: ${ch.twitchId}]`;
@@ -132,7 +141,6 @@ function renderList() {
     document.getElementById('allList').innerHTML = html;
 }
 
-// フォームのボタンが押されたとき（追加 or 更新の自動判定）
 function submitForm() {
     const getVal = id => document.getElementById(id).value.trim();
     const name = getVal('new-name'), id = getVal('new-id');
@@ -151,15 +159,12 @@ function submitForm() {
     };
 
     if (editingChannelId !== null) {
-        // 【編集モード時】該当するチャンネルのインデックスを探して上書き更新（再登録）
         const idx = channels.findIndex(c => c.id === editingChannelId);
         if (idx > -1) {
             channels[idx] = channelData;
         }
-        editingChannelId = null; // モードを戻す
+        editingChannelId = null;
     } else {
-        // 【通常モード時】新規追加
-        // 重複チェック
         if (channels.some(c => c.id === id)) { alert("そのYouTube IDは既に登録されているよ！"); return; }
         channels.push(channelData);
     }
@@ -168,14 +173,12 @@ function submitForm() {
     saveAndGenerate();
 }
 
-// 指定されたメンバーのデータを編集フォームにセットする
 function startEdit(id) {
     const ch = channels.find(c => c.id === id);
     if (!ch) return;
 
-    editingChannelId = id; // 現在編集中のIDを記録
+    editingChannelId = id;
 
-    // 各フォームに入力値をセット
     document.getElementById('new-name').value = ch.name;
     document.getElementById('new-id').value = ch.id;
     document.getElementById('new-twitter').value = ch.twitterId || '';
@@ -185,24 +188,20 @@ function startEdit(id) {
     document.getElementById('new-discord').value = ch.discordUrl || '';
     document.getElementById('new-color').value = ch.color || '#ffffff';
 
-    // フォームのUIを「編集モード」に変更
     document.getElementById('formPanel').classList.add('editing-mode');
     document.getElementById('formTitle').innerText = `📝 「${ch.name}」のデータを編集（再登録）`;
     document.getElementById('submitBtn').innerText = `この内容で更新する (再登録)`;
     document.getElementById('submitBtn').style.background = '#ff9900';
     document.getElementById('cancelBtn').style.display = 'inline-block';
 
-    // 画面を一番上（フォームの位置）までスムーズにスクロールさせる
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// 編集キャンセル
 function cancelEdit() {
     editingChannelId = null;
     clearForm();
 }
 
-// フォームの入力内容とUIを初期状態に戻す
 function clearForm() {
     ['new-name', 'new-id', 'new-twitter', 'new-twitch', 'new-tiktok', 'new-insta', 'new-discord'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('new-color').value = '#ffffff';
@@ -217,7 +216,7 @@ function clearForm() {
 
 function deleteChannel(id) {
     if (confirm("本当にこのメンバーをリストから削除する？")) {
-        if (editingChannelId === id) cancelEdit(); // 編集中のデータを消されたらキャンセルする
+        if (editingChannelId === id) cancelEdit();
         channels = channels.filter(c => c.id !== id);
         saveAndGenerate();
     }
@@ -248,7 +247,7 @@ function copyCode() {
 }
 
 function resetToDefault() {
-    if(confirm("現在画面上で編集中のデータを破棄して、現在アップロードされている config.js の元の状態に同期しますか？")) {
+    if(confirm("現在の config.js の元の状態に同期しますか？")) {
         localStorage.removeItem('admin_channels');
         location.reload();
     }
