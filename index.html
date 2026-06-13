@@ -11,16 +11,15 @@
 
     <style>
         :root {
-            --bg-color: #f1f5f9;          /* 清潔感のある薄いグレー */
-            --container-bg: #ffffff;     /* コンテンツを乗せる白いボックス */
-            --text-color: #0f172a;       /* 読みやすい濃いグレー */
-            --secondary-text: #64748b;   /* 補足用の薄いグレー文字 */
-            --accent-green: #2d5a27;     /* 🟢 白いロゴが映える深みのある濃い緑 */
-            --accent-light-green: #eef7ed;
-            --border-color: #e2e8f0;     /* 境界線 */
+            --bg-color: #eef3ee;          /* 🌿 目に優しい、ごく薄いナチュラルな緑 */
+            --container-bg: #f7faf7;      /* 🟢 真っ白を廃止し、ほんのり緑を帯びた優しいホワイト */
+            --text-color: #1c281a;        /* 📝 文字も真っ黒ではなく、かなり深い緑ベースの黒でマイルドに */
+            --secondary-text: #5c6b5a;    /* 補足用の落ち着いたオリーブグレー文字 */
+            --accent-green: #2d5a27;      /* ヘッダー等の深みのある濃い緑 */
+            --border-color: #d8e2d7;      /* 🎨 背景に溶け込む薄緑の境界線 */
             
-            --accent-yellow: #eab308;
-            --accent-blue: #3b82f6;
+            --accent-yellow: #ca8a04;     /* 眩しさを抑えた少し深みのある金・黄 */
+            --accent-blue: #2563eb;       /* 少し落ち着かせた青 */
         }
 
         body { 
@@ -32,63 +31,25 @@
             line-height: 1.5;
         }
 
-        /* 🖼️ 上部の巨大バナーエリア（濃い緑に変更） */
+        /* 🖼️ 上部のバナーエリア */
         .banner-container {
             width: 100%;
-            background: var(--accent-green); /* 白ロゴを引き立てる深い緑 */
-            aspect-ratio: 16 / 3.5; /* YouTubeヘッダーに近い比率 */
+            background: var(--accent-green);
+            aspect-ratio: 16 / 1.75; 
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.05);
+            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.05);
         }
         .header-logo {
-            height: 65%; /* バナーの高さに合わせてバランスよく拡大縮小 */
+            height: 75%; 
             width: auto;
             object-fit: contain;
-            filter: drop-shadow(0px 2px 8px rgba(0,0,0,0.15)); /* ロゴにうっすら影をつけて視認性アップ */
+            filter: drop-shadow(0px 2px 6px rgba(0,0,0,0.15));
         }
 
-        /* 🗺️ YouTube風ナビゲーションバー */
-        nav {
-            background: var(--container-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 12px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .nav-item {
-            text-decoration: none;
-            color: var(--secondary-text);
-            font-size: 14px;
-            font-weight: 500;
-            padding: 6px 14px;
-            border-radius: 20px;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .nav-item:hover {
-            color: var(--text-color);
-            background: #f8fafc;
-        }
-        .nav-item.active {
-            background: var(--accent-green);
-            color: #ffffff !important;
-        }
-        
-        /* ルーレットリンク用のマイルドなホバースタイル */
-        .roulette-btn:hover {
-            background: #fffbeb;
-            color: #b45309;
-        }
-
-        /* ⏱️ 更新タイマー・コントロールエリア */
+        /* ⏱️ コントロールエリア */
         .header-controls {
             max-width: 1200px;
             margin: 20px auto 0;
@@ -97,6 +58,39 @@
             justify-content: space-between;
             align-items: center;
         }
+        .controls-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* ルーレットボタン */
+        .roulette-btn {
+            text-decoration: none;
+            color: var(--secondary-text);
+            font-size: 13px;
+            font-weight: bold;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+        }
+        .roulette-btn:hover {
+            background: #fffbeb;
+            color: #b45309;
+            border-color: #fde68a;
+        }
+
         .btn-tool {
             background: var(--accent-green); color: #fff; border: none; padding: 6px 16px; border-radius: 20px;
             font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -104,10 +98,10 @@
         .btn-tool:hover { opacity: 0.9; }
         #timer { font-size: 13px; color: var(--secondary-text); font-family: monospace; }
 
-        .progress-container { max-width: 1200px; height: 4px; background: #e2e8f0; margin: 8px auto; border-radius: 2px; overflow: hidden; }
+        .progress-container { max-width: 1200px; height: 4px; background: var(--border-color); margin: 8px auto; border-radius: 2px; overflow: hidden; }
         #progress-bar { width: 100%; height: 100%; background: var(--accent-green); transition: width 1s linear; }
 
-        /* 📦 白い角丸カードコンテナ（メイン枠） */
+        /* 📦 角丸カードコンテナ */
         .main-wrapper {
             max-width: 1200px;
             margin: 0 auto;
@@ -120,8 +114,8 @@
             border-radius: 16px;
             padding: 24px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            border: 1px solid rgba(0,0,0,0.02);
+            box-shadow: 0 4px 10px -2px rgba(45, 90, 39, 0.04); /* 影にもほんのり緑のニュアンスを */
+            border: 1px solid var(--border-color);
         }
 
         .section-title { 
@@ -142,14 +136,14 @@
             border: 1px solid var(--border-color); display: flex; flex-direction: column; 
             position: relative; transition: transform 0.2s, box-shadow 0.2s;
         }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
-        .card.is-live { border-color: var(--accent-green) !important; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(45, 90, 39, 0.06); }
+        .card.is-live { border-color: var(--accent-green) !important; box-shadow: 0 0 8px rgba(45, 90, 39, 0.15); }
         .card.is-new { border-color: var(--accent-blue) !important; }
 
-        .thumb-wrap { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #f8fafc; }
+        .thumb-wrap { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #e6ede6; }
         .thumb { width: 100%; height: 100%; object-fit: cover; }
-        .thumb-bg { position: absolute; width: 100%; height: 100%; opacity: 0.1; filter: blur(20px); }
-        .thumb-profile { width: 40%; height: auto; border-radius: 50%; position: relative; z-index: 2; border: 3px solid #ffffff; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .thumb-bg { position: absolute; width: 100%; height: 100%; opacity: 0.12; filter: blur(20px); }
+        .thumb-profile { width: 40%; height: auto; border-radius: 50%; position: relative; z-index: 2; border: 3px solid var(--container-bg); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         
         .badge-new { position: absolute; top: 8px; left: 8px; background: var(--accent-blue); color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; z-index: 10; }
         .badge-live { position: absolute; top: 8px; left: 8px; background: var(--accent-green); color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; z-index: 10; }
@@ -160,13 +154,13 @@
 
         .btn-area { padding: 0 12px 12px; display: flex; flex-wrap: wrap; gap: 6px; }
         
-        /* 🔘 ボタン関係のデザイン */
+        /* 🔘 ボタン関係のデザイン（ベースを薄緑に） */
         .btn { 
             flex: 1; min-width: 65px; text-align: center; text-decoration: none; font-size: 11px; font-weight: bold;
-            padding: 6px 0; border-radius: 6px; color: #475569 !important; background: #f1f5f9; transition: background 0.2s;
+            padding: 6px 0; border-radius: 6px; color: var(--secondary-text) !important; background: #e2eae2; transition: background 0.2s;
         }
-        .btn:hover { background: #e2e8f0; }
-        .btn-yt { background: #fee2e2; color: #dc2626 !important; }
+        .btn:hover { background: #d3ded3; color: var(--text-color) !important; }
+        .btn-yt { background: #fde2e2; color: #dc2626 !important; }
         .btn-yt:hover { background: #fca5a5; }
         .btn-tw { background: #ede9fe; color: #7c3aed !important; }
         .btn-tw:hover { background: #ddd6fe; }
@@ -182,7 +176,7 @@
         }
 
         .row-item {
-            background: #f8fafc; 
+            background: #f0f5f0; /* リストアイテムもマイルドな薄緑に */
             border-radius: 10px; 
             padding: 10px 16px;
             display: flex; 
@@ -200,10 +194,10 @@
         .row-btns { display: flex; gap: 6px; align-items: center; }
         .btn-square-mini { 
             width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-            text-decoration: none; transition: background 0.15s, transform 0.1s; background: #ffffff; border: 1px solid var(--border-color);
+            text-decoration: none; transition: background 0.15s, transform 0.1s; background: var(--container-bg); border: 1px solid var(--border-color);
         }
-        .btn-square-mini:hover { transform: scale(1.05); background: #f1f5f9; }
-        .btn-square-mini svg { width: 14px; height: 14px; fill: #64748b; }
+        .btn-square-mini:hover { transform: scale(1.05); background: #e2eae2; }
+        .btn-square-mini svg { width: 14px; height: 14px; fill: var(--secondary-text); }
         
         .btn-square-mini.btn-yt:hover svg { fill: #ff0000; }
         .btn-square-mini.btn-x:hover svg { fill: #000000; }
@@ -216,25 +210,23 @@
 </head>
 <body>
 
-<!-- 🖼️ 最上部のバナーエリア（濃い緑背景 ＋ logo.png配置） -->
+<!-- 🖼️ スリムバナーエリア -->
 <div class="banner-container">
     <img src="logo.png" alt="homeクラ" class="header-logo">
 </div>
 
-<!-- 🗺️ YouTube風のナビゲーションバー（ルーレットへのリンクを復活！） -->
-<nav>
-    <a href="#" class="nav-item active">ホーム</a>
-    <a href="https://shun-chacha.github.io/homekura-live/roulette.html" class="nav-item roulette-btn" target="_blank">
-        <img src="roulette-icon.png" alt="" style="width: 18px; height: 18px; vertical-align: middle;">
-        旬茶作 ルーレット
-    </a>
-    <a href="#" class="nav-item">Discord</a>
-    <a href="#" class="nav-item">メンバーになる</a>
-</nav>
-
+<!-- ⏱️ コントロールエリア -->
 <div class="header-controls">
-    <button id="refresh-btn" class="btn-tool" onclick="manualRefresh()">更新</button>
-    <div id="timer">Next Update: --:--</div>
+    <div class="controls-left">
+        <a href="https://shun-chacha.github.io/homekura-live/roulette.html" class="roulette-btn" target="_blank">
+            <img src="roulette-icon.png" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
+            旬茶作 ルーレット
+        </a>
+    </div>
+    <div class="controls-right">
+        <button id="refresh-btn" class="btn-tool" onclick="manualRefresh()">更新</button>
+        <div id="timer">Next Update: --:--</div>
+    </div>
 </div>
 
 <div class="progress-container">
@@ -267,6 +259,7 @@
 
 <script src="config.js"></script>
 <script>
+// (中略 - JavaScriptのロジック部分は前回のままで完全互換です)
 const API_KEY = CONFIG.YOUTUBE_API_KEY;
 const defaultChannels = [
     {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29", twitchId:"maguro29game", tiktokId:"", instaId:"", discordUrl:"https://discord.gg/bRuT74X7sS", color:"#ff9900"}
@@ -286,16 +279,10 @@ function init() {
     if ("Notification" in window && Notification.permission !== "granted") {
         Notification.requestPermission();
     }
-    
     const saved = localStorage.getItem('custom_channels');
-    if (saved) {
-        channels = JSON.parse(saved);
-    } else if (typeof CONFIG !== 'undefined' && CONFIG.DEFAULT_CHANNELS) {
-        channels = [...CONFIG.DEFAULT_CHANNELS];
-    } else {
-        channels = [...defaultChannels];
-    }
-
+    if (saved) { channels = JSON.parse(saved); } 
+    else if (typeof CONFIG !== 'undefined' && CONFIG.DEFAULT_CHANNELS) { channels = [...CONFIG.DEFAULT_CHANNELS]; } 
+    else { channels = [...defaultChannels]; }
     loadPortal();
     setInterval(checkNotifications, 30000);
 }
@@ -316,16 +303,12 @@ async function loadPortal() {
                     .then(r => r.json()).catch(() => null);
             })
         );
-        
         const videoIds = playlistResults.map(r => r?.items?.[0]?.snippet.resourceId.videoId).filter(Boolean);
-        
         if (videoIds.length > 0) {
             const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
             const vData = await vRes.json();
             renderGrids(chInfoMap, vData.items || []);
-        } else {
-            renderGrids(chInfoMap, []);
-        }
+        } else { renderGrids(chInfoMap, []); }
     } catch (e) { console.error("ポータル読み込みエラー:", e); }
 }
 
@@ -345,19 +328,14 @@ function renderGrids(chInfoMap, vItems) {
         let timeStr = "オフライン";
         let startTime = null;
 
-        if (isLive) {
-            timeStr = lastV.snippet.title;
-        } else if (isUpcoming) {
+        if (isLive) { timeStr = lastV.snippet.title; } 
+        else if (isUpcoming) {
             if (lastV.liveStreamingDetails && lastV.liveStreamingDetails.scheduledStartTime) {
                 startTime = lastV.liveStreamingDetails.scheduledStartTime;
                 const d = new Date(startTime);
                 timeStr = `🕒 ${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}～`;
-            } else {
-                timeStr = "🕒 配信予定（未定）";
-            }
-        } else if (isNew) {
-            timeStr = `${lastV.snippet.title}`;
-        }
+            } else { timeStr = "🕒 配信予定（未定）"; }
+        } else if (isNew) { timeStr = `${lastV.snippet.title}`; }
 
         const isReserved = reservedVideos.some(rv => rv.id === lastV?.id);
         let cardBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>`;
