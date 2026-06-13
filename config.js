@@ -28,6 +28,8 @@ const CONFIG = {
         {name:"犬野はる", id:"UCVB16vOi24WElLNbbmOFFsA", twitterId:"VT_InunoHaru", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ccffcc"},
         {name:"珍珠花こまり", id:"UCSLCZ5uhCYUMQ9TG9Cs1ERQ", twitterId:"komari_yuki", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#ffffff"},
         {name:"ぽこにゃん", id:"UCO06KZjWOe6b1tXrgzzakZA", twitterId:"pokonyan1185", twitterId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#00ff00"},
-        {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"HAOKtR", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#3399ff"}
+        {name:"KtR（こーたろー）", id:"UCuJVrV6spfu9QUP6Wr4fugA", twitterId:"HAOKtR", twitchId:"", tiktokId:"", instaId:"", discordUrl:"", color:"#3399ff"},
+        {name:"ゆりも", id:"UCrfGCEk3MPYap72t0TX_sdQ", twitterId:"yurimotosuzu", twitchId:"yurimotosuzu", tiktokId:"yurimotosuzu", instaId:"yurimotosuzu", discordUrl:"", color:"#ff9900"},
+
     ]
 };
