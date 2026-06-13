@@ -68,144 +68,92 @@
         }
         
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 0 8px 20px; max-width: 1400px; margin: auto; }
-        .list-container { display: flex; flex-direction: column; gap: 8px; padding: 0 8px 20px; max-width: 1400px; margin: auto; }
         
+        /* 👥 メンバー一覧：1行3名ずつのグリッド用コンテナ設定 */
+        .list-container { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 10px; 
+            padding: 0 8px 20px; 
+            max-width: 1400px; 
+            margin: auto; 
+        }
+
         .card { 
             background: var(--card-bg); border-radius: 8px; overflow: hidden; 
             border: 1px solid var(--border-color); display: flex; flex-direction: column; 
-            position: relative; transition: transform 0.2s; backdrop-filter: blur(5px);
+            position: relative; transition: transform 0.2s; touch-action: pan-y; backdrop-filter: blur(5px);
         }
         .card.is-live { border-color: var(--accent-green) !important; box-shadow: 0 0 15px rgba(40,167,69,0.3); }
         .card.is-new { border-color: var(--accent-blue) !important; }
 
+        /* 🖼️ 四角いコンパクトなメンバー行カードのデザイン */
         .row-item {
-            background: var(--card-bg); border-radius: 8px; padding: 10px;
-            display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--border-color);
-            position: relative; backdrop-filter: blur(5px);
+            background: var(--card-bg); 
+            border-radius: 6px; 
+            padding: 8px 12px;
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            border: 1px solid var(--border-color);
+            position: relative; 
+            backdrop-filter: blur(5px);
+            box-sizing: border-box;
         }
 
-        .row-top { display: flex; align-items: center; gap: 10px; }
-        .row-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .row-top { display: flex; align-items: center; gap: 8px; overflow: hidden; flex-grow: 1; }
+        .row-bottom { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 
         .thumb-wrap { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000; }
         .thumb { width: 100%; height: 100%; object-fit: cover; }
         .thumb-bg { position: absolute; width: 100%; height: 100%; opacity: 0.3; filter: blur(20px); }
         .thumb-profile { width: 45%; height: auto; border-radius: 50%; position: relative; z-index: 2; border: 2px solid rgba(255,255,255,0.2); }
         
-        .mini-icon { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; }
-        .row-name { font-weight: bold; font-size: 15px; flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .member-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .row-name { font-weight: bold; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .badge-new { position: absolute; top: 8px; left: 8px; background: var(--accent-blue); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10; }
-        .badge-live { position: absolute; top: 8px; left: 8px; background: var(--accent-green); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10; }
+        .badge-new { position: absolute; top: 8px; left: 40px; background: var(--accent-blue); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10; }
+        .badge-live { position: absolute; top: 8px; left: 40px; background: var(--accent-green); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10; }
 
         .info { padding: 8px; flex-grow: 1; }
         .name { font-weight: bold; font-size: 11px; margin-bottom: 2px; }
         .title { font-size: 11px; line-height: 1.2; height: 2.4em; overflow: hidden; color: inherit; }
 
         .btn-area { padding: 0 8px 8px; display: flex; flex-wrap: wrap; gap: 4px; }
-        .row-btns { display: flex; gap: 4px; flex-wrap: wrap; flex-grow: 1; }
+        .row-btns { display: flex; gap: 5px; align-items: center; }
         
         .btn { flex: 1; min-width: 60px; text-align: center; text-decoration: none; font-size: 10px; padding: 5px 0; border-radius: 4px; color: white !important; background: #333; }
-        .btn-mini { min-width: 40px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0 8px; font-weight: bold; font-size: 11px; }
-        .btn-yt { background: #c00; }
-        .btn-tw { background: #6441a5; }
-        .btn-insta { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
-        .btn-tiktok { background: #000; border: 1px solid #444; }
-        .btn-discord { background: #5865F2; }
+        
+        /* 📱 小さな四角いアイコンボタンのスタイル */
+        .btn-square-mini { 
+            width: 28px; 
+            height: 28px; 
+            border-radius: 4px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            text-decoration: none;
+            transition: transform 0.15s, filter 0.15s;
+        }
+        .btn-square-mini:hover { transform: translateY(-2px); filter: brightness(1.2); }
+        .btn-square-mini svg { width: 15px; height: 15px; fill: #ffffff; }
+
+        /* 各種ブランドカラー */
+        .btn-yt { background: #ff0000; }
+        .btn-tw { background: #9146ff; }
+        .btn-insta { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+        .btn-tiktok { background: #000; border: 1px solid #333; }
+        .btn-discord { background: #5865f2; }
+        .btn-x { background: #1da1f2; }
 
         .btn-reserve { flex-basis: 100%; transition: background 0.3s; }
         .btn-reserve.active { background: var(--accent-blue); }
 
-        @media (min-width: 768px) {
+        /* PC大画面の際はきっちり1行に3名グリッド配置 */
+        @media (min-width: 950px) {
             .grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-            .btn-mini { min-width: 50px; font-size: 12px; }
+            .list-container { grid-template-columns: repeat(3, 1fr); gap: 12px; }
         }
-        /* 1行に3名並べるためのコンテナ */
-.member-grid-compact {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 12px;
-    padding: 15px 0;
-}
-
-/* メンバー1人分の行カード */
-.member-row-card {
-    background: rgba(26, 26, 26, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    padding: 10px 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-sizing: border-box;
-}
-
-/* 左側：名前エリア */
-.member-info-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: bold;
-    font-size: 14px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* 丸いカラーインジケーター */
-.member-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-/* 右側：小さな四角いアイコンリンクの集まり */
-.member-links-right {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-/* 四角いアイコンボタンの共通スタイル */
-.icon-square-btn {
-    width: 28px;
-    height: 28px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.15s, filter 0.15s;
-    text-decoration: none;
-}
-
-.icon-square-btn:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.2);
-}
-
-/* 各各SNSのブランドカラー（画像のような綺麗な配色） */
-.btn-youtube { background: #ff0000; }
-.btn-twitter { background: #1da1f2; }
-.btn-twitch  { background: #9146ff; }
-.btn-tiktok  { background: #000000; border: 1px solid #333; }
-.btn-insta   { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
-.btn-discord { background: #5865f2; }
-
-/* アイコン内のSVGのサイズ */
-.icon-square-btn svg {
-    width: 16px;
-    height: 16px;
-    fill: #ffffff;
-}
-
-/* 画面が広いときはきっちり3列にするためのメディアクエリ */
-@media (min-width: 900px) {
-    .member-grid-compact {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
     </style>
 </head>
 <body>
@@ -251,26 +199,66 @@
 <script src="config.js"></script>
 <script>
 const API_KEY = CONFIG.YOUTUBE_API_KEY;
-// 一般画面では常に config.js の最新のリストだけを読み込む（LocalStorageを見ない）
-const channels = [...CONFIG.DEFAULT_CHANNELS]; 
+
+// config.jsが万が一読み込めないときの予備
+const defaultChannels = [
+    {name:"まぐにぃ", id:"UCMP7QuS4suoONg47Nbi-wrg", twitterId:"maguro29", twitchId:"maguro29game", tiktokId:"", instaId:"", discordUrl:"https://discord.gg/bRuT74X7sS", color:"#ff9900"}
+];
+
+let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 let timeLeft = 600;
 
+// ⚙️ 画質が劣化しないインライン公式SVGロゴデータ
+const SVG_ICONS = {
+    youtube: `<svg viewBox="0 0 24 24"><path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.516 0-9.387.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.387.508 9.387.508s7.517 0 9.387-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`,
+    x: `<svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+    twitch: `<svg viewBox="0 0 24 24"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>`,
+    tiktok: `<svg viewBox="0 0 24 24"><path d="M12.525.02c1.31.02 2.61.1 3.89.24V4.58c-1.32-.23-2.67-.32-4.01-.25v6.23c0 1.83-.41 3.29-1.22 4.15-.82.86-2.11 1.28-3.88 1.28-1.55 0-2.78-.45-3.7-1.36c-.92-.91-1.38-2.22-1.38-3.92 0-1.72.48-3.04 1.44-3.96C4.61 6.03 6.01 5.57 7.85 5.57c.36 0 .73.02 1.09.07V1.31C8.01 1.23 7.07 1.19 6.11 1.19c-3.13 0-5.59.89-7.39 2.68C-1.08 5.66-2 8.16-2 11.36c0 3.22.91 5.73 2.74 7.53c1.82 1.79 4.38 2.69 7.67 2.69 2.87 0 5.1-.73 6.69-2.18c1.58-1.45 2.37-3.6 2.37-6.45V6.7c1.19.92 2.58 1.62 4.17 2.08v-4.3c-1.32-.34-2.48-.99-3.48-1.95c-.99-.97-1.63-2.15-1.92-3.53h-3.53z"/></svg>`,
+    insta: `<svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>`,
+    discord: `<svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.094 13.094 0 0 1-1.873-.894.077.077 0 0 1-.008-.128c.126-.093.252-.19.372-.287a.075.075 0 0 1 .077-.011c3.92 1.793 8.18 1.793 12.061 0a.073.073 0 0 1 .078.009c.12.099.246.195.373.289a.075.075 0 0 1-.006.127 12.298 12.298 0 0 1-1.873.894.077.077 0 0 1-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.156-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.156 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.156-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.156 2.418z"/></svg>`
+};
+
 function applyDesign() {
-    const color = '#0f0f0f';
+    const color = localStorage.getItem('custom_bg_color') || '#0f0f0f';
+    const url = localStorage.getItem('custom_bg_image') || '';
+    
     document.documentElement.style.setProperty('--bg-color', color);
-    document.documentElement.style.setProperty('--text-color', '#ffffff');
-    document.documentElement.style.setProperty('--secondary-text', 'rgba(255,255,255,0.6)');
-    document.documentElement.style.setProperty('--border-color', 'rgba(255,255,255,0.1)');
-    document.documentElement.style.setProperty('--header-bg', 'rgba(31,31,31,0.7)');
-    document.documentElement.style.setProperty('--card-bg', 'rgba(26,26,26,0.85)');
+    const r = parseInt(color.substring(1,3), 16), g = parseInt(color.substring(3,5), 16), b = parseInt(color.substring(5,7), 16);
+    const textColor = (r*299 + g*587 + b*114) / 1000 > 128 ? '#000000' : '#ffffff';
+    document.documentElement.style.setProperty('--text-color', textColor);
+    
+    const isDark = textColor === '#ffffff';
+    document.documentElement.style.setProperty('--secondary-text', isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)');
+    document.documentElement.style.setProperty('--border-color', isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)');
+    document.documentElement.style.setProperty('--header-bg', isDark ? 'rgba(31,31,31,0.7)' : 'rgba(255,255,255,0.7)');
+    document.documentElement.style.setProperty('--card-bg', isDark ? 'rgba(26,26,26,0.85)' : 'rgba(255,255,255,0.85)');
+    
+    if (url) {
+        document.documentElement.style.setProperty('--bg-image', `url('${url}')`);
+    } else {
+        document.documentElement.style.setProperty('--bg-image', 'none');
+    }
 }
 
 function init() {
     if ("Notification" in window && Notification.permission !== "granted") {
         Notification.requestPermission();
     }
+    
+    // 背景・デザインテーマをローカルストレージから復元
     applyDesign();
+    
+    // 管理側のカスタム並び替えデータを優先、無ければconfig、それも無ければ予備
+    const saved = localStorage.getItem('custom_channels');
+    if (saved) {
+        channels = JSON.parse(saved);
+    } else if (typeof CONFIG !== 'undefined' && CONFIG.DEFAULT_CHANNELS) {
+        channels = [...CONFIG.DEFAULT_CHANNELS];
+    } else {
+        channels = [...defaultChannels];
+    }
+
     loadPortal();
     setInterval(checkNotifications, 30000);
 }
@@ -301,7 +289,10 @@ async function loadPortal() {
         } else {
             renderGrids(chInfoMap, []);
         }
-    } catch (e) { console.error("ポータル読み込みエラー:", e); }
+
+    } catch (e) { 
+        console.error("ポータル読み込みエラー:", e); 
+    }
 }
 
 function renderGrids(chInfoMap, vItems) {
@@ -321,17 +312,24 @@ function renderGrids(chInfoMap, vItems) {
         let timeStr = "OFFLINE";
         let startTime = null;
 
-        if (isLive) { timeStr = lastV.snippet.title; } 
-        else if (isUpcoming) {
+        if (isLive) {
+            timeStr = lastV.snippet.title;
+        } else if (isUpcoming) {
             if (lastV.liveStreamingDetails && lastV.liveStreamingDetails.scheduledStartTime) {
                 startTime = lastV.liveStreamingDetails.scheduledStartTime;
                 const d = new Date(startTime);
                 timeStr = `🕒 ${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}～`;
-            } else { timeStr = "🕒 配信予定（開始時間：未定）"; }
-        } else if (isNew) { timeStr = `🆕 新着: ${lastV.snippet.title}`; }
+            } else {
+                timeStr = "🕒 配信予定（開始時間：未定）";
+                startTime = null;
+            }
+        } else if (isNew) {
+            timeStr = `🆕 新着: ${lastV.snippet.title}`;
+        }
 
         const isReserved = reservedVideos.some(rv => rv.id === lastV?.id);
         let cardBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>`;
+        
         if (ch.twitterId) cardBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>`;
         if (ch.twitchId) cardBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-tw">Twitch</a>`;
         if (ch.tiktokId) cardBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId.replace('@','')}" target="_blank" class="btn btn-tiktok">TikTok</a>`;
@@ -339,7 +337,7 @@ function renderGrids(chInfoMap, vItems) {
         if (ch.discordUrl) cardBtnsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn btn-discord">Discord</a>`;
 
         const card = `
-        <div class="card ${isLive?'is-live':''} ${isNew?'is-new':''}" data-id="${ch.id}">
+        <div class="card ${isLive?'is-live':''} ${isNew?'is-new':''}">
             <a href="https://youtube.com/watch?v=${lastV?.id || ''}" target="_blank" style="text-decoration:none; color:inherit;">
                 <div class="thumb-wrap ${isShorts?'is-shorts':''}">${(isLive || isUpcoming || isNew)
                     ? `${isLive ? '<div class="badge-live">LIVE</div>' : isNew ? '<div class="badge-new">NEW</div>' : ''}
@@ -353,14 +351,24 @@ function renderGrids(chInfoMap, vItems) {
             </div>
         </div>`;
 
-        let listBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-mini btn-yt" title="YouTube">YT</a>`;
-        if (ch.twitterId) listBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn btn-mini" title="X">X</a>`;
-        if (ch.twitchId) listBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-mini btn-tw" title="Twitch">Tw</a>`;
-        if (ch.tiktokId) listBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId.replace('@','')}" target="_blank" class="btn btn-mini btn-tiktok" title="TikTok">Tk</a>`;
-        if (ch.instaId) listBtnsHtml += `<a href="https://www.instagram.com/${ch.instaId}" target="_blank" class="btn btn-mini btn-insta" title="Instagram">In</a>`;
-        if (ch.discordUrl) listBtnsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn btn-mini btn-discord" title="Discord">Dc</a>`;
+        // 👥 メンバー一覧用のコンパクトな横並び四角ボタンHTML（ドラッグハンドル・削除ボタンを完全撤去）
+        let listBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn-square-mini btn-yt" title="YouTube">${SVG_ICONS.youtube}</a>`;
+        if (ch.twitterId) listBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn-square-mini btn-x" title="X (Twitter)">${SVG_ICONS.x}</a>`;
+        if (ch.twitchId) listBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn-square-mini btn-tw" title="Twitch">${SVG_ICONS.twitch}</a>`;
+        if (ch.tiktokId) listBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId.replace('@','')}" target="_blank" class="btn-square-mini btn-tiktok" title="TikTok">${SVG_ICONS.tiktok}</a>`;
+        if (ch.instaId) listBtnsHtml += `<a href="https://www.instagram.com/${ch.instaId}" target="_blank" class="btn-square-mini btn-insta" title="Instagram">${SVG_ICONS.insta}</a>`;
+        if (ch.discordUrl) listBtnsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn-square-mini btn-discord" title="Discord">${SVG_ICONS.discord}</a>`;
 
-        const row = `<div class="row-item" data-id="${ch.id}"><div class="row-top"><img class="mini-icon" src="${chInfo.icon}"><div class="row-name" style="color:${ch.color}">${ch.name}</div></div><div class="row-bottom"><div class="row-btns">${listBtnsHtml}</div></div></div>`;
+        const row = `
+        <div class="row-item">
+            <div class="row-top">
+                <div class="member-dot" style="background:${ch.color || '#fff'}; box-shadow: 0 0 6px ${ch.color || '#fff'};"></div>
+                <div class="row-name" style="color:${ch.color || '#fff'}">${ch.name}</div>
+            </div>
+            <div class="row-bottom">
+                <div class="row-btns">${listBtnsHtml}</div>
+            </div>
+        </div>`;
         
         if (isLive) { htmls.live += card; counts.live++; }
         else if (isNew) { htmls.new += card; counts.new++; }
