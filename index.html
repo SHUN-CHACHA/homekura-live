@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>homeクラ 配信ポータル　＠旬茶</title>
+    <title>homeクラ 配信ポータル ＠旬茶</title>
 
     <link rel="icon" href="https://shun-chacha.github.io/homekura-live/favicon.ico" type="image/x-icon">
     <link rel="icon" href="https://shun-chacha.github.io/homekura-live/icon.png" type="image/png" sizes="192x192">
@@ -143,7 +143,7 @@
         <img src="logo.png" alt="homeクラ" class="header-logo">
         <a href="https://shun-chacha.github.io/homekura-live/roulette.html" id="roulette-link" target="_blank">
             <img src="roulette-icon.png" alt="" style="width: 24px; height: 24px;">
-            旬茶作　ルーレット
+            旬茶作 ルーレット
         </a>
     </div>
     <div class="header-controls">
@@ -314,10 +314,13 @@ async function loadPortal() {
     if (!channels.length) return;
     const channelIds = channels.map(c => c.id).join(',');
     try {
+        // 1. 全チャンネルの基本情報（アイコン等）を一括取得
         const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${channelIds}&part=snippet`);
         const chData = await chRes.json();
         const chInfoMap = {};
         chData.items?.forEach(i => chInfoMap[i.id] = { icon: i.snippet.thumbnails.medium.url });
+
+        // 2. 各チャンネルの最新動画を1件ずつ取得
         const playlistResults = await Promise.all(
             channels.map(ch => {
                 const pId = ch.id.replace(/^UC/, 'UU');
@@ -325,17 +328,31 @@ async function loadPortal() {
                     .then(r => r.json()).catch(() => null);
             })
         );
+        
+        // 有効な動画IDを抽出
         const videoIds = playlistResults.map(r => r?.items?.[0]?.snippet.resourceId.videoId).filter(Boolean);
-        const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
-        const vData = await vRes.json();
-        renderGrids(chInfoMap, vData.items || []);
-    } catch (e) { console.error(e); }
+        
+        // 3. 動画の配信・ライブ状況を一括取得
+        if (videoIds.length > 0) {
+            const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
+            const vData = await vRes.json();
+            
+            // 4. 描画ロジックへバインド
+            renderGrids(chInfoMap, vData.items || []);
+        } else {
+            renderGrids(chInfoMap, []);
+        }
+
+    } catch (e) { 
+        console.error("ポータル読み込みエラー:", e); 
+    }
 }
 
 function renderGrids(chInfoMap, vItems) {
     let htmls = { live: "", new: "", upcoming: "", all: "" };
     let counts = { live: 0, new: 0, upcoming: 0 };
     const now = new Date();
+    
     channels.forEach(ch => {
         const chInfo = chInfoMap[ch.id]; if (!chInfo) return;
         const lastV = vItems.find(v => v.snippet.channelId === ch.id);
@@ -405,6 +422,7 @@ function renderGrids(chInfoMap, vItems) {
         else if (isUpcoming) { htmls.upcoming += card; counts.upcoming++; }
         htmls.all += row;
     });
+
     document.getElementById("liveSection").style.display = counts.live ? "block" : "none";
     document.getElementById("liveGrid").innerHTML = htmls.live;
     document.getElementById("upcomingSection").style.display = counts.upcoming ? "block" : "none";
@@ -456,11 +474,13 @@ function deleteChannel(id) {
 }
 
 function manualRefresh() { location.reload(); }
+
 setInterval(() => {
     timeLeft--; if (timeLeft < 0) location.reload();
     document.getElementById('timer').innerText = `Next Update: ${String(Math.floor(timeLeft/60)).padStart(2,'0')}:${String(timeLeft%60).padStart(2,'0')}`;
     document.getElementById('progress-bar').style.width = (timeLeft/600)*100 + "%";
 }, 1000);
+
 init();
 </script>
 </body>
