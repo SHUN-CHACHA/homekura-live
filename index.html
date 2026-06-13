@@ -120,6 +120,92 @@
             .grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
             .btn-mini { min-width: 50px; font-size: 12px; }
         }
+        /* 1行に3名並べるためのコンテナ */
+.member-grid-compact {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    padding: 15px 0;
+}
+
+/* メンバー1人分の行カード */
+.member-row-card {
+    background: rgba(26, 26, 26, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+/* 左側：名前エリア */
+.member-info-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 丸いカラーインジケーター */
+.member-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* 右側：小さな四角いアイコンリンクの集まり */
+.member-links-right {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* 四角いアイコンボタンの共通スタイル */
+.icon-square-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, filter 0.15s;
+    text-decoration: none;
+}
+
+.icon-square-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+/* 各各SNSのブランドカラー（画像のような綺麗な配色） */
+.btn-youtube { background: #ff0000; }
+.btn-twitter { background: #1da1f2; }
+.btn-twitch  { background: #9146ff; }
+.btn-tiktok  { background: #000000; border: 1px solid #333; }
+.btn-insta   { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+.btn-discord { background: #5865f2; }
+
+/* アイコン内のSVGのサイズ */
+.icon-square-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: #ffffff;
+}
+
+/* 画面が広いときはきっちり3列にするためのメディアクエリ */
+@media (min-width: 900px) {
+    .member-grid-compact {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
     </style>
 </head>
 <body>
