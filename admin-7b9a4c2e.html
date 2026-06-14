@@ -57,16 +57,21 @@
         .clickable-name { color: #2d5a27; text-decoration: underline; cursor: pointer; }
         .clickable-name:hover { color: #143311; background: #e2eae2; }
 
-        /* 📦 キャンバスで切り抜いたマイクラの顔を表示する箱 */
-        .mc-canvas-box {
-            width: 32px; height: 32px; border-radius: 4px; overflow: hidden;
+        /* 🧊 マイクラの3D顔キューブ用のスタイル（Minotar表示用） */
+        .mc-head-box {
+            width: 28px; height: 28px; border-radius: 4px; overflow: hidden;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1); background: #cbd5e1;
-            border: 2px solid #d8e2d7; margin: 0 auto;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); background: #ffffff;
+            border: 1px solid #d8e2d7; margin: 0 auto;
         }
+        .mc-head-img { width: 100%; height: 100%; object-fit: contain; transform: scale(1.1); }
         
+        /* 🕒 未登録時のComing Soonラベル */
         .coming-soon-lbl {
-            font-size: 11px; font-weight: bold; color: #ba2d2d;
+            width: 100%; height: 100%; background: #94a3b8; color: #ffffff;
+            font-size: 7px; font-weight: bold; text-align: center; line-height: 1.1;
+            display: flex; align-items: center; justify-content: center;
+            text-transform: uppercase; letter-spacing: -0.2px;
         }
 
         .btn-del { background: #dc2626; color: white; border: none; padding: 4px 10px; cursor: pointer; border-radius: 4px; }
@@ -83,7 +88,7 @@
         <div id="editNotice" style="display: none;"><span class="edit-badge">✏️ メンバー編集モード中</span></div>
         <div class="form-group"><label>名前</label><input type="text" id="m_name" placeholder="例: まぐにぃ"></div>
         <div class="form-group"><label>YouTube チャンネルID</label><input type="text" id="m_id" placeholder="例: UCMP7QuS4suoONg47Nbi-wrg"></div>
-        <div class="form-group"><label>Minecraft ID (Java版)</label><input type="text" id="m_mc" placeholder="例: magunee (空欄時は未設定表示)"></div>
+        <div class="form-group"><label>Minecraft ID (Java版)</label><input type="text" id="m_mc" placeholder="例: magunee (空欄時はComing soon)"></div>
         <div class="form-group"><label>X (旧Twitter) ID</label><input type="text" id="m_x" placeholder="例: maguro29"></div>
         <div class="form-group"><label>Twitch ID</label><input type="text" id="m_tw" placeholder="例: maguro29game"></div>
         <div class="form-group"><label>Instagram ID</label><input type="text" id="m_inst" placeholder="例: "></div>
@@ -99,12 +104,12 @@
         <button id="cancelBtn" style="display:none; margin-left:10px;" onclick="cancelEdit()">編集をキャンセル</button>
     </div>
 
-    <h2>📋 現在の登録メンバー一覧 <span style="font-size:13px; color:#5c6b5a; font-weight:normal;">（名前をクリックすると再編集できます）</span></h2>
+    <h2 style="margin-top: 40px;">📋 現在の登録メンバー一覧 <span style="font-size:13px; color:#5c6b5a; font-weight:normal;">（名前をクリックすると再編集できます）</span></h2>
     <table class="member-table">
         <thead>
             <tr>
                 <th style="width: 60px; text-align:center;">カラー</th>
-                <th style="width: 60px; text-align:center;">マイクラ顔</th>
+                <th style="width: 60px; text-align:center;">顔</th>
                 <th>名前 (クリックで編集)</th>
                 <th>Minecraft ID</th>
                 <th>YouTube ID</th>
@@ -140,73 +145,9 @@ function syncTextColorToPicker(val) {
     }
 }
 
-function cleanIdStr(str) {
-    if (!str) return "";
-    return str.toString().replace(/\r?\n|\r/g, '').trim();
-}
-
-// 🟢 Mojang公式のユーザー名→UUID→スキン画像URLを中継サービスなしで取得し、Canvasで顔だけ切り抜く超確実関数
-function loadMinecraftHead(username, canvasId, memberColor) {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    
-    // ユーザー名からUUIDを取得（プロキシ経由でCORS回避）
-    fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://api.mojang.com/users/profiles/minecraft/' + username)}`)
-        .then(res => { if (res.ok) return res.json(); throw new Error(); })
-        .then(data => {
-            const userData = JSON.parse(data.contents);
-            if (!userData || !userData.id) { drawDefaultSteve(ctx); return; }
-            
-            // UUIDからスキン情報を取得
-            return fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://sessionserver.mojang.com/session/minecraft/profile/' + userData.id)}`);
-        })
-        .then(res => res ? res.json() : null)
-        .then(data => {
-            if (!data) return;
-            const profileData = JSON.parse(data.contents);
-            const property = profileData.properties.find(p => p.name === 'textures');
-            if (!property) { drawDefaultSteve(ctx); return; }
-            
-            const textureData = JSON.parse(atob(property.value));
-            const skinUrl = textureData.textures.SKIN.url;
-            
-            // スキン画像を読み込んでキャンバスに描画
-            const img = new Image();
-            img.crossOrigin = "anonymous";
-            img.src = `https://api.allorigins.win/raw?url=${encodeURIComponent(skinUrl)}`;
-            img.onload = function() {
-                ctx.imageSmoothingEnabled = false; // ドット絵をクッキリさせる
-                
-                // 1. ベースの顔を切り抜き (スキン画像内の (8,8) から 8x8 マスを 32x32 に拡大描画)
-                ctx.drawImage(img, 8, 8, 8, 8, 0, 0, 32, 32);
-                
-                // 2. オーバーレイ（髪・帽子）を重ねる (スキン画像内の (40,8) から 8x8 マス)
-                ctx.drawImage(img, 40, 8, 8, 8, 0, 0, 32, 32);
-                
-                // 外枠の枠線にメンバーカラーを適応
-                canvas.parentElement.style.borderColor = memberColor || '#d8e2d7';
-            };
-            img.onerror = function() { drawDefaultSteve(ctx); };
-        })
-        .catch(() => {
-            drawDefaultSteve(ctx);
-        });
-}
-
-// 👤 エラー時や通信拒否時に標準スティーブ顔を描画するバックアップ処理
-function drawDefaultSteve(ctx) {
-    ctx.imageSmoothingEnabled = false;
-    ctx.fillStyle = "#5c3e31"; // 髪の茶色
-    ctx.fillRect(0, 0, 32, 32);
-    ctx.fillStyle = "#a97d64"; // 肌色
-    ctx.fillRect(4, 8, 24, 24);
-    ctx.fillStyle = "#2b1e17"; // 目の黒
-    ctx.fillRect(4, 16, 4, 4);
-    ctx.fillRect(24, 16, 4, 4);
-    ctx.fillStyle = "#ffffff"; // 目の白
-    ctx.fillRect(8, 16, 4, 4);
-    ctx.fillRect(20, 16, 4, 4);
+function cleanMcId(idStr) {
+    if (!idStr) return "";
+    return idStr.toString().replace(/\r?\n|\r/g, '').trim();
 }
 
 function renderMemberList() {
@@ -218,18 +159,20 @@ function renderMemberList() {
     
     tbody.innerHTML = "";
     channels.forEach((ch, idx) => {
-        const pureMcId = cleanIdStr(ch.minecraftId);
-        const canvasId = `mc_canvas_${idx}`;
+        const pureMcId = cleanMcId(ch.minecraftId);
         
-        let faceHtml = "";
+        // 🔙 最初のMinotarの立体キューブURL設定に完全に戻しました
+        let mcHeadHtml = "";
         if (pureMcId !== "") {
-            // 後からJavaScriptで非同期に公式から切り抜くためのCanvasを設置
-            faceHtml = `
-                <div class="mc-canvas-box" style="border-color:#d8e2d7">
-                    <canvas id="${canvasId}" width="32" height="32" style="width:100%; height:100%;"></canvas>
+            mcHeadHtml = `
+                <div class="mc-head-box" style="border-color:${ch.color || '#d8e2d7'}">
+                    <img class="mc-head-img" src="https://minotar.net/cube/${pureMcId}/32.png" alt="${ch.name}">
                 </div>`;
         } else {
-            faceHtml = `<span class="coming-soon-lbl">❌ 未設定</span>`;
+            mcHeadHtml = `
+                <div class="mc-head-box">
+                    <div class="coming-soon-lbl">CS</div>
+                </div>`;
         }
 
         const mcText = pureMcId ? pureMcId : `<span style="color:#8ca08a; font-size:12px;">未設定 (Coming soon)</span>`;
@@ -237,20 +180,13 @@ function renderMemberList() {
         tbody.innerHTML += `
             <tr>
                 <td style="text-align:center;"><span style="display:inline-block; width:20px; height:20px; border-radius:50%; background:${ch.color}; border:1px solid #d8e2d7;"></span></td>
-                <td>${faceHtml}</td>
+                <td>${mcHeadHtml}</td>
                 <td><strong class="clickable-name" onclick="editMember(${idx})" title="クリックして編集">${ch.name}</strong></td>
                 <td>${mcText}</td>
-                <td style="font-family:monospace; font-size:12px; color:#414d3f;">${cleanIdStr(ch.id)}</td>
+                <td style="font-family:monospace; font-size:12px; color:#414d3f;">${ch.id}</td>
                 <td><button class="btn-del" onclick="deleteMember(${idx})">削除</button></td>
             </tr>
         `;
-        
-        // 🟢 テーブルに置いてから、非同期でマインクラフト公式から顔を切り抜いてキャンバスに流し込む
-        if (pureMcId !== "") {
-            setTimeout(() => {
-                loadMinecraftHead(pureMcId, canvasId, ch.color);
-            }, 50);
-        }
     });
 }
 
@@ -259,8 +195,8 @@ function editMember(idx) {
     const ch = channels[idx];
     
     document.getElementById('m_name').value = ch.name || "";
-    document.getElementById('m_id').value = cleanIdStr(ch.id);
-    document.getElementById('m_mc').value = cleanIdStr(ch.minecraftId);
+    document.getElementById('m_id').value = ch.id || "";
+    document.getElementById('m_mc').value = cleanMcId(ch.minecraftId);
     document.getElementById('m_x').value = ch.twitterId || "";
     document.getElementById('m_tw').value = ch.twitchId || "";
     document.getElementById('m_inst').value = ch.instaId || "";
@@ -301,8 +237,8 @@ function clearForm() {
 
 function addMember() {
     const name = document.getElementById('m_name').value.trim();
-    const id = cleanIdStr(document.getElementById('m_id').value);
-    const minecraftId = cleanIdStr(document.getElementById('m_mc').value);
+    const id = document.getElementById('m_id').value.trim();
+    const minecraftId = cleanMcId(document.getElementById('m_mc').value);
     const twitterId = document.getElementById('m_x').value.trim();
     const twitchId = document.getElementById('m_tw').value.trim();
     const instaId = document.getElementById('m_inst').value.trim();
@@ -339,7 +275,7 @@ function deleteMember(idx) {
 }
 
 function exportConfig() {
-    const output = `const CONFIG = {\n    YOUTUBE_API_KEY: "AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY",\n    DEFAULT_CHANNELS: ${JSON.stringify(channels, null, 8)}\n};`;
+    const output = `const CONFIG = {\n    YOUTUBE_API_KEY: "ここにあなたのAPIキー",\n    DEFAULT_CHANNELS: ${JSON.stringify(channels, null, 8)}\n};`;
     navigator.clipboard.writeText(output).then(() => {
         alert("config.js 用のコードをコピーしました！config.jsファイルに貼り付けて保存してください。");
     });
