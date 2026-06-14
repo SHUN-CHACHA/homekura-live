@@ -2,290 +2,125 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>【管理者専用】配信者データ編集パネル</title>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <title>homeクラ 配信ポータル 管理画面</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: #fff; padding: 20px; max-width: 1000px; margin: auto; }
-        
-        /* ヘッダー周りのレイアウト調整 */
-        .admin-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #28a745; padding-bottom: 10px; margin-bottom: 5px; }
-        h1 { font-size: 20px; margin: 0; color: #28a745; }
-        .btn-to-index { background: #444; color: #fff; text-decoration: none; padding: 6px 14px; border-radius: 4px; font-size: 13px; font-weight: bold; transition: background 0.2s; border: 1px solid #555; }
-        .btn-to-index:hover { background: #555; }
-
-        .panel { background: #1e1e1e; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px; transition: border-color 0.3s; }
-        .panel.editing-mode { border-color: #ff9900; box-shadow: 0 0 10px rgba(255, 153, 0, 0.2); }
-        .input-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-        input[type="text"] { background: #2a2a2a; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 4px; flex: 1; min-width: 150px; }
-        
-        /* カラーピッカー・コード入力周りのスタイル */
-        .color-picker-wrapper { display: flex; align-items: center; gap: 5px; background: #2a2a2a; border: 1px solid #444; padding: 4px 8px; border-radius: 4px; }
-        .color-input-code { background: transparent !important; border: none !important; color: #fff; width: 80px !important; padding: 0 !important; font-family: monospace; font-size: 14px; outline: none; }
-        
-        .btn { background: #28a745; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        .btn-copy { background: #007bff; width: 100%; padding: 12px; font-size: 16px; margin-top: 10px; }
-        .btn-edit { background: #ff9900; }
-        .btn-danger { background: #d9534f; }
-        .btn-reset { background: #666; }
-        .btn-cancel { background: #555; display: none; }
-        
-        .list-container { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-        .row-item { background: #222; border: 1px solid #333; border-radius: 6px; padding: 10px; display: flex; align-items: center; justify-content: space-between; touch-action: pan-y; }
-        .row-left { display: flex; align-items: center; gap: 10px; flex-grow: 1; overflow: hidden; }
-        .row-right { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
-        .drag-handle { cursor: grab; font-size: 18px; color: #888; background: #333; padding: 2px 8px; border-radius: 4px; user-select: none; }
-        .channel-name { font-weight: bold; white-space: nowrap; }
-        .channel-details { font-size: 11px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        textarea { width: 100%; height: 250px; background: #000; color: #0f0; font-family: monospace; padding: 10px; border-radius: 4px; border: 1px solid #333; box-sizing: border-box; font-size: 12px; }
+        body { font-family: sans-serif; background: #eef3ee; color: #1a2418; padding: 20px; }
+        .container { max-width: 700px; margin: 0 auto; background: #f7faf7; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #d8e2d7; }
+        h2 { margin-top: 0; color: #2d5a27; }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-weight: bold; margin-bottom: 4px; font-size: 13px; }
+        input[type="text"], input[type="color"] { width: 100%; padding: 8px; box-sizing: border-box; border-radius: 6px; border: 1px solid #d8e2d7; }
+        input[type="color"] { height: 40px; padding: 2px; }
+        .btn-box { margin-top: 15px; display: flex; gap: 10px; }
+        button { flex: 1; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-save { background: #2d5a27; color: white; }
+        .btn-export { background: #2563eb; color: white; }
+        .member-item { background: #f0f5f0; padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #d8e2d7; }
+        .member-info { font-size: 14px; }
+        .btn-del { background: #dc2626; color: white; padding: 4px 10px; font-size: 12px; border-radius: 4px; width: auto; flex: none; }
     </style>
 </head>
 <body>
 
-<div class="admin-header">
-    <h1>🛠️ homeクラ ポータル メンバー編集管理画面</h1>
-    <a href="index.html" class="btn-to-index">💻 公開画面(index)へ戻る</a>
-</div>
-<p style="font-size:13px; color:#ccc; margin-top: 5px;">ここでメンバーを追加・削除・編集・並び替えしたあと、一番下の出力コードを <strong>config.js</strong> にそのままコピペして上書きしてください。</p>
-
-<div class="panel" id="formPanel">
-    <h3 style="margin-top:0; font-size:15px;" id="formTitle">➕ 配信者の追加</h3>
-    <div class="input-group">
-        <input type="text" id="new-name" placeholder="名前 (必須)">
-        <input type="text" id="new-id" placeholder="YouTube チャンネルID (UC〜 必須)">
-        <input type="text" id="new-twitter" placeholder="X (Twitter) ID">
-    </div>
-    <div class="input-group">
-        <input type="text" id="new-twitch" placeholder="Twitch ID">
-        <input type="text" id="new-tiktok" placeholder="TikTok ID">
-        <input type="text" id="new-insta" placeholder="Instagram ID">
-    </div>
-    <div class="input-group">
-        <input type="text" id="new-discord" placeholder="Discord 招待URL">
-        
-        <div class="color-picker-wrapper">
-            <span style="font-size:12px; color:#aaa; user-select:none;">色:</span>
-            <input type="color" id="new-color" value="#ffffff" style="width:30px; height:25px; border:none; background:none; cursor:pointer;" oninput="syncColorCode(this.value)">
-            <input type="text" id="new-color-code" value="#ffffff" class="color-input-code" placeholder="#ffffff" maxlength="7" oninput="syncColorPalette(this.value)">
+<div class="container">
+    <h2>👥 メンバー追加・編集</h2>
+    <div id="memberForm">
+        <div class="form-group"><label>名前</label><input type="text" id="m_name" placeholder="例: まぐにぃ"></div>
+        <div class="form-group"><label>YouTube チャンネルID</label><input type="text" id="m_id" placeholder="例: UCMP7QuS4suoONg47Nbi-wrg"></div>
+        <div class="form-group"><label>Minecraft ID (Java版) <span>※空欄ならComing soon</span></label><input type="text" id="m_mc" placeholder="例: magunee"></div>
+        <div class="form-group"><label>X (旧Twitter) ID</label><input type="text" id="m_x" placeholder="例: maguro29"></div>
+        <div class="form-group"><label>Twitch ID</label><input type="text" id="m_tw" placeholder="例: maguro29game"></div>
+        <div class="form-group"><label>Instagram ID</label><input type="text" id="m_inst" placeholder="例: "></div>
+        <div class="form-group"><label>Discord 招待URL</label><input type="text" id="m_discord" placeholder="https://discord.gg/..."></div>
+        <div class="form-group"><label>メンバーカラー</label><input type="color" id="m_color" value="#ff9900"></div>
+        <div class="btn-box">
+            <button class="btn-save" onclick="addMember()">メンバーを保存</button>
         </div>
-
-        <button class="btn" id="submitBtn" onclick="submitForm()">リストに追加</button>
-        <button class="btn btn-cancel" id="cancelBtn" onclick="cancelEdit()">キャンセル</button>
     </div>
-</div>
 
-<h3>⠿ 登録メンバー一覧（「編集」でデータ修正 / 「⠿」をドラッグして並び替え可能）</h3>
-<div id="allList" class="list-container"></div>
+    <hr style="border:0; border-top:1px solid #d8e2d7; margin:20px 0;">
 
-<div class="panel" style="border-color: #007bff;">
-    <h3 style="margin-top:0; font-size:15px; color:#007bff;">📋 config.js 用の出力コード</h3>
-    <p style="font-size:12px; color:#aaa; margin-bottom:5px;">以下のテキストボックスの中身をすべてコピーして、手元の <strong>config.js</strong> に上書き保存してください。</p>
-    <textarea id="outputCode" readonly></textarea>
-    <button class="btn btn-copy" onclick="copyCode()">上のコードをクリップボードにコピー</button>
-</div>
+    <h2>📋 現在の登録メンバー一覧</h2>
+    <div id="memberList"></div>
 
-<div style="text-align: right; margin-bottom: 40px;">
-    <button class="btn btn-reset" onclick="resetToDefault()">現在の config.js の状態に同期（リセット）</button>
+    <div class="btn-box" style="margin-top:20px;">
+        <button class="btn-export" onclick="exportConfig()">config.js用のデータをクリップボードにコピー</button>
+    </div>
 </div>
 
 <script src="config.js"></script>
 <script>
 let channels = [];
-let editingChannelId = null;
 
-function init() {
-    const saved = localStorage.getItem('admin_channels');
-    channels = saved ? JSON.parse(saved) : [...CONFIG.DEFAULT_CHANNELS];
-    
-    new Sortable(document.getElementById('allList'), {
-        animation: 150,
-        handle: '.drag-handle',
-        onEnd: () => {
-            const newOrder = [];
-            document.querySelectorAll('#allList .row-item').forEach(el => {
-                const ch = channels.find(c => c.id === el.getAttribute('data-id'));
-                if(ch) newOrder.push(ch);
-            });
-            channels = newOrder;
-            saveAndGenerate();
-        }
-    });
-    
-    saveAndGenerate();
+function initAdmin() {
+    const saved = localStorage.getItem('custom_channels');
+    if (saved) { channels = JSON.parse(saved); }
+    else if (typeof CONFIG !== 'undefined' && CONFIG.DEFAULT_CHANNELS) { channels = [...CONFIG.DEFAULT_CHANNELS]; }
+    renderMemberList();
 }
 
-// パレットで色を選んだとき、テキストボックスに反映
-function syncColorCode(hex) {
-    document.getElementById('new-color-code').value = hex;
-}
-
-// テキストボックスに色コードを入れたとき、パレットに反映
-function syncColorPalette(hex) {
-    // 正しいHEXコードの形式（#付き6桁）のときだけパレット側を更新
-    if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
-        document.getElementById('new-color').value = hex;
-    }
-}
-
-function saveAndGenerate() {
-    localStorage.setItem('admin_channels', JSON.stringify(channels));
-    renderList();
-    generateCode();
-}
-
-function renderList() {
-    let html = "";
-    channels.forEach(ch => {
-        let details = `[YT: ${ch.id}]`;
-        if (ch.twitterId) details += ` [X: ${ch.twitterId}]`;
-        if (ch.twitchId) details += ` [Twitch: ${ch.twitchId}]`;
-        if (ch.tiktokId) details += ` [TikTok: ${ch.tiktokId}]`;
-        if (ch.instaId) details += ` [Insta: ${ch.instaId}]`;
-        if (ch.discordUrl) details += ` [Discord: リンクあり]`;
-
-        html += `
-        <div class="row-item" data-id="${ch.id}">
-            <div class="row-left">
-                <div class="drag-handle">⠿</div>
-                <div style="width:12px; height:12px; background:${ch.color}; border-radius:50%; flex-shrink:0;"></div>
-                <div style="overflow:hidden;">
-                    <span class="channel-name" style="color:${ch.color}">${ch.name}</span>
-                    <span class="channel-details">${details}</span>
+function renderMemberList() {
+    const list = document.getElementById('memberList');
+    list.innerHTML = channels.length ? "" : "<p style='color:#5c6b5a; font-size:13px;'>メンバーが登録されていません。</p>";
+    channels.forEach((ch, idx) => {
+        const mcText = ch.minecraftId ? ` [MC: ${ch.minecraftId}]` : ' [MC: 未設定]';
+        list.innerHTML += `
+            <div class="member-item">
+                <div class="member-info">
+                    <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:${ch.color}; margin-right:6px;"></span>
+                    <strong>${ch.name}</strong>${mcText}
                 </div>
+                <button class="btn-del" onclick="deleteMember(${idx})">削除</button>
             </div>
-            <div class="row-right">
-                <button class="btn btn-edit" style="padding:4px 10px; font-size:12px;" onclick="startEdit('${ch.id}')">編集</button>
-                <button class="btn btn-danger" style="padding:4px 10px; font-size:12px;" onclick="deleteChannel('${ch.id}')">削除</button>
-            </div>
-        </div>`;
+        `;
     });
-    document.getElementById('allList').innerHTML = html;
 }
 
-function submitForm() {
-    const getVal = id => document.getElementById(id).value.trim();
-    const name = getVal('new-name'), id = getVal('new-id');
+function addMember() {
+    const name = document.getElementById('m_name').value.trim();
+    const id = document.getElementById('m_id').value.trim();
+    const minecraftId = document.getElementById('m_mc').value.trim();
+    const twitterId = document.getElementById('m_x').value.trim();
+    const twitchId = document.getElementById('m_tw').value.trim();
+    const instaId = document.getElementById('m_inst').value.trim();
+    const discordUrl = document.getElementById('m_discord').value.trim();
+    const color = document.getElementById('m_color').value;
+
+    if (!name || !id) { alert("名前とYouTubeチャンネルIDは必須です！"); return; }
+
+    const newChannel = { name, id, minecraftId, twitterId, twitchId, tiktokId:"", instaId, discordUrl, color };
+    channels.push(newChannel);
+    localStorage.setItem('custom_channels', JSON.stringify(channels));
     
-    if (!name || !id) { alert("名前とYouTube IDは必須だよ！"); return; }
-    if (!id.startsWith("UC")) { alert("YouTube IDは「UC」から始まる文字列を入力してね！"); return; }
-
-    // カラーコードが正常か最終チェック（#の付け忘れなどの救済）
-    let colorVal = getVal('new-color-code');
-    if (!colorVal.startsWith('#')) colorVal = '#' + colorVal;
-    if (!/^#[0-9A-Fa-f]{6}$/.test(colorVal)) {
-        alert("テーマカラーの色コードが正しくないよ！ (#ff9900 の形式で入力してね)");
-        return;
-    }
-
-    const channelData = {
-        name, id,
-        twitterId: getVal('new-twitter'),
-        twitchId: getVal('new-twitch'),
-        tiktokId: getVal('new-tiktok'),
-        instaId: getVal('new-insta'),
-        discordUrl: getVal('new-discord'),
-        color: colorVal
-    };
-
-    if (editingChannelId !== null) {
-        const idx = channels.findIndex(c => c.id === editingChannelId);
-        if (idx > -1) channels[idx] = channelData;
-        editingChannelId = null;
-    } else {
-        if (channels.some(c => c.id === id)) { alert("そのYouTube IDは既に登録されているよ！"); return; }
-        channels.push(channelData);
-    }
-
-    clearForm();
-    saveAndGenerate();
-}
-
-function startEdit(id) {
-    const ch = channels.find(c => c.id === id);
-    if (!ch) return;
-
-    editingChannelId = id;
-
-    document.getElementById('new-name').value = ch.name;
-    document.getElementById('new-id').value = ch.id;
-    document.getElementById('new-twitter').value = ch.twitterId || '';
-    document.getElementById('new-twitch').value = ch.twitchId || '';
-    document.getElementById('new-tiktok').value = ch.tiktokId || '';
-    document.getElementById('new-insta').value = ch.instaId || '';
-    document.getElementById('new-discord').value = ch.discordUrl || '';
+    // フォームクリア
+    document.getElementById('m_name').value = "";
+    document.getElementById('m_id').value = "";
+    document.getElementById('m_mc').value = "";
+    document.getElementById('m_x').value = "";
+    document.getElementById('m_tw').value = "";
+    document.getElementById('m_inst').value = "";
+    document.getElementById('m_discord').value = "";
     
-    // カラーの初期値をパレットとテキストボックスの両方にセット
-    const targetColor = ch.color || '#ffffff';
-    document.getElementById('new-color').value = targetColor;
-    document.getElementById('new-color-code').value = targetColor;
-
-    document.getElementById('formPanel').classList.add('editing-mode');
-    document.getElementById('formTitle').innerText = `📝 「${ch.name}」のデータを編集（再登録）`;
-    document.getElementById('submitBtn').innerText = `この内容で更新する (再登録)`;
-    document.getElementById('submitBtn').style.background = '#ff9900';
-    document.getElementById('cancelBtn').style.display = 'inline-block';
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    renderMemberList();
+    alert(`${name} さんを保存しました！`);
 }
 
-function cancelEdit() {
-    editingChannelId = null;
-    clearForm();
-}
-
-function clearForm() {
-    ['new-name', 'new-id', 'new-twitter', 'new-twitch', 'new-tiktok', 'new-insta', 'new-discord'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('new-color').value = '#ffffff';
-    document.getElementById('new-color-code').value = '#ffffff';
-    
-    document.getElementById('formPanel').classList.remove('editing-mode');
-    document.getElementById('formTitle').innerText = `➕ 配信者の追加`;
-    document.getElementById('submitBtn').innerText = `リストに追加`;
-    document.getElementById('submitBtn').style.background = '#28a745';
-    document.getElementById('cancelBtn').style.display = 'none';
-    editingChannelId = null;
-}
-
-function deleteChannel(id) {
-    if (confirm("本当にこのメンバーをリストから削除する？")) {
-        if (editingChannelId === id) cancelEdit();
-        channels = channels.filter(c => c.id !== id);
-        saveAndGenerate();
+function deleteMember(idx) {
+    if (confirm(`${channels[idx].name} さんを削除しますか？`)) {
+        channels.splice(idx, 1);
+        localStorage.setItem('custom_channels', JSON.stringify(channels));
+        renderMemberList();
     }
 }
 
-function generateCode() {
-    const jsonStr = JSON.stringify(channels, null, 8);
-    const apiKey = (typeof CONFIG !== 'undefined' && CONFIG.YOUTUBE_API_KEY) ? CONFIG.YOUTUBE_API_KEY : 'YOUR_YOUTUBE_API_KEY';
-    
-    const output = `// config.js
-// APIキーと初期配信者リストをまとめて管理します
-
-const CONFIG = {
-    YOUTUBE_API_KEY: '${apiKey}',
-
-    // 配信者一覧データ
-    DEFAULT_CHANNELS: ${jsonStr}
-};`;
-
-    document.getElementById('outputCode').value = output;
+function exportConfig() {
+    const output = `const CONFIG = {\n    YOUTUBE_API_KEY: "ここにあなたのAPIキー",\n    DEFAULT_CHANNELS: ${JSON.stringify(channels, null, 8)}\n};`;
+    navigator.clipboard.writeText(output).then(() => {
+        alert("config.js 用のコードをコピーしました！config.jsファイルに貼り付けて保存してください。");
+    });
 }
 
-function copyCode() {
-    const textarea = document.getElementById('outputCode');
-    textarea.select();
-    document.execCommand('copy');
-    alert('📋 config.js 用のコードをコピーしたよ！\n手元の config.js ファイルに全て貼り付けて上書き保存してね。');
-}
-
-function resetToDefault() {
-    if(confirm("現在の config.js の元の状態に同期しますか？")) {
-        localStorage.removeItem('admin_channels');
-        location.reload();
-    }
-}
-
-init();
+initAdmin();
 </script>
 </body>
 </html>
