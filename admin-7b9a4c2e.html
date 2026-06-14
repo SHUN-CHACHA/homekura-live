@@ -461,14 +461,15 @@ function exportConfig() {
     
     navigator.clipboard.writeText(outputText).then(() => {
         alert("config.js 用のコードをコピーしました！config.jsファイルに貼り付けて保存してください。");
-    }).catch(err => {
+   }).catch(err => {
         console.error('コピー失敗:', err);
         const textarea = document.getElementById('configOutput');
         textarea.select();
         alert('自動コピーに失敗しました。右側のテキストエリアを全選択して手動でコピーしてください。');
     });
 }
-</head> function copyConfigText() {
+
+function copyConfigText() {
     exportConfig();
 }
 
