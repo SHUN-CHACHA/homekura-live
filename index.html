@@ -375,13 +375,15 @@ function renderGrids(chInfoMap, vItems) {
         if (ch.instaId) listBtnsHtml += `<a href="https://instagram.com/${ch.instaId}" target="_blank" class="btn-square-mini btn-inst" title="Instagram">${SVG_ICONS.instagram}</a>`;
         if (ch.discordUrl) listBtnsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn-square-mini btn-disc" title="Discord">${SVG_ICONS.discord}</a>`;
 
-        // 🧊 マイクラ3D顔キューブ判定
+        // 🧊 ローカルのマイクラ3D顔画像（avatarImg）判定
         let mcHeadHtml = "";
-        if (ch.minecraftId && ch.minecraftId.trim() !== "") {
+        if (ch.avatarImg && ch.avatarImg.trim() !== "") {
+            // 管理画面で生成したローカルの画像パス（avatars/マイクラID.png）を使用する
             mcHeadHtml = `<div class="mc-head-box" style="border-color:${ch.color || 'var(--border-color)'}">
-                <img class="mc-head-img" src="https://minotar.net/cube/${ch.minecraftId.trim()}/32.png" alt="${ch.name}">
+                <img class="mc-head-img" src="${ch.avatarImg.trim()}" alt="${ch.name}">
             </div>`;
         } else {
+            // 画像パスが設定されていない場合は、従来の Coming soon 表示にする
             mcHeadHtml = `<div class="mc-head-box"><div class="coming-soon-lbl">Coming<br>soon</div></div>`;
         }
 
