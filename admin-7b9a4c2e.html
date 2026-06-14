@@ -66,7 +66,6 @@
         }
         .mc-head-img { width: 100%; height: 100%; object-fit: contain; transform: scale(1.1); }
         
-        /* 🕒 未登録時のComing Soonラベル */
         .coming-soon-lbl {
             width: 100%; height: 100%; background: #94a3b8; color: #ffffff;
             font-size: 7px; font-weight: bold; text-align: center; line-height: 1.1;
@@ -79,6 +78,19 @@
         
         #cancelBtn { background: #64748b; color: white; border: none; }
         #cancelBtn:hover { opacity: 0.9; }
+
+        /* 📱 スマホ環境（画面の横幅が768px以下）のときの表示ルール */
+        @media screen and (max-width: 768px) {
+            /* 入力入力欄の幅をスマホ画面にフィットさせる */
+            input[type="text"] { width: 100%; box-sizing: border-box; }
+            label { display: block; margin-bottom: 4px; }
+            
+            /* 🟢 表の中の「2列目（顔アイコンの列）」を丸ごと非表示にして消し去る */
+            .member-table th:nth-child(2),
+            .member-table td:nth-child(2) {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -161,7 +173,6 @@ function renderMemberList() {
     channels.forEach((ch, idx) => {
         const pureMcId = cleanMcId(ch.minecraftId);
         
-        // 🔙 最初のMinotarの立体キューブURL設定に完全に戻しました
         let mcHeadHtml = "";
         if (pureMcId !== "") {
             mcHeadHtml = `
@@ -275,7 +286,7 @@ function deleteMember(idx) {
 }
 
 function exportConfig() {
-    const output = `const CONFIG = {\n    YOUTUBE_API_KEY: "AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY",\n    DEFAULT_CHANNELS: ${JSON.stringify(channels, null, 8)}\n};`;
+    const output = `const CONFIG = {\n    YOUTUBE_API_KEY: "ここにあなたのAPIキー",\n    DEFAULT_CHANNELS: ${JSON.stringify(channels, null, 8)}\n};`;
     navigator.clipboard.writeText(output).then(() => {
         alert("config.js 用のコードをコピーしました！config.jsファイルに貼り付けて保存してください。");
     });
