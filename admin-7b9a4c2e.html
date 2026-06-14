@@ -38,7 +38,6 @@
             outline: none;
         }
         
-        /* 🎨 カラー選択エリア用のスタイル */
         input[type="color"] { width: 50px; height: 30px; vertical-align: middle; border: 1px solid #d8e2d7; background: #f0f5f0; cursor: pointer; }
         .color-code-input { width: 100px !important; margin-left: 10px; vertical-align: middle; font-family: monospace; text-transform: uppercase; }
 
@@ -134,16 +133,20 @@ function initAdmin() {
     renderMemberList();
 }
 
-// 🟢 ピッカーで色を変えたらテキスト欄に反映する関数
 function syncColorPickerToText(val) {
     document.getElementById('m_color_text').value = val.toUpperCase();
 }
 
-// 🟢 テキスト欄にコードを打ったらピッカーに反映する関数（#付き7文字の時だけ連動）
 function syncTextColorToPicker(val) {
     if (val.match(/^#[0-9a-fA-F]{6}$/)) {
         document.getElementById('m_color').value = val;
     }
+}
+
+// 🟢 IDに潜む改行や空白をキレイさっぱり除去する安全な関数
+function cleanMcId(idStr) {
+    if (!idStr) return "";
+    return idStr.toString().replace(/\r?\n|\r/g, '').trim();
 }
 
 function renderMemberList() {
@@ -155,11 +158,14 @@ function renderMemberList() {
     
     tbody.innerHTML = "";
     channels.forEach((ch, idx) => {
+        // 🟢 IDデータをクレンジング処理
+        const pureMcId = cleanMcId(ch.minecraftId);
+        
         let mcHeadHtml = "";
-        if (ch.minecraftId && ch.minecraftId.trim() !== "") {
+        if (pureMcId !== "") {
             mcHeadHtml = `
                 <div class="mc-head-box" style="border-color:${ch.color || '#d8e2d7'}">
-                    <img class="mc-head-img" src="https://minotar.net/cube/${ch.minecraftId.trim()}/32.png" alt="${ch.name}">
+                    <img class="mc-head-img" src="https://minotar.net/cube/${pureMcId}/32.png" alt="${ch.name}">
                 </div>`;
         } else {
             mcHeadHtml = `
@@ -168,7 +174,7 @@ function renderMemberList() {
                 </div>`;
         }
 
-        const mcText = ch.minecraftId ? ch.minecraftId : `<span style="color:#8ca08a; font-size:12px;">未設定 (Coming soon)</span>`;
+        const mcText = pureMcId ? pureMcId : `<span style="color:#8ca08a; font-size:12px;">未設定 (Coming soon)</span>`;
         
         tbody.innerHTML += `
             <tr>
@@ -189,13 +195,12 @@ function editMember(idx) {
     
     document.getElementById('m_name').value = ch.name || "";
     document.getElementById('m_id').value = ch.id || "";
-    document.getElementById('m_mc').value = ch.minecraftId || "";
+    document.getElementById('m_mc').value = cleanMcId(ch.minecraftId); // ここも綺麗にしてセット
     document.getElementById('m_x').value = ch.twitterId || "";
     document.getElementById('m_tw').value = ch.twitchId || "";
     document.getElementById('m_inst').value = ch.instaId || "";
     document.getElementById('m_discord').value = ch.discordUrl || "";
     
-    // 🟢 再編集モード時、ピッカーと文字入力欄の両方に色をセット
     const targetColor = ch.color || "#ff9900";
     document.getElementById('m_color').value = targetColor;
     document.getElementById('m_color_text').value = targetColor.toUpperCase();
@@ -226,19 +231,17 @@ function clearForm() {
     document.getElementById('m_inst').value = "";
     document.getElementById('m_discord').value = "";
     document.getElementById('m_color').value = "#ff9900";
-    document.getElementById('m_color_text').value = "#ff9900"; // テキスト欄もリセット
+    document.getElementById('m_color_text').value = "#ff9900";
 }
 
 function addMember() {
     const name = document.getElementById('m_name').value.trim();
     const id = document.getElementById('m_id').value.trim();
-    const minecraftId = document.getElementById('m_mc').value.trim();
+    const minecraftId = cleanMcId(document.getElementById('m_mc').value); // 保存時も綺麗にする
     const twitterId = document.getElementById('m_x').value.trim();
     const twitchId = document.getElementById('m_tw').value.trim();
     const instaId = document.getElementById('m_inst').value.trim();
     const discordUrl = document.getElementById('m_discord').value.trim();
-    
-    // 🟢 保存時はテキストボックス側の値を優先して取得（大文字小文字を統一するため小文字化）
     const color = document.getElementById('m_color_text').value.trim().toLowerCase();
 
     if (!name || !id) { alert("名前とYouTubeチャンネルIDは必須です！"); return; }
