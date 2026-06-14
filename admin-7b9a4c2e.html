@@ -275,7 +275,7 @@ function deleteMember(idx) {
 }
 
 function exportConfig() {
-    const output = `const CONFIG = {\n    YOUTUBE_API_KEY: "ここにあなたのAPIキー",\n    DEFAULT_CHANNELS: ${JSON.stringify(channels, null, 8)}\n};`;
+    const output = `const CONFIG = {\n    YOUTUBE_API_KEY: "AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY",\n    DEFAULT_CHANNELS: ${JSON.stringify(channels, null, 8)}\n};`;
     navigator.clipboard.writeText(output).then(() => {
         alert("config.js 用のコードをコピーしました！config.jsファイルに貼り付けて保存してください。");
     });
