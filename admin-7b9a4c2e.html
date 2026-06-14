@@ -57,19 +57,20 @@
         .clickable-name { color: #2d5a27; text-decoration: underline; cursor: pointer; }
         .clickable-name:hover { color: #143311; background: #e2eae2; }
 
+        /* 🧊 マイクラの3D顔キューブ用のスタイル */
         .mc-head-box {
-            width: 28px; height: 28px; border-radius: 4px; overflow: hidden;
+            width: 32px; height: 32px; border-radius: 4px; overflow: hidden;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1); background: #ffffff;
-            border: 1px solid #d8e2d7; margin: 0 auto;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); background: #cbd5e1;
+            border: 2px solid #d8e2d7; margin: 0 auto;
+            position: relative;
         }
-        .mc-head-img { width: 100%; height: 100%; object-fit: contain; transform: scale(1.1); }
+        .mc-head-img { width: 100%; height: 100%; object-fit: contain; display: block; }
         
-        .coming-soon-lbl {
+        /* 🕒 未登録時やエラー時のデフォルトアイコン（スティーブ風シルエット） */
+        .default-avatar {
             width: 100%; height: 100%; background: #94a3b8; color: #ffffff;
-            font-size: 7px; font-weight: bold; text-align: center; line-height: 1.1;
-            display: flex; align-items: center; justify-content: center;
-            text-transform: uppercase; letter-spacing: -0.2px;
+            font-size: 18px; display: flex; align-items: center; justify-content: center;
         }
 
         .btn-del { background: #dc2626; color: white; border: none; padding: 4px 10px; cursor: pointer; border-radius: 4px; }
@@ -86,7 +87,7 @@
         <div id="editNotice" style="display: none;"><span class="edit-badge">✏️ メンバー編集モード中</span></div>
         <div class="form-group"><label>名前</label><input type="text" id="m_name" placeholder="例: まぐにぃ"></div>
         <div class="form-group"><label>YouTube チャンネルID</label><input type="text" id="m_id" placeholder="例: UCMP7QuS4suoONg47Nbi-wrg"></div>
-        <div class="form-group"><label>Minecraft ID (Java版)</label><input type="text" id="m_mc" placeholder="例: magunee (空欄時はComing soon)"></div>
+        <div class="form-group"><label>Minecraft ID (Java版)</label><input type="text" id="m_mc" placeholder="例: magunee (空欄時はシルエット)"></div>
         <div class="form-group"><label>X (旧Twitter) ID</label><input type="text" id="m_x" placeholder="例: maguro29"></div>
         <div class="form-group"><label>Twitch ID</label><input type="text" id="m_tw" placeholder="例: maguro29game"></div>
         <div class="form-group"><label>Instagram ID</label><input type="text" id="m_inst" placeholder="例: "></div>
@@ -102,7 +103,7 @@
         <button id="cancelBtn" style="display:none; margin-left:10px;" onclick="cancelEdit()">編集をキャンセル</button>
     </div>
 
-    <h2 style="margin-top: 40px;">📋 現在の登録メンバー一覧 <span style="font-size:13px; color:#5c6b5a; font-weight:normal;">（名前をクリックすると再編集できます）</span></h2>
+    <h2>📋 現在の登録メンバー一覧 <span style="font-size:13px; color:#5c6b5a; font-weight:normal;">（名前をクリックすると再編集できます）</span></h2>
     <table class="member-table">
         <thead>
             <tr>
@@ -143,10 +144,17 @@ function syncTextColorToPicker(val) {
     }
 }
 
-// 🟢 IDに潜む改行や空白をキレイさっぱり除去する安全な関数
 function cleanMcId(idStr) {
     if (!idStr) return "";
     return idStr.toString().replace(/\r?\n|\r/g, '').trim();
+}
+
+// 🟢 画像の読み込みに失敗した時に自動で人型シルエットに切り替えるお助け関数
+function handleAvatarError(imgElement) {
+    const box = imgElement.parentElement;
+    if (box) {
+        box.innerHTML = `<div class="default-avatar" title="画像読み込みエラー">👤</div>`;
+    }
 }
 
 function renderMemberList() {
@@ -158,23 +166,28 @@ function renderMemberList() {
     
     tbody.innerHTML = "";
     channels.forEach((ch, idx) => {
-        // 🟢 IDデータをクレンジング処理
         const pureMcId = cleanMcId(ch.minecraftId);
         
         let mcHeadHtml = "";
         if (pureMcId !== "") {
+            // 🟢 より高速で安定している「crafatar.com」の3D頭部モデルAPIに変更しました！
+            // 🟢 onerror属性を付け、もし落ちてもシルエット(👤)を出す防衛策を追加
             mcHeadHtml = `
                 <div class="mc-head-box" style="border-color:${ch.color || '#d8e2d7'}">
-                    <img class="mc-head-img" src="https://minotar.net/cube/${pureMcId}/32.png" alt="${ch.name}">
+                    <img class="mc-head-img" 
+                         src="https://crafatar.com/avatars/${pureMcId}?size=32&overlay" 
+                         alt="${ch.name}" 
+                         onerror="handleAvatarError(this)">
                 </div>`;
         } else {
+            // ID未登録のときは、最初から優しく人型シルエットを出す
             mcHeadHtml = `
                 <div class="mc-head-box">
-                    <div class="coming-soon-lbl">CS</div>
+                    <div class="default-avatar" title="未設定">👤</div>
                 </div>`;
         }
 
-        const mcText = pureMcId ? pureMcId : `<span style="color:#8ca08a; font-size:12px;">未設定 (Coming soon)</span>`;
+        const mcText = pureMcId ? pureMcId : `<span style="color:#8ca08a; font-size:12px;">未設定</span>`;
         
         tbody.innerHTML += `
             <tr>
@@ -195,7 +208,7 @@ function editMember(idx) {
     
     document.getElementById('m_name').value = ch.name || "";
     document.getElementById('m_id').value = ch.id || "";
-    document.getElementById('m_mc').value = cleanMcId(ch.minecraftId); // ここも綺麗にしてセット
+    document.getElementById('m_mc').value = cleanMcId(ch.minecraftId);
     document.getElementById('m_x').value = ch.twitterId || "";
     document.getElementById('m_tw').value = ch.twitchId || "";
     document.getElementById('m_inst').value = ch.instaId || "";
@@ -237,7 +250,7 @@ function clearForm() {
 function addMember() {
     const name = document.getElementById('m_name').value.trim();
     const id = document.getElementById('m_id').value.trim();
-    const minecraftId = cleanMcId(document.getElementById('m_mc').value); // 保存時も綺麗にする
+    const minecraftId = cleanMcId(document.getElementById('m_mc').value);
     const twitterId = document.getElementById('m_x').value.trim();
     const twitchId = document.getElementById('m_tw').value.trim();
     const instaId = document.getElementById('m_inst').value.trim();
