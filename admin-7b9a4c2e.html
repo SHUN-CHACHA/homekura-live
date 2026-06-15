@@ -7,7 +7,7 @@
         body { 
             font-family: sans-serif; 
             padding: 20px; 
-            background: #eef3ee; /* 目に優しい薄緑 */
+            background: #eef3ee;
             color: #1a2418; 
         }
         
@@ -21,7 +21,6 @@
             margin-bottom: 20px;
         }
 
-        /* 💻 PC・タブレット用の左右2カラムレイアウト設定 */
         @media (min-width: 768px) {
             .admin-main-layout {
                 display: flex;
@@ -66,7 +65,6 @@
         .btn-export { background: #2563eb; color: white; border: none; font-weight: bold; padding: 10px 20px; }
         .btn-export:hover { opacity: 0.9; }
         
-        /* 💾 画像ダウンロード用ボタンのスタイル */
         .btn-download-avatar { background: #d97706; color: white; border: none; font-weight: bold; margin-left: 10px; padding: 4px 10px; font-size: 13px; }
         .btn-download-avatar:hover { opacity: 0.9; }
         .btn-download-avatar:disabled { background: #cbd5e1; cursor: not-allowed; }
@@ -81,7 +79,6 @@
         .clickable-name { color: #2d5a27; text-decoration: underline; cursor: pointer; }
         .clickable-name:hover { color: #143311; background: #e2eae2; }
 
-        /* 🧊 マイクラの3D顔キューブ用のスタイル（Minotar表示用） */
         .mc-head-box {
             width: 28px; height: 28px; border-radius: 4px; overflow: hidden;
             display: flex; align-items: center; justify-content: center;
@@ -103,7 +100,28 @@
         #cancelBtn { background: #64748b; color: white; border: none; }
         #cancelBtn:hover { opacity: 0.9; }
 
-        /* 📝 右側マニュアル・ツール用スタイル */
+        /* TikTokラベル用バッジ */
+        .label-badge-tt {
+            display: inline-block;
+            background: #010101;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 1px 5px;
+            border-radius: 3px;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+
+        /* テーブル内TikTokリンク */
+        .tt-link {
+            color: #010101;
+            font-size: 12px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .tt-link:hover { text-decoration: underline; }
+
         .helper-card {
             background: #ffffff;
             border: 1px solid #d8e2d7;
@@ -123,13 +141,17 @@
             padding: 8px; border-radius: 4px; border: 1px solid #d8e2d7; background: #fafafa; color: #1a2418; resize: vertical;
         }
 
-        /* 📱 スマホ環境（画面の横幅が768px以下）のときの表示ルール */
         @media screen and (max-width: 768px) {
             input[type="text"] { width: 100%; box-sizing: border-box; }
             label { display: block; margin-bottom: 4px; }
             
             .member-table th:nth-child(2),
             .member-table td:nth-child(2) {
+                display: none !important;
+            }
+            /* スマホではTikTok列も非表示 */
+            .member-table th.col-tt,
+            .member-table td.col-tt {
                 display: none !important;
             }
         }
@@ -162,6 +184,11 @@
 
                 <div class="form-group"><label>X (旧Twitter) ID</label><input type="text" id="m_x" placeholder="例: maguro29"></div>
                 <div class="form-group"><label>Twitch ID</label><input type="text" id="m_tw" placeholder="例: maguro29game"></div>
+                <!-- ✅ TikTok入力欄を追加 -->
+                <div class="form-group">
+                    <label>TikTok ID <span class="label-badge-tt">TT</span></label>
+                    <input type="text" id="m_tt" placeholder="例: maguro29 （@は不要）">
+                </div>
                 <div class="form-group"><label>Instagram ID</label><input type="text" id="m_inst" placeholder="例: "></div>
                 <div class="form-group"><label>Discord 招待URL</label><input type="text" id="m_discord" placeholder="https://discord.gg/..."></div>
                 
@@ -226,6 +253,8 @@
                 <th>名前 (クリックで編集)</th>
                 <th>Minecraft ID</th>
                 <th>YouTube ID</th>
+                <!-- ✅ TikTok列を追加 -->
+                <th class="col-tt" style="width: 100px;">TikTok</th>
                 <th style="width: 80px;">操作</th>
             </tr>
         </thead>
@@ -243,7 +272,7 @@ function initAdmin() {
     if (saved) { channels = JSON.parse(saved); }
     else if (typeof CONFIG !== 'undefined' && CONFIG.DEFAULT_CHANNELS) { channels = [...CONFIG.DEFAULT_CHANNELS]; }
     renderMemberList();
-    updateConfigOutput(); // 初期化時にテキストエリアを同期
+    updateConfigOutput();
 }
 
 function syncColorPickerToText(val) {
@@ -261,7 +290,6 @@ function cleanMcId(idStr) {
     return idStr.toString().replace(/\r?\n|\r/g, '').trim();
 }
 
-// 🧊 マイクラIDが入力されたときにプレビューとダウンロードボタンの状態を切り替える関数
 function updateAvatarPreview(rawId) {
     const pureMcId = cleanMcId(rawId);
     const box = document.getElementById('previewHeadBox');
@@ -278,7 +306,6 @@ function updateAvatarPreview(rawId) {
     }
 }
 
-// 💾 プレビュー中の顔画像を [マイクラID].png という名前でローカル保存する関数
 function downloadMinecraftAvatar() {
     const pureMcId = cleanMcId(document.getElementById('m_mc').value);
     if (!pureMcId) return;
@@ -311,7 +338,7 @@ function renderMemberList() {
 
     if (!channels.length) {
         tbody.innerHTML =
-            `<tr><td colspan="6" style="text-align:center; color:#5c6b5a;">メンバーが登録されていません。</td></tr>`;
+            `<tr><td colspan="7" style="text-align:center; color:#5c6b5a;">メンバーが登録されていません。</td></tr>`;
         return;
     }
 
@@ -329,7 +356,6 @@ function renderMemberList() {
         let mcHeadHtml = "";
 
         if (avatarPath) {
-
             mcHeadHtml = `
                 <div class="mc-head-box" style="border-color:${ch.color || '#d8e2d7'}">
                     <img
@@ -339,19 +365,21 @@ function renderMemberList() {
                         onerror="this.parentElement.innerHTML='<div class=&quot;coming-soon-lbl&quot;>Coming soon</div>'"
                     >
                 </div>`;
-
         } else {
-
             mcHeadHtml = `
                 <div class="mc-head-box">
                     <div class="coming-soon-lbl">Coming soon</div>
                 </div>`;
-
         }
 
         const mcText = pureMcId
             ? pureMcId
             : `<span style="color:#8ca08a; font-size:12px;">未設定 (Coming soon)</span>`;
+
+        // ✅ TikTokセルの表示
+        const tiktokCell = ch.tiktokId
+            ? `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" class="tt-link">@${ch.tiktokId}</a>`
+            : `<span style="color:#8ca08a; font-size:12px;">未設定</span>`;
 
         tbody.innerHTML += `
             <tr>
@@ -374,6 +402,9 @@ function renderMemberList() {
                 <td style="font-family:monospace; font-size:12px; color:#414d3f;">
                     ${ch.id}
                 </td>
+
+                <!-- ✅ TikTokセル -->
+                <td class="col-tt">${tiktokCell}</td>
 
                 <td>
                     <button class="btn-del"
@@ -399,6 +430,8 @@ function editMember(idx) {
     
     document.getElementById('m_x').value = ch.twitterId || "";
     document.getElementById('m_tw').value = ch.twitchId || "";
+    // ✅ TikTok IDをフォームに読み込む
+    document.getElementById('m_tt').value = ch.tiktokId || "";
     document.getElementById('m_inst').value = ch.instaId || "";
     document.getElementById('m_discord').value = ch.discordUrl || "";
     
@@ -430,6 +463,8 @@ function clearForm() {
     updateAvatarPreview("");
     document.getElementById('m_x').value = "";
     document.getElementById('m_tw').value = "";
+    // ✅ クリア時にTikTokもリセット
+    document.getElementById('m_tt').value = "";
     document.getElementById('m_inst').value = "";
     document.getElementById('m_discord').value = "";
     document.getElementById('m_color').value = "#ff9900";
@@ -442,6 +477,8 @@ function addMember() {
     const minecraftId = cleanMcId(document.getElementById('m_mc').value);
     const twitterId = document.getElementById('m_x').value.trim();
     const twitchId = document.getElementById('m_tw').value.trim();
+    // ✅ TikTok IDを取得（@が入力されていた場合は除去）
+    const tiktokId = document.getElementById('m_tt').value.trim().replace(/^@/, '');
     const instaId = document.getElementById('m_inst').value.trim();
     const discordUrl = document.getElementById('m_discord').value.trim();
     const color = document.getElementById('m_color_text').value.trim().toLowerCase();
@@ -449,7 +486,8 @@ function addMember() {
     if (!name || !id) { alert("名前とYouTubeチャンネルIDは必須です！"); return; }
     if (!color.match(/^#[0-9a-fA-F]{6}$/)) { alert("カラーコードは #ffffff のような形式で入力してください！"); return; }
 
-    const memberData = { name, id, minecraftId, twitterId, twitchId, tiktokId:"", instaId, discordUrl, color };
+    // ✅ tiktokId を memberData に含める
+    const memberData = { name, id, minecraftId, twitterId, twitchId, tiktokId, instaId, discordUrl, color };
 
     if (editIndex > -1) {
         channels[editIndex] = memberData;
@@ -463,7 +501,7 @@ function addMember() {
     
     localStorage.setItem('custom_channels', JSON.stringify(channels));
     renderMemberList();
-    updateConfigOutput(); // 保存時にも右側の出力をリアルタイム更新
+    updateConfigOutput();
 }
 
 function deleteMember(idx) {
@@ -473,31 +511,28 @@ function deleteMember(idx) {
         channels.splice(idx, 1);
         localStorage.setItem('custom_channels', JSON.stringify(channels));
         renderMemberList();
-        updateConfigOutput(); // 削除時にも右側の出力をリアルタイム更新
+        updateConfigOutput();
     }
 }
 
-// 📝 データの変更や初期化に合わせて右側の出力をリアルタイム更新する内部関数
 function updateConfigOutput() {
     const outputTextarea = document.getElementById('configOutput');
     const formattedChannels = channels.map(ch => {
         const pureMcId = cleanMcId(ch.minecraftId);
         return {
             ...ch,
-            avatarImg: pureMcId ? `avatars/${pureMcId}.png` : "" // ポータルに最適化されたパスを自動補完
+            avatarImg: pureMcId ? `avatars/${pureMcId}.png` : ""
         };
     });
 
-    // 既存のAPIキーを維持（取得できない場合はデフォルト値を表示）
     const apiKey = (typeof CONFIG !== 'undefined' && CONFIG.YOUTUBE_API_KEY) ? CONFIG.YOUTUBE_API_KEY : "AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY";
     const output = `const CONFIG = {\n    YOUTUBE_API_KEY: "${apiKey}",\n    DEFAULT_CHANNELS: ${JSON.stringify(formattedChannels, null, 8)}\n};`;
     
     outputTextarea.value = output;
 }
 
-// 📂 config.js用のデータをクリップボードに送信する関数（既存のボタンと右側ボタンの両方から呼び出されます）
 function exportConfig() {
-    updateConfigOutput(); // 最新の状態に同期
+    updateConfigOutput();
     const outputText = document.getElementById('configOutput').value;
     
     navigator.clipboard.writeText(outputText).then(() => {
