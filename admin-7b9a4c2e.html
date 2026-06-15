@@ -21,20 +21,29 @@
             margin-bottom: 20px;
         }
 
+        .admin-main-layout {
+            display: block;
+        }
+
+        .admin-left-col,
+        .admin-right-col {
+            min-width: 0;
+        }
+
         @media (min-width: 768px) {
             .admin-main-layout {
                 display: flex;
-                flex-wrap: wrap;
+                flex-wrap: nowrap;
                 gap: 24px;
                 align-items: flex-start;
             }
             .admin-left-col {
-                flex: 1;
+                flex: 1 1 auto;
                 min-width: 0;
             }
             .admin-right-col {
                 width: 380px;
-                flex-shrink: 0;
+                flex: 0 0 380px;
                 position: sticky;
                 top: 20px;
             }
@@ -42,6 +51,19 @@
 
         .form-group { margin-bottom: 10px; }
         label { display: inline-block; width: 180px; font-weight: bold; }
+
+        #memberFormContainer .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px 12px;
+        }
+
+        #memberFormContainer .form-group > input[type="text"] {
+            flex: 1 1 400px;
+            min-width: 220px;
+            max-width: 100%;
+        }
         
         input[type="text"] { 
             width: 400px; 
@@ -50,6 +72,7 @@
             border: 1px solid #d8e2d7; 
             border-radius: 4px;
             color: #1a2418;
+            box-sizing: border-box;
         }
         input[type="text"]:focus {
             background: #ffffff;
@@ -182,8 +205,16 @@
         }
 
         @media screen and (max-width: 768px) {
+            #memberFormContainer .form-group {
+                display: block;
+            }
             input[type="text"] { width: 100%; box-sizing: border-box; }
-            label { display: block; margin-bottom: 4px; }
+            label { display: block; width: auto; margin-bottom: 4px; }
+            #avatarPreviewArea {
+                width: 100% !important;
+                box-sizing: border-box;
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
@@ -232,8 +263,6 @@
                 <button id="cancelBtn" style="display:none; margin-left:10px;" onclick="cancelEdit()">編集をキャンセル</button>
             </div>
 
-        </div><!-- /.admin-left-col -->
-
         <div class="config-block">
             <div class="helper-card">
                 <h3>⚙️ config.js の書き換え</h3>
@@ -246,7 +275,10 @@
                 <textarea id="configOutput" readonly placeholder="メンバー情報を保存すると最新の設定データがここに自動同期されます"></textarea>
             </div>
         </div>
-            
+
+        </div><!-- /.admin-left-col -->
+
+        <div class="admin-right-col">
             <div class="helper-card">
                 <h3>🎨 顔アイコン（アバター）の追加手順</h3>
                 <ol class="steps-list-lg">
@@ -279,8 +311,7 @@
                     ※ MinotarのリンクをそのままWEBに貼らずローカル画像を使う理由：スマホ表示時にMinotar側でリクエストが弾かれる場合があり、Minecraft IDでもUUIDでもスマホでは表示できないケースがあったため、画像をダウンロードしてローカルで参照する方式を採用しています。
                 </p>
             </div>
-
-        </div>
+        </div><!-- /.admin-right-col -->
 
     </div>
 
@@ -596,5 +627,6 @@ function copyConfigText() {
 
 initAdmin();
 </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
