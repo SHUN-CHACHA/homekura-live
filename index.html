@@ -291,14 +291,8 @@ function createMemberCard(ch, status, videoTitle = "", videoId = "", startTime =
 
     const pureMcId = cleanMcId(ch.minecraftId);
 
-    // 💡【修正箇所】外部API（Minotar）を廃止し、ローカルのavatars/マイクラID.png を見にいくように変更。
-    // 画像がない（読み込みエラー）の場合は、altテキストを表示させる、または coming soon テキストに切り替える処理にしています。
-    let avatarHtml = '';
-    if (pureMcId !== "") {
-        avatarHtml = `<img src="avatars/${pureMcId}.png" alt="${ch.name}" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<span>CS</span>');">`;
-    } else {
-        avatarHtml = `<span>CS</span>`;
-    }
+    // 💡【修正箇所】元のコードと完全に同じ構造で、src属性の中身だけをローカルのフォルダパスに差し替えました
+    let avatarHtml = pureMcId ? `<img src="avatars/${pureMcId}.png" alt="${ch.name}">` : '';
 
     let badgeHtml = '<div class="status-badge">オフライン</div>';
     let timeHtml = '';
