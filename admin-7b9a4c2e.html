@@ -135,6 +135,32 @@
         }
         .steps-list { margin: 0; padding-left: 18px; font-size: 12px; line-height: 1.6; }
         .steps-list li { margin-bottom: 6px; }
+
+        /* 大きめフォントの手順リスト */
+        .steps-list-lg {
+            margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.8; color: #1a2418;
+        }
+        .steps-list-lg > li {
+            margin-bottom: 14px;
+        }
+        .steps-list-lg > li > strong {
+            font-size: 14px; color: #2d5a27; display: block; margin-bottom: 4px;
+        }
+        .steps-list-lg ul {
+            margin: 4px 0 0 0; padding-left: 18px; list-style: disc;
+        }
+        .steps-list-lg ul li {
+            margin-bottom: 4px;
+        }
+        .steps-list-lg code {
+            background: #e2eae2; padding: 1px 5px; border-radius: 3px;
+            font-size: 12px; color: #2d5a27;
+        }
+        .helper-note {
+            margin: 12px 0 0 0; padding: 10px 12px;
+            background: #fffbeb; border-left: 3px solid #ca8a04;
+            border-radius: 4px; font-size: 12px; color: #5c4a00; line-height: 1.7;
+        }
         
         #configOutput {
             width: 100%; height: 160px; font-family: monospace; font-size: 11px; box-sizing: border-box; 
@@ -198,25 +224,35 @@
             
             <div class="helper-card">
                 <h3>🎨 顔アイコン（アバター）の追加手順</h3>
-                <ol class="steps-list">
+                <ol class="steps-list-lg">
                     <li>
-                        <strong>画像を準備する</strong><br>
-                        正方形のPNG画像を用意します。（推奨サイズ: 64x64 〜 128x128ピクセル）
+                        <strong>画像を準備する</strong>
+                        <ul>
+                            <li>下部のメンバー一覧から名前をクリックしてデータを参照するか、新規に必要項目を記入します。</li>
+                            <li><b>Minecraft ID</b> を入力すると、Minotar経由で顔アイコンがプレビュー表示されます。</li>
+                            <li>「<b>画像を【Minecraft ID】.png でPCに保存</b>」ボタンがアクティブになるのでクリックすると、PCのダウンロードフォルダに画像が保存されます。</li>
+                            <li>編集が完了したら「<b>メンバーを保存</b>」ボタンをクリックしてください。</li>
+                        </ul>
                     </li>
                     <li>
-                        <strong>ファイル名を設定する</strong><br>
-                        ファイル名を <code>マイクラID.png</code> に変更します。<br>
-                        <small style="color: #666;">（例: shun_chacha.png / ⚠️大文字・小文字を正確に）</small>
+                        <strong>画像ファイルのアップロード</strong>
+                        <ul>
+                            <li>WEBの <code>index.html</code> 等が保存されているルートディレクトリに <code>avatars</code> フォルダを作成します。</li>
+                            <li>ダウンロードした画像ファイルをその <code>avatars</code> フォルダ内に保存します。</li>
+                        </ul>
                     </li>
                     <li>
-                        <strong>フォルダに配置する</strong><br>
-                        ポータルサイトのルート（index.htmlがある場所）にある <code>avatars</code> フォルダの中に、準備した画像ファイルを移動（保存）します。
-                    </li>
-                    <li>
-                        <strong>管理画面で紐付け</strong><br>
-                        左のフォームで「Minecraft ID」を入力して保存すると、自動的に <code>avatars/マイクラID.png</code> としてポータルに登録されます。
+                        <strong>画像ファイルの紐づけ</strong>
+                        <ul>
+                            <li>右側の「<b>⚙️ config.jsの書き換え</b>」から「<b>config.jsの内容をコピー</b>」ボタンをクリックするとクリップボードにコピーされます。</li>
+                            <li>コピーした内容をWEBの <code>config.js</code> に全文貼り替えて保存してください。</li>
+                            <li>アップロードが完了したら反映されているか確認して終了です。</li>
+                        </ul>
                     </li>
                 </ol>
+                <p class="helper-note">
+                    ※ MinotarのリンクをそのままWEBに貼らずローカル画像を使う理由：スマホ表示時にMinotar側でリクエストが弾かれる場合があり、Minecraft IDでもUUIDでもスマホでは表示できないケースがあったため、画像をダウンロードしてローカルで参照する方式を採用しています。
+                </p>
             </div>
 
             <div class="helper-card">
