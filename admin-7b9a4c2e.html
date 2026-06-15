@@ -24,6 +24,7 @@
         @media (min-width: 768px) {
             .admin-main-layout {
                 display: flex;
+                flex-wrap: wrap;
                 gap: 24px;
                 align-items: flex-start;
             }
@@ -167,6 +168,19 @@
             padding: 8px; border-radius: 4px; border: 1px solid #d8e2d7; background: #fafafa; color: #1a2418; resize: vertical;
         }
 
+        /* config.jsブロック：フォームの直下、全幅で表示 */
+        .config-block {
+            max-width: 100%;
+            margin-top: 0;
+        }
+        @media (min-width: 768px) {
+            .config-block {
+                /* 2カラムレイアウト内では左カラムと同じ幅に収める */
+                flex: 1;
+                min-width: 0;
+            }
+        }
+
         @media screen and (max-width: 768px) {
             input[type="text"] { width: 100%; box-sizing: border-box; }
             label { display: block; margin-bottom: 4px; }
@@ -218,9 +232,20 @@
                 <button id="cancelBtn" style="display:none; margin-left:10px;" onclick="cancelEdit()">編集をキャンセル</button>
             </div>
 
-        </div>
+        </div><!-- /.admin-left-col -->
 
-        <div class="admin-right-col">
+        <div class="config-block">
+            <div class="helper-card">
+                <h3>⚙️ config.js の書き換え</h3>
+                <p style="font-size: 13px; color: #5c6b5a; margin-bottom: 10px; margin-top: 0;">
+                    メンバーの追加・編集が終わったら、下のボタンで最新の設定をコピーし、ローカルの <code>config.js</code> を丸ごと上書き保存してください。
+                </p>
+                <button type="button" class="btn-export" style="width: 100%; padding: 10px; margin-bottom: 10px; font-size: 13px;" onclick="exportConfig()">
+                    📋 config.jsの内容をコピー
+                </button>
+                <textarea id="configOutput" readonly placeholder="メンバー情報を保存すると最新の設定データがここに自動同期されます"></textarea>
+            </div>
+        </div>
             
             <div class="helper-card">
                 <h3>🎨 顔アイコン（アバター）の追加手順</h3>
@@ -244,7 +269,7 @@
                     <li>
                         <strong>画像ファイルの紐づけ</strong>
                         <ul>
-                            <li>右側の「<b>⚙️ config.jsの書き換え</b>」から「<b>config.jsの内容をコピー</b>」ボタンをクリックするとクリップボードにコピーされます。</li>
+                            <li>「<b>⚙️ config.jsの書き換え</b>」から「<b>config.jsの内容をコピー</b>」ボタンをクリックするとクリップボードにコピーされます。</li>
                             <li>コピーした内容をWEBの <code>config.js</code> に全文貼り替えて保存してください。</li>
                             <li>アップロードが完了したら反映されているか確認して終了です。</li>
                         </ul>
@@ -253,17 +278,6 @@
                 <p class="helper-note">
                     ※ MinotarのリンクをそのままWEBに貼らずローカル画像を使う理由：スマホ表示時にMinotar側でリクエストが弾かれる場合があり、Minecraft IDでもUUIDでもスマホでは表示できないケースがあったため、画像をダウンロードしてローカルで参照する方式を採用しています。
                 </p>
-            </div>
-
-            <div class="helper-card">
-                <h3>⚙️ config.js の書き換え</h3>
-                <p style="font-size: 11px; color: #5c6b5a; margin-bottom: 10px; margin-top: 0;">
-                    メンバーの追加・編集が終わったら、下のボタンで最新の設定をコピーし、ローカルの <code>config.js</code> を丸ごと上書き保存してください。
-                </p>
-                <button type="button" class="btn-export" style="width: 100%; padding: 10px; margin-bottom: 10px; font-size: 13px;" onclick="exportConfig()">
-                    📋 config.jsの内容をコピー
-                </button>
-                <textarea id="configOutput" readonly placeholder="メンバー情報を保存すると最新の設定データがここに自動同期されます"></textarea>
             </div>
 
         </div>
