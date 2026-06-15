@@ -345,6 +345,12 @@ function renderGrids(chInfoMap, vItems) {
         const isReserved = reservedVideos.some(rv => rv.id === lastV?.id);
         let cardBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>`;
         if (ch.twitterId) cardBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>`;
+        if (ch.tiktokId) {
+    listBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId}"
+        target="_blank"
+        class="btn-square-mini"
+        title="TikTok">TT</a>`;
+}
         if (ch.twitchId) cardBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-tw">Twitch</a>`;
 
         const safeTextColor = adjustColorForText(ch.color);
