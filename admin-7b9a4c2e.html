@@ -142,13 +142,14 @@
             padding: 8px; border-radius: 4px; border: 1px solid #d8e2d7; background: #fafafa; color: #1a2418; resize: vertical;
         }
 
-        /* 📱 スマホ環境の表示ルール */
+        /* 📱 スマホ環境の表示ルール（テーブル最適化） */
         @media screen and (max-width: 768px) {
             input[type="text"] { width: 100%; box-sizing: border-box; }
             label { display: block; margin-bottom: 4px; }
             
-            .member-table th:nth-child(3),
-            .member-table td:nth-child(3) {
+            /* 横幅を節約するため、スマホ時は一番長い「YouTube ID（6番目の列）」を非表示にします。顔列は残します。 */
+            .member-table th:nth-child(6),
+            .member-table td:nth-child(6) {
                 display: none !important;
             }
         }
@@ -203,7 +204,7 @@
                 <ol class="steps-list">
                     <li>
                         <strong>画像を準備する</strong><br>
-                        正方形のPNG画像を用意します。（推奨サイズ: 64x64 〜 128x128ピクセル）
+                        フォームの「画像保存」ボタン、または正方形のPNG画像を用意します。
                     </li>
                     <li>
                         <strong>ファイル名を設定する</strong><br>
@@ -212,11 +213,11 @@
                     </li>
                     <li>
                         <strong>フォルダに配置する</strong><br>
-                        ポータルサイトのルート（index.htmlがある場所）にある <code>avatars</code> フォルダの中に、準備した画像ファイルを移動（保存）します。
+                        ポータルサイトのルートにある <code>avatars</code> フォルダの中に、準備した画像ファイルを移動（保存）します。
                     </li>
                     <li>
-                        <strong>管理画面で紐付け</strong><br>
-                        左のフォームで「Minecraft ID」を入力して保存すると、自動的に <code>avatars/マイクラID.png</code> としてポータルに登録されます。
+                        <strong>管理画面で確認</strong><br>
+                        フォルダへの配置が完了すると、下の一覧の「顔」部分にローカル画像が反映されます。
                     </li>
                 </ol>
             </div>
@@ -240,7 +241,8 @@
     <table class="member-table">
         <thead>
             <tr>
-                <th style="width: 40px; text-align:center;">移動</th> <th style="width: 60px; text-align:center;">カラー</th>
+                <th style="width: 40px; text-align:center;">移動</th>
+                <th style="width: 60px; text-align:center;">カラー</th>
                 <th style="width: 60px; text-align:center;">顔</th>
                 <th>名前 (クリックで編集)</th>
                 <th>Minecraft ID</th>
@@ -280,6 +282,7 @@ function cleanMcId(idStr) {
     return idStr.toString().replace(/\r?\n|\r/g, '').trim();
 }
 
+// 💡 フォームの入力プレビュー部分。ここでのみ Minotar（外部API）を使用します。
 function updateAvatarPreview(rawId) {
     const pureMcId = cleanMcId(rawId);
     const box = document.getElementById('previewHeadBox');
@@ -336,9 +339,14 @@ function renderMemberList() {
         
         let mcHeadHtml = "";
         if (pureMcId !== "") {
+            // 💡【ロジック修正】ローカルのavatars内の画像だけを読み込みます。
+            // 画像がない(エラー)場合は、親要素の中身ごと「Coming Soon」のバッジ表示に書き換えます。
+            const localImgUrl = `avatars/${pureMcId}.png`;
+            
             mcHeadHtml = `
                 <div class="mc-head-box" style="border-color:${ch.color || '#d8e2d7'}">
-                    <img class="mc-head-img" src="https://minotar.net/cube/${pureMcId}/32.png" alt="${ch.name}">
+                    <img class="mc-head-img" src="${localImgUrl}" alt="${ch.name}" 
+                         onerror="this.parentElement.innerHTML='<div class=\'coming-soon-lbl\'>CS</div>';">
                 </div>`;
         } else {
             mcHeadHtml = `
@@ -349,7 +357,6 @@ function renderMemberList() {
 
         const mcText = pureMcId ? pureMcId : `<span style="color:#8ca08a; font-size:12px;">未設定 (Coming soon)</span>`;
         
-        // 🚀 各行を draggable="true" にしてデータインデックスを保持
         tbody.innerHTML += `
             <tr draggable="true" data-index="${idx}" class="draggable-row">
                 <td class="drag-handle">⋮⋮</td>
@@ -363,11 +370,9 @@ function renderMemberList() {
         `;
     });
 
-    // ドラッグ＆ドロップ用イベントリスナーの設定
     setupDragAndDrop();
 }
 
-// 🎛️ ドラッグ＆ドロップの並び替えロジック
 function setupDragAndDrop() {
     const rows = document.querySelectorAll('.draggable-row');
     const tbody = document.getElementById('memberTableBody');
@@ -383,14 +388,12 @@ function setupDragAndDrop() {
         row.addEventListener('dragend', () => {
             row.classList.remove('dragging');
             
-            // 🚀 ドロップして位置が確定したら配列データを並び替えて保存する
             const currentRows = Array.from(tbody.querySelectorAll('.draggable-row'));
             const newChannels = currentRows.map(r => channels[parseInt(r.getAttribute('data-index'))]);
             
             channels = newChannels;
             localStorage.setItem('custom_channels', JSON.stringify(channels));
             
-            // インデックスがズレるので一度レンダリングと出力を同期
             renderMemberList();
             updateConfigOutput();
         });
