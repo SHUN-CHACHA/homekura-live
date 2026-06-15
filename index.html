@@ -49,7 +49,6 @@
             object-fit: contain;
         }
 
-        /* 📋 タイマーと手動更新のエリア */
         .controls {
             display: flex;
             justify-content: center;
@@ -78,7 +77,6 @@
             border-color: var(--accent-green);
         }
 
-        /* 📱 企画用ルーレットページ等への移動ボタンエリア */
         .nav-links {
             margin-top: 15px;
             display: flex;
@@ -138,53 +136,26 @@
             border-top: 6px solid var(--accent-green);
             text-decoration: none;
             color: inherit;
-            
-            /* 💡 顔アイコンとテキスト情報を綺麗に左右に並べる設定 */
-            display: flex;
-            gap: 14px;
-            align-items: flex-start;
         }
 
-        /* 🧊 マイクラ顔アイコンの配置スペース */
-        .card-avatar-zone {
-            flex-shrink: 0;
-            width: 54px;
-            height: 54px;
-            border-radius: 8px;
-            overflow: hidden;
-            background: #fafafa;
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .card-avatar-img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            transform: scale(1.05);
-        }
-        .card-coming-soon {
-            width: 100%;
-            height: 100%;
-            background: #94a3b8;
-            color: #ffffff;
-            font-size: 9px;
+        .name {
+            font-size: 18px;
             font-weight: bold;
-            text-align: center;
+            margin: 0 0 12px 0;
+            padding-right: 75px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-transform: ellipsis;
             display: flex;
             align-items: center;
-            justify-content: center;
-            line-height: 1.2;
-            text-transform: uppercase;
-            letter-spacing: -0.3px;
+            gap: 8px;
         }
 
-        /* 📝 テキスト情報（名前やステータス）のメインゾーン */
-        .card-main-zone {
-            flex: 1;
-            min-width: 0;
+        .name img {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            object-fit: contain;
         }
 
         .status-badge {
@@ -207,16 +178,6 @@
             0% { opacity: 1; }
             50% { opacity: 0.6; }
             100% { opacity: 1; }
-        }
-
-        .name {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 0 0 4px 0;
-            padding-right: 75px; /* バッジと重ならないように確保 */
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         .title {
@@ -274,13 +235,6 @@
         .btn-reserved {
             background-color: #dc2626;
         }
-
-        /* 📱 スマホ縦画面用の最適化（横幅が狭いとき） */
-        @media (max-width: 360px) {
-            .card { padding: 12px; gap: 10px; }
-            .card-avatar-zone { width: 46px; height: 46px; }
-            .name { font-size: 16px; }
-        }
     </style>
 </head>
 <body>
@@ -319,7 +273,7 @@
 
 <script src="config.js"></script>
 <script>
-let timeLeft = 300; // 5分タイマー
+let timeLeft = 300; 
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos')) || [];
 
 function cleanMcId(idStr) {
@@ -327,11 +281,9 @@ function cleanMcId(idStr) {
     return idStr.toString().replace(/\r?\n|\r/g, '').trim();
 }
 
-// 💡 メンバーカードのHTML構造を生成する共通関数（ここに顔アイコン処理を綺麗に組み込みました）
 function createMemberCard(ch, status, videoTitle = "", videoId = "", startTime = "") {
     const borderTopColor = ch.color || 'var(--accent-green)';
     
-    // 配信中や予定があればその動画へのリンク、なければチャンネルの配信URLにする
     let targetUrl = `https://youtube.com/channel/${ch.id}/live`;
     if (videoId) {
         targetUrl = `https://youtube.com/watch?v=${videoId}`;
@@ -339,22 +291,15 @@ function createMemberCard(ch, status, videoTitle = "", videoId = "", startTime =
 
     const pureMcId = cleanMcId(ch.minecraftId);
 
-    // 🧊 顔アイコン表示スペースのHTML生成（画像がない場合はComing Soonに化けるonerror付き）
+    // 💡【修正箇所】外部API（Minotar）を廃止し、ローカルのavatars/マイクラID.png を見にいくように変更。
+    // 画像がない（読み込みエラー）の場合は、altテキストを表示させる、または coming soon テキストに切り替える処理にしています。
     let avatarHtml = '';
     if (pureMcId !== "") {
-        avatarHtml = `
-            <div class="card-avatar-zone" style="border-color: ${ch.color || 'var(--border-color)'}">
-                <img class="card-avatar-img" src="avatars/${pureMcId}.png" alt="${ch.name}"
-                     onerror="this.parentElement.innerHTML='<div class=\'card-coming-soon\'>COMING<br>SOON</div>';">
-            </div>`;
+        avatarHtml = `<img src="avatars/${pureMcId}.png" alt="${ch.name}" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<span>CS</span>');">`;
     } else {
-        avatarHtml = `
-            <div class="card-avatar-zone">
-                <div class="card-coming-soon">COMING<br>SOON</div>
-            </div>`;
+        avatarHtml = `<span>CS</span>`;
     }
 
-    // 右上の状態バッジ
     let badgeHtml = '<div class="status-badge">オフライン</div>';
     let timeHtml = '';
     let actionBtnHtml = '';
@@ -379,7 +324,6 @@ function createMemberCard(ch, status, videoTitle = "", videoId = "", startTime =
         badgeHtml = '<div class="status-badge status-new">NEW</div>';
     }
 
-    // 各種SNSボタン
     let snsHtml = '';
     if (ch.id) snsHtml += `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-youtube">YouTube</a>`;
     if (ch.twitchId) snsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-twitch">Twitch</a>`;
@@ -387,20 +331,16 @@ function createMemberCard(ch, status, videoTitle = "", videoId = "", startTime =
     if (ch.instaId) snsHtml += `<a href="https://instagram.com/${ch.instaId}" target="_blank" class="btn btn-instagram">Instagram</a>`;
     if (ch.discordUrl) snsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn btn-discord">Discord</a>`;
 
-    // 組み込みアクションボタンがあればSNSの先頭に足す
     if (actionBtnHtml) snsHtml = actionBtnHtml + snsHtml;
 
     return `
         <a href="${targetUrl}" target="_blank" class="card" style="border-top-color: ${borderTopColor}">
-            ${avatarHtml}
-            <div class="card-main-zone">
-                ${badgeHtml}
-                <h2 class="name">${ch.name}</h2>
-                <p class="title">${videoTitle || 'オフライン、または別プラットフォームで配信中'}</p>
-                ${timeHtml}
-                <div class="sns-buttons" onclick="event.stopPropagation();">
-                    ${snsHtml}
-                </div>
+            <h2 class="name">${avatarHtml}${ch.name}</h2>
+            ${badgeHtml}
+            <p class="title">${videoTitle || 'オフライン、または別プラットフォームで配信中'}</p>
+            ${timeHtml}
+            <div class="sns-buttons" onclick="event.stopPropagation();">
+                ${snsHtml}
             </div>
         </a>
     `;
@@ -415,7 +355,6 @@ async function loadPortal() {
     const channels = CONFIG.DEFAULT_CHANNELS;
     const idList = channels.map(ch => ch.id).join(',');
     
-    // YouTube API から動画データを取得
     const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=50&channelIds=${idList}&key=${CONFIG.YOUTUBE_API_KEY}`;
     
     let apiItems = [];
@@ -431,7 +370,6 @@ async function loadPortal() {
     const counts = { live: 0, upcoming: 0, new: 0 };
     const processedChannels = new Set();
 
-    // 1. APIから返ってきた動画データを元に各セクションを組み立てる
     apiItems.forEach(item => {
         const channelId = item.snippet.channelId;
         const ch = channels.find(c => c.id === channelId);
@@ -451,7 +389,6 @@ async function loadPortal() {
             counts.upcoming++;
             processedChannels.add(channelId);
         } else if (liveBroadcastContent === 'none') {
-            // 24時間以内の新着動画判定
             const pubDate = new Date(publishedAt);
             const dayAgo = new Date(); dayAgo.setDate(dayAgo.getDate() - 1);
             if (pubDate > dayAgo && !processedChannels.has(channelId)) {
@@ -462,12 +399,10 @@ async function loadPortal() {
         }
     });
 
-    // 2. 「全員一覧」セクションを組み立てる
     channels.forEach(ch => {
         htmls.all += createMemberCard(ch, 'offline');
     });
 
-    // 3. 画面への反映と、セクションの表示・非表示の切り替え
     document.getElementById("liveSection").style.display = counts.live ? "block" : "none";
     document.getElementById("liveGrid").innerHTML = htmls.live;
     document.getElementById("upcomingSection").style.display = counts.upcoming ? "block" : "none";
@@ -502,7 +437,6 @@ function checkNotifications() {
 
 function manualRefresh() { location.reload(); }
 
-// 5分ごとのカウントダウンタイマーの処理
 setInterval(() => {
     timeLeft--; if (timeLeft < 0) location.reload();
     document.getElementById('timer').innerText = `Next Update: ${String(Math.floor(timeLeft/60)).padStart(2,'0')}:${String(timeLeft%60).padStart(2,'0')}`;
