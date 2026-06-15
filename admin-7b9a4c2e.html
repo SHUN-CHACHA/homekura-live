@@ -1,543 +1,100 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>homeクラ 配信ポータル 管理画面</title>
-    <style>
-        body { 
-            font-family: sans-serif; 
-            padding: 20px; 
-            background: #eef3ee; /* 目に優しい薄緑 */
-            color: #1a2418; 
-        }
-        
-        h2 { border-bottom: 2px solid #2d5a27; padding-bottom: 8px; color: #2d5a27; }
-        
-        #memberFormContainer {
-            background: #f7faf7;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #d8e2d7;
-            margin-bottom: 20px;
-        }
-
-        /* 💻 PC・タブレット用の左右2カラムレイアウト設定 */
-        @media (min-width: 768px) {
-            .admin-main-layout {
-                display: flex;
-                gap: 24px;
-                align-items: flex-start;
-            }
-            .admin-left-col {
-                flex: 1;
-                min-width: 0;
-            }
-            .admin-right-col {
-                width: 380px;
-                flex-shrink: 0;
-                position: sticky;
-                top: 20px;
-            }
-        }
-
-        .form-group { margin-bottom: 10px; }
-        label { display: inline-block; width: 180px; font-weight: bold; }
-        
-        input[type="text"] { 
-            width: 400px; 
-            padding: 6px; 
-            background: #f0f5f0; 
-            border: 1px solid #d8e2d7; 
-            border-radius: 4px;
-            color: #1a2418;
-        }
-        input[type="text"]:focus {
-            background: #ffffff;
-            border-color: #2d5a27;
-            outline: none;
-        }
-        
-        input[type="color"] { width: 50px; height: 30px; vertical-align: middle; border: 1px solid #d8e2d7; background: #f0f5f0; cursor: pointer; }
-        .color-code-input { width: 100px !important; margin-left: 10px; vertical-align: middle; font-family: monospace; text-transform: uppercase; }
-
-        button { padding: 6px 12px; margin-top: 10px; cursor: pointer; border-radius: 4px; }
-        .btn-save { background: #2d5a27; color: white; border: none; font-weight: bold; }
-        .btn-save:hover { opacity: 0.9; }
-        .btn-export { background: #2563eb; color: white; border: none; font-weight: bold; padding: 10px 20px; }
-        .btn-export:hover { opacity: 0.9; }
-        
-        /* 💾 画像ダウンロード用ボタンのスタイル */
-        .btn-download-avatar { background: #d97706; color: white; border: none; font-weight: bold; margin-left: 10px; padding: 4px 10px; font-size: 13px; }
-        .btn-download-avatar:hover { opacity: 0.9; }
-        .btn-download-avatar:disabled { background: #cbd5e1; cursor: not-allowed; }
-
-        .editing { background: #fffbeb !important; border: 1px solid #fde68a !important; }
-        .edit-badge { display: inline-block; background: #b45309; color: white; padding: 2px 8px; font-size: 12px; border-radius: 4px; margin-bottom: 10px; font-weight: bold; }
-
-        /* テーブル設定 */
-        .member-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #f7faf7; }
-        .member-table th, .member-table td { border: 1px solid #d8e2d7; padding: 10px; text-align: left; vertical-align: middle; }
-        .member-table th { background: #e2eae2; color: #2d5a27; }
-        
-        .clickable-name { color: #2d5a27; text-decoration: underline; cursor: pointer; }
-        .clickable-name:hover { color: #143311; background: #e2eae2; }
-
-        /* 🧊 マイクラの3D顔キューブ用のスタイル */
-        .mc-head-box {
-            width: 28px; height: 28px; border-radius: 4px; overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1); background: #ffffff;
-            border: 1px solid #d8e2d7; margin: 0 auto;
-        }
-        .mc-head-img { width: 100%; height: 100%; object-fit: contain; transform: scale(1.1); }
-        
-        .coming-soon-lbl {
-            width: 100%; height: 100%; background: #94a3b8; color: #ffffff;
-            font-size: 7px; font-weight: bold; text-align: center; line-height: 1.1;
-            display: flex; align-items: center; justify-content: center;
-            text-transform: uppercase; letter-spacing: -0.2px;
-        }
-
-        .btn-del { background: #dc2626; color: white; border: none; padding: 4px 10px; cursor: pointer; border-radius: 4px; }
-        .btn-del:hover { opacity: 0.9; }
-        
-        #cancelBtn { background: #64748b; color: white; border: none; }
-        #cancelBtn:hover { opacity: 0.9; }
-
-        /* 🎛️ ドラッグハンドル（6つの点）用のスタイル */
-        .drag-handle {
-            font-size: 18px;
-            color: #94a3b8;
-            cursor: grab;
-            user-select: none;
-            text-align: center;
-            padding: 0 5px;
-        }
-        .drag-handle:active { cursor: grabbing; color: #475569; }
-        
-        /* ドラッグ中の行の視覚フィードバック */
-        .member-table tr.dragging {
-            opacity: 0.4;
-            background: #e2e8f0;
-            border: 2px dashed #94a3b8;
-        }
-
-        /* 📝 右側マニュアル・ツール用スタイル */
-        .helper-card {
-            background: #ffffff;
-            border: 1px solid #d8e2d7;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .helper-card h3 {
-            margin-top: 0; margin-bottom: 10px; font-size: 14px; font-weight: bold; color: #2d5a27; border-bottom: 1px solid #d8e2d7; padding-bottom: 6px;
-        }
-        .steps-list { margin: 0; padding-left: 18px; font-size: 12px; line-height: 1.6; }
-        .steps-list li { margin-bottom: 6px; }
-        
-        #configOutput {
-            width: 100%; height: 160px; font-family: monospace; font-size: 11px; box-sizing: border-box; 
-            padding: 8px; border-radius: 4px; border: 1px solid #d8e2d7; background: #fafafa; color: #1a2418; resize: vertical;
-        }
-
-        /* 📱 スマホ環境の表示ルール（テーブル最適化） */
-        @media screen and (max-width: 768px) {
-            input[type="text"] { width: 100%; box-sizing: border-box; }
-            label { display: block; margin-bottom: 4px; }
-            
-            /* 横幅を節約するため、スマホ時は一番長い「YouTube ID（6番目の列）」を非表示にします。顔列は残します。 */
-            .member-table th:nth-child(6),
-            .member-table td:nth-child(6) {
-                display: none !important;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <h2>👥 メンバー追加・編集</h2>
-    
-    <div class="admin-main-layout">
-
-        <div class="admin-left-col">
-            
-            <div id="memberFormContainer">
-                <div id="editNotice" style="display: none;"><span class="edit-badge">✏️ メンバー編集モード中</span></div>
-                <div class="form-group"><label>名前</label><input type="text" id="m_name" placeholder="例: まぐにぃ"></div>
-                <div class="form-group"><label>YouTube チャンネルID</label><input type="text" id="m_id" placeholder="例: UCMP7QuS4suoONg47Nbi-wrg"></div>
-                
-                <div class="form-group">
-                    <label>Minecraft ID (Java版)</label>
-                    <input type="text" id="m_mc" placeholder="例: magunee (空欄時はComing soon)" oninput="updateAvatarPreview(this.value)">
-                    <div id="avatarPreviewArea" style="margin-top: 10px; display: flex; align-items: center; gap: 15px; background: #e2eae2; padding: 10px; border-radius: 6px; width: fit-content;">
-                        <span style="font-size: 13px; font-weight: bold; color: #2d5a27;">顔プレビュー:</span>
-                        <div class="mc-head-box" id="previewHeadBox">
-                            <div class="coming-soon-lbl">CS</div>
-                        </div>
-                        <button type="button" id="downloadAvatarBtn" class="btn-download-avatar" onclick="downloadMinecraftAvatar()" disabled>画像を [マイクラID].png でPCに保存</button>
-                    </div>
-                </div>
-
-                <div class="form-group"><label>X (旧Twitter) ID</label><input type="text" id="m_x" placeholder="例: maguro29"></div>
-                <div class="form-group"><label>Twitch ID</label><input type="text" id="m_tw" placeholder="例: maguro29game"></div>
-                <div class="form-group"><label>Instagram ID</label><input type="text" id="m_inst" placeholder="例: "></div>
-                <div class="form-group"><label>Discord 招待URL</label><input type="text" id="m_discord" placeholder="https://discord.gg/..."></div>
-                
-                <div class="form-group">
-                    <label>メンバーカラー</label>
-                    <input type="color" id="m_color" value="#ff9900" oninput="syncColorPickerToText(this.value)">
-                    <input type="text" id="m_color_text" class="color-code-input" value="#ff9900" maxlength="7" placeholder="#ffffff" oninput="syncTextColorToPicker(this.value)">
-                </div>
-                
-                <button id="saveBtn" class="btn-save" onclick="addMember()">メンバーを保存</button>
-                <button id="cancelBtn" style="display:none; margin-left:10px;" onclick="cancelEdit()">編集をキャンセル</button>
-            </div>
-
-        </div>
-
-        <div class="admin-right-col">
-            
-            <div class="helper-card">
-                <h3>🎨 顔アイコン（アバター）の追加手順</h3>
-                <ol class="steps-list">
-                    <li>
-                        <strong>画像を準備する</strong><br>
-                        フォームの「画像保存」ボタン、または正方形のPNG画像を用意します。
-                    </li>
-                    <li>
-                        <strong>ファイル名を設定する</strong><br>
-                        ファイル名を <code>マイクラID.png</code> に変更します。<br>
-                        <small style="color: #666;">（例: shun_chacha.png / ⚠️大文字・小文字を正確に）</small>
-                    </li>
-                    <li>
-                        <strong>フォルダに配置する</strong><br>
-                        ポータルサイトのルートにある <code>avatars</code> フォルダの中に、準備した画像ファイルを移動（保存）します。
-                    </li>
-                    <li>
-                        <strong>管理画面で確認</strong><br>
-                        フォルダへの配置が完了すると、下の一覧の「顔」部分にローカル画像が反映されます。
-                    </li>
-                </ol>
-            </div>
-
-            <div class="helper-card">
-                <h3>⚙️ config.js の書き換え</h3>
-                <p style="font-size: 11px; color: #5c6b5a; margin-bottom: 10px; margin-top: 0;">
-                    メンバーの追加・編集が終わったら、下のボタンで最新の設定をコピーし、ローカルの <code>config.js</code> を丸ごと上書き保存してください。
-                </p>
-                <button type="button" class="btn-export" style="width: 100%; padding: 10px; margin-bottom: 10px; font-size: 13px;" onclick="exportConfig()">
-                    📋 config.jsの内容をコピー
-                </button>
-                <textarea id="configOutput" readonly placeholder="メンバー情報を保存すると最新の設定データがここに自動同期されます"></textarea>
-            </div>
-
-        </div>
-
-    </div>
-
-    <h2 style="margin-top: 30px;">📋 現在の登録メンバー一覧 <span style="font-size:13px; color:#5c6b5a; font-weight:normal;">（ドラッグして並び替え、名前クリックで再編集できます）</span></h2>
-    <table class="member-table">
-        <thead>
-            <tr>
-                <th style="width: 40px; text-align:center;">移動</th>
-                <th style="width: 60px; text-align:center;">カラー</th>
-                <th style="width: 60px; text-align:center;">顔</th>
-                <th>名前 (クリックで編集)</th>
-                <th>Minecraft ID</th>
-                <th>YouTube ID</th>
-                <th style="width: 80px;">操作</th>
-            </tr>
-        </thead>
-        <tbody id="memberTableBody"></tbody>
-    </table>
-
-
-<script src="config.js"></script>
-<script>
-let channels = [];
-let editIndex = -1;
-
-function initAdmin() {
-    const saved = localStorage.getItem('custom_channels');
-    if (saved) { channels = JSON.parse(saved); }
-    else if (typeof CONFIG !== 'undefined' && CONFIG.DEFAULT_CHANNELS) { channels = [...CONFIG.DEFAULT_CHANNELS]; }
-    renderMemberList();
-    updateConfigOutput();
-}
-
-function syncColorPickerToText(val) {
-    document.getElementById('m_color_text').value = val.toUpperCase();
-}
-
-function syncTextColorToPicker(val) {
-    if (val.match(/^#[0-9a-fA-F]{6}$/)) {
-        document.getElementById('m_color').value = val;
-    }
-}
-
-function cleanMcId(idStr) {
-    if (!idStr) return "";
-    return idStr.toString().replace(/\r?\n|\r/g, '').trim();
-}
-
-// 💡 フォームの入力プレビュー部分。ここでのみ Minotar（外部API）を使用します。
-function updateAvatarPreview(rawId) {
-    const pureMcId = cleanMcId(rawId);
-    const box = document.getElementById('previewHeadBox');
-    const btn = document.getElementById('downloadAvatarBtn');
-    
-    if (pureMcId !== "") {
-        box.innerHTML = `<img class="mc-head-img" src="https://minotar.net/cube/${pureMcId}/32.png" id="previewHeadImg">`;
-        btn.disabled = false;
-        btn.innerText = `画像を ${pureMcId}.png でPCに保存`;
-    } else {
-        box.innerHTML = `<div class="coming-soon-lbl">CS</div>`;
-        btn.disabled = true;
-        btn.innerText = `画像を [マイクラID].png でPCに保存`;
-    }
-}
-
-function downloadMinecraftAvatar() {
-    const pureMcId = cleanMcId(document.getElementById('m_mc').value);
-    if (!pureMcId) return;
-
-    const imageUrl = `https://minotar.net/cube/${pureMcId}/32.png`;
-    
-    fetch(imageUrl)
-        .then(response => {
-            if (!response.ok) throw new Error('画像の取得に失敗しました');
-            return response.blob();
-        })
-        .then(blob => {
-            const blobUrl = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = blobUrl;
-            a.download = `${pureMcId}.png`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(blobUrl);
-        })
-        .catch(err => {
-            alert("画像のダウンロードに失敗しました。外部APIの制限か、ネットワーク環境を確認してください。");
-            console.error(err);
-        });
-}
-
 function renderMemberList() {
     const tbody = document.getElementById('memberTableBody');
+
     if (!channels.length) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#5c6b5a;">メンバーが登録されていません。</td></tr>`;
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center; color:#5c6b5a;">
+                    メンバーが登録されていません。
+                </td>
+            </tr>`;
         return;
     }
-    
+
     tbody.innerHTML = "";
+
     channels.forEach((ch, idx) => {
+
         const pureMcId = cleanMcId(ch.minecraftId);
-        
+
+        // avatarImg優先
+        // 古いデータは minecraftId から自動生成
+        const avatarPath =
+            ch.avatarImg && ch.avatarImg.trim()
+                ? ch.avatarImg.trim()
+                : (pureMcId ? `avatars/${pureMcId}.png` : "");
+
         let mcHeadHtml = "";
-        if (pureMcId !== "") {
-            // 💡【ロジック修正】ローカルのavatars内の画像だけを読み込みます。
-            // 画像がない(エラー)場合は、親要素の中身ごと「Coming Soon」のバッジ表示に書き換えます。
-            const localImgUrl = `avatars/${pureMcId}.png`;
-            
+
+        if (avatarPath) {
+
             mcHeadHtml = `
                 <div class="mc-head-box" style="border-color:${ch.color || '#d8e2d7'}">
-                    <img class="mc-head-img" src="${localImgUrl}" alt="${ch.name}" 
-                         onerror="this.parentElement.innerHTML='<div class=\'coming-soon-lbl\'>CS</div>';">
+                    <img
+                        class="mc-head-img"
+                        src="${avatarPath}"
+                        alt="${ch.name}"
+                        onerror="this.parentElement.innerHTML='<div class=&quot;coming-soon-lbl&quot;>Coming soon</div>'"
+                    >
                 </div>`;
+
         } else {
+
             mcHeadHtml = `
                 <div class="mc-head-box">
-                    <div class="coming-soon-lbl">CS</div>
+                    <div class="coming-soon-lbl">Coming soon</div>
                 </div>`;
+
         }
 
-        const mcText = pureMcId ? pureMcId : `<span style="color:#8ca08a; font-size:12px;">未設定 (Coming soon)</span>`;
-        
+        const mcText = pureMcId
+            ? pureMcId
+            : `<span style="color:#8ca08a; font-size:12px;">未設定 (Coming soon)</span>`;
+
         tbody.innerHTML += `
-            <tr draggable="true" data-index="${idx}" class="draggable-row">
-                <td class="drag-handle">⋮⋮</td>
-                <td style="text-align:center;"><span style="display:inline-block; width:20px; height:20px; border-radius:50%; background:${ch.color}; border:1px solid #d8e2d7;"></span></td>
-                <td>${mcHeadHtml}</td>
-                <td><strong class="clickable-name" onclick="editMember(${idx})" title="クリックして編集">${ch.name}</strong></td>
-                <td>${mcText}</td>
-                <td style="font-family:monospace; font-size:12px; color:#414d3f;">${ch.id}</td>
-                <td><button class="btn-del" onclick="deleteMember(${idx})">削除</button></td>
+            <tr>
+                <td style="text-align:center;">
+                    <span
+                        style="
+                            display:inline-block;
+                            width:20px;
+                            height:20px;
+                            border-radius:50%;
+                            background:${ch.color};
+                            border:1px solid #d8e2d7;
+                        ">
+                    </span>
+                </td>
+
+                <td>
+                    ${mcHeadHtml}
+                </td>
+
+                <td>
+                    <strong
+                        class="clickable-name"
+                        onclick="editMember(${idx})"
+                        title="クリックして編集">
+                        ${ch.name}
+                    </strong>
+                </td>
+
+                <td>
+                    ${mcText}
+                </td>
+
+                <td style="font-family:monospace; font-size:12px; color:#414d3f;">
+                    ${ch.id}
+                </td>
+
+                <td>
+                    <button
+                        class="btn-del"
+                        onclick="deleteMember(${idx})">
+                        削除
+                    </button>
+                </td>
             </tr>
         `;
     });
-
-    setupDragAndDrop();
 }
-
-function setupDragAndDrop() {
-    const rows = document.querySelectorAll('.draggable-row');
-    const tbody = document.getElementById('memberTableBody');
-    let draggedRow = null;
-
-    rows.forEach(row => {
-        row.addEventListener('dragstart', (e) => {
-            draggedRow = row;
-            row.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-        });
-
-        row.addEventListener('dragend', () => {
-            row.classList.remove('dragging');
-            
-            const currentRows = Array.from(tbody.querySelectorAll('.draggable-row'));
-            const newChannels = currentRows.map(r => channels[parseInt(r.getAttribute('data-index'))]);
-            
-            channels = newChannels;
-            localStorage.setItem('custom_channels', JSON.stringify(channels));
-            
-            renderMemberList();
-            updateConfigOutput();
-        });
-
-        row.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            const bounding = row.getBoundingClientRect();
-            const offset = e.clientY - bounding.top - (bounding.height / 2);
-            
-            if (offset < 0) {
-                tbody.insertBefore(draggedRow, row);
-            } else {
-                tbody.insertBefore(draggedRow, row.nextSibling);
-            }
-        });
-    });
-}
-
-function editMember(idx) {
-    editIndex = idx;
-    const ch = channels[idx];
-    
-    document.getElementById('m_name').value = ch.name || "";
-    document.getElementById('m_id').value = ch.id || "";
-    
-    const pureMcId = cleanMcId(ch.minecraftId);
-    document.getElementById('m_mc').value = pureMcId;
-    updateAvatarPreview(pureMcId);
-    
-    document.getElementById('m_x').value = ch.twitterId || "";
-    document.getElementById('m_tw').value = ch.twitchId || "";
-    document.getElementById('m_inst').value = ch.instaId || "";
-    document.getElementById('m_discord').value = ch.discordUrl || "";
-    
-    const targetColor = ch.color || "#ff9900";
-    document.getElementById('m_color').value = targetColor;
-    document.getElementById('m_color_text').value = targetColor.toUpperCase();
-    
-    document.getElementById('memberFormContainer').className = "editing";
-    document.getElementById('editNotice').style.display = "block";
-    document.getElementById('saveBtn').innerText = "変更を上書き保存";
-    document.getElementById('cancelBtn').style.display = "inline-block";
-    
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function cancelEdit() {
-    editIndex = -1;
-    clearForm();
-    document.getElementById('memberFormContainer').className = "";
-    document.getElementById('editNotice').style.display = "none";
-    document.getElementById('saveBtn').innerText = "メンバーを保存";
-    document.getElementById('cancelBtn').style.display = "none";
-}
-
-function clearForm() {
-    document.getElementById('m_name').value = "";
-    document.getElementById('m_id').value = "";
-    document.getElementById('m_mc').value = "";
-    updateAvatarPreview("");
-    document.getElementById('m_x').value = "";
-    document.getElementById('m_tw').value = "";
-    document.getElementById('m_inst').value = "";
-    document.getElementById('m_discord').value = "";
-    document.getElementById('m_color').value = "#ff9900";
-    document.getElementById('m_color_text').value = "#ff9900";
-}
-
-function addMember() {
-    const name = document.getElementById('m_name').value.trim();
-    const id = document.getElementById('m_id').value.trim();
-    const minecraftId = cleanMcId(document.getElementById('m_mc').value);
-    const twitterId = document.getElementById('m_x').value.trim();
-    const twitchId = document.getElementById('m_tw').value.trim();
-    const instaId = document.getElementById('m_inst').value.trim();
-    const discordUrl = document.getElementById('m_discord').value.trim();
-    const color = document.getElementById('m_color_text').value.trim().toLowerCase();
-
-    if (!name || !id) { alert("名前とYouTubeチャンネルIDは必須です！"); return; }
-    if (!color.match(/^#[0-9a-fA-F]{6}$/)) { alert("カラーコードは #ffffff のような形式で入力してください！"); return; }
-
-    const memberData = { name, id, minecraftId, twitterId, twitchId, tiktokId:"", instaId, discordUrl, color };
-
-    if (editIndex > -1) {
-        channels[editIndex] = memberData;
-        alert(`${name} さんの情報を更新しました！`);
-        cancelEdit();
-    } else {
-        channels.push(memberData);
-        alert(`${name} さんを新規保存しました！`);
-        clearForm();
-    }
-    
-    localStorage.setItem('custom_channels', JSON.stringify(channels));
-    renderMemberList();
-    updateConfigOutput();
-}
-
-function deleteMember(idx) {
-    if (confirm(`${channels[idx].name} さんを削除しますか？`)) {
-        if (editIndex === idx) cancelEdit();
-        
-        channels.splice(idx, 1);
-        localStorage.setItem('custom_channels', JSON.stringify(channels));
-        renderMemberList();
-        updateConfigOutput();
-    }
-}
-
-function updateConfigOutput() {
-    const outputTextarea = document.getElementById('configOutput');
-    const formattedChannels = channels.map(ch => {
-        const pureMcId = cleanMcId(ch.minecraftId);
-        return {
-            ...ch,
-            avatarImg: pureMcId ? `avatars/${pureMcId}.png` : ""
-        };
-    });
-
-    const apiKey = (typeof CONFIG !== 'undefined' && CONFIG.YOUTUBE_API_KEY) ? CONFIG.YOUTUBE_API_KEY : "AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY";
-    const output = `const CONFIG = {\n    YOUTUBE_API_KEY: "${apiKey}",\n    DEFAULT_CHANNELS: ${JSON.stringify(formattedChannels, null, 8)}\n};`;
-    
-    outputTextarea.value = output;
-}
-
-function exportConfig() {
-    updateConfigOutput();
-    const outputText = document.getElementById('configOutput').value;
-    
-    navigator.clipboard.writeText(outputText).then(() => {
-        alert("config.js 用のコードをコピーしました！config.jsファイルに貼り付けて保存してください。");
-    }).catch(err => {
-        console.error('コピー失敗:', err);
-        const textarea = document.getElementById('configOutput');
-        textarea.select();
-        alert('自動コピーに失敗しました。右側のテキストエリアを全選択して手動でコピーしてください。');
-    });
-}
-
-function copyConfigText() {
-    exportConfig();
-}
-
-initAdmin();
-</script>
-</body>
-</html>
