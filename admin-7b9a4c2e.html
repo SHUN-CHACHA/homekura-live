@@ -329,11 +329,11 @@ function updateAvatarPreview(rawId) {
     if (pureMcId !== "") {
         box.innerHTML = `<img class="mc-head-img" src="https://minotar.net/cube/${pureMcId}/32.png" id="previewHeadImg">`;
         btn.disabled = false;
-        btn.innerText = `画像を ${pureMcId}.png でPCに保存`;
+        btn.innerText = `画像を ${pureMcId}.svg でPCに保存`;
     } else {
         box.innerHTML = `<div class="coming-soon-lbl">CS</div>`;
         btn.disabled = true;
-        btn.innerText = `画像を [マイクラID].png でPCに保存`;
+        btn.innerText = `画像を [マイクラID].svg でPCに保存`;
     }
 }
 
@@ -342,7 +342,7 @@ function downloadMinecraftAvatar() {
     if (!pureMcId) return;
 
     // ポータルサイトと同じ40pxサイズでMinotarのURLを指定
-    const imageUrl = `https://minotar.net/helm/${pureMcId}/40.png`;
+    const imageUrl = `https://minotar.net/helm/${pureMcId}/40.svg`;
     
     // 1. PNG画像のURLを内包したSVGのテキストデータを作成する
     // image-rendering: pixelated; を指定することでドットがぼやけないようにします
@@ -388,7 +388,7 @@ function renderMemberList() {
         const avatarPath =
             ch.avatarImg && ch.avatarImg.trim()
                 ? ch.avatarImg.trim()
-                : (pureMcId ? `avatars/${pureMcId}.png` : "");
+                : (pureMcId ? `avatars/${pureMcId}.svg` : "");
 
         let mcHeadHtml = "";
 
