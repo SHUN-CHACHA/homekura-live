@@ -370,21 +370,25 @@ function renderGrids(chInfoMap, vItems) {
         if (ch.instaId)   listBtnsHtml += `<a href="https://instagram.com/${ch.instaId}" target="_blank" class="btn-square-mini btn-inst" title="Instagram">${SVG_ICONS.instagram}</a>`;
         if (ch.discordUrl) listBtnsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn-square-mini btn-disc" title="Discord">${SVG_ICONS.discord}</a>`;
 
-        // マイクラ3D顔画像（Minotarから直接取得）
+       // マイクラ3D顔画像（Minotarから直接取得 ＋ エラー時はパターン2のSVGを表示）
         const rawMcId = ch.minecraftId ? ch.minecraftId.trim() : "";
         let mcHeadHtml = "";
 
+        // パターン2の代替画像パス
+        const fallbackImg = "avatars/fallback.svg";
+
         if (rawMcId !== "") {
-            // MinotarのAPI URLを生成（サイズはmc-head-boxの28px～34pxに合わせて40pxに設定）
             const minotarUrl = `https://minotar.net/helm/${rawMcId}/40.png`;
             
             mcHeadHtml = `<div class="mc-head-box" style="border-color:${ch.color || 'var(--border-color)'}">
                 <img class="mc-head-img" src="${minotarUrl}" alt="${ch.name}"
-                     onerror="this.parentElement.innerHTML='<div class=\\'coming-soon-lbl\\'>Coming<br>soon</div>'">
+                     onerror="this.onerror=null; this.src='${fallbackImg}';">
             </div>`;
         } else {
-            // minecraftIdが空、または設定されていない場合はComing soon
-            mcHeadHtml = `<div class="mc-head-box"><div class="coming-soon-lbl">Coming<br>soon</div></div>`;
+            // minecraftId が空の場合も最初から代替画像を表示
+            mcHeadHtml = `<div class="mc-head-box" style="border-color:${ch.color || 'var(--border-color)'}">
+                <img class="mc-head-img" src="${fallbackImg}" alt="Coming Soon">
+            </div>`;
         }
 
         const row = `
