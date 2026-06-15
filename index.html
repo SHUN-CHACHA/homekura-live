@@ -3,16 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>homeクラ 配信ポータル</title>
-    <link rel="icon" href="favicon.ico">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <title>homeクラ 配信ポータル ＠旬茶</title>
+
+    <link rel="icon" href="https://shun-chacha.github.io/homekura-live/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="https://shun-chacha.github.io/homekura-live/icon.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/apple-touch-icon.png">
+
     <style>
         :root {
-            --bg-color: #f4f6f4;
-            --text-color: #1a2418;
-            --card-bg: #ffffff;
-            --border-color: #d8e2d7;
-            --primary-color: #2d5a27;
+            --bg-color: #eef3ee;          /* 🌿 目に優しい、ごく薄いナチュラルな緑 */
+            --container-bg: #f7faf7;      /* 🟢 ほんのり緑を帯びた優しいホワイト */
+            --text-color: #1a2418;        /* 📝 文字色をさらに少し濃くして視認性をアップ */
+            --secondary-text: #414d3f;    /* 🔍 配信タイトル用：薄すぎない濃いオリーブグレー */
+            --accent-green: #2d5a27;      /* ヘッダー等の深みのある濃い緑 */
+            --border-color: #d8e2d7;      /* 🎨 背景に溶け込む薄緑の境界線 */
         }
 
         body {
@@ -30,7 +34,7 @@
         }
 
         h1 {
-            color: var(--primary-color);
+            color: var(--accent-green);
             margin: 0 0 10px 0;
             font-size: 28px;
             display: flex;
@@ -45,6 +49,35 @@
             object-fit: contain;
         }
 
+        /* 📋 タイマーと手動更新のエリア */
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--secondary-text);
+            margin-top: 5px;
+        }
+
+        .refresh-btn {
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 5px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.2s;
+        }
+        .refresh-btn:hover {
+            background: #ffffff;
+            border-color: var(--accent-green);
+        }
+
         /* 📱 企画用ルーレットページ等への移動ボタンエリア */
         .nav-links {
             margin-top: 15px;
@@ -56,7 +89,7 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: var(--card-bg);
+            background: var(--container-bg);
             border: 1px solid var(--border-color);
             padding: 6px 14px;
             border-radius: 20px;
@@ -64,18 +97,27 @@
             color: var(--text-color);
             font-size: 14px;
             font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
             transition: transform 0.2s, background 0.2s;
         }
         .nav-btn:hover {
             transform: translateY(-1px);
-            background: #fdfdfd;
-            border-color: var(--primary-color);
+            background: #ffffff;
+            border-color: var(--accent-green);
         }
         .nav-btn img {
             width: 18px;
             height: 18px;
             object-fit: contain;
+        }
+
+        .section-title {
+            color: var(--accent-green);
+            border-left: 5px solid var(--accent-green);
+            padding-left: 10px;
+            margin: 40px auto 20px auto;
+            max-width: 1400px;
+            font-size: 20px;
         }
 
         .grid {
@@ -87,15 +129,17 @@
         }
 
         .card {
-            background-color: var(--card-bg);
+            background-color: var(--container-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 16px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.02);
             position: relative;
-            border-top: 6px solid var(--primary-color);
+            border-top: 6px solid var(--accent-green);
+            text-decoration: none;
+            color: inherit;
             
-            /* 💡 顔アイコンとテキストを綺麗に左右に並べるための設定 */
+            /* 💡 顔アイコンとテキスト情報を綺麗に左右に並べる設定 */
             display: flex;
             gap: 14px;
             align-items: flex-start;
@@ -155,10 +199,9 @@
             color: white;
         }
 
-        .status-streaming {
-            background-color: #dc2626;
-            animation: pulse 2s infinite;
-        }
+        .status-live { background-color: #dc2626; animation: pulse 2s infinite; }
+        .status-upcoming { background-color: #2563eb; }
+        .status-new { background-color: #10b981; }
 
         @keyframes pulse {
             0% { opacity: 1; }
@@ -170,20 +213,31 @@
             font-size: 18px;
             font-weight: bold;
             margin: 0 0 4px 0;
-            padding-right: 70px; /* バッジと重ならないように余白を確保 */
+            padding-right: 75px; /* バッジと重ならないように確保 */
             white-space: nowrap;
             overflow: hidden;
-            text-transform: ellipsis;
+            text-overflow: ellipsis;
         }
 
         .title {
             font-size: 13px;
-            color: #555;
+            color: var(--secondary-text);
             margin: 0 0 12px 0;
-            white-space: nowrap;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
-            min-height: 18px;
+            min-height: 36px;
+            line-height: 1.4;
+        }
+
+        .time-info {
+            font-size: 11px;
+            color: #777;
+            margin-top: -8px;
+            margin-bottom: 8px;
+            font-weight: bold;
         }
 
         .sns-buttons {
@@ -196,9 +250,9 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             text-decoration: none;
             color: white;
@@ -212,6 +266,15 @@
         .btn-instagram { background-color: #e1306c; }
         .btn-discord { background-color: #5865f2; }
 
+        .btn-reserve {
+            background-color: #2563eb;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-reserved {
+            background-color: #dc2626;
+        }
+
         /* 📱 スマホ縦画面用の最適化（横幅が狭いとき） */
         @media (max-width: 360px) {
             .card { padding: 12px; gap: 10px; }
@@ -224,6 +287,10 @@
 
     <header>
         <h1><img src="logo.png" alt="homeクラ"> 配信ポータル</h1>
+        <div class="controls">
+            <span id="timer">Next Update: --:--</span>
+            <button class="refresh-btn" onclick="manualRefresh()">🔄 今すぐ更新</button>
+        </div>
         <div class="nav-links">
             <a href="roulette.html" class="nav-btn">
                 <img src="roulette-icon.png" alt="ルーレット">
@@ -232,118 +299,222 @@
         </div>
     </header>
 
-    <div class="grid" id="portalGrid"></div>
+    <div id="liveSection" style="display: none;">
+        <h2 class="section-title">🔴 配信中</h2>
+        <div class="grid" id="liveGrid"></div>
+    </div>
+
+    <div id="upcomingSection" style="display: none;">
+        <h2 class="section-title">🔵 配信予定</h2>
+        <div class="grid" id="upcomingGrid"></div>
+    </div>
+
+    <div id="newSection" style="display: none;">
+        <h2 class="section-title">🟢 新着動画（24時間以内）</h2>
+        <div class="grid" id="newGrid"></div>
+    </div>
+
+    <h2 class="section-title">👥 メンバー一覧</h2>
+    <div class="grid" id="allList"></div>
 
 <script src="config.js"></script>
 <script>
-// トリミング処理（改行や空白の完全除去）
+let timeLeft = 300; // 5分タイマー
+let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos')) || [];
+
 function cleanMcId(idStr) {
     if (!idStr) return "";
     return idStr.toString().replace(/\r?\n|\r/g, '').trim();
 }
 
-async function fetchStatus() {
-    const grid = document.getElementById('portalGrid');
-    if (typeof CONFIG === 'undefined' || !CONFIG.DEFAULT_CHANNELS) {
-        grid.innerHTML = '<p style="text-align:center; grid-column:1/-1;">config.js が読み込めないか、設定が正しくありません。</p>';
-        return;
+// 💡 メンバーカードのHTML構造を生成する共通関数（ここに顔アイコン処理を綺麗に組み込みました）
+function createMemberCard(ch, status, videoTitle = "", videoId = "", startTime = "") {
+    const borderTopColor = ch.color || 'var(--accent-green)';
+    
+    // 配信中や予定があればその動画へのリンク、なければチャンネルの配信URLにする
+    let targetUrl = `https://youtube.com/channel/${ch.id}/live`;
+    if (videoId) {
+        targetUrl = `https://youtube.com/watch?v=${videoId}`;
     }
 
-    const channels = CONFIG.DEFAULT_CHANNELS;
-    grid.innerHTML = '';
+    const pureMcId = cleanMcId(ch.minecraftId);
 
-    // 1. まず全メンバーのカード枠を画面に生成する
-    channels.forEach((ch, index) => {
-        const card = document.createElement('a');
-        card.href = `https://youtube.com/channel/${ch.id}/live`;
-        card.target = '_blank';
-        card.className = 'card';
-        card.id = `card-${index}`;
-        card.style.borderTopColor = ch.color || 'var(--primary-color)';
-        card.style.textDecoration = 'none';
-        card.style.color = 'inherit';
+    // 🧊 顔アイコン表示スペースのHTML生成（画像がない場合はComing Soonに化けるonerror付き）
+    let avatarHtml = '';
+    if (pureMcId !== "") {
+        avatarHtml = `
+            <div class="card-avatar-zone" style="border-color: ${ch.color || 'var(--border-color)'}">
+                <img class="card-avatar-img" src="avatars/${pureMcId}.png" alt="${ch.name}"
+                     onerror="this.parentElement.innerHTML='<div class=\'card-coming-soon\'>COMING<br>SOON</div>';">
+            </div>`;
+    } else {
+        avatarHtml = `
+            <div class="card-avatar-zone">
+                <div class="card-coming-soon">COMING<br>SOON</div>
+            </div>`;
+    }
 
-        const pureMcId = cleanMcId(ch.minecraftId);
+    // 右上の状態バッジ
+    let badgeHtml = '<div class="status-badge">オフライン</div>';
+    let timeHtml = '';
+    let actionBtnHtml = '';
 
-        // 💡【アバター表示の実装】
-        // ローカルの avatars/マックID.png を見にいき、画像がない(エラー)場合はCOMING SOON表示に切り替えます。
-        let avatarHtml = '';
-        if (pureMcId !== "") {
-            avatarHtml = `
-                <div class="card-avatar-zone" style="border-color: ${ch.color || 'var(--border-color)'}">
-                    <img class="card-avatar-img" src="avatars/${pureMcId}.png" alt="${ch.name}"
-                         onerror="this.parentElement.innerHTML='<div class=\'card-coming-soon\'>COMING<br>SOON</div>';">
-                </div>`;
-        } else {
-            avatarHtml = `
-                <div class="card-avatar-zone">
-                    <div class="card-coming-soon">COMING<br>SOON</div>
-                </div>`;
+    if (status === 'live') {
+        badgeHtml = '<div class="status-badge status-live">LIVE</div>';
+    } else if (status === 'upcoming') {
+        badgeHtml = '<div class="status-badge status-upcoming">配信予定</div>';
+        if (startTime) {
+            const date = new Date(startTime);
+            timeHtml = `<div class="time-info">📅 ${date.getMonth()+1}/${date.getDate()} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}〜</div>`;
+            
+            const isReserved = reservedVideos.some(rv => rv.id === videoId);
+            actionBtnHtml = `
+                <button class="btn btn-reserve ${isReserved ? 'btn-reserved' : ''}" 
+                        onclick="event.stopPropagation(); event.preventDefault(); toggleReserve('${videoId}', '${ch.name}', '${startTime}')">
+                    ${isReserved ? '🔔 通知ON' : '🔕 通知予約'}
+                </button>
+            `;
         }
+    } else if (status === 'new') {
+        badgeHtml = '<div class="status-badge status-new">NEW</div>';
+    }
 
-        // SNSボタンの生成
-        let snsHtml = '';
-        if (ch.id) snsHtml += `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-youtube">YouTube</a>`;
-        if (ch.twitchId) snsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-twitch">Twitch</a>`;
-        if (ch.twitterId) snsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn btn-twitter">X</a>`;
-        if (ch.instaId) snsHtml += `<a href="https://instagram.com/${ch.instaId}" target="_blank" class="btn btn-instagram">Instagram</a>`;
-        if (ch.discordUrl) snsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn btn-discord">Discord</a>`;
+    // 各種SNSボタン
+    let snsHtml = '';
+    if (ch.id) snsHtml += `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-youtube">YouTube</a>`;
+    if (ch.twitchId) snsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-twitch">Twitch</a>`;
+    if (ch.twitterId) snsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn btn-twitter">X</a>`;
+    if (ch.instaId) snsHtml += `<a href="https://instagram.com/${ch.instaId}" target="_blank" class="btn btn-instagram">Instagram</a>`;
+    if (ch.discordUrl) snsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn btn-discord">Discord</a>`;
 
-        // 💡 左右2カラム構造でカードの中身を出力
-        card.innerHTML = `
+    // 組み込みアクションボタンがあればSNSの先頭に足す
+    if (actionBtnHtml) snsHtml = actionBtnHtml + snsHtml;
+
+    return `
+        <a href="${targetUrl}" target="_blank" class="card" style="border-top-color: ${borderTopColor}">
             ${avatarHtml}
             <div class="card-main-zone">
-                <div class="status-badge" id="badge-${index}">オフライン</div>
+                ${badgeHtml}
                 <h2 class="name">${ch.name}</h2>
-                <p class="title" id="title-${index}">取得中...</p>
+                <p class="title">${videoTitle || 'オフライン、または別プラットフォームで配信中'}</p>
+                ${timeHtml}
                 <div class="sns-buttons" onclick="event.stopPropagation();">
                     ${snsHtml}
                 </div>
             </div>
-        `;
-        grid.appendChild(card);
-    });
+        </a>
+    `;
+}
 
-    // 2. YouTube API を使って配信ステータスを裏側でまとめて取得・反映
+async function loadPortal() {
+    if (typeof CONFIG === 'undefined' || !CONFIG.DEFAULT_CHANNELS) {
+        document.getElementById('allList').innerHTML = '<p style="text-align:center; grid-column:1/-1;">config.js が正しく読み込めません。</p>';
+        return;
+    }
+
+    const channels = CONFIG.DEFAULT_CHANNELS;
     const idList = channels.map(ch => ch.id).join(',');
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&eventType=live&channelIds=${idList}&key=${CONFIG.YOUTUBE_API_KEY}`;
-
+    
+    // YouTube API から動画データを取得
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=50&channelIds=${idList}&key=${CONFIG.YOUTUBE_API_KEY}`;
+    
+    let apiItems = [];
     try {
         const res = await fetch(url);
         const data = await res.json();
-        
-        const liveChannels = {};
-        if (data.items) {
-            data.items.forEach(item => {
-                liveChannels[item.snippet.channelId] = item.snippet.title;
-            });
-        }
-
-        channels.forEach((ch, index) => {
-            const badge = document.getElementById(`badge-${index}`);
-            const titleElement = document.getElementById(`title-${index}`);
-            
-            if (liveChannels[ch.id]) {
-                badge.textContent = '配信中';
-                badge.className = 'status-badge status-streaming';
-                titleElement.textContent = liveChannels[ch.id];
-            } else {
-                badge.textContent = 'オフライン';
-                badge.className = 'status-badge';
-                titleElement.textContent = 'オフライン、または別プラットフォームで配信中';
-            }
-        });
-
-    } catch (error) {
-        console.error("配信状況の取得に失敗しました:", error);
-        channels.forEach((ch, index) => {
-            document.getElementById(`title-${index}`).textContent = '配信状況を取得できませんでした';
-        });
+        if (data.items) apiItems = data.items;
+    } catch (e) {
+        console.error("APIの取得エラー:", e);
     }
+
+    const htmls = { live: "", upcoming: "", new: "", all: "" };
+    const counts = { live: 0, upcoming: 0, new: 0 };
+    const processedChannels = new Set();
+
+    // 1. APIから返ってきた動画データを元に各セクションを組み立てる
+    apiItems.forEach(item => {
+        const channelId = item.snippet.channelId;
+        const ch = channels.find(c => c.id === channelId);
+        if (!ch) return;
+
+        const liveBroadcastContent = item.snippet.liveBroadcastContent;
+        const videoTitle = item.snippet.title;
+        const videoId = item.id.videoId;
+        const publishedAt = item.snippet.publishedAt;
+
+        if (liveBroadcastContent === 'live') {
+            htmls.live += createMemberCard(ch, 'live', videoTitle, videoId);
+            counts.live++;
+            processedChannels.add(channelId);
+        } else if (liveBroadcastContent === 'upcoming') {
+            htmls.upcoming += createMemberCard(ch, 'upcoming', videoTitle, videoId, item.snippet.publishTime || publishedAt);
+            counts.upcoming++;
+            processedChannels.add(channelId);
+        } else if (liveBroadcastContent === 'none') {
+            // 24時間以内の新着動画判定
+            const pubDate = new Date(publishedAt);
+            const dayAgo = new Date(); dayAgo.setDate(dayAgo.getDate() - 1);
+            if (pubDate > dayAgo && !processedChannels.has(channelId)) {
+                htmls.new += createMemberCard(ch, 'new', videoTitle, videoId);
+                counts.new++;
+                processedChannels.add(channelId);
+            }
+        }
+    });
+
+    // 2. 「全員一覧」セクションを組み立てる
+    channels.forEach(ch => {
+        htmls.all += createMemberCard(ch, 'offline');
+    });
+
+    // 3. 画面への反映と、セクションの表示・非表示の切り替え
+    document.getElementById("liveSection").style.display = counts.live ? "block" : "none";
+    document.getElementById("liveGrid").innerHTML = htmls.live;
+    document.getElementById("upcomingSection").style.display = counts.upcoming ? "block" : "none";
+    document.getElementById("upcomingGrid").innerHTML = htmls.upcoming;
+    document.getElementById("newSection").style.display = counts.new ? "block" : "none";
+    document.getElementById("newGrid").innerHTML = htmls.new;
+    document.getElementById("allList").innerHTML = htmls.all;
 }
 
-// ページ読み込み時に実行
-window.onload = fetchStatus;
+function toggleReserve(id, name, startTime) {
+    const idx = reservedVideos.findIndex(rv => rv.id === id);
+    if (idx > -1) reservedVideos.splice(idx, 1);
+    else {
+        reservedVideos.push({ id, name, startTime, notified: false });
+        if (Notification.permission !== "granted") Notification.requestPermission();
+    }
+    localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
+    loadPortal();
+}
+
+function checkNotifications() {
+    const now = new Date();
+    let changed = false;
+    reservedVideos.forEach(rv => {
+        if (!rv.notified && new Date(rv.startTime) <= now) {
+            new Notification("配信開始！", { body: `${rv.name}さんの配信が始まるよ！`, icon: "icon.png" });
+            rv.notified = true; changed = true;
+        }
+    });
+    if (changed) localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
+}
+
+function manualRefresh() { location.reload(); }
+
+// 5分ごとのカウントダウンタイマーの処理
+setInterval(() => {
+    timeLeft--; if (timeLeft < 0) location.reload();
+    document.getElementById('timer').innerText = `Next Update: ${String(Math.floor(timeLeft/60)).padStart(2,'0')}:${String(timeLeft%60).padStart(2,'0')}`;
+    checkNotifications();
+}, 1000);
+
+window.onload = () => {
+    loadPortal();
+    if (Notification.permission === "default") {
+        Notification.requestPermission();
+    }
+};
 </script>
 </body>
 </html>
