@@ -144,16 +144,6 @@
         @media screen and (max-width: 768px) {
             input[type="text"] { width: 100%; box-sizing: border-box; }
             label { display: block; margin-bottom: 4px; }
-            
-            .member-table th:nth-child(2),
-            .member-table td:nth-child(2) {
-                display: none !important;
-            }
-            /* スマホではTikTok列も非表示 */
-            .member-table th.col-tt,
-            .member-table td.col-tt {
-                display: none !important;
-            }
         }
     </style>
 </head>
@@ -245,21 +235,26 @@
     </div>
 
     <h2 style="margin-top: 30px;">📋 現在の登録メンバー一覧 <span style="font-size:13px; color:#5c6b5a; font-weight:normal;">（名前をクリックすると再編集できます）</span></h2>
+    <div style="overflow-x: auto;">
     <table class="member-table">
         <thead>
             <tr>
-                <th style="width: 60px; text-align:center;">カラー</th>
-                <th style="width: 60px; text-align:center;">顔</th>
-                <th>名前 (クリックで編集)</th>
-                <th>Minecraft ID</th>
-                <th>YouTube ID</th>
-                <!-- ✅ TikTok列を追加 -->
-                <th class="col-tt" style="width: 100px;">TikTok</th>
-                <th style="width: 80px;">操作</th>
+                <th style="width: 40px; text-align:center;">カラー</th>
+                <th style="width: 44px; text-align:center;">顔</th>
+                <th style="min-width: 80px;">名前</th>
+                <th style="min-width: 90px;">Minecraft ID</th>
+                <th style="min-width: 120px;">YouTube ID</th>
+                <th style="min-width: 80px;">X (Twitter)</th>
+                <th style="min-width: 80px;">Twitch</th>
+                <th style="min-width: 80px;">TikTok</th>
+                <th style="min-width: 80px;">Instagram</th>
+                <th style="min-width: 100px;">Discord</th>
+                <th style="width: 60px;">操作</th>
             </tr>
         </thead>
         <tbody id="memberTableBody"></tbody>
     </table>
+    </div>
 
 
 <script src="config.js"></script>
@@ -335,14 +330,13 @@ function downloadMinecraftAvatar() {
 
 function renderMemberList() {
     const tbody = document.getElementById('memberTableBody');
+    tbody.innerHTML = "";
 
     if (!channels.length) {
         tbody.innerHTML =
-            `<tr><td colspan="7" style="text-align:center; color:#5c6b5a;">メンバーが登録されていません。</td></tr>`;
+            `<tr><td colspan="11" style="text-align:center; color:#8ca08a; padding: 20px; font-size:13px;">まだメンバーが登録されていません。左のフォームから追加してください。</td></tr>`;
         return;
     }
-
-    tbody.innerHTML = "";
 
     channels.forEach((ch, idx) => {
 
@@ -372,45 +366,47 @@ function renderMemberList() {
                 </div>`;
         }
 
-        const mcText = pureMcId
-            ? pureMcId
-            : `<span style="color:#8ca08a; font-size:12px;">未設定 (Coming soon)</span>`;
-
-        // ✅ TikTokセルの表示
+        // 各SNSセル：登録あり→リンク、なし→空白
+        const mcText    = pureMcId    ? pureMcId    : "";
+        const ytCell    = ch.id
+            ? `<a href="https://youtube.com/channel/${ch.id}" target="_blank" style="font-family:monospace; font-size:11px; color:#dc2626; word-break:break-all;">${ch.id}</a>`
+            : "";
+        const xCell     = ch.twitterId
+            ? `<a href="https://x.com/${ch.twitterId}" target="_blank" style="font-size:12px; color:#14171a;">@${ch.twitterId}</a>`
+            : "";
+        const twitchCell = ch.twitchId
+            ? `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" style="font-size:12px; color:#9146ff;">@${ch.twitchId}</a>`
+            : "";
         const tiktokCell = ch.tiktokId
-            ? `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" class="tt-link">@${ch.tiktokId}</a>`
-            : `<span style="color:#8ca08a; font-size:12px;">未設定</span>`;
+            ? `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" style="font-size:12px; color:#010101;">@${ch.tiktokId}</a>`
+            : "";
+        const instaCell  = ch.instaId
+            ? `<a href="https://instagram.com/${ch.instaId}" target="_blank" style="font-size:12px; color:#e1306c;">@${ch.instaId}</a>`
+            : "";
+        const discordCell = ch.discordUrl
+            ? `<a href="${ch.discordUrl}" target="_blank" style="font-size:12px; color:#5865f2;">リンク</a>`
+            : "";
 
         tbody.innerHTML += `
             <tr>
                 <td style="text-align:center;">
                     <span style="display:inline-block; width:20px; height:20px; border-radius:50%; background:${ch.color}; border:1px solid #d8e2d7;"></span>
                 </td>
-
-                <td>${mcHeadHtml}</td>
-
+                <td style="text-align:center;">${mcHeadHtml}</td>
                 <td>
-                    <strong class="clickable-name"
-                            onclick="editMember(${idx})"
-                            title="クリックして編集">
+                    <strong class="clickable-name" onclick="editMember(${idx})" title="クリックして編集">
                         ${ch.name}
                     </strong>
                 </td>
-
-                <td>${mcText}</td>
-
-                <td style="font-family:monospace; font-size:12px; color:#414d3f;">
-                    ${ch.id}
-                </td>
-
-                <!-- ✅ TikTokセル -->
-                <td class="col-tt">${tiktokCell}</td>
-
+                <td style="font-size:12px; color:#414d3f;">${mcText}</td>
+                <td>${ytCell}</td>
+                <td>${xCell}</td>
+                <td>${twitchCell}</td>
+                <td>${tiktokCell}</td>
+                <td>${instaCell}</td>
+                <td>${discordCell}</td>
                 <td>
-                    <button class="btn-del"
-                            onclick="deleteMember(${idx})">
-                        削除
-                    </button>
+                    <button class="btn-del" onclick="deleteMember(${idx})">削除</button>
                 </td>
             </tr>
         `;
