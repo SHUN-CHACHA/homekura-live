@@ -379,8 +379,9 @@ function renderGrids(chInfoMap, vItems) {
         let mcHeadHtml = "";
         if (ch.avatarImg && ch.avatarImg.trim() !== "") {
             // 管理画面で生成したローカルの画像パス（avatars/マイクラID.png）を使用する
+            const imgPath = ch.avatarImg.includes('/') ? ch.avatarImg.trim() : `avatars/${ch.avatarImg.trim()}.png`;
             mcHeadHtml = `<div class="mc-head-box" style="border-color:${ch.color || 'var(--border-color)'}">
-                <img class="mc-head-img" src="${ch.avatarImg.trim()}" alt="${ch.name}">
+                <img class="mc-head-img" src="${imgPath}" alt="${ch.name}">
             </div>`;
         } else {
             // 画像パスが設定されていない場合は、従来の Coming soon 表示にする
