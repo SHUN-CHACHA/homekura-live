@@ -193,7 +193,7 @@
                         <div class="mc-head-box" id="previewHeadBox">
                             <div class="coming-soon-lbl">CS</div>
                         </div>
-                        <button type="button" id="downloadAvatarBtn" class="btn-download-avatar" onclick="downloadMinecraftAvatar()" disabled>画像を [マイクラID].png でPCに保存</button>
+                        <button type="button" id="downloadAvatarBtn" class="btn-download-avatar" onclick="downloadMinecraftAvatar()" disabled>画像を [マイクラID].svg でPCに保存</button>
                     </div>
                 </div>
 
@@ -341,27 +341,34 @@ function downloadMinecraftAvatar() {
     const pureMcId = cleanMcId(document.getElementById('m_mc').value);
     if (!pureMcId) return;
 
-    const imageUrl = `https://minotar.net/cube/${pureMcId}/32.png`;
+    // ポータルサイトと同じ40pxサイズでMinotarのURLを指定
+    const imageUrl = `https://minotar.net/helm/${pureMcId}/40.png`;
     
-    fetch(imageUrl)
-        .then(response => {
-            if (!response.ok) throw new Error('画像の取得に失敗しました');
-            return response.blob();
-        })
-        .then(blob => {
-            const blobUrl = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = blobUrl;
-            a.download = `${pureMcId}.png`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(blobUrl);
-        })
-        .catch(err => {
-            alert("画像のダウンロードに失敗しました。外部APIの制限か、ネットワーク環境を確認してください。");
-            console.error(err);
-        });
+    // 1. PNG画像のURLを内包したSVGのテキストデータを作成する
+    // image-rendering: pixelated; を指定することでドットがぼやけないようにします
+    const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
+  <rect width="40" height="40" fill="#e2eae2" rx="4"/>
+  <image href="${imageUrl}" x="0" y="0" width="40" height="40" style="image-rendering: pixelated;"/>
+</svg>`;
+
+    try {
+        // 2. ブラウザに「これはSVGファイルですよ」と認識させてダウンロードさせる
+        const blob = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
+        const blobUrl = window.URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        // 拡張子を .svg に指定してダウンロード
+        a.download = `${pureMcId}.svg`; 
+        
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+        alert("SVGファイルの作成・ダウンロードに失敗しました。");
+        console.error(err);
+    }
 }
 
 function renderMemberList() {
@@ -553,7 +560,8 @@ function updateConfigOutput() {
         const pureMcId = cleanMcId(ch.minecraftId);
         return {
             ...ch,
-            avatarImg: pureMcId ? `avatars/${pureMcId}.png` : ""
+            // 補完される拡張子を .png から .svg に変更
+            avatarImg: pureMcId ? `avatars/${pureMcId}.svg` : ""
         };
     });
 
