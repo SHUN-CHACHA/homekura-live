@@ -291,7 +291,7 @@ function createMemberCard(ch, status, videoTitle = "", videoId = "", startTime =
 
     const pureMcId = cleanMcId(ch.minecraftId);
 
-    // 💡【修正箇所】元のコードと完全に同じ構造で、src属性の中身だけをローカルのフォルダパスに差し替えました
+    // 🛠️ 変更箇所：リンク先をminotarからローカルのavatars/マイクラID.pngに変更しました
     let avatarHtml = pureMcId ? `<img src="avatars/${pureMcId}.png" alt="${ch.name}">` : '';
 
     let badgeHtml = '<div class="status-badge">オフライン</div>';
