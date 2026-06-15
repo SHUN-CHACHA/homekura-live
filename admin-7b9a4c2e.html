@@ -21,49 +21,24 @@
             margin-bottom: 20px;
         }
 
-        .admin-main-layout {
-            display: block;
-        }
-
-        .admin-left-col,
-        .admin-right-col {
-            min-width: 0;
-        }
-
         @media (min-width: 768px) {
             .admin-main-layout {
                 display: flex;
-                flex-wrap: nowrap;
                 gap: 24px;
                 align-items: flex-start;
             }
             .admin-left-col {
-                flex: 1 1 auto;
+                flex: 1;
                 min-width: 0;
             }
             .admin-right-col {
-                width: 380px;
-                flex: 0 0 380px;
-                position: sticky;
-                top: 20px;
+                width: 420px;
+                flex-shrink: 0;
             }
         }
 
         .form-group { margin-bottom: 10px; }
         label { display: inline-block; width: 180px; font-weight: bold; }
-
-        #memberFormContainer .form-group {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 8px 12px;
-        }
-
-        #memberFormContainer .form-group > input[type="text"] {
-            flex: 1 1 400px;
-            min-width: 220px;
-            max-width: 100%;
-        }
         
         input[type="text"] { 
             width: 400px; 
@@ -72,7 +47,6 @@
             border: 1px solid #d8e2d7; 
             border-radius: 4px;
             color: #1a2418;
-            box-sizing: border-box;
         }
         input[type="text"]:focus {
             background: #ffffff;
@@ -191,30 +165,9 @@
             padding: 8px; border-radius: 4px; border: 1px solid #d8e2d7; background: #fafafa; color: #1a2418; resize: vertical;
         }
 
-        /* config.jsブロック：フォームの直下、全幅で表示 */
-        .config-block {
-            max-width: 100%;
-            margin-top: 0;
-        }
-        @media (min-width: 768px) {
-            .config-block {
-                /* 2カラムレイアウト内では左カラムと同じ幅に収める */
-                flex: 1;
-                min-width: 0;
-            }
-        }
-
         @media screen and (max-width: 768px) {
-            #memberFormContainer .form-group {
-                display: block;
-            }
             input[type="text"] { width: 100%; box-sizing: border-box; }
-            label { display: block; width: auto; margin-bottom: 4px; }
-            #avatarPreviewArea {
-                width: 100% !important;
-                box-sizing: border-box;
-                flex-wrap: wrap;
-            }
+            label { display: block; margin-bottom: 4px; }
         }
     </style>
 </head>
@@ -224,13 +177,14 @@
     
     <div class="admin-main-layout">
 
+        <!-- 左カラム：フォーム ＋ config.js -->
         <div class="admin-left-col">
-            
+
             <div id="memberFormContainer">
                 <div id="editNotice" style="display: none;"><span class="edit-badge">✏️ メンバー編集モード中</span></div>
                 <div class="form-group"><label>名前</label><input type="text" id="m_name" placeholder="例: まぐにぃ"></div>
                 <div class="form-group"><label>YouTube チャンネルID</label><input type="text" id="m_id" placeholder="例: UCMP7QuS4suoONg47Nbi-wrg"></div>
-                
+
                 <div class="form-group">
                     <label>Minecraft ID (Java版)</label>
                     <input type="text" id="m_mc" placeholder="例: magunee (空欄時はComing soon)" oninput="updateAvatarPreview(this.value)">
@@ -245,26 +199,25 @@
 
                 <div class="form-group"><label>X (旧Twitter) ID</label><input type="text" id="m_x" placeholder="例: maguro29"></div>
                 <div class="form-group"><label>Twitch ID</label><input type="text" id="m_tw" placeholder="例: maguro29game"></div>
-                <!-- ✅ TikTok入力欄を追加 -->
                 <div class="form-group">
                     <label>TikTok ID <span class="label-badge-tt">TT</span></label>
                     <input type="text" id="m_tt" placeholder="例: maguro29 （@は不要）">
                 </div>
                 <div class="form-group"><label>Instagram ID</label><input type="text" id="m_inst" placeholder="例: "></div>
                 <div class="form-group"><label>Discord 招待URL</label><input type="text" id="m_discord" placeholder="https://discord.gg/..."></div>
-                
+
                 <div class="form-group">
                     <label>メンバーカラー</label>
                     <input type="color" id="m_color" value="#ff9900" oninput="syncColorPickerToText(this.value)">
                     <input type="text" id="m_color_text" class="color-code-input" value="#ff9900" maxlength="7" placeholder="#ffffff" oninput="syncTextColorToPicker(this.value)">
                 </div>
-                
+
                 <button id="saveBtn" class="btn-save" onclick="addMember()">メンバーを保存</button>
                 <button id="cancelBtn" style="display:none; margin-left:10px;" onclick="cancelEdit()">編集をキャンセル</button>
             </div>
 
-        <div class="config-block">
-            <div class="helper-card">
+            <!-- config.js ブロック（フォームの直下） -->
+            <div class="helper-card" style="margin-top: 20px;">
                 <h3>⚙️ config.js の書き換え</h3>
                 <p style="font-size: 13px; color: #5c6b5a; margin-bottom: 10px; margin-top: 0;">
                     メンバーの追加・編集が終わったら、下のボタンで最新の設定をコピーし、ローカルの <code>config.js</code> を丸ごと上書き保存してください。
@@ -274,11 +227,12 @@
                 </button>
                 <textarea id="configOutput" readonly placeholder="メンバー情報を保存すると最新の設定データがここに自動同期されます"></textarea>
             </div>
+
         </div>
 
-        </div><!-- /.admin-left-col -->
-
+        <!-- 右カラム：顔アイコン手順 -->
         <div class="admin-right-col">
+
             <div class="helper-card">
                 <h3>🎨 顔アイコン（アバター）の追加手順</h3>
                 <ol class="steps-list-lg">
@@ -311,7 +265,8 @@
                     ※ MinotarのリンクをそのままWEBに貼らずローカル画像を使う理由：スマホ表示時にMinotar側でリクエストが弾かれる場合があり、Minecraft IDでもUUIDでもスマホでは表示できないケースがあったため、画像をダウンロードしてローカルで参照する方式を採用しています。
                 </p>
             </div>
-        </div><!-- /.admin-right-col -->
+
+        </div>
 
     </div>
 
@@ -627,6 +582,5 @@ function copyConfigText() {
 
 initAdmin();
 </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
