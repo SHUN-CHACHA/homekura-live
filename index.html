@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -369,11 +369,22 @@ function renderGrids(chInfoMap, vItems) {
         if (ch.discordUrl) listBtnsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn-square-mini btn-disc" title="Discord">${SVG_ICONS.discord}</a>`;
 
         // マイクラ3D顔画像
+        // avatarImg → minecraftId の順でフォールバック
+        const rawAvatar = ch.avatarImg ? ch.avatarImg.trim() : "";
+        const rawMcId   = ch.minecraftId ? ch.minecraftId.trim() : "";
+        let imgPath = "";
+        if (rawAvatar !== "") {
+            // すでに "avatars/xxx.png" 形式ならそのまま、それ以外はパスを補完
+            imgPath = rawAvatar.includes('/') ? rawAvatar : `avatars/${rawAvatar}.png`;
+        } else if (rawMcId !== "") {
+            // avatarImg未設定でもminecraftIdがあれば自動補完
+            imgPath = `avatars/${rawMcId}.png`;
+        }
         let mcHeadHtml = "";
-        if (ch.avatarImg && ch.avatarImg.trim() !== "") {
-            const imgPath = ch.avatarImg.includes('/') ? ch.avatarImg.trim() : `avatars/${ch.avatarImg.trim()}.png`;
+        if (imgPath !== "") {
             mcHeadHtml = `<div class="mc-head-box" style="border-color:${ch.color || 'var(--border-color)'}">
-                <img class="mc-head-img" src="${imgPath}" alt="${ch.name}">
+                <img class="mc-head-img" src="${imgPath}" alt="${ch.name}"
+                     onerror="this.parentElement.innerHTML='<div class=\\'coming-soon-lbl\\'>Coming<br>soon</div>'">
             </div>`;
         } else {
             mcHeadHtml = `<div class="mc-head-box"><div class="coming-soon-lbl">Coming<br>soon</div></div>`;
