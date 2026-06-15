@@ -352,7 +352,11 @@ function renderGrids(chInfoMap, vItems) {
         title="TikTok">TT</a>`;
 }
         if (ch.twitchId) cardBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-tw">Twitch</a>`;
-
+　      if (ch.tiktokId) {
+    cardBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId}"
+        target="_blank"
+        class="btn">TikTok</a>`;
+}
         const safeTextColor = adjustColorForText(ch.color);
 
         const card = `
