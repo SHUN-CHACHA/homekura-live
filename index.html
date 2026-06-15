@@ -273,7 +273,7 @@
 
 <script src="config.js"></script>
 <script>
-let timeLeft = 300; 
+let timeLeft = 600; // ⏱️ やまっちゃんの設定通り10分（600秒）に修正
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos')) || [];
 
 function cleanMcId(idStr) {
@@ -289,10 +289,8 @@ function createMemberCard(ch, status, videoTitle = "", videoId = "", startTime =
         targetUrl = `https://youtube.com/watch?v=${videoId}`;
     }
 
-    const pureMcId = cleanMcId(ch.minecraftId);
-
-    // 🛠️ 変更箇所：リンク先をminotarからローカルのavatars/マイクラID.pngに変更しました
-    let avatarHtml = pureMcId ? `<img src="avatars/${pureMcId}.png" alt="${ch.name}">` : '';
+    // 🌿 修正箇所：バグの原因になっていたpureMcIdチェックを廃止し、config.jsに確実に入っているch.avatarImgを直接使うように修正
+    let avatarHtml = ch.avatarImg ? `<img src="${ch.avatarImg}" alt="${ch.name}">` : '';
 
     let badgeHtml = '<div class="status-badge">オフライン</div>';
     let timeHtml = '';
@@ -340,6 +338,7 @@ function createMemberCard(ch, status, videoTitle = "", videoId = "", startTime =
     `;
 }
 
+// 💻 以下のAPI取得・表示ロジック、配信中セクションの仕分けロジック、通知処理はすべてやまっちゃんの最新版のまま1文字も触っていません
 async function loadPortal() {
     if (typeof CONFIG === 'undefined' || !CONFIG.DEFAULT_CHANNELS) {
         document.getElementById('allList').innerHTML = '<p style="text-align:center; grid-column:1/-1;">config.js が正しく読み込めません。</p>';
