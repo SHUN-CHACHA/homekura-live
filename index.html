@@ -150,12 +150,7 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
         .mc-head-img { width: 100%; height: 100%; object-fit: contain; transform: scale(1.1); }
-        .coming-soon-lbl {
-            width: 100%; height: 100%; background: #94a3b8; color: #ffffff;
-            font-size: 6px; font-weight: bold; text-align: center; line-height: 1.1;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            letter-spacing: -0.3px; text-transform: uppercase;
-        }
+
         .row-name { font-weight: bold; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-color); }
 
         .row-btns { display: flex; gap: 4px; align-items: center; width: 100%; justify-content: space-between; }
@@ -187,7 +182,6 @@
             .btn-square-mini svg { width: 14px; height: 14px; }
             
             .mc-head-box { width: 34px; height: 34px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-            .coming-soon-lbl { font-size: 7px; }
             .row-name { font-size: 14px; }
         }
 
@@ -369,7 +363,7 @@ function renderGrids(chInfoMap, vItems) {
         // 優先順位:
         //   1. ch.avatarImg が設定済み → 拡張子を .svg に正規化して使用
         //   2. ch.minecraftId が設定済み → avatars/{minecraftId}.svg
-        //   3. どちらもない → Coming Soon 表示
+        //   3. どちらもない → avatars/fallback.svg を表示
         const rawAvatar = ch.avatarImg   ? ch.avatarImg.trim()   : "";
         const rawMcId   = ch.minecraftId ? ch.minecraftId.trim() : "";
 
@@ -382,15 +376,12 @@ function renderGrids(chInfoMap, vItems) {
             imgPath = `avatars/${rawMcId}.svg`;
         }
 
-        let mcHeadHtml = "";
-        if (imgPath !== "") {
-            mcHeadHtml = `<div class="mc-head-box" style="border-color:${ch.color || 'var(--border-color)'}">
-                <img class="mc-head-img" src="${imgPath}" alt="${ch.name}"
-                     onerror="this.onerror=null; this.src='avatars/fallback.svg';">
-            </div>`;
-        } else {
-            mcHeadHtml = `<div class="mc-head-box"><div class="coming-soon-lbl">Coming<br>soon</div></div>`;
-        }
+        // imgPathが未設定の場合も fallback.svg を使う <img> タグに統一
+        const resolvedImg = imgPath !== "" ? imgPath : "avatars/fallback.svg";
+        const mcHeadHtml = `<div class="mc-head-box" style="border-color:${ch.color || 'var(--border-color)'}">
+            <img class="mc-head-img" src="${resolvedImg}" alt="${ch.name}"
+                 onerror="this.onerror=null; this.src='avatars/fallback.svg';">
+        </div>`;
         // ────────────────────────────────────────────────────────────────────
 
         const row = `
@@ -453,6 +444,4 @@ setInterval(() => {
 init();
 </script>
 </body>
-</html>
-
 </html>
