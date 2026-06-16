@@ -27,33 +27,18 @@
                 gap: 24px;
                 align-items: flex-start;
             }
-            .admin-left-col {
-                flex: 1;
-                min-width: 0;
-            }
-            .admin-right-col {
-                width: 420px;
-                flex-shrink: 0;
-            }
+            .admin-left-col { flex: 1; min-width: 0; }
+            .admin-right-col { width: 420px; flex-shrink: 0; }
         }
 
         .form-group { margin-bottom: 10px; }
         label { display: inline-block; width: 180px; font-weight: bold; }
         
         input[type="text"] { 
-            width: 400px; 
-            padding: 6px; 
-            background: #f0f5f0; 
-            border: 1px solid #d8e2d7; 
-            border-radius: 4px;
-            color: #1a2418;
+            width: 400px; padding: 6px; 
+            background: #f0f5f0; border: 1px solid #d8e2d7; border-radius: 4px; color: #1a2418;
         }
-        input[type="text"]:focus {
-            background: #ffffff;
-            border-color: #2d5a27;
-            outline: none;
-        }
-        
+        input[type="text"]:focus { background: #ffffff; border-color: #2d5a27; outline: none; }
         input[type="color"] { width: 50px; height: 30px; vertical-align: middle; border: 1px solid #d8e2d7; background: #f0f5f0; cursor: pointer; }
         .color-code-input { width: 100px !important; margin-left: 10px; vertical-align: middle; font-family: monospace; text-transform: uppercase; }
 
@@ -62,37 +47,27 @@
         .btn-save:hover { opacity: 0.9; }
         .btn-export { background: #2563eb; color: white; border: none; font-weight: bold; padding: 10px 20px; }
         .btn-export:hover { opacity: 0.9; }
-        
         .btn-download-avatar { background: #d97706; color: white; border: none; font-weight: bold; margin-left: 10px; padding: 4px 10px; font-size: 13px; }
         .btn-download-avatar:hover { opacity: 0.9; }
         .btn-download-avatar:disabled { background: #cbd5e1; cursor: not-allowed; }
 
-        /* UUIDフィールド */
+        /* UUID表示 */
+        .uuid-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+        .uuid-label { font-size: 12px; font-weight: bold; color: #5c6b5a; white-space: nowrap; }
         .uuid-display {
-            font-family: monospace;
-            font-size: 11px;
-            color: #5c6b5a;
-            background: #e2eae2;
-            border: 1px solid #d8e2d7;
-            border-radius: 4px;
-            padding: 5px 8px;
-            display: inline-block;
-            min-width: 260px;
-            letter-spacing: 0.03em;
-            vertical-align: middle;
+            font-family: monospace; font-size: 11px; color: #5c6b5a;
+            background: #e2eae2; border: 1px solid #d8e2d7; border-radius: 4px;
+            padding: 4px 8px; min-width: 240px; letter-spacing: 0.03em;
         }
-        .uuid-status {
-            display: inline-block;
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 3px;
-            margin-left: 8px;
-            vertical-align: middle;
-            font-weight: bold;
+        .uuid-display.ok  { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+        .uuid-display.err { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+        .uuid-badge {
+            display: inline-block; font-size: 11px; padding: 2px 8px;
+            border-radius: 3px; font-weight: bold; white-space: nowrap;
         }
-        .uuid-status.ok   { background: #d1fae5; color: #065f46; }
-        .uuid-status.err  { background: #fee2e2; color: #991b1b; }
-        .uuid-status.wait { background: #fef3c7; color: #92400e; }
+        .uuid-badge.wait { background: #fef3c7; color: #92400e; }
+        .uuid-badge.ok   { background: #d1fae5; color: #065f46; }
+        .uuid-badge.err  { background: #fee2e2; color: #991b1b; }
 
         .editing { background: #fffbeb !important; border: 1px solid #fde68a !important; }
         .edit-badge { display: inline-block; background: #b45309; color: white; padding: 2px 8px; font-size: 12px; border-radius: 4px; margin-bottom: 10px; font-weight: bold; }
@@ -111,7 +86,6 @@
             border: 1px solid #d8e2d7; margin: 0 auto;
         }
         .mc-head-img { width: 100%; height: 100%; object-fit: contain; transform: scale(1.1); }
-        
         .coming-soon-lbl {
             width: 100%; height: 100%; background: #94a3b8; color: #ffffff;
             font-size: 7px; font-weight: bold; text-align: center; line-height: 1.1;
@@ -121,87 +95,26 @@
 
         .btn-del { background: #dc2626; color: white; border: none; padding: 4px 10px; cursor: pointer; border-radius: 4px; }
         .btn-del:hover { opacity: 0.9; }
-        
         #cancelBtn { background: #64748b; color: white; border: none; }
         #cancelBtn:hover { opacity: 0.9; }
 
-        /* TikTokラベル用バッジ */
-        .label-badge-tt {
-            display: inline-block;
-            background: #010101;
-            color: #ffffff;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 1px 5px;
-            border-radius: 3px;
-            margin-left: 4px;
-            vertical-align: middle;
-        }
+        .label-badge-tt { display: inline-block; background: #010101; color: #ffffff; font-size: 10px; font-weight: bold; padding: 1px 5px; border-radius: 3px; margin-left: 4px; vertical-align: middle; }
+        .label-badge-ma { display: inline-block; background: #2563eb; color: #ffffff; font-size: 10px; font-weight: bold; padding: 1px 5px; border-radius: 3px; margin-left: 4px; vertical-align: middle; }
 
-        /* Mineafarバッジ */
-        .label-badge-ma {
-            display: inline-block;
-            background: #2563eb;
-            color: #ffffff;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 1px 5px;
-            border-radius: 3px;
-            margin-left: 4px;
-            vertical-align: middle;
-        }
+        .helper-card { background: #ffffff; border: 1px solid #d8e2d7; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .helper-card h3 { margin-top: 0; margin-bottom: 10px; font-size: 14px; font-weight: bold; color: #2d5a27; border-bottom: 1px solid #d8e2d7; padding-bottom: 6px; }
 
-        .helper-card {
-            background: #ffffff;
-            border: 1px solid #d8e2d7;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .helper-card h3 {
-            margin-top: 0; margin-bottom: 10px; font-size: 14px; font-weight: bold; color: #2d5a27; border-bottom: 1px solid #d8e2d7; padding-bottom: 6px;
-        }
-
-        /* 大きめフォントの手順リスト */
-        .steps-list-lg {
-            margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.8; color: #1a2418;
-        }
-        .steps-list-lg > li {
-            margin-bottom: 14px;
-        }
-        .steps-list-lg > li > strong {
-            font-size: 14px; color: #2d5a27; display: block; margin-bottom: 4px;
-        }
-        .steps-list-lg ul {
-            margin: 4px 0 0 0; padding-left: 18px; list-style: disc;
-        }
-        .steps-list-lg ul li {
-            margin-bottom: 4px;
-        }
-        .steps-list-lg code {
-            background: #e2eae2; padding: 1px 5px; border-radius: 3px;
-            font-size: 12px; color: #2d5a27;
-        }
-        .helper-note {
-            margin: 12px 0 0 0; padding: 10px 12px;
-            background: #fffbeb; border-left: 3px solid #ca8a04;
-            border-radius: 4px; font-size: 12px; color: #5c4a00; line-height: 1.7;
-        }
+        .steps-list-lg { margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.8; color: #1a2418; }
+        .steps-list-lg > li { margin-bottom: 14px; }
+        .steps-list-lg > li > strong { font-size: 14px; color: #2d5a27; display: block; margin-bottom: 4px; }
+        .steps-list-lg ul { margin: 4px 0 0 0; padding-left: 18px; list-style: disc; }
+        .steps-list-lg ul li { margin-bottom: 4px; }
+        .steps-list-lg code { background: #e2eae2; padding: 1px 5px; border-radius: 3px; font-size: 12px; color: #2d5a27; }
+        .helper-note { margin: 12px 0 0 0; padding: 10px 12px; background: #fffbeb; border-left: 3px solid #ca8a04; border-radius: 4px; font-size: 12px; color: #5c4a00; line-height: 1.7; }
         
-        #configOutput {
-            width: 100%; height: 160px; font-family: monospace; font-size: 11px; box-sizing: border-box; 
-            padding: 8px; border-radius: 4px; border: 1px solid #d8e2d7; background: #fafafa; color: #1a2418; resize: vertical;
-        }
+        #configOutput { width: 100%; height: 160px; font-family: monospace; font-size: 11px; box-sizing: border-box; padding: 8px; border-radius: 4px; border: 1px solid #d8e2d7; background: #fafafa; color: #1a2418; resize: vertical; }
 
-        /* UUID列 */
-        .uuid-cell {
-            font-family: monospace;
-            font-size: 10px;
-            color: #5c6b5a;
-            word-break: break-all;
-            max-width: 120px;
-        }
+        .uuid-cell { font-family: monospace; font-size: 10px; color: #5c6b5a; word-break: break-all; max-width: 130px; }
 
         @media screen and (max-width: 768px) {
             input[type="text"] { width: 100%; box-sizing: border-box; }
@@ -214,11 +127,10 @@
     <h2>👥 メンバー追加・編集</h2>
     
     <div class="admin-main-layout">
-
         <div class="admin-left-col">
-
             <div id="memberFormContainer">
-                <div id="editNotice" style="display: none;"><span class="edit-badge">✏️ メンバー編集モード中</span></div>
+                <div id="editNotice" style="display:none;"><span class="edit-badge">✏️ メンバー編集モード中</span></div>
+
                 <div class="form-group"><label>名前</label><input type="text" id="m_name" placeholder="例: まぐにぃ"></div>
                 <div class="form-group"><label>YouTube チャンネルID</label><input type="text" id="m_id" placeholder="例: UCMP7QuS4suoONg47Nbi-wrg"></div>
 
@@ -226,14 +138,14 @@
                     <label>Minecraft ID (Java版) <span class="label-badge-ma">MA</span></label>
                     <input type="text" id="m_mc" placeholder="例: magunee" oninput="onMcIdInput(this.value)">
 
-                    <!-- UUID表示エリア -->
-                    <div style="margin-top: 6px; display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 12px; font-weight: bold; color: #5c6b5a; white-space: nowrap;">UUID:</span>
+                    <!-- UUID表示 -->
+                    <div class="uuid-row">
+                        <span class="uuid-label">UUID:</span>
                         <span class="uuid-display" id="uuidDisplay">—</span>
-                        <span class="uuid-status wait" id="uuidStatus" style="display:none;">取得中…</span>
+                        <span class="uuid-badge wait" id="uuidBadge" style="display:none;"></span>
                     </div>
 
-                    <!-- プレビューエリア -->
+                    <!-- プレビュー -->
                     <div id="avatarPreviewArea" style="margin-top: 10px; display: flex; align-items: center; gap: 15px; background: #e2eae2; padding: 10px; border-radius: 6px; width: fit-content;">
                         <span style="font-size: 13px; font-weight: bold; color: #2d5a27;">頭部プレビュー:</span>
                         <div class="mc-head-box" id="previewHeadBox">
@@ -242,7 +154,7 @@
                         <button type="button" id="downloadAvatarBtn" class="btn-download-avatar" onclick="downloadMinecraftAvatar()" disabled>画像を [マイクラID].svg でPCに保存</button>
                     </div>
                     <div id="mineafarNote" style="font-size:11px; color:#2563eb; margin-top:4px; display:none;">
-                        ✅ Mineatar（api.mineatar.io）で頭部3D画像を取得しています
+                        ✅ Mineatar（api.mineatar.io）でアウターレイヤー込みの頭部3D画像を取得しています
                     </div>
                 </div>
 
@@ -275,11 +187,9 @@
                 </button>
                 <textarea id="configOutput" readonly placeholder="メンバー情報を保存すると最新の設定データがここに自動同期されます"></textarea>
             </div>
-
         </div>
 
         <div class="admin-right-col">
-
             <div class="helper-card">
                 <h3>🎨 顔アイコン（アバター）の追加手順</h3>
                 <ol class="steps-list-lg">
@@ -287,10 +197,10 @@
                         <strong>画像を準備する</strong>
                         <ul>
                             <li>下部のメンバー一覧から名前をクリックしてデータを参照するか、新規に必要項目を記入します。</li>
-                            <li><b>Minecraft ID</b> を入力すると、Mojang APIで自動的に <b>UUID</b> が取得・保存されます。</li>
-                            <li>UUIDが取得できると <b>Mineatar</b> で頭部3D画像がプレビュー表示されます（アウターレイヤーも正確に反映されます）。</li>
-                            <li>「<b>画像を【Minecraft ID】.svg でPCに保存</b>」ボタンがアクティブになるのでクリックすると、PCのダウンロードフォルダに画像が保存されます。</li>
-                            <li>編集が完了したら「<b>メンバーを保存</b>」ボタンをクリックしてください。</li>
+                            <li><b>Minecraft ID</b> を入力すると、<b>Ashcon API</b> 経由でUUIDを自動取得します（Mojang APIはブラウザから直接呼べないためCORS対応プロキシを使用）。</li>
+                            <li>UUIDが取得できると <b>Mineatar</b>（api.mineatar.io）で頭部3D画像がプレビュー表示されます。アウターレイヤーも正確に反映されます。</li>
+                            <li>「<b>画像を【Minecraft ID】.svg でPCに保存</b>」ボタンをクリックするとダウンロードフォルダに画像が保存されます。</li>
+                            <li>編集が完了したら「<b>メンバーを保存</b>」ボタンをクリックしてください。UUIDも一緒に保存されます。</li>
                         </ul>
                     </li>
                     <li>
@@ -311,12 +221,11 @@
                     </li>
                 </ol>
                 <p class="helper-note">
-                    ※ UUIDを使ってMineatar（api.mineatar.io）から頭部3D画像を取得しています。アウターレイヤーもデフォルトで有効です。スマホでMinotarのリクエストが弾かれる問題があったため、画像をダウンロードしてローカルで参照する方式を採用しています。
+                    ※ <b>UUID取得について：</b>Mojang APIはブラウザからの直接アクセスがCORSでブロックされるため、CORS対応の <code>api.ashcon.app</code> を経由してUUIDを取得しています。取得したUUIDはconfig.jsに保存されます。<br>
+                    ※ 画像はMineatar（api.mineatar.io）から取得しローカルに保存することで、スマホ表示時の外部APIブロック問題を回避しています。
                 </p>
             </div>
-
         </div>
-
     </div>
 
     <h2 style="margin-top: 30px;">📋 現在の登録メンバー一覧 <span style="font-size:13px; color:#5c6b5a; font-weight:normal;">（名前をクリックすると再編集できます）</span></h2>
@@ -328,7 +237,7 @@
                 <th style="width: 44px; text-align:center;">顔</th>
                 <th style="min-width: 80px;">名前</th>
                 <th style="min-width: 90px;">Minecraft ID</th>
-                <th style="min-width: 120px;">UUID</th>
+                <th style="min-width: 130px;">UUID</th>
                 <th style="min-width: 120px;">YouTube ID</th>
                 <th style="min-width: 80px;">X (Twitter)</th>
                 <th style="min-width: 80px;">Twitch</th>
@@ -342,20 +251,14 @@
     </table>
     </div>
 
-
 <script src="config.js"></script>
 <script>
-let channels = [];
+let channels  = [];
 let editIndex = -1;
-
-// フォームに保持する現在のUUID（Minecraft ID入力のたびに更新）
 let currentUUID = "";
-// UUID取得の debounce タイマー
-let uuidTimer = null;
+let uuidTimer   = null;
 
-// ─────────────────────────────────────────
-// 初期化
-// ─────────────────────────────────────────
+// ─── 初期化 ───────────────────────────────────────────
 function initAdmin() {
     const saved = localStorage.getItem('custom_channels');
     if (saved) { channels = JSON.parse(saved); }
@@ -364,312 +267,237 @@ function initAdmin() {
     updateConfigOutput();
 }
 
-// ─────────────────────────────────────────
-// カラー同期
-// ─────────────────────────────────────────
-function syncColorPickerToText(val) {
-    document.getElementById('m_color_text').value = val.toUpperCase();
-}
-function syncTextColorToPicker(val) {
-    if (val.match(/^#[0-9a-fA-F]{6}$/)) {
-        document.getElementById('m_color').value = val;
-    }
-}
+// ─── カラー同期 ────────────────────────────────────────
+function syncColorPickerToText(val) { document.getElementById('m_color_text').value = val.toUpperCase(); }
+function syncTextColorToPicker(val) { if (val.match(/^#[0-9a-fA-F]{6}$/)) document.getElementById('m_color').value = val; }
 
-// ─────────────────────────────────────────
-// Minecraft ID の入力ハンドラ（debounce 800ms）
-// ─────────────────────────────────────────
+// ─── Minecraft ID 入力（debounce 700ms）──────────────────
 function onMcIdInput(rawId) {
     const mcId = cleanMcId(rawId);
     clearTimeout(uuidTimer);
-
-    // UUIDをリセット
     currentUUID = "";
-    setUuidDisplay("—", null);
+    resetUuidUI();
 
-    if (!mcId) {
-        updateAvatarPreview("", "");
-        return;
-    }
+    if (!mcId) { updateAvatarPreview("", ""); return; }
 
-    // 入力中表示
-    showUuidStatus("wait", "入力待ち…");
-
-    uuidTimer = setTimeout(() => {
-        fetchUUIDFromMojang(mcId);
-    }, 800);
+    setBadge("wait", "入力受付中…");
+    uuidTimer = setTimeout(() => fetchUUID(mcId), 700);
 }
 
-// ─────────────────────────────────────────
-// Mojang API → UUID 取得
-// ─────────────────────────────────────────
-async function fetchUUIDFromMojang(mcId) {
-    showUuidStatus("wait", "取得中…");
+// ─── UUID取得 (Ashcon API — CORS対応) ──────────────────
+// Mojang の api.mojang.com はブラウザからの fetch を CORS でブロックするため、
+// CORS ヘッダーを付けて中継してくれる api.ashcon.app を使用する。
+async function fetchUUID(mcId) {
+    setBadge("wait", "UUID取得中…");
     try {
-        const res = await fetch(`https://api.mojang.com/users/profiles/minecraft/${encodeURIComponent(mcId)}`);
-        if (!res.ok) throw new Error("not found");
-
+        const res = await fetch(`https://api.ashcon.app/mojang/v2/user/${encodeURIComponent(mcId)}`);
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.reason || `HTTP ${res.status}`);
+        }
         const data = await res.json();
-        // Mojang は ハイフンなし32文字UUID を返す → ハイフン付きに変換して保存
-        const rawId = data.id; // e.g. "069a79f4447247fa8e5ff2a8ba86b6d3"
-        const uuid = formatUUID(rawId);
+        // ashcon は "uuid" フィールドにハイフン付きで返してくれる
+        const uuid = data.uuid;
+        if (!uuid) throw new Error("UUIDが見つかりません");
 
         currentUUID = uuid;
         setUuidDisplay(uuid, "ok");
-        hideUuidStatus();
+        setBadge("ok", "✅ 取得成功");
         updateAvatarPreview(mcId, uuid);
 
     } catch (e) {
         currentUUID = "";
-        setUuidDisplay("取得失敗（IDを確認してください）", null);
-        showUuidStatus("err", "見つかりません");
+        setUuidDisplay(`取得失敗: ${e.message}`, "err");
+        setBadge("err", "❌ 失敗");
         updateAvatarPreview("", "");
     }
 }
 
-// ハイフンなし32文字 → ハイフンあり 8-4-4-4-12 形式
-function formatUUID(raw) {
-    if (!raw || raw.length !== 32) return raw;
-    return `${raw.slice(0,8)}-${raw.slice(8,12)}-${raw.slice(12,16)}-${raw.slice(16,20)}-${raw.slice(20)}`;
+// ─── UUID表示UI ────────────────────────────────────────
+function resetUuidUI() {
+    const el = document.getElementById('uuidDisplay');
+    el.textContent = "—";
+    el.className = "uuid-display";
+    document.getElementById('uuidBadge').style.display = "none";
 }
-
-function setUuidDisplay(text, statusClass) {
+function setUuidDisplay(text, state) {
     const el = document.getElementById('uuidDisplay');
     el.textContent = text;
-    // 取得済み→緑っぽく
-    el.style.color = statusClass === "ok" ? "#065f46" : "#5c6b5a";
-    el.style.background = statusClass === "ok" ? "#d1fae5" : "#e2eae2";
+    el.className = `uuid-display${state ? ' ' + state : ''}`;
 }
-function showUuidStatus(cls, text) {
-    const el = document.getElementById('uuidStatus');
-    el.className = `uuid-status ${cls}`;
+function setBadge(cls, text) {
+    const el = document.getElementById('uuidBadge');
+    el.className = `uuid-badge ${cls}`;
     el.textContent = text;
     el.style.display = "inline-block";
 }
-function hideUuidStatus() {
-    document.getElementById('uuidStatus').style.display = "none";
-}
 
-// ─────────────────────────────────────────
-// アバタープレビュー（Mineatar 使用）
-// ─────────────────────────────────────────
+// ─── アバタープレビュー（Mineatar）────────────────────────
 function updateAvatarPreview(mcId, uuid) {
-    const box = document.getElementById('previewHeadBox');
-    const btn = document.getElementById('downloadAvatarBtn');
+    const box  = document.getElementById('previewHeadBox');
+    const btn  = document.getElementById('downloadAvatarBtn');
     const note = document.getElementById('mineafarNote');
 
     if (uuid) {
-        // Mineatar: UUIDで頭部3D画像（アウターレイヤーON がデフォルト）
         const imgUrl = `https://api.mineatar.io/head/${uuid}?overlay=true&scale=8`;
-        box.innerHTML = `<img class="mc-head-img" src="${imgUrl}" id="previewHeadImg"
+        box.innerHTML = `<img class="mc-head-img" src="${imgUrl}"
             onerror="this.onerror=null; this.src='avatars/fallback.svg';">`;
-        btn.disabled = false;
+        btn.disabled  = false;
         btn.innerText = `画像を ${mcId}.svg でPCに保存`;
         note.style.display = "block";
     } else {
         box.innerHTML = `<div class="coming-soon-lbl">CS</div>`;
-        btn.disabled = true;
-        btn.innerText = `画像を [マイクラID].svg でPCに保存`;
+        btn.disabled  = true;
+        btn.innerText = "画像を [マイクラID].svg でPCに保存";
         note.style.display = "none";
     }
 }
 
-// ─────────────────────────────────────────
-// SVGダウンロード（Mineatar PNG → base64 → SVG）
-// ─────────────────────────────────────────
+// ─── SVGダウンロード ────────────────────────────────────
 async function downloadMinecraftAvatar() {
     const mcId = cleanMcId(document.getElementById('m_mc').value);
-    if (!mcId || !currentUUID) {
-        alert("Minecraft IDの入力またはUUID取得を完了してください。");
-        return;
-    }
+    if (!mcId || !currentUUID) { alert("UUID取得が完了してからダウンロードしてください。"); return; }
 
     const btn = document.getElementById('downloadAvatarBtn');
-    const origText = btn.innerText;
+    const orig = btn.innerText;
     btn.disabled = true;
     btn.innerText = "ダウンロード中…";
 
     try {
-        // Mineatar から頭部3D画像（PNG）を取得
-        const pngUrl = `https://api.mineatar.io/head/${currentUUID}?overlay=true&scale=8`;
+        const pngUrl  = `https://api.mineatar.io/head/${currentUUID}?overlay=true&scale=8`;
         const response = await fetch(pngUrl);
         if (!response.ok) throw new Error("Mineatar画像の取得に失敗しました");
 
         const blob = await response.blob();
+        const base64data = await blobToBase64(blob);
 
-        await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = function () {
-                const base64data = reader.result;
-
-                // 40×40 の SVG にラップ（pixelated でくっきり表示）
-                const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
+        const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
   <rect width="40" height="40" fill="#e2eae2" rx="4"/>
   <image href="${base64data}" x="2" y="2" width="36" height="36" style="image-rendering: pixelated;"/>
 </svg>`;
 
-                const blobSvg = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
-                const blobUrl = window.URL.createObjectURL(blobSvg);
-
-                const a = document.createElement('a');
-                a.href = blobUrl;
-                a.download = `${mcId}.svg`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(blobUrl);
-                resolve();
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-        });
+        const blobSvg = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
+        const blobUrl = URL.createObjectURL(blobSvg);
+        const a = document.createElement('a');
+        a.href = blobUrl; a.download = `${mcId}.svg`;
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a); URL.revokeObjectURL(blobUrl);
 
     } catch (err) {
-        alert("Mineafarからの画像取得またはSVG作成に失敗しました。\n" + err.message);
+        alert("画像の保存に失敗しました。\n" + err.message);
         console.error(err);
     } finally {
         btn.disabled = false;
-        btn.innerText = origText;
+        btn.innerText = orig;
     }
 }
 
-// ─────────────────────────────────────────
-// ユーティリティ
-// ─────────────────────────────────────────
-function cleanMcId(idStr) {
-    if (!idStr) return "";
-    return idStr.toString().replace(/\r?\n|\r/g, '').trim();
+function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onloadend = () => resolve(r.result);
+        r.onerror   = reject;
+        r.readAsDataURL(blob);
+    });
 }
 
-// ─────────────────────────────────────────
-// メンバー一覧レンダリング
-// ─────────────────────────────────────────
+// ─── ユーティリティ ────────────────────────────────────
+function cleanMcId(s) { return s ? s.toString().replace(/\r?\n|\r/g, '').trim() : ""; }
+
+// ─── メンバー一覧レンダリング ──────────────────────────────
 function renderMemberList() {
     const tbody = document.getElementById('memberTableBody');
     tbody.innerHTML = "";
 
     if (!channels.length) {
-        tbody.innerHTML =
-            `<tr><td colspan="12" style="text-align:center; color:#8ca08a; padding: 20px; font-size:13px;">まだメンバーが登録されていません。左のフォームから追加してください。</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="12" style="text-align:center; color:#8ca08a; padding:20px; font-size:13px;">まだメンバーが登録されていません。左のフォームから追加してください。</td></tr>`;
         return;
     }
 
     channels.forEach((ch, idx) => {
         const pureMcId = cleanMcId(ch.minecraftId);
-        const uuid = ch.uuid || "";
+        const uuid     = ch.uuid || "";
 
-        const avatarPath =
-            ch.avatarImg && ch.avatarImg.trim()
-                ? ch.avatarImg.trim()
-                : (pureMcId ? `avatars/${pureMcId}.svg` : "avatars/fallback.svg");
+        const avatarPath = ch.avatarImg && ch.avatarImg.trim()
+            ? ch.avatarImg.trim()
+            : (pureMcId ? `avatars/${pureMcId}.svg` : "avatars/fallback.svg");
 
-        const mcHeadHtml = `
-            <div class="mc-head-box" style="border-color:${ch.color || '#d8e2d7'}">
-                <img
-                    class="mc-head-img"
-                    src="${avatarPath}"
-                    alt="${ch.name || ''}"
-                    onerror="this.onerror=null; this.src='avatars/fallback.svg';"
-                >
-            </div>`;
+        const mcHeadHtml = `<div class="mc-head-box" style="border-color:${ch.color||'#d8e2d7'}">
+            <img class="mc-head-img" src="${avatarPath}" alt="${ch.name||''}"
+                onerror="this.onerror=null; this.src='avatars/fallback.svg';"></div>`;
 
-        // UUID 短縮表示（8文字-…）
-        const uuidShort = uuid
-            ? `<span title="${uuid}" style="cursor:help;">${uuid.slice(0,8)}…</span>`
-            : `<span style="color:#94a3b8;">—</span>`;
+        // UUID: 先頭8文字 + …、ホバーでフル表示
+        const uuidCell = uuid
+            ? `<span class="uuid-cell" title="${uuid}" style="cursor:help;">${uuid.slice(0,8)}&hellip;</span>`
+            : `<span style="color:#94a3b8; font-size:11px;">—</span>`;
 
-        const mcText     = pureMcId || "";
-        const ytCell     = ch.id
-            ? `<a href="https://youtube.com/channel/${ch.id}" target="_blank" style="font-family:monospace; font-size:11px; color:#dc2626; word-break:break-all;">${ch.id}</a>`
-            : "";
-        const xCell      = ch.twitterId
-            ? `<a href="https://x.com/${ch.twitterId}" target="_blank" style="font-size:12px; color:#14171a;">@${ch.twitterId}</a>`
-            : "";
-        const twitchCell = ch.twitchId
-            ? `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" style="font-size:12px; color:#9146ff;">@${ch.twitchId}</a>`
-            : "";
-        const tiktokCell = ch.tiktokId
-            ? `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" style="font-size:12px; color:#010101;">@${ch.tiktokId}</a>`
-            : "";
-        const instaCell  = ch.instaId
-            ? `<a href="https://instagram.com/${ch.instaId}" target="_blank" style="font-size:12px; color:#e1306c;">@${ch.instaId}</a>`
-            : "";
-        const discordCell = ch.discordUrl
-            ? `<a href="${ch.discordUrl}" target="_blank" style="font-size:12px; color:#5865f2;">リンク</a>`
-            : "";
+        const mcText      = pureMcId || "";
+        const ytCell      = ch.id       ? `<a href="https://youtube.com/channel/${ch.id}" target="_blank" style="font-family:monospace;font-size:11px;color:#dc2626;word-break:break-all;">${ch.id}</a>` : "";
+        const xCell       = ch.twitterId ? `<a href="https://x.com/${ch.twitterId}" target="_blank" style="font-size:12px;color:#14171a;">@${ch.twitterId}</a>` : "";
+        const twitchCell  = ch.twitchId  ? `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" style="font-size:12px;color:#9146ff;">@${ch.twitchId}</a>` : "";
+        const tiktokCell  = ch.tiktokId  ? `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" style="font-size:12px;color:#010101;">@${ch.tiktokId}</a>` : "";
+        const instaCell   = ch.instaId   ? `<a href="https://instagram.com/${ch.instaId}" target="_blank" style="font-size:12px;color:#e1306c;">@${ch.instaId}</a>` : "";
+        const discordCell = ch.discordUrl ? `<a href="${ch.discordUrl}" target="_blank" style="font-size:12px;color:#5865f2;">リンク</a>` : "";
 
         tbody.innerHTML += `
             <tr>
-                <td style="text-align:center;">
-                    <span style="display:inline-block; width:20px; height:20px; border-radius:50%; background:${ch.color || '#ff9900'}; border:1px solid #d8e2d7;"></span>
-                </td>
+                <td style="text-align:center;"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:${ch.color||'#ff9900'};border:1px solid #d8e2d7;"></span></td>
                 <td style="text-align:center;">${mcHeadHtml}</td>
-                <td>
-                    <strong class="clickable-name" onclick="editMember(${idx})" title="クリックして編集">
-                        ${ch.name || ''}
-                    </strong>
-                </td>
-                <td style="font-size:12px; color:#414d3f;">${mcText}</td>
-                <td class="uuid-cell">${uuidShort}</td>
+                <td><strong class="clickable-name" onclick="editMember(${idx})" title="クリックして編集">${ch.name||''}</strong></td>
+                <td style="font-size:12px;color:#414d3f;">${mcText}</td>
+                <td>${uuidCell}</td>
                 <td>${ytCell}</td>
                 <td>${xCell}</td>
                 <td>${twitchCell}</td>
                 <td>${tiktokCell}</td>
                 <td>${instaCell}</td>
                 <td>${discordCell}</td>
-                <td>
-                    <button class="btn-del" onclick="deleteMember(${idx})">削除</button>
-                </td>
-            </tr>
-        `;
+                <td><button class="btn-del" onclick="deleteMember(${idx})">削除</button></td>
+            </tr>`;
     });
 }
 
-// ─────────────────────────────────────────
-// 編集モード
-// ─────────────────────────────────────────
+// ─── 編集モード ────────────────────────────────────────
 function editMember(idx) {
     editIndex = idx;
     const ch = channels[idx];
-    
+
     document.getElementById('m_name').value = ch.name || "";
-    document.getElementById('m_id').value = ch.id || "";
-    
+    document.getElementById('m_id').value   = ch.id   || "";
+
     const pureMcId = cleanMcId(ch.minecraftId);
     document.getElementById('m_mc').value = pureMcId;
 
-    // 保存済みUUIDを復元
     if (ch.uuid) {
         currentUUID = ch.uuid;
         setUuidDisplay(ch.uuid, "ok");
-        hideUuidStatus();
+        setBadge("ok", "✅ 保存済み");
         updateAvatarPreview(pureMcId, ch.uuid);
     } else if (pureMcId) {
-        // UUIDがない場合は再取得
         currentUUID = "";
-        setUuidDisplay("—", null);
-        fetchUUIDFromMojang(pureMcId);
+        resetUuidUI();
+        fetchUUID(pureMcId);
     } else {
         currentUUID = "";
-        setUuidDisplay("—", null);
+        resetUuidUI();
         updateAvatarPreview("", "");
     }
-    
-    document.getElementById('m_x').value = ch.twitterId || "";
-    document.getElementById('m_tw').value = ch.twitchId || "";
-    document.getElementById('m_tt').value = ch.tiktokId || "";
-    document.getElementById('m_inst').value = ch.instaId || "";
-    document.getElementById('m_discord').value = ch.discordUrl || "";
-    
-    const targetColor = ch.color || "#ff9900";
-    document.getElementById('m_color').value = targetColor;
-    document.getElementById('m_color_text').value = targetColor.toUpperCase();
-    
+
+    document.getElementById('m_x').value       = ch.twitterId  || "";
+    document.getElementById('m_tw').value       = ch.twitchId   || "";
+    document.getElementById('m_tt').value       = ch.tiktokId   || "";
+    document.getElementById('m_inst').value     = ch.instaId    || "";
+    document.getElementById('m_discord').value  = ch.discordUrl || "";
+
+    const c = ch.color || "#ff9900";
+    document.getElementById('m_color').value      = c;
+    document.getElementById('m_color_text').value = c.toUpperCase();
+
     document.getElementById('memberFormContainer').className = "editing";
-    document.getElementById('editNotice').style.display = "block";
-    document.getElementById('saveBtn').innerText = "変更を上書き保存";
-    document.getElementById('cancelBtn').style.display = "inline-block";
-    
+    document.getElementById('editNotice').style.display      = "block";
+    document.getElementById('saveBtn').innerText             = "変更を上書き保存";
+    document.getElementById('cancelBtn').style.display       = "inline-block";
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -677,51 +505,36 @@ function cancelEdit() {
     editIndex = -1;
     clearForm();
     document.getElementById('memberFormContainer').className = "";
-    document.getElementById('editNotice').style.display = "none";
-    document.getElementById('saveBtn').innerText = "メンバーを保存";
-    document.getElementById('cancelBtn').style.display = "none";
+    document.getElementById('editNotice').style.display      = "none";
+    document.getElementById('saveBtn').innerText             = "メンバーを保存";
+    document.getElementById('cancelBtn').style.display       = "none";
 }
 
 function clearForm() {
-    document.getElementById('m_name').value = "";
-    document.getElementById('m_id').value = "";
-    document.getElementById('m_mc').value = "";
+    ['m_name','m_id','m_mc','m_x','m_tw','m_tt','m_inst','m_discord'].forEach(id => document.getElementById(id).value = "");
     currentUUID = "";
-    setUuidDisplay("—", null);
-    hideUuidStatus();
+    resetUuidUI();
     updateAvatarPreview("", "");
-    document.getElementById('m_x').value = "";
-    document.getElementById('m_tw').value = "";
-    document.getElementById('m_tt').value = "";
-    document.getElementById('m_inst').value = "";
-    document.getElementById('m_discord').value = "";
-    document.getElementById('m_color').value = "#ff9900";
-    document.getElementById('m_color_text').value = "#ff9900";
+    document.getElementById('m_color').value      = "#ff9900";
+    document.getElementById('m_color_text').value = "#FF9900";
 }
 
-// ─────────────────────────────────────────
-// 保存・削除
-// ─────────────────────────────────────────
+// ─── 保存・削除 ────────────────────────────────────────
 function addMember() {
-    const name = document.getElementById('m_name').value.trim();
-    const id = document.getElementById('m_id').value.trim();
+    const name       = document.getElementById('m_name').value.trim();
+    const id         = document.getElementById('m_id').value.trim();
     const minecraftId = cleanMcId(document.getElementById('m_mc').value);
-    const twitterId = document.getElementById('m_x').value.trim();
-    const twitchId = document.getElementById('m_tw').value.trim();
-    const tiktokId = document.getElementById('m_tt').value.trim().replace(/^@/, '');
-    const instaId = document.getElementById('m_inst').value.trim();
+    const twitterId  = document.getElementById('m_x').value.trim();
+    const twitchId   = document.getElementById('m_tw').value.trim();
+    const tiktokId   = document.getElementById('m_tt').value.trim().replace(/^@/, '');
+    const instaId    = document.getElementById('m_inst').value.trim();
     const discordUrl = document.getElementById('m_discord').value.trim();
-    const color = document.getElementById('m_color_text').value.trim().toLowerCase();
+    const color      = document.getElementById('m_color_text').value.trim().toLowerCase();
 
     if (!name || !id) { alert("名前とYouTubeチャンネルIDは必須です！"); return; }
     if (!color.match(/^#[0-9a-fA-F]{6}$/)) { alert("カラーコードは #ffffff のような形式で入力してください！"); return; }
 
-    // UUIDも保存する
-    const memberData = {
-        name, id, minecraftId,
-        uuid: currentUUID,   // ← NEW: UUID を保存
-        twitterId, twitchId, tiktokId, instaId, discordUrl, color
-    };
+    const memberData = { name, id, minecraftId, uuid: currentUUID, twitterId, twitchId, tiktokId, instaId, discordUrl, color };
 
     if (editIndex > -1) {
         channels[editIndex] = memberData;
@@ -732,7 +545,7 @@ function addMember() {
         alert(`${name} さんを新規保存しました！`);
         clearForm();
     }
-    
+
     localStorage.setItem('custom_channels', JSON.stringify(channels));
     renderMemberList();
     updateConfigOutput();
@@ -748,38 +561,22 @@ function deleteMember(idx) {
     }
 }
 
-// ─────────────────────────────────────────
-// config.js 出力
-// ─────────────────────────────────────────
+// ─── config.js 出力 ────────────────────────────────────
 function updateConfigOutput() {
-    const outputTextarea = document.getElementById('configOutput');
-    const formattedChannels = channels.map(ch => {
+    const formatted = channels.map(ch => {
         const pureMcId = cleanMcId(ch.minecraftId);
-        return {
-            ...ch,
-            avatarImg: pureMcId ? `avatars/${pureMcId}.svg` : ""
-        };
+        return { ...ch, avatarImg: pureMcId ? `avatars/${pureMcId}.svg` : "" };
     });
-
-    const apiKey = (typeof CONFIG !== 'undefined' && CONFIG.YOUTUBE_API_KEY)
-        ? CONFIG.YOUTUBE_API_KEY
-        : "AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY";
-
-    const output = `const CONFIG = {\n    YOUTUBE_API_KEY: "${apiKey}",\n    DEFAULT_CHANNELS: ${JSON.stringify(formattedChannels, null, 8)}\n};`;
-    outputTextarea.value = output;
+    const apiKey = (typeof CONFIG !== 'undefined' && CONFIG.YOUTUBE_API_KEY) ? CONFIG.YOUTUBE_API_KEY : "YOUR_API_KEY";
+    document.getElementById('configOutput').value =
+        `const CONFIG = {\n    YOUTUBE_API_KEY: "${apiKey}",\n    DEFAULT_CHANNELS: ${JSON.stringify(formatted, null, 8)}\n};`;
 }
 
 function exportConfig() {
     updateConfigOutput();
-    const outputText = document.getElementById('configOutput').value;
-    navigator.clipboard.writeText(outputText).then(() => {
-        alert("config.js 用のコードをコピーしました！config.jsファイルに貼り付けて保存してください。");
-    }).catch(err => {
-        console.error('コピー失敗:', err);
-        const textarea = document.getElementById('configOutput');
-        textarea.select();
-        alert('自動コピーに失敗しました。右側のテキストエリアを全選択して手動でコピーしてください。');
-    });
+    navigator.clipboard.writeText(document.getElementById('configOutput').value)
+        .then(() => alert("config.js 用のコードをコピーしました！config.jsファイルに貼り付けて保存してください。"))
+        .catch(() => { document.getElementById('configOutput').select(); alert('自動コピーに失敗しました。テキストエリアを全選択して手動でコピーしてください。'); });
 }
 
 initAdmin();
