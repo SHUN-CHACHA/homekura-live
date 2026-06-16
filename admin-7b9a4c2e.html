@@ -101,6 +101,14 @@
         .label-badge-tt { display: inline-block; background: #010101; color: #ffffff; font-size: 10px; font-weight: bold; padding: 1px 5px; border-radius: 3px; margin-left: 4px; vertical-align: middle; }
         .label-badge-ma { display: inline-block; background: #2563eb; color: #ffffff; font-size: 10px; font-weight: bold; padding: 1px 5px; border-radius: 3px; margin-left: 4px; vertical-align: middle; }
 
+        .btn-uuid-manual  { background: #f59e0b; color: white; border: none; font-size: 11px; font-weight: bold; padding: 3px 10px; border-radius: 4px; cursor: pointer; margin-top: 0; }
+        .btn-uuid-manual:hover  { opacity: 0.85; }
+        .btn-uuid-confirm { background: #2d5a27; color: white; border: none; font-size: 12px; font-weight: bold; padding: 5px 14px; border-radius: 4px; cursor: pointer; margin-top: 0; }
+        .btn-uuid-confirm:hover  { opacity: 0.9; }
+        .btn-uuid-confirm:disabled { background: #cbd5e1; cursor: not-allowed; }
+        .btn-uuid-cancel  { background: #64748b; color: white; border: none; font-size: 12px; font-weight: bold; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-top: 0; }
+        .btn-uuid-cancel:hover { opacity: 0.9; }
+
         .helper-card { background: #ffffff; border: 1px solid #d8e2d7; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .helper-card h3 { margin-top: 0; margin-bottom: 10px; font-size: 14px; font-weight: bold; color: #2d5a27; border-bottom: 1px solid #d8e2d7; padding-bottom: 6px; }
 
@@ -143,6 +151,27 @@
                         <span class="uuid-label">UUID:</span>
                         <span class="uuid-display" id="uuidDisplay">—</span>
                         <span class="uuid-badge wait" id="uuidBadge" style="display:none;"></span>
+                        <button type="button" id="uuidManualToggleBtn" class="btn-uuid-manual" onclick="toggleUuidManual()" style="display:none;">✏️ 手動入力</button>
+                    </div>
+
+                    <!-- UUID手動入力エリア（自動取得失敗時に展開） -->
+                    <div id="uuidManualArea" style="display:none; margin-top:8px; background:#fff8e1; border:1px solid #fde68a; border-radius:6px; padding:10px;">
+                        <div style="font-size:12px; color:#92400e; margin-bottom:6px; font-weight:bold;">
+                            ⚠️ UUID手動入力（自動取得に失敗した場合）
+                        </div>
+                        <div style="font-size:11px; color:#5c4a00; margin-bottom:8px; line-height:1.6;">
+                            <a href="https://minecraftuuid.com" target="_blank" style="color:#2563eb;">minecraftuuid.com</a> や
+                            <a href="https://namemc.com" target="_blank" style="color:#2563eb;">namemc.com</a> でMinecraft IDを検索し、UUIDをコピーして貼り付けてください。
+                        </div>
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                            <input type="text" id="uuidManualInput"
+                                style="width:280px; font-family:monospace; font-size:12px;"
+                                placeholder="例: 069a79f4-44e9-4726-a5be-fca90e38aaf5"
+                                oninput="validateManualUuid(this.value)">
+                            <button type="button" id="uuidManualConfirmBtn" class="btn-uuid-confirm" onclick="confirmManualUuid()" disabled>確定</button>
+                            <button type="button" class="btn-uuid-cancel" onclick="closeUuidManual()">キャンセル</button>
+                        </div>
+                        <div id="uuidManualValidation" style="font-size:11px; margin-top:5px;"></div>
                     </div>
 
                     <!-- プレビュー -->
@@ -194,7 +223,6 @@
                 <h3>🎨 顔アイコン（アバター）の追加手順</h3>
                 <ol class="steps-list-lg">
                     <li>
-                        <li>
                         <strong>画像を準備する</strong>
                         <ul>
                             <li>下部のメンバー一覧から名前をクリックしてデータを参照するか、新規に必要項目を記入します。</li>
@@ -311,7 +339,69 @@ async function fetchUUID(mcId) {
         setUuidDisplay(`取得失敗: ${e.message}`, "err");
         setBadge("err", "❌ 失敗");
         updateAvatarPreview("", "");
+        // 失敗時は手動入力ボタンを表示
+        document.getElementById('uuidManualToggleBtn').style.display = "inline-block";
     }
+}
+
+// ─── UUID手動入力 ───────────────────────────────────────
+function toggleUuidManual() {
+    const area = document.getElementById('uuidManualArea');
+    const isOpen = area.style.display !== "none";
+    if (isOpen) {
+        closeUuidManual();
+    } else {
+        area.style.display = "block";
+        document.getElementById('uuidManualInput').focus();
+    }
+}
+
+function closeUuidManual() {
+    document.getElementById('uuidManualArea').style.display = "none";
+    document.getElementById('uuidManualInput').value = "";
+    document.getElementById('uuidManualValidation').textContent = "";
+    document.getElementById('uuidManualConfirmBtn').disabled = true;
+}
+
+// UUID形式バリデーション（ハイフンあり・なし両対応）
+function validateManualUuid(val) {
+    const trimmed = val.trim();
+    const validationEl = document.getElementById('uuidManualValidation');
+    const confirmBtn = document.getElementById('uuidManualConfirmBtn');
+
+    // ハイフンなし32文字 or ハイフンあり36文字
+    const noHyphen = /^[0-9a-fA-F]{32}$/.test(trimmed);
+    const withHyphen = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(trimmed);
+
+    if (noHyphen || withHyphen) {
+        validationEl.style.color = "#065f46";
+        validationEl.textContent = "✅ 正しいUUID形式です";
+        confirmBtn.disabled = false;
+    } else if (trimmed.length > 0) {
+        validationEl.style.color = "#991b1b";
+        validationEl.textContent = "❌ UUID形式が正しくありません（例: 069a79f4-44e9-4726-a5be-fca90e38aaf5）";
+        confirmBtn.disabled = true;
+    } else {
+        validationEl.textContent = "";
+        confirmBtn.disabled = true;
+    }
+}
+
+function confirmManualUuid() {
+    const mcId = cleanMcId(document.getElementById('m_mc').value);
+    let val = document.getElementById('uuidManualInput').value.trim();
+
+    // ハイフンなし32文字の場合は自動でハイフン付きに変換
+    if (/^[0-9a-fA-F]{32}$/.test(val)) {
+        val = `${val.slice(0,8)}-${val.slice(8,12)}-${val.slice(12,16)}-${val.slice(16,20)}-${val.slice(20)}`;
+    }
+
+    currentUUID = val;
+    setUuidDisplay(val, "ok");
+    setBadge("ok", "✅ 手動入力");
+    document.getElementById('uuidManualToggleBtn').style.display = "none";
+    closeUuidManual();
+    updateAvatarPreview(mcId, val);
 }
 
 // ─── UUID表示UI ────────────────────────────────────────
@@ -473,14 +563,20 @@ function editMember(idx) {
         currentUUID = ch.uuid;
         setUuidDisplay(ch.uuid, "ok");
         setBadge("ok", "✅ 保存済み");
+        document.getElementById('uuidManualToggleBtn').style.display = "none";
+        closeUuidManual();
         updateAvatarPreview(pureMcId, ch.uuid);
     } else if (pureMcId) {
         currentUUID = "";
         resetUuidUI();
+        document.getElementById('uuidManualToggleBtn').style.display = "none";
+        closeUuidManual();
         fetchUUID(pureMcId);
     } else {
         currentUUID = "";
         resetUuidUI();
+        document.getElementById('uuidManualToggleBtn').style.display = "none";
+        closeUuidManual();
         updateAvatarPreview("", "");
     }
 
@@ -515,6 +611,8 @@ function clearForm() {
     ['m_name','m_id','m_mc','m_x','m_tw','m_tt','m_inst','m_discord'].forEach(id => document.getElementById(id).value = "");
     currentUUID = "";
     resetUuidUI();
+    document.getElementById('uuidManualToggleBtn').style.display = "none";
+    closeUuidManual();
     updateAvatarPreview("", "");
     document.getElementById('m_color').value      = "#ff9900";
     document.getElementById('m_color_text').value = "#FF9900";
