@@ -325,8 +325,8 @@ function updateAvatarPreview(rawId) {
     const btn = document.getElementById('downloadAvatarBtn');
     
     if (pureMcId !== "") {
-        // アウターが確実に反映される armor/bust を使用
-        box.innerHTML = `<img class="mc-head-img" src="https://minotar.net/armor/bust/${pureMcId}/32" id="previewHeadImg" onerror="this.onerror=null; this.src='avatars/fallback.svg';">`;
+        // プレビュー側もななめ3D立体＋アウター強制ONに統一
+        box.innerHTML = `<img class="mc-head-img" src="https://minotar.net/cube/${pureMcId}/32.png?overlay" id="previewHeadImg" onerror="this.onerror=null; this.src='avatars/fallback.svg';">`;
         btn.disabled = false;
         btn.innerText = `画像を ${pureMcId}.svg でPCに保存`;
     } else {
@@ -340,8 +340,8 @@ function downloadMinecraftAvatar() {
     const pureMcId = cleanMcId(document.getElementById('m_mc').value);
     if (!pureMcId) return;
 
-    // アウターが反映されるURLを指定
-    const pngUrl = `https://minotar.net/armor/bust/${pureMcId}/32`;
+    // ななめ3D立体キューブ(cube)で、かつアウターレイヤー(?overlay)を強制有効化する正しいURL
+    const pngUrl = `https://minotar.net/cube/${pureMcId}/32.png?overlay`;
 
     fetch(pngUrl)
         .then(response => response.blob())
@@ -350,51 +350,7 @@ function downloadMinecraftAvatar() {
             reader.onloadend = function () {
                 const base64data = reader.result;
 
-                // 全身・上半身画像から「頭部」だけを綺麗にクリッピング（切り抜き）して
-                // nanahoshiNanaVT.svg などのファイルに落とし込みます。
-                // viewBoxとY軸(y="-5")、拡大率(width/height)を調整して顔を中央に配置しています。
-                const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
-  <rect width="40" height="40" fill="#e2eae2" rx="4"/>
-  <g style="clip-path: inset(0px 0px 0px 0px); width: 40px; height: 40px;">
-    <image href="${base64data}" x="-12" y="-5" width="64" height="64" style="image-rendering: pixelated;"/>
-  </g>
-</svg>`;
-
-                const blobSvg = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
-                const blobUrl = window.URL.createObjectURL(blobSvg);
-                
-                const a = document.createElement('a');
-                a.href = blobUrl;
-                a.download = `${pureMcId}.svg`; 
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(blobUrl);
-            };
-            reader.readAsDataURL(blob);
-        })
-        .catch(err => {
-            alert("Minotarからのスキン画像取得、またはSVGの作成に失敗しました。");
-            console.error(err);
-        });
-}
-
-function downloadMinecraftAvatar() {
-    const pureMcId = cleanMcId(document.getElementById('m_mc').value);
-    if (!pureMcId) return;
-
-    // 取得先を平面的(avatar)から、ななめ立体キューブ(cube)に変更
-// 変更後（末尾に ?overlay を追加）
-const pngUrl = `https://minotar.net/cube/${pureMcId}/32.png?overlay`;
-    fetch(pngUrl)
-        .then(response => response.blob())
-        .then(blob => {
-            const reader = new FileReader();
-            reader.onloadend = function () {
-                const base64data = reader.result;
-
-                // 3D画像は縦横比が少し変わる（横長・縦長になる）ことがあるため、
-                // viewBoxや画像サイズを調整して、枠内に綺麗にクッキリ収まるようにします
+                // 3D立体キューブが枠内にクッキリ、綺麗に収まるサイズ(40x40枠に対して36x36配置)
                 const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
   <rect width="40" height="40" fill="#e2eae2" rx="4"/>
   <image href="${base64data}" x="2" y="2" width="36" height="36" style="image-rendering: pixelated;"/>
@@ -418,7 +374,6 @@ const pngUrl = `https://minotar.net/cube/${pureMcId}/32.png?overlay`;
             console.error(err);
         });
 }
-
 function renderMemberList() {
     const tbody = document.getElementById('memberTableBody');
     tbody.innerHTML = "";
