@@ -341,34 +341,39 @@ function downloadMinecraftAvatar() {
     const pureMcId = cleanMcId(document.getElementById('m_mc').value);
     if (!pureMcId) return;
 
-    // ポータルサイトと同じ40pxサイズでMinotarのURLを指定
-    const imageUrl = `https://minotar.net/helm/${pureMcId}/40.svg`;
-    
-    // 1. PNG画像のURLを内包したSVGのテキストデータを作成する
-    // image-rendering: pixelated; を指定することでドットがぼやけないようにします
-    const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
+    // 外部のボケないPNG画像を一度JavaScript側で取得し、Base64形式（埋め込み用テキスト）に変換する
+    const pngUrl = `https://minotar.net/avatar/${pureMcId}/32.png`;
+
+    fetch(pngUrl)
+        .then(response => response.blob())
+        .then(blob => {
+            const reader = new FileReader();
+            reader.onloadend = function () {
+                const base64data = reader.result; // PNG画像がテキストデータ化される
+
+                // ポータルや一覧のサイズ(40px)に合わせつつ、ドット絵を中央にクッキリ(pixelated)配置するSVGを作成
+                const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
   <rect width="40" height="40" fill="#e2eae2" rx="4"/>
-  <image href="${imageUrl}" x="0" y="0" width="40" height="40" style="image-rendering: pixelated;"/>
+  <image href="${base64data}" x="4" y="4" width="32" height="32" style="image-rendering: pixelated;"/>
 </svg>`;
 
-    try {
-        // 2. ブラウザに「これはSVGファイルですよ」と認識させてダウンロードさせる
-        const blob = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
-        const blobUrl = window.URL.createObjectURL(blob);
-        
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        // 拡張子を .svg に指定してダウンロード
-        a.download = `${pureMcId}.svg`; 
-        
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(blobUrl);
-    } catch (err) {
-        alert("SVGファイルの作成・ダウンロードに失敗しました。");
-        console.error(err);
-    }
+                const blobSvg = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
+                const blobUrl = window.URL.createObjectURL(blobSvg);
+                
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = `${pureMcId}.svg`; 
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(blobUrl);
+            };
+            reader.readAsDataURL(blob);
+        })
+        .catch(err => {
+            alert("Minotarからの画像取得、またはSVGの作成に失敗しました。");
+            console.error(err);
+        });
 }
 
 function renderMemberList() {
