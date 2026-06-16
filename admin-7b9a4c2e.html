@@ -325,7 +325,8 @@ function updateAvatarPreview(rawId) {
     const btn = document.getElementById('downloadAvatarBtn');
     
     if (pureMcId !== "") {
-        box.innerHTML = `<img class="mc-head-img" src="https://minotar.net/cube/${pureMcId}/32.png" id="previewHeadImg">`;
+        // アウターが確実に反映される armor/bust を使用
+        box.innerHTML = `<img class="mc-head-img" src="https://minotar.net/armor/bust/${pureMcId}/32" id="previewHeadImg" onerror="this.onerror=null; this.src='avatars/fallback.svg';">`;
         btn.disabled = false;
         btn.innerText = `画像を ${pureMcId}.svg でPCに保存`;
     } else {
@@ -333,6 +334,49 @@ function updateAvatarPreview(rawId) {
         btn.disabled = true;
         btn.innerText = `画像を [マイクラID].svg でPCに保存`;
     }
+}
+
+function downloadMinecraftAvatar() {
+    const pureMcId = cleanMcId(document.getElementById('m_mc').value);
+    if (!pureMcId) return;
+
+    // アウターが反映されるURLを指定
+    const pngUrl = `https://minotar.net/armor/bust/${pureMcId}/32`;
+
+    fetch(pngUrl)
+        .then(response => response.blob())
+        .then(blob => {
+            const reader = new FileReader();
+            reader.onloadend = function () {
+                const base64data = reader.result;
+
+                // 全身・上半身画像から「頭部」だけを綺麗にクリッピング（切り抜き）して
+                // nanahoshiNanaVT.svg などのファイルに落とし込みます。
+                // viewBoxとY軸(y="-5")、拡大率(width/height)を調整して顔を中央に配置しています。
+                const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
+  <rect width="40" height="40" fill="#e2eae2" rx="4"/>
+  <g style="clip-path: inset(0px 0px 0px 0px); width: 40px; height: 40px;">
+    <image href="${base64data}" x="-12" y="-5" width="64" height="64" style="image-rendering: pixelated;"/>
+  </g>
+</svg>`;
+
+                const blobSvg = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
+                const blobUrl = window.URL.createObjectURL(blobSvg);
+                
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = `${pureMcId}.svg`; 
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(blobUrl);
+            };
+            reader.readAsDataURL(blob);
+        })
+        .catch(err => {
+            alert("Minotarからのスキン画像取得、またはSVGの作成に失敗しました。");
+            console.error(err);
+        });
 }
 
 function downloadMinecraftAvatar() {
