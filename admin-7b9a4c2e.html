@@ -339,8 +339,9 @@ function downloadMinecraftAvatar() {
     const pureMcId = cleanMcId(document.getElementById('m_mc').value);
     if (!pureMcId) return;
 
-    const pngUrl = `https://minotar.net/avatar/${pureMcId}/32.png`;
-
+    // 取得先を平面的(avatar)から、ななめ立体キューブ(cube)に変更
+// 変更後（末尾に ?overlay を追加）
+const pngUrl = `https://minotar.net/cube/${pureMcId}/32.png?overlay`;
     fetch(pngUrl)
         .then(response => response.blob())
         .then(blob => {
@@ -348,9 +349,11 @@ function downloadMinecraftAvatar() {
             reader.onloadend = function () {
                 const base64data = reader.result;
 
+                // 3D画像は縦横比が少し変わる（横長・縦長になる）ことがあるため、
+                // viewBoxや画像サイズを調整して、枠内に綺麗にクッキリ収まるようにします
                 const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
   <rect width="40" height="40" fill="#e2eae2" rx="4"/>
-  <image href="${base64data}" x="4" y="4" width="32" height="32" style="image-rendering: pixelated;"/>
+  <image href="${base64data}" x="2" y="2" width="36" height="36" style="image-rendering: pixelated;"/>
 </svg>`;
 
                 const blobSvg = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
@@ -367,7 +370,7 @@ function downloadMinecraftAvatar() {
             reader.readAsDataURL(blob);
         })
         .catch(err => {
-            alert("Minotarからの画像取得、またはSVGの作成に失敗しました。");
+            alert("Minotarからの3D画像取得、またはSVGの作成に失敗しました。");
             console.error(err);
         });
 }
