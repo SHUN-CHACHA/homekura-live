@@ -44,7 +44,7 @@ const CONFIG = {
                 "name": "Ｍさん",
                 "id": "UCGK0iFuXhfA5VnL64xiKEmQ",
                 "minecraftId": "MrMsan",
-                "uuid": "",
+                "uuid": "fe91adf4-7131-4da5-bcbf-b4a675d4ceef",
                 "twitterId": "maikura_souti",
                 "twitchId": "msan_no_nitizyou",
                 "tiktokId": "msan_official",
@@ -327,8 +327,8 @@ const CONFIG = {
                 "avatarImg": "avatars/yurimosaaan.svg"
         },
         {
-                "name": "ＴＥＳＴ",
-                "id": "UCxO-oRsU25HReEf8wM0Frxw",
+                "name": "TEST",
+                "id": "UCMP7QuS4suoONg47Nbi-wrg",
                 "minecraftId": "",
                 "uuid": "",
                 "twitterId": "",
@@ -336,7 +336,7 @@ const CONFIG = {
                 "tiktokId": "",
                 "instaId": "",
                 "discordUrl": "",
-                "color": "#c707ed",
+                "color": "#ff9900",
                 "avatarImg": ""
         }
 ]
