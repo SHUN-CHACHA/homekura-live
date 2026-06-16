@@ -67,6 +67,33 @@
         .btn-download-avatar:hover { opacity: 0.9; }
         .btn-download-avatar:disabled { background: #cbd5e1; cursor: not-allowed; }
 
+        /* UUIDフィールド */
+        .uuid-display {
+            font-family: monospace;
+            font-size: 11px;
+            color: #5c6b5a;
+            background: #e2eae2;
+            border: 1px solid #d8e2d7;
+            border-radius: 4px;
+            padding: 5px 8px;
+            display: inline-block;
+            min-width: 260px;
+            letter-spacing: 0.03em;
+            vertical-align: middle;
+        }
+        .uuid-status {
+            display: inline-block;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 3px;
+            margin-left: 8px;
+            vertical-align: middle;
+            font-weight: bold;
+        }
+        .uuid-status.ok   { background: #d1fae5; color: #065f46; }
+        .uuid-status.err  { background: #fee2e2; color: #991b1b; }
+        .uuid-status.wait { background: #fef3c7; color: #92400e; }
+
         .editing { background: #fffbeb !important; border: 1px solid #fde68a !important; }
         .edit-badge { display: inline-block; background: #b45309; color: white; padding: 2px 8px; font-size: 12px; border-radius: 4px; margin-bottom: 10px; font-weight: bold; }
 
@@ -111,14 +138,18 @@
             vertical-align: middle;
         }
 
-        /* テーブル内TikTokリンク */
-        .tt-link {
-            color: #010101;
-            font-size: 12px;
-            text-decoration: none;
+        /* Mineafarバッジ */
+        .label-badge-ma {
+            display: inline-block;
+            background: #2563eb;
+            color: #ffffff;
+            font-size: 10px;
             font-weight: bold;
+            padding: 1px 5px;
+            border-radius: 3px;
+            margin-left: 4px;
+            vertical-align: middle;
         }
-        .tt-link:hover { text-decoration: underline; }
 
         .helper-card {
             background: #ffffff;
@@ -131,8 +162,6 @@
         .helper-card h3 {
             margin-top: 0; margin-bottom: 10px; font-size: 14px; font-weight: bold; color: #2d5a27; border-bottom: 1px solid #d8e2d7; padding-bottom: 6px;
         }
-        .steps-list { margin: 0; padding-left: 18px; font-size: 12px; line-height: 1.6; }
-        .steps-list li { margin-bottom: 6px; }
 
         /* 大きめフォントの手順リスト */
         .steps-list-lg {
@@ -165,6 +194,15 @@
             padding: 8px; border-radius: 4px; border: 1px solid #d8e2d7; background: #fafafa; color: #1a2418; resize: vertical;
         }
 
+        /* UUID列 */
+        .uuid-cell {
+            font-family: monospace;
+            font-size: 10px;
+            color: #5c6b5a;
+            word-break: break-all;
+            max-width: 120px;
+        }
+
         @media screen and (max-width: 768px) {
             input[type="text"] { width: 100%; box-sizing: border-box; }
             label { display: block; margin-bottom: 4px; }
@@ -185,14 +223,26 @@
                 <div class="form-group"><label>YouTube チャンネルID</label><input type="text" id="m_id" placeholder="例: UCMP7QuS4suoONg47Nbi-wrg"></div>
 
                 <div class="form-group">
-                    <label>Minecraft ID (Java版)</label>
-                    <input type="text" id="m_mc" placeholder="例: magunee (空欄時はFallback画像)" oninput="updateAvatarPreview(this.value)">
+                    <label>Minecraft ID (Java版) <span class="label-badge-ma">MA</span></label>
+                    <input type="text" id="m_mc" placeholder="例: magunee" oninput="onMcIdInput(this.value)">
+
+                    <!-- UUID表示エリア -->
+                    <div style="margin-top: 6px; display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 12px; font-weight: bold; color: #5c6b5a; white-space: nowrap;">UUID:</span>
+                        <span class="uuid-display" id="uuidDisplay">—</span>
+                        <span class="uuid-status wait" id="uuidStatus" style="display:none;">取得中…</span>
+                    </div>
+
+                    <!-- プレビューエリア -->
                     <div id="avatarPreviewArea" style="margin-top: 10px; display: flex; align-items: center; gap: 15px; background: #e2eae2; padding: 10px; border-radius: 6px; width: fit-content;">
-                        <span style="font-size: 13px; font-weight: bold; color: #2d5a27;">顔プレビュー:</span>
+                        <span style="font-size: 13px; font-weight: bold; color: #2d5a27;">頭部プレビュー:</span>
                         <div class="mc-head-box" id="previewHeadBox">
                             <div class="coming-soon-lbl">CS</div>
                         </div>
                         <button type="button" id="downloadAvatarBtn" class="btn-download-avatar" onclick="downloadMinecraftAvatar()" disabled>画像を [マイクラID].svg でPCに保存</button>
+                    </div>
+                    <div id="mineafarNote" style="font-size:11px; color:#2563eb; margin-top:4px; display:none;">
+                        ✅ Mineatar（api.mineatar.io）で頭部3D画像を取得しています
                     </div>
                 </div>
 
@@ -237,7 +287,8 @@
                         <strong>画像を準備する</strong>
                         <ul>
                             <li>下部のメンバー一覧から名前をクリックしてデータを参照するか、新規に必要項目を記入します。</li>
-                            <li><b>Minecraft ID</b> を入力すると、Minotar経由で顔アイコンがプレビュー表示されます。</li>
+                            <li><b>Minecraft ID</b> を入力すると、Mojang APIで自動的に <b>UUID</b> が取得・保存されます。</li>
+                            <li>UUIDが取得できると <b>Mineatar</b> で頭部3D画像がプレビュー表示されます（アウターレイヤーも正確に反映されます）。</li>
                             <li>「<b>画像を【Minecraft ID】.svg でPCに保存</b>」ボタンがアクティブになるのでクリックすると、PCのダウンロードフォルダに画像が保存されます。</li>
                             <li>編集が完了したら「<b>メンバーを保存</b>」ボタンをクリックしてください。</li>
                         </ul>
@@ -260,7 +311,7 @@
                     </li>
                 </ol>
                 <p class="helper-note">
-                    ※ MinotarのリンクをそのままWEBに貼らずローカル画像を使う理由：スマホ表示時にMinotar側でリクエストが弾かれる場合があり、Minecraft IDでもUUIDでもスマホでは表示できないケースがあったため、画像をダウンロードしてローカルで参照する方式を採用しています。
+                    ※ UUIDを使ってMineatar（api.mineatar.io）から頭部3D画像を取得しています。アウターレイヤーもデフォルトで有効です。スマホでMinotarのリクエストが弾かれる問題があったため、画像をダウンロードしてローカルで参照する方式を採用しています。
                 </p>
             </div>
 
@@ -277,6 +328,7 @@
                 <th style="width: 44px; text-align:center;">顔</th>
                 <th style="min-width: 80px;">名前</th>
                 <th style="min-width: 90px;">Minecraft ID</th>
+                <th style="min-width: 120px;">UUID</th>
                 <th style="min-width: 120px;">YouTube ID</th>
                 <th style="min-width: 80px;">X (Twitter)</th>
                 <th style="min-width: 80px;">Twitch</th>
@@ -296,6 +348,14 @@
 let channels = [];
 let editIndex = -1;
 
+// フォームに保持する現在のUUID（Minecraft ID入力のたびに更新）
+let currentUUID = "";
+// UUID取得の debounce タイマー
+let uuidTimer = null;
+
+// ─────────────────────────────────────────
+// 初期化
+// ─────────────────────────────────────────
 function initAdmin() {
     const saved = localStorage.getItem('custom_channels');
     if (saved) { channels = JSON.parse(saved); }
@@ -304,53 +364,145 @@ function initAdmin() {
     updateConfigOutput();
 }
 
+// ─────────────────────────────────────────
+// カラー同期
+// ─────────────────────────────────────────
 function syncColorPickerToText(val) {
     document.getElementById('m_color_text').value = val.toUpperCase();
 }
-
 function syncTextColorToPicker(val) {
     if (val.match(/^#[0-9a-fA-F]{6}$/)) {
         document.getElementById('m_color').value = val;
     }
 }
 
-function cleanMcId(idStr) {
-    if (!idStr) return "";
-    return idStr.toString().replace(/\r?\n|\r/g, '').trim();
+// ─────────────────────────────────────────
+// Minecraft ID の入力ハンドラ（debounce 800ms）
+// ─────────────────────────────────────────
+function onMcIdInput(rawId) {
+    const mcId = cleanMcId(rawId);
+    clearTimeout(uuidTimer);
+
+    // UUIDをリセット
+    currentUUID = "";
+    setUuidDisplay("—", null);
+
+    if (!mcId) {
+        updateAvatarPreview("", "");
+        return;
+    }
+
+    // 入力中表示
+    showUuidStatus("wait", "入力待ち…");
+
+    uuidTimer = setTimeout(() => {
+        fetchUUIDFromMojang(mcId);
+    }, 800);
 }
 
-function updateAvatarPreview(rawId) {
-    const pureMcId = cleanMcId(rawId);
+// ─────────────────────────────────────────
+// Mojang API → UUID 取得
+// ─────────────────────────────────────────
+async function fetchUUIDFromMojang(mcId) {
+    showUuidStatus("wait", "取得中…");
+    try {
+        const res = await fetch(`https://api.mojang.com/users/profiles/minecraft/${encodeURIComponent(mcId)}`);
+        if (!res.ok) throw new Error("not found");
+
+        const data = await res.json();
+        // Mojang は ハイフンなし32文字UUID を返す → ハイフン付きに変換して保存
+        const rawId = data.id; // e.g. "069a79f4447247fa8e5ff2a8ba86b6d3"
+        const uuid = formatUUID(rawId);
+
+        currentUUID = uuid;
+        setUuidDisplay(uuid, "ok");
+        hideUuidStatus();
+        updateAvatarPreview(mcId, uuid);
+
+    } catch (e) {
+        currentUUID = "";
+        setUuidDisplay("取得失敗（IDを確認してください）", null);
+        showUuidStatus("err", "見つかりません");
+        updateAvatarPreview("", "");
+    }
+}
+
+// ハイフンなし32文字 → ハイフンあり 8-4-4-4-12 形式
+function formatUUID(raw) {
+    if (!raw || raw.length !== 32) return raw;
+    return `${raw.slice(0,8)}-${raw.slice(8,12)}-${raw.slice(12,16)}-${raw.slice(16,20)}-${raw.slice(20)}`;
+}
+
+function setUuidDisplay(text, statusClass) {
+    const el = document.getElementById('uuidDisplay');
+    el.textContent = text;
+    // 取得済み→緑っぽく
+    el.style.color = statusClass === "ok" ? "#065f46" : "#5c6b5a";
+    el.style.background = statusClass === "ok" ? "#d1fae5" : "#e2eae2";
+}
+function showUuidStatus(cls, text) {
+    const el = document.getElementById('uuidStatus');
+    el.className = `uuid-status ${cls}`;
+    el.textContent = text;
+    el.style.display = "inline-block";
+}
+function hideUuidStatus() {
+    document.getElementById('uuidStatus').style.display = "none";
+}
+
+// ─────────────────────────────────────────
+// アバタープレビュー（Mineatar 使用）
+// ─────────────────────────────────────────
+function updateAvatarPreview(mcId, uuid) {
     const box = document.getElementById('previewHeadBox');
     const btn = document.getElementById('downloadAvatarBtn');
-    
-    if (pureMcId !== "") {
-        // プレビュー側もななめ3D立体＋アウター強制ONに統一
-        box.innerHTML = `<img class="mc-head-img" src="https://minotar.net/cube/${pureMcId}/32.png?overlay" id="previewHeadImg" onerror="this.onerror=null; this.src='avatars/fallback.svg';">`;
+    const note = document.getElementById('mineafarNote');
+
+    if (uuid) {
+        // Mineatar: UUIDで頭部3D画像（アウターレイヤーON がデフォルト）
+        const imgUrl = `https://api.mineatar.io/head/${uuid}?overlay=true&scale=8`;
+        box.innerHTML = `<img class="mc-head-img" src="${imgUrl}" id="previewHeadImg"
+            onerror="this.onerror=null; this.src='avatars/fallback.svg';">`;
         btn.disabled = false;
-        btn.innerText = `画像を ${pureMcId}.svg でPCに保存`;
+        btn.innerText = `画像を ${mcId}.svg でPCに保存`;
+        note.style.display = "block";
     } else {
         box.innerHTML = `<div class="coming-soon-lbl">CS</div>`;
         btn.disabled = true;
         btn.innerText = `画像を [マイクラID].svg でPCに保存`;
+        note.style.display = "none";
     }
 }
 
-function downloadMinecraftAvatar() {
-    const pureMcId = cleanMcId(document.getElementById('m_mc').value);
-    if (!pureMcId) return;
+// ─────────────────────────────────────────
+// SVGダウンロード（Mineatar PNG → base64 → SVG）
+// ─────────────────────────────────────────
+async function downloadMinecraftAvatar() {
+    const mcId = cleanMcId(document.getElementById('m_mc').value);
+    if (!mcId || !currentUUID) {
+        alert("Minecraft IDの入力またはUUID取得を完了してください。");
+        return;
+    }
 
-    // ななめ3D立体キューブ(cube)で、かつアウターレイヤー(?overlay)を強制有効化する正しいURL
-    const pngUrl = `https://minotar.net/cube/${pureMcId}/32.png?overlay`;
+    const btn = document.getElementById('downloadAvatarBtn');
+    const origText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = "ダウンロード中…";
 
-    fetch(pngUrl)
-        .then(response => response.blob())
-        .then(blob => {
+    try {
+        // Mineatar から頭部3D画像（PNG）を取得
+        const pngUrl = `https://api.mineatar.io/head/${currentUUID}?overlay=true&scale=8`;
+        const response = await fetch(pngUrl);
+        if (!response.ok) throw new Error("Mineatar画像の取得に失敗しました");
+
+        const blob = await response.blob();
+
+        await new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onloadend = function () {
                 const base64data = reader.result;
 
-                // 3D立体キューブが枠内にクッキリ、綺麗に収まるサイズ(40x40枠に対して36x36配置)
+                // 40×40 の SVG にラップ（pixelated でくっきり表示）
                 const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
   <rect width="40" height="40" fill="#e2eae2" rx="4"/>
   <image href="${base64data}" x="2" y="2" width="36" height="36" style="image-rendering: pixelated;"/>
@@ -358,42 +510,59 @@ function downloadMinecraftAvatar() {
 
                 const blobSvg = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
                 const blobUrl = window.URL.createObjectURL(blobSvg);
-                
+
                 const a = document.createElement('a');
                 a.href = blobUrl;
-                a.download = `${pureMcId}.svg`; 
+                a.download = `${mcId}.svg`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(blobUrl);
+                resolve();
             };
+            reader.onerror = reject;
             reader.readAsDataURL(blob);
-        })
-        .catch(err => {
-            alert("Minotarからの3D画像取得、またはSVGの作成に失敗しました。");
-            console.error(err);
         });
+
+    } catch (err) {
+        alert("Mineafarからの画像取得またはSVG作成に失敗しました。\n" + err.message);
+        console.error(err);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = origText;
+    }
 }
+
+// ─────────────────────────────────────────
+// ユーティリティ
+// ─────────────────────────────────────────
+function cleanMcId(idStr) {
+    if (!idStr) return "";
+    return idStr.toString().replace(/\r?\n|\r/g, '').trim();
+}
+
+// ─────────────────────────────────────────
+// メンバー一覧レンダリング
+// ─────────────────────────────────────────
 function renderMemberList() {
     const tbody = document.getElementById('memberTableBody');
     tbody.innerHTML = "";
 
     if (!channels.length) {
         tbody.innerHTML =
-            `<tr><td colspan="11" style="text-align:center; color:#8ca08a; padding: 20px; font-size:13px;">まだメンバーが登録されていません。左のフォームから追加してください。</td></tr>`;
+            `<tr><td colspan="12" style="text-align:center; color:#8ca08a; padding: 20px; font-size:13px;">まだメンバーが登録されていません。左のフォームから追加してください。</td></tr>`;
         return;
     }
 
     channels.forEach((ch, idx) => {
         const pureMcId = cleanMcId(ch.minecraftId);
+        const uuid = ch.uuid || "";
 
-        // 画像の基本パスを決定（登録があればそれ、なければMinecraft IDから推測、どちらもなければ fallback.svg）
         const avatarPath =
             ch.avatarImg && ch.avatarImg.trim()
                 ? ch.avatarImg.trim()
                 : (pureMcId ? `avatars/${pureMcId}.svg` : "avatars/fallback.svg");
 
-        // 画像を表示（画像読み込みエラー(onerror)が発生した際も fallback.svg に差し替える）
         const mcHeadHtml = `
             <div class="mc-head-box" style="border-color:${ch.color || '#d8e2d7'}">
                 <img
@@ -404,8 +573,12 @@ function renderMemberList() {
                 >
             </div>`;
 
-        // 各SNSセル：登録あり→リンク、なし→空白
-        const mcText     = pureMcId    ? pureMcId    : "";
+        // UUID 短縮表示（8文字-…）
+        const uuidShort = uuid
+            ? `<span title="${uuid}" style="cursor:help;">${uuid.slice(0,8)}…</span>`
+            : `<span style="color:#94a3b8;">—</span>`;
+
+        const mcText     = pureMcId || "";
         const ytCell     = ch.id
             ? `<a href="https://youtube.com/channel/${ch.id}" target="_blank" style="font-family:monospace; font-size:11px; color:#dc2626; word-break:break-all;">${ch.id}</a>`
             : "";
@@ -437,6 +610,7 @@ function renderMemberList() {
                     </strong>
                 </td>
                 <td style="font-size:12px; color:#414d3f;">${mcText}</td>
+                <td class="uuid-cell">${uuidShort}</td>
                 <td>${ytCell}</td>
                 <td>${xCell}</td>
                 <td>${twitchCell}</td>
@@ -451,6 +625,9 @@ function renderMemberList() {
     });
 }
 
+// ─────────────────────────────────────────
+// 編集モード
+// ─────────────────────────────────────────
 function editMember(idx) {
     editIndex = idx;
     const ch = channels[idx];
@@ -460,7 +637,23 @@ function editMember(idx) {
     
     const pureMcId = cleanMcId(ch.minecraftId);
     document.getElementById('m_mc').value = pureMcId;
-    updateAvatarPreview(pureMcId);
+
+    // 保存済みUUIDを復元
+    if (ch.uuid) {
+        currentUUID = ch.uuid;
+        setUuidDisplay(ch.uuid, "ok");
+        hideUuidStatus();
+        updateAvatarPreview(pureMcId, ch.uuid);
+    } else if (pureMcId) {
+        // UUIDがない場合は再取得
+        currentUUID = "";
+        setUuidDisplay("—", null);
+        fetchUUIDFromMojang(pureMcId);
+    } else {
+        currentUUID = "";
+        setUuidDisplay("—", null);
+        updateAvatarPreview("", "");
+    }
     
     document.getElementById('m_x').value = ch.twitterId || "";
     document.getElementById('m_tw').value = ch.twitchId || "";
@@ -493,7 +686,10 @@ function clearForm() {
     document.getElementById('m_name').value = "";
     document.getElementById('m_id').value = "";
     document.getElementById('m_mc').value = "";
-    updateAvatarPreview("");
+    currentUUID = "";
+    setUuidDisplay("—", null);
+    hideUuidStatus();
+    updateAvatarPreview("", "");
     document.getElementById('m_x').value = "";
     document.getElementById('m_tw').value = "";
     document.getElementById('m_tt').value = "";
@@ -503,6 +699,9 @@ function clearForm() {
     document.getElementById('m_color_text').value = "#ff9900";
 }
 
+// ─────────────────────────────────────────
+// 保存・削除
+// ─────────────────────────────────────────
 function addMember() {
     const name = document.getElementById('m_name').value.trim();
     const id = document.getElementById('m_id').value.trim();
@@ -517,7 +716,12 @@ function addMember() {
     if (!name || !id) { alert("名前とYouTubeチャンネルIDは必須です！"); return; }
     if (!color.match(/^#[0-9a-fA-F]{6}$/)) { alert("カラーコードは #ffffff のような形式で入力してください！"); return; }
 
-    const memberData = { name, id, minecraftId, twitterId, twitchId, tiktokId, instaId, discordUrl, color };
+    // UUIDも保存する
+    const memberData = {
+        name, id, minecraftId,
+        uuid: currentUUID,   // ← NEW: UUID を保存
+        twitterId, twitchId, tiktokId, instaId, discordUrl, color
+    };
 
     if (editIndex > -1) {
         channels[editIndex] = memberData;
@@ -537,7 +741,6 @@ function addMember() {
 function deleteMember(idx) {
     if (confirm(`${channels[idx].name} さんを削除しますか？`)) {
         if (editIndex === idx) cancelEdit();
-        
         channels.splice(idx, 1);
         localStorage.setItem('custom_channels', JSON.stringify(channels));
         renderMemberList();
@@ -545,6 +748,9 @@ function deleteMember(idx) {
     }
 }
 
+// ─────────────────────────────────────────
+// config.js 出力
+// ─────────────────────────────────────────
 function updateConfigOutput() {
     const outputTextarea = document.getElementById('configOutput');
     const formattedChannels = channels.map(ch => {
@@ -555,16 +761,17 @@ function updateConfigOutput() {
         };
     });
 
-    const apiKey = (typeof CONFIG !== 'undefined' && CONFIG.YOUTUBE_API_KEY) ? CONFIG.YOUTUBE_API_KEY : "AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY";
+    const apiKey = (typeof CONFIG !== 'undefined' && CONFIG.YOUTUBE_API_KEY)
+        ? CONFIG.YOUTUBE_API_KEY
+        : "AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY";
+
     const output = `const CONFIG = {\n    YOUTUBE_API_KEY: "${apiKey}",\n    DEFAULT_CHANNELS: ${JSON.stringify(formattedChannels, null, 8)}\n};`;
-    
     outputTextarea.value = output;
 }
 
 function exportConfig() {
     updateConfigOutput();
     const outputText = document.getElementById('configOutput').value;
-    
     navigator.clipboard.writeText(outputText).then(() => {
         alert("config.js 用のコードをコピーしました！config.jsファイルに貼り付けて保存してください。");
     }).catch(err => {
