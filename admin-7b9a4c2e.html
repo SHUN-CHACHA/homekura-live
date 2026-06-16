@@ -390,29 +390,71 @@ function renderMemberList() {
 
         const pureMcId = cleanMcId(ch.minecraftId);
 
+        // 画像の基本パスを決定（登録があればそれ、なければMinecraft IDから推測、どちらもなければ fallback.svg）
         const avatarPath =
             ch.avatarImg && ch.avatarImg.trim()
                 ? ch.avatarImg.trim()
-                : (pureMcId ? `avatars/${pureMcId}.svg` : "");
+                : (pureMcId ? `avatars/${pureMcId}.svg` : "avatars/fallback.svg");
 
         let mcHeadHtml = "";
 
-        if (avatarPath) {
-            mcHeadHtml = `
-                <div class="mc-head-box" style="border-color:${ch.color || '#d8e2d7'}">
-                    <img
-                        class="mc-head-img"
-                        src="${avatarPath}"
-                        alt="${ch.name}"
-                        onerror="this.parentElement.innerHTML='<div class=&quot;coming-soon-lbl&quot;>Coming soon</div>'"
-                    >
-                </div>`;
-        } else {
-            mcHeadHtml = `
-                <div class="mc-head-box">
-                    <div class="coming-soon-lbl">Coming soon</div>
-                </div>`;
-        }
+        // 画像を表示（画像読み込みエラー(onerror)が発生した際も fallback.svg に差し替える）
+        mcHeadHtml = `
+            <div class="mc-head-box" style="border-color:${ch.color || '#d8e2d7'}">
+                <img
+                    class="mc-head-img"
+                    src="${avatarPath}"
+                    alt="${ch.name}"
+                    onerror="this.onerror=null; this.src='avatars/fallback.svg';"
+                >
+            </div>`;
+
+        // 各SNSセル：登録あり→リンク、なし→空白
+        const mcText    = pureMcId    ? pureMcId    : "";
+        const ytCell    = ch.id
+            ? `<a href="https://youtube.com/channel/${ch.id}" target="_blank" style="font-family:monospace; font-size:11px; color:#dc2626; word-break:break-all;">${ch.id}</a>`
+            : "";
+        const xCell     = ch.twitterId
+            ? `<a href="https://x.com/${ch.twitterId}" target="_blank" style="font-size:12px; color:#14171a;">@${ch.twitterId}</a>`
+            : "";
+        const twitchCell = ch.twitchId
+            ? `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" style="font-size:12px; color:#9146ff;">@${ch.twitchId}</a>`
+            : "";
+        const tiktokCell = ch.tiktokId
+            ? `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" style="font-size:12px; color:#010101;">@${ch.tiktokId}</a>`
+            : "";
+        const instaCell   = ch.instaId
+            ? `<a href="https://instagram.com/${ch.instaId}" target="_blank" style="font-size:12px; color:#e1306c;">@${ch.instaId}</a>`
+            : "";
+        const discordCell = ch.discordUrl
+            ? `<a href="${ch.discordUrl}" target="_blank" style="font-size:12px; color:#5865f2;">リンク</a>`
+            : "";
+
+        tbody.innerHTML += `
+            <tr>
+                <td style="text-align:center;">
+                    <span style="display:inline-block; width:20px; height:20px; border-radius:50%; background:${ch.color}; border:1px solid #d8e2d7;"></span>
+                </td>
+                <td style="text-align:center;">${mcHeadHtml}</td>
+                <td>
+                    <strong class="clickable-name" onclick="editMember(${idx})" title="クリックして編集">
+                        ${ch.name}
+                    </strong>
+                </td>
+                <td style="font-size:12px; color:#414d3f;">${mcText}</td>
+                <td>${ytCell}</td>
+                <td>${xCell}</td>
+                <td>${twitchCell}</td>
+                <td>${tiktokCell}</td>
+                <td>${instaCell}</td>
+                <td>${discordCell}</td>
+                <td>
+                    <button class="btn-del" onclick="deleteMember(${idx})">削除</button>
+                </td>
+            </tr>
+        `;
+    });
+}
 
         // 各SNSセル：登録あり→リンク、なし→空白
         const mcText    = pureMcId    ? pureMcId    : "";
