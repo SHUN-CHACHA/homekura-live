@@ -177,7 +177,6 @@
     
     <div class="admin-main-layout">
 
-        <!-- 左カラム：フォーム ＋ config.js -->
         <div class="admin-left-col">
 
             <div id="memberFormContainer">
@@ -187,7 +186,7 @@
 
                 <div class="form-group">
                     <label>Minecraft ID (Java版)</label>
-                    <input type="text" id="m_mc" placeholder="例: magunee (空欄時はComing soon)" oninput="updateAvatarPreview(this.value)">
+                    <input type="text" id="m_mc" placeholder="例: magunee (空欄時はFallback画像)" oninput="updateAvatarPreview(this.value)">
                     <div id="avatarPreviewArea" style="margin-top: 10px; display: flex; align-items: center; gap: 15px; background: #e2eae2; padding: 10px; border-radius: 6px; width: fit-content;">
                         <span style="font-size: 13px; font-weight: bold; color: #2d5a27;">顔プレビュー:</span>
                         <div class="mc-head-box" id="previewHeadBox">
@@ -216,7 +215,6 @@
                 <button id="cancelBtn" style="display:none; margin-left:10px;" onclick="cancelEdit()">編集をキャンセル</button>
             </div>
 
-            <!-- config.js ブロック（フォームの直下） -->
             <div class="helper-card" style="margin-top: 20px;">
                 <h3>⚙️ config.js の書き換え</h3>
                 <p style="font-size: 13px; color: #5c6b5a; margin-bottom: 10px; margin-top: 0;">
@@ -230,7 +228,6 @@
 
         </div>
 
-        <!-- 右カラム：顔アイコン手順 -->
         <div class="admin-right-col">
 
             <div class="helper-card">
@@ -241,15 +238,16 @@
                         <ul>
                             <li>下部のメンバー一覧から名前をクリックしてデータを参照するか、新規に必要項目を記入します。</li>
                             <li><b>Minecraft ID</b> を入力すると、Minotar経由で顔アイコンがプレビュー表示されます。</li>
-                            <li>「<b>画像を【Minecraft ID】.png でPCに保存</b>」ボタンがアクティブになるのでクリックすると、PCのダウンロードフォルダに画像が保存されます。</li>
+                            <li>「<b>画像を【Minecraft ID】.svg でPCに保存</b>」ボタンがアクティブになるのでクリックすると、PCのダウンロードフォルダに画像が保存されます。</li>
                             <li>編集が完了したら「<b>メンバーを保存</b>」ボタンをクリックしてください。</li>
                         </ul>
                     </li>
                     <li>
                         <strong>画像ファイルのアップロード</strong>
                         <ul>
-                            <li>WEBの <code>index.html</code> 等が保存されているルートディレクトリに <code>avatars</code> フォルダを作成します。</li>
+                            <li>ルートディレクトリに <code>avatars</code> フォルダを作成します。</li>
                             <li>ダウンロードした画像ファイルをその <code>avatars</code> フォルダ内に保存します。</li>
+                            <li>画像がない・まだ用意していないメンバーは、自動的に <code>avatars/fallback.svg</code> が表示されます。</li>
                         </ul>
                     </li>
                     <li>
@@ -341,7 +339,6 @@ function downloadMinecraftAvatar() {
     const pureMcId = cleanMcId(document.getElementById('m_mc').value);
     if (!pureMcId) return;
 
-    // 外部のボケないPNG画像を一度JavaScript側で取得し、Base64形式（埋め込み用テキスト）に変換する
     const pngUrl = `https://minotar.net/avatar/${pureMcId}/32.png`;
 
     fetch(pngUrl)
@@ -349,9 +346,8 @@ function downloadMinecraftAvatar() {
         .then(blob => {
             const reader = new FileReader();
             reader.onloadend = function () {
-                const base64data = reader.result; // PNG画像がテキストデータ化される
+                const base64data = reader.result;
 
-                // ポータルや一覧のサイズ(40px)に合わせつつ、ドット絵を中央にクッキリ(pixelated)配置するSVGを作成
                 const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
   <rect width="40" height="40" fill="#e2eae2" rx="4"/>
   <image href="${base64data}" x="4" y="4" width="32" height="32" style="image-rendering: pixelated;"/>
@@ -387,7 +383,6 @@ function renderMemberList() {
     }
 
     channels.forEach((ch, idx) => {
-
         const pureMcId = cleanMcId(ch.minecraftId);
 
         // 画像の基本パスを決定（登録があればそれ、なければMinecraft IDから推測、どちらもなければ fallback.svg）
@@ -396,72 +391,23 @@ function renderMemberList() {
                 ? ch.avatarImg.trim()
                 : (pureMcId ? `avatars/${pureMcId}.svg` : "avatars/fallback.svg");
 
-        let mcHeadHtml = "";
-
         // 画像を表示（画像読み込みエラー(onerror)が発生した際も fallback.svg に差し替える）
-        mcHeadHtml = `
+        const mcHeadHtml = `
             <div class="mc-head-box" style="border-color:${ch.color || '#d8e2d7'}">
                 <img
                     class="mc-head-img"
                     src="${avatarPath}"
-                    alt="${ch.name}"
+                    alt="${ch.name || ''}"
                     onerror="this.onerror=null; this.src='avatars/fallback.svg';"
                 >
             </div>`;
 
         // 各SNSセル：登録あり→リンク、なし→空白
-        const mcText    = pureMcId    ? pureMcId    : "";
-        const ytCell    = ch.id
+        const mcText     = pureMcId    ? pureMcId    : "";
+        const ytCell     = ch.id
             ? `<a href="https://youtube.com/channel/${ch.id}" target="_blank" style="font-family:monospace; font-size:11px; color:#dc2626; word-break:break-all;">${ch.id}</a>`
             : "";
-        const xCell     = ch.twitterId
-            ? `<a href="https://x.com/${ch.twitterId}" target="_blank" style="font-size:12px; color:#14171a;">@${ch.twitterId}</a>`
-            : "";
-        const twitchCell = ch.twitchId
-            ? `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" style="font-size:12px; color:#9146ff;">@${ch.twitchId}</a>`
-            : "";
-        const tiktokCell = ch.tiktokId
-            ? `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" style="font-size:12px; color:#010101;">@${ch.tiktokId}</a>`
-            : "";
-        const instaCell   = ch.instaId
-            ? `<a href="https://instagram.com/${ch.instaId}" target="_blank" style="font-size:12px; color:#e1306c;">@${ch.instaId}</a>`
-            : "";
-        const discordCell = ch.discordUrl
-            ? `<a href="${ch.discordUrl}" target="_blank" style="font-size:12px; color:#5865f2;">リンク</a>`
-            : "";
-
-        tbody.innerHTML += `
-            <tr>
-                <td style="text-align:center;">
-                    <span style="display:inline-block; width:20px; height:20px; border-radius:50%; background:${ch.color}; border:1px solid #d8e2d7;"></span>
-                </td>
-                <td style="text-align:center;">${mcHeadHtml}</td>
-                <td>
-                    <strong class="clickable-name" onclick="editMember(${idx})" title="クリックして編集">
-                        ${ch.name}
-                    </strong>
-                </td>
-                <td style="font-size:12px; color:#414d3f;">${mcText}</td>
-                <td>${ytCell}</td>
-                <td>${xCell}</td>
-                <td>${twitchCell}</td>
-                <td>${tiktokCell}</td>
-                <td>${instaCell}</td>
-                <td>${discordCell}</td>
-                <td>
-                    <button class="btn-del" onclick="deleteMember(${idx})">削除</button>
-                </td>
-            </tr>
-        `;
-    });
-}
-
-        // 各SNSセル：登録あり→リンク、なし→空白
-        const mcText    = pureMcId    ? pureMcId    : "";
-        const ytCell    = ch.id
-            ? `<a href="https://youtube.com/channel/${ch.id}" target="_blank" style="font-family:monospace; font-size:11px; color:#dc2626; word-break:break-all;">${ch.id}</a>`
-            : "";
-        const xCell     = ch.twitterId
+        const xCell      = ch.twitterId
             ? `<a href="https://x.com/${ch.twitterId}" target="_blank" style="font-size:12px; color:#14171a;">@${ch.twitterId}</a>`
             : "";
         const twitchCell = ch.twitchId
@@ -480,12 +426,12 @@ function renderMemberList() {
         tbody.innerHTML += `
             <tr>
                 <td style="text-align:center;">
-                    <span style="display:inline-block; width:20px; height:20px; border-radius:50%; background:${ch.color}; border:1px solid #d8e2d7;"></span>
+                    <span style="display:inline-block; width:20px; height:20px; border-radius:50%; background:${ch.color || '#ff9900'}; border:1px solid #d8e2d7;"></span>
                 </td>
                 <td style="text-align:center;">${mcHeadHtml}</td>
                 <td>
                     <strong class="clickable-name" onclick="editMember(${idx})" title="クリックして編集">
-                        ${ch.name}
+                        ${ch.name || ''}
                     </strong>
                 </td>
                 <td style="font-size:12px; color:#414d3f;">${mcText}</td>
@@ -516,7 +462,6 @@ function editMember(idx) {
     
     document.getElementById('m_x').value = ch.twitterId || "";
     document.getElementById('m_tw').value = ch.twitchId || "";
-    // ✅ TikTok IDをフォームに読み込む
     document.getElementById('m_tt').value = ch.tiktokId || "";
     document.getElementById('m_inst').value = ch.instaId || "";
     document.getElementById('m_discord').value = ch.discordUrl || "";
@@ -549,7 +494,6 @@ function clearForm() {
     updateAvatarPreview("");
     document.getElementById('m_x').value = "";
     document.getElementById('m_tw').value = "";
-    // ✅ クリア時にTikTokもリセット
     document.getElementById('m_tt').value = "";
     document.getElementById('m_inst').value = "";
     document.getElementById('m_discord').value = "";
@@ -563,7 +507,6 @@ function addMember() {
     const minecraftId = cleanMcId(document.getElementById('m_mc').value);
     const twitterId = document.getElementById('m_x').value.trim();
     const twitchId = document.getElementById('m_tw').value.trim();
-    // ✅ TikTok IDを取得（@が入力されていた場合は除去）
     const tiktokId = document.getElementById('m_tt').value.trim().replace(/^@/, '');
     const instaId = document.getElementById('m_inst').value.trim();
     const discordUrl = document.getElementById('m_discord').value.trim();
@@ -572,7 +515,6 @@ function addMember() {
     if (!name || !id) { alert("名前とYouTubeチャンネルIDは必須です！"); return; }
     if (!color.match(/^#[0-9a-fA-F]{6}$/)) { alert("カラーコードは #ffffff のような形式で入力してください！"); return; }
 
-    // ✅ tiktokId を memberData に含める
     const memberData = { name, id, minecraftId, twitterId, twitchId, tiktokId, instaId, discordUrl, color };
 
     if (editIndex > -1) {
@@ -607,7 +549,6 @@ function updateConfigOutput() {
         const pureMcId = cleanMcId(ch.minecraftId);
         return {
             ...ch,
-            // 補完される拡張子を .png から .svg に変更
             avatarImg: pureMcId ? `avatars/${pureMcId}.svg` : ""
         };
     });
@@ -630,9 +571,6 @@ function exportConfig() {
         textarea.select();
         alert('自動コピーに失敗しました。右側のテキストエリアを全選択して手動でコピーしてください。');
     });
-}
-function copyConfigText() {
-    exportConfig();
 }
 
 initAdmin();
