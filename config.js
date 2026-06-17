@@ -1,4 +1,6 @@
 const CONFIG = {
+window.CONFIG = {
+    // YouTube Data API v3 の本物のAPIキーをダブルクォーテーションの中に貼り付けてください
     YOUTUBE_API_KEY: "AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY",
     DEFAULT_CHANNELS: [
         {
