@@ -188,6 +188,95 @@
         @media (min-width: 950px) {
             .list-container { grid-template-columns: repeat(3, 1fr); gap: 14px; }
         }
+
+        /* 更新ボタン disabled スタイル */
+        .btn-tool:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            background: #888;
+        }
+
+        /* QRボタン */
+        .btn-qr {
+            background: var(--container-bg);
+            color: var(--secondary-text);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-qr:hover { background: #e8f5e8; border-color: var(--accent-green); color: var(--accent-green); }
+
+        /* QRモーダル */
+        #qr-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        #qr-modal.open { display: flex; }
+        #qr-modal-inner {
+            background: #fff;
+            border-radius: 20px;
+            padding: 28px 32px 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            text-align: center;
+            max-width: 90vw;
+            animation: modalIn 0.2s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.88); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        #qr-modal-inner h3 {
+            margin: 0 0 4px;
+            font-size: 16px;
+            color: var(--accent-green);
+        }
+        #qr-modal-inner p {
+            margin: 0 0 16px;
+            font-size: 12px;
+            color: var(--secondary-text);
+        }
+        #qr-canvas-wrap {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 16px;
+            border: 4px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+        }
+        #qr-url-label {
+            font-size: 10px;
+            word-break: break-all;
+            color: #888;
+            margin-bottom: 16px;
+        }
+        #qr-close-btn {
+            background: var(--accent-green);
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 28px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        #qr-close-btn:hover { opacity: 0.85; }
     </style>
 </head>
 <body>
@@ -204,6 +293,15 @@
         </a>
     </div>
     <div class="controls-right">
+        <button class="btn-qr" onclick="openQrModal()" title="QRコードを表示">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/>
+                <rect x="19" y="14" width="2" height="2"/><rect x="14" y="19" width="2" height="2"/>
+                <rect x="18" y="19" width="3" height="2"/>
+            </svg>
+            QR
+        </button>
         <button id="refresh-btn" class="btn-tool" onclick="manualRefresh()">更新</button>
         <div id="timer">Next Update: --:--</div>
     </div>
@@ -242,6 +340,74 @@ let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 let timeLeft = 600;
 
+// ─── キャッシュ設定 ────────────────────────────────────────────────────
+const CACHE_KEY      = 'portal_cache';
+const CACHE_TTL_MS   = 10 * 60 * 1000; // 10分
+
+function saveCache(data) {
+    try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));
+    } catch(e) { /* quota超過等を無視 */ }
+}
+function loadCache() {
+    try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        if (!raw) return null;
+        const obj = JSON.parse(raw);
+        if (Date.now() - obj.ts > CACHE_TTL_MS) { localStorage.removeItem(CACHE_KEY); return null; }
+        return obj.data;   // { chInfoMap, vItems, cachedAt }
+    } catch(e) { return null; }
+}
+function cacheAge() {
+    try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        if (!raw) return null;
+        return Date.now() - JSON.parse(raw).ts;
+    } catch(e) { return null; }
+}
+// ──────────────────────────────────────────────────────────────────────
+
+// ─── 更新ボタン disabled 制御 ─────────────────────────────────────────
+const REFRESH_DISABLE_SEC = 15; // 押してから何秒間無効化するか
+
+function disableRefreshBtn(sec) {
+    const btn = document.getElementById('refresh-btn');
+    if (!btn || btn.disabled) return;
+    btn.disabled = true;
+    let remain = sec;
+    btn.textContent = `更新 (${remain}s)`;
+    const iv = setInterval(() => {
+        remain--;
+        if (remain <= 0) {
+            clearInterval(iv);
+            btn.disabled = false;
+            btn.textContent = '更新';
+        } else {
+            btn.textContent = `更新 (${remain}s)`;
+        }
+    }, 1000);
+}
+// ──────────────────────────────────────────────────────────────────────
+
+// ─── F5 / ページリロード抑止（連打・誤操作防止）─────────────────────────
+(function setupF5Guard() {
+    const F5_GUARD_KEY = 'f5_guard_until';
+    const F5_BLOCK_SEC = 20; // F5後XX秒間はリロードをキャッシュ表示で吸収
+
+    // beforeunload でリロード時刻を記録
+    window.addEventListener('beforeunload', () => {
+        localStorage.setItem(F5_GUARD_KEY, Date.now().toString());
+    });
+
+    // ページ読み込み時：前回リロードから短時間ならキャッシュ強制利用フラグを立てる
+    const lastUnload = parseInt(localStorage.getItem(F5_GUARD_KEY) || '0', 10);
+    if (lastUnload && Date.now() - lastUnload < F5_BLOCK_SEC * 1000) {
+        window._forceCache = true;
+    }
+    localStorage.removeItem(F5_GUARD_KEY);
+})();
+// ──────────────────────────────────────────────────────────────────────
+
 const SVG_ICONS = {
     youtube:   `<svg viewBox="0 0 24 24"><path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.516 0-9.387.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.387.508 9.387.508s7.517 0 9.387-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`,
     x:         `<svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
@@ -269,179 +435,19 @@ function init() {
     if (saved) { channels = JSON.parse(saved); }
     else if (typeof CONFIG !== 'undefined' && CONFIG.DEFAULT_CHANNELS) { channels = [...CONFIG.DEFAULT_CHANNELS]; }
     else { channels = []; }
+
+    // キャッシュ残量でタイマー初期値を合わせる
+    const age = cacheAge();
+    if (age !== null) {
+        const remainSec = Math.max(0, Math.floor((CACHE_TTL_MS - age) / 1000));
+        timeLeft = remainSec;
+    }
+
     loadPortal();
     setInterval(checkNotifications, 30000);
 }
 
 async function loadPortal() {
     if (!channels.length) return;
-    const channelIds = channels.map(c => c.id).join(',');
-    try {
-        const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${channelIds}&part=snippet`);
-        const chData = await chRes.json();
-        const chInfoMap = {};
-        chData.items?.forEach(i => chInfoMap[i.id] = { icon: i.snippet.thumbnails.medium.url });
 
-        const playlistResults = await Promise.all(
-            channels.map(ch => {
-                const pId = ch.id.replace(/^UC/, 'UU');
-                return fetch(`https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${pId}&part=snippet&maxResults=1`)
-                    .then(r => r.json()).catch(() => null);
-            })
-        );
-        const videoIds = playlistResults.map(r => r?.items?.[0]?.snippet.resourceId.videoId).filter(Boolean);
-        if (videoIds.length > 0) {
-            const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
-            const vData = await vRes.json();
-            renderGrids(chInfoMap, vData.items || []);
-        } else { renderGrids(chInfoMap, []); }
-    } catch (e) { console.error("ポータル読み込みエラー:", e); }
-}
-
-function renderGrids(chInfoMap, vItems) {
-    let htmls = { live: "", new: "", upcoming: "", all: "" };
-    let counts = { live: 0, new: 0, upcoming: 0 };
-    const now = new Date();
-
-    channels.forEach(ch => {
-        const chInfo = chInfoMap[ch.id]; if (!chInfo) return;
-        const lastV = vItems.find(v => v.snippet.channelId === ch.id);
-        const status = lastV?.snippet.liveBroadcastContent || 'none';
-        const isLive = status === 'live';
-        const isUpcoming = status === 'upcoming';
-        const pubDate = lastV ? new Date(lastV.snippet.publishedAt) : null;
-        const isNew = lastV && !isLive && !isUpcoming && (now - pubDate < 24 * 60 * 60 * 1000);
-        let timeStr = "オフライン";
-        let startTime = null;
-
-        if (isLive) { timeStr = lastV.snippet.title; }
-        else if (isUpcoming) {
-            if (lastV.liveStreamingDetails && lastV.liveStreamingDetails.scheduledStartTime) {
-                startTime = lastV.liveStreamingDetails.scheduledStartTime;
-                const d = new Date(startTime);
-                timeStr = `🕒 ${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}～`;
-            } else { timeStr = "🕒 配信予定（未定）"; }
-        } else if (isNew) { timeStr = `${lastV.snippet.title}`; }
-
-        const isReserved = reservedVideos.some(rv => rv.id === lastV?.id);
-
-        let cardBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>`;
-        if (ch.twitterId) cardBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>`;
-        if (ch.twitchId)  cardBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-tw">Twitch</a>`;
-        if (ch.tiktokId)  cardBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" class="btn">TikTok</a>`;
-
-        const safeTextColor = adjustColorForText(ch.color);
-
-        const card = `
-        <div class="card ${isLive?'is-live':''} ${isNew?'is-new':''}">
-            <a href="https://youtube.com/watch?v=${lastV?.id || ''}" target="_blank" style="text-decoration:none; color:inherit;">
-                <div class="thumb-wrap">
-                    ${isLive ? '<div class="badge-live">LIVE</div>' : isNew ? '<div class="badge-new">NEW</div>' : ''}
-                    ${(isLive || isUpcoming || isNew)
-                        ? `<img class="thumb" src="${lastV.snippet.thumbnails.maxres?.url || lastV.snippet.thumbnails.medium.url}">`
-                        : `<div class="thumb-bg" style="background:${ch.color}"></div><img class="thumb-profile" src="${chInfo.icon}">`}
-                </div>
-                <div class="info">
-                    <div class="name" style="color:${safeTextColor}">${ch.name}</div>
-                    <div class="title">${timeStr}</div>
-                </div>
-            </a>
-            <div class="btn-area">
-                ${cardBtnsHtml}
-                ${(isUpcoming && startTime) ? `<button class="btn btn-reserve ${isReserved?'active':''}" onclick="toggleReserve('${lastV.id}', '${ch.name}', '${startTime}')">🔔 ${isReserved?'予約中':'通知予約'}</button>` : ''}
-            </div>
-        </div>`;
-
-        let listBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn-square-mini btn-yt" title="YouTube">${SVG_ICONS.youtube}</a>`;
-        if (ch.twitterId)  listBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn-square-mini btn-x" title="X">${SVG_ICONS.x}</a>`;
-        if (ch.twitchId)   listBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn-square-mini btn-tw" title="Twitch">${SVG_ICONS.twitch}</a>`;
-        if (ch.tiktokId)   listBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" class="btn-square-mini btn-tt" title="TikTok">${SVG_ICONS.tiktok}</a>`;
-        if (ch.instaId)    listBtnsHtml += `<a href="https://instagram.com/${ch.instaId}" target="_blank" class="btn-square-mini btn-inst" title="Instagram">${SVG_ICONS.instagram}</a>`;
-        if (ch.discordUrl) listBtnsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn-square-mini btn-disc" title="Discord">${SVG_ICONS.discord}</a>`;
-
-        // ─── アバター画像パスの解決（.svg に統一）───────────────────────────
-        // 優先順位:
-        //   1. ch.avatarImg が設定済み → 拡張子を .svg に正規化して使用
-        //   2. ch.minecraftId が設定済み → avatars/{minecraftId}.svg
-        //   3. どちらもない → avatars/fallback.svg を表示
-        const rawAvatar = ch.avatarImg   ? ch.avatarImg.trim()   : "";
-        const rawMcId   = ch.minecraftId ? ch.minecraftId.trim() : "";
-
-        let imgPath = "";
-        if (rawAvatar !== "") {
-            // "avatars/foo.png" や "foo" など表記が混在しても .svg に統一
-            const withoutExt = rawAvatar.replace(/\.(png|jpg|jpeg|gif|svg)$/i, "");
-            imgPath = withoutExt.includes("/") ? `${withoutExt}.svg` : `avatars/${withoutExt}.svg`;
-        } else if (rawMcId !== "") {
-            imgPath = `avatars/${rawMcId}.svg`;
-        }
-
-        // imgPathが未設定の場合も fallback.svg を使う <img> タグに統一
-        const resolvedImg = imgPath !== "" ? imgPath : "avatars/fallback.svg";
-        const mcHeadHtml = `<div class="mc-head-box" style="border-color:${ch.color || 'var(--border-color)'}">
-            <img class="mc-head-img" src="${resolvedImg}" alt="${ch.name}"
-                 onerror="this.onerror=null; this.src='avatars/fallback.svg';">
-        </div>`;
-        // ────────────────────────────────────────────────────────────────────
-
-        const row = `
-        <div class="row-item">
-            <div class="row-top">
-                ${mcHeadHtml}
-                <div class="row-name">${ch.name}</div>
-            </div>
-            <div class="row-bottom">
-                <div class="row-btns">${listBtnsHtml}</div>
-            </div>
-        </div>`;
-
-        if (isLive) { htmls.live += card; counts.live++; }
-        else if (isNew) { htmls.new += card; counts.new++; }
-        else if (isUpcoming) { htmls.upcoming += card; counts.upcoming++; }
-        htmls.all += row;
-    });
-
-    document.getElementById("liveSection").style.display = counts.live ? "block" : "none";
-    document.getElementById("liveGrid").innerHTML = htmls.live;
-    document.getElementById("upcomingSection").style.display = counts.upcoming ? "block" : "none";
-    document.getElementById("upcomingGrid").innerHTML = htmls.upcoming;
-    document.getElementById("newSection").style.display = counts.new ? "block" : "none";
-    document.getElementById("newGrid").innerHTML = htmls.new;
-    document.getElementById("allList").innerHTML = htmls.all;
-}
-
-function toggleReserve(id, name, startTime) {
-    const idx = reservedVideos.findIndex(rv => rv.id === id);
-    if (idx > -1) reservedVideos.splice(idx, 1);
-    else {
-        reservedVideos.push({ id, name, startTime, notified: false });
-        if (Notification.permission !== "granted") Notification.requestPermission();
-    }
-    localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
-    loadPortal();
-}
-
-function checkNotifications() {
-    const now = new Date();
-    let changed = false;
-    reservedVideos.forEach(rv => {
-        if (!rv.notified && new Date(rv.startTime) <= now) {
-            new Notification("配信開始！", { body: `${rv.name}さんの配信が始まるよ！`, icon: "icon.png" });
-            rv.notified = true; changed = true;
-        }
-    });
-    if (changed) localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
-}
-
-function manualRefresh() { location.reload(); }
-
-setInterval(() => {
-    timeLeft--; if (timeLeft < 0) location.reload();
-    document.getElementById('timer').innerText = `Next Update: ${String(Math.floor(timeLeft/60)).padStart(2,'0')}:${String(timeLeft%60).padStart(2,'0')}`;
-    document.getElementById('progress-bar').style.width = (timeLeft/600)*100 + "%";
-}, 1000);
-
-init();
-</script>
-</body>
-</html>
+    // ── キャッシュ優先（F5ガード中も強制キャッシュ）──────────────────────
