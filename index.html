@@ -389,23 +389,6 @@ function disableRefreshBtn(sec) {
 }
 // ──────────────────────────────────────────────────────────────────────
 
-// ─── F5 / ページリロード抑止（連打・誤操作防止）─────────────────────────
-(function setupF5Guard() {
-    const F5_GUARD_KEY = 'f5_guard_until';
-    const F5_BLOCK_SEC = 20; // F5後XX秒間はリロードをキャッシュ表示で吸収
-
-    // beforeunload でリロード時刻を記録
-    window.addEventListener('beforeunload', () => {
-        localStorage.setItem(F5_GUARD_KEY, Date.now().toString());
-    });
-
-    // ページ読み込み時：前回リロードから短時間ならキャッシュ強制利用フラグを立てる
-    const lastUnload = parseInt(localStorage.getItem(F5_GUARD_KEY) || '0', 10);
-    if (lastUnload && Date.now() - lastUnload < F5_BLOCK_SEC * 1000) {
-        window._forceCache = true;
-    }
-    localStorage.removeItem(F5_GUARD_KEY);
-})();
 // ──────────────────────────────────────────────────────────────────────
 
 const SVG_ICONS = {
@@ -650,7 +633,7 @@ function openQrModal() {
     const modal = document.getElementById('qr-modal');
     const wrap  = document.getElementById('qr-canvas-wrap');
     const label = document.getElementById('qr-url-label');
-    const url   = location.href;
+    const url   = location.origin + location.pathname;  // ?nocache等のパラメータを除去
 
     label.textContent = url;
 
