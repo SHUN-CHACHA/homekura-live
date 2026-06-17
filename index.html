@@ -335,7 +335,7 @@
 
 <script src="config.js"></script>
 <script>
-const API_KEY = CONFIG.YOUTUBE_API_KEY;
+const API_KEY = window.CONFIG?.YOUTUBE_API_KEY || '';
 let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 let timeLeft = 600;
