@@ -326,9 +326,10 @@
     </div>
 </div>
 
-<script src="config.js"></script>
+// ✨ 修正後の記述（このように書き換えます）
+</script>
 <script>
-const API_KEY = window.CONFIG?.YOUTUBE_API_KEY || '';
+const API_KEY = "AIzaSyYourActualYouTubeAPIKeyHereXXXXXXXX"; // ←ここに取得した本物のAPIキーを直接貼り付ける
 let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 let timeLeft = 600;
