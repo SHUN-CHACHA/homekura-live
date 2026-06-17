@@ -445,9 +445,3 @@ function init() {
 
     loadPortal();
     setInterval(checkNotifications, 30000);
-}
-
-async function loadPortal() {
-    if (!channels.length) return;
-
-    // ── キャッシュ優先（F5ガード中も強制キャッシュ）──────────────────────
