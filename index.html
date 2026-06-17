@@ -656,7 +656,7 @@ function openQrModal() {
 
     // 既存QR破棄
     if (_qrInstance) { _qrInstance.clear(); _qrInstance = null; }
-    wrap.innerHTML = '<canvas id="qr-canvas"></canvas>';
+    wrap.innerHTML = '<div id="qr-canvas"></div>';
 
     if (typeof QRCode !== 'undefined') {
         _qrInstance = new QRCode(document.getElementById('qr-canvas'), {
