@@ -448,16 +448,26 @@ async function loadPortal() {
         const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${channelIds}&part=snippet`);
         const chData = await chRes.json();
         const chInfoMap = {};
-        chData.items?.forEach(i => chInfoMap[i.id] = { icon: i.snippet.thumbnails.medium.url });
+        chData.items?.forEach(i => chInfoMap[i.id] = { icon: i.snippet?.thumbnails?.medium?.url || '' });
 
         const playlistResults = await Promise.all(
             channels.map(ch => {
                 const pId = ch.id.replace(/^UC/, 'UU');
-                return fetch(`https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${pId}&part=snippet&maxResults=1`)
+                return fetch(`https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${pId}&part=snippet&maxResults=3`)
                     .then(r => r.json()).catch(() => null);
             })
         );
-        const videoIds = playlistResults.map(r => r?.items?.[0]?.snippet.resourceId.videoId).filter(Boolean);
+        // 各チャンネルの最新3件からlive/upcomingを優先して1件選ぶ
+        const videoIds = playlistResults.map(r => {
+            const items = r?.items || [];
+            // live または upcoming の動画を優先
+            const priority = items.find(i => {
+                const bc = i.snippet?.liveBroadcastContent;
+                return bc === 'live' || bc === 'upcoming';
+            });
+            const target = priority || items[0];
+            return target?.snippet?.resourceId?.videoId;
+        }).filter(Boolean);
         let vItems = [];
         if (videoIds.length > 0) {
             const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
@@ -472,7 +482,12 @@ async function loadPortal() {
         console.error("ポータル読み込みエラー:", e);
         // エラー時はキャッシュがあれば使う
         const fallback = loadCache();
-        if (fallback) renderGrids(fallback.chInfoMap, fallback.vItems);
+        if (fallback) {
+            renderGrids(fallback.chInfoMap, fallback.vItems);
+        } else {
+            // キャッシュもなければ空のchInfoMapでもメンバー一覧だけ表示
+            renderGrids({}, []);
+        }
     }
 }
 
@@ -482,7 +497,7 @@ function renderGrids(chInfoMap, vItems) {
     const now = new Date();
 
     channels.forEach(ch => {
-        const chInfo = chInfoMap[ch.id]; if (!chInfo) return;
+        const chInfo = chInfoMap[ch.id] || { icon: '' };  // アイコン取得失敗でもスキップしない
         const lastV = vItems.find(v => v.snippet.channelId === ch.id);
         const status = lastV?.snippet.liveBroadcastContent || 'none';
         const isLive = status === 'live';
@@ -517,7 +532,7 @@ function renderGrids(chInfoMap, vItems) {
                     ${isLive ? '<div class="badge-live">LIVE</div>' : isNew ? '<div class="badge-new">NEW</div>' : ''}
                     ${(isLive || isUpcoming || isNew)
                         ? `<img class="thumb" src="${lastV.snippet.thumbnails.maxres?.url || lastV.snippet.thumbnails.medium.url}">`
-                        : `<div class="thumb-bg" style="background:${ch.color}"></div><img class="thumb-profile" src="${chInfo.icon}">`}
+                        : `<div class="thumb-bg" style="background:${ch.color}"></div>${chInfo.icon ? `<img class="thumb-profile" src="${chInfo.icon}">` : ''}`}
                 </div>
                 <div class="info">
                     <div class="name" style="color:${safeTextColor}">${ch.name}</div>
@@ -566,8 +581,8 @@ function renderGrids(chInfoMap, vItems) {
         </div>`;
 
         if (isLive) { htmls.live += card; counts.live++; }
-        else if (isNew) { htmls.new += card; counts.new++; }
         else if (isUpcoming) { htmls.upcoming += card; counts.upcoming++; }
+        else if (isNew) { htmls.new += card; counts.new++; }
         htmls.all += row;
     });
 
