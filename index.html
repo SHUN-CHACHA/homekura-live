@@ -445,3 +445,262 @@ function init() {
 
     loadPortal();
     setInterval(checkNotifications, 30000);
+}
+
+async function loadPortal() {
+    if (!channels.length) return;
+
+    // ── キャッシュ優先（有効なキャッシュがあれば即描画）────────────────────
+    const cached = loadCache();
+    if (cached) {
+        renderGrids(cached.chInfoMap, cached.vItems);
+        return;
+    }
+
+    // ── キャッシュなし → API取得 ─────────────────────────────────────────
+    const channelIds = channels.map(c => c.id).join(',');
+    try {
+        const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${channelIds}&part=snippet`);
+        const chData = await chRes.json();
+        const chInfoMap = {};
+        chData.items?.forEach(i => chInfoMap[i.id] = { icon: i.snippet.thumbnails.medium.url });
+
+        const playlistResults = await Promise.all(
+            channels.map(ch => {
+                const pId = ch.id.replace(/^UC/, 'UU');
+                return fetch(`https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${pId}&part=snippet&maxResults=1`)
+                    .then(r => r.json()).catch(() => null);
+            })
+        );
+        const videoIds = playlistResults.map(r => r?.items?.[0]?.snippet.resourceId.videoId).filter(Boolean);
+        let vItems = [];
+        if (videoIds.length > 0) {
+            const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
+            const vData = await vRes.json();
+            vItems = vData.items || [];
+        }
+        // 取得成功 → キャッシュ保存
+        saveCache({ chInfoMap, vItems });
+        timeLeft = 600; // タイマーリセット
+        renderGrids(chInfoMap, vItems);
+    } catch (e) {
+        console.error("ポータル読み込みエラー:", e);
+        // エラー時はキャッシュがあれば使う
+        const fallback = loadCache();
+        if (fallback) renderGrids(fallback.chInfoMap, fallback.vItems);
+    }
+}
+
+function renderGrids(chInfoMap, vItems) {
+    let htmls = { live: "", new: "", upcoming: "", all: "" };
+    let counts = { live: 0, new: 0, upcoming: 0 };
+    const now = new Date();
+
+    channels.forEach(ch => {
+        const chInfo = chInfoMap[ch.id]; if (!chInfo) return;
+        const lastV = vItems.find(v => v.snippet.channelId === ch.id);
+        const status = lastV?.snippet.liveBroadcastContent || 'none';
+        const isLive = status === 'live';
+        const isUpcoming = status === 'upcoming';
+        const pubDate = lastV ? new Date(lastV.snippet.publishedAt) : null;
+        const isNew = lastV && !isLive && !isUpcoming && (now - pubDate < 24 * 60 * 60 * 1000);
+        let timeStr = "オフライン";
+        let startTime = null;
+
+        if (isLive) { timeStr = lastV.snippet.title; }
+        else if (isUpcoming) {
+            if (lastV.liveStreamingDetails && lastV.liveStreamingDetails.scheduledStartTime) {
+                startTime = lastV.liveStreamingDetails.scheduledStartTime;
+                const d = new Date(startTime);
+                timeStr = `🕒 ${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}～`;
+            } else { timeStr = "🕒 配信予定（未定）"; }
+        } else if (isNew) { timeStr = `${lastV.snippet.title}`; }
+
+        const isReserved = reservedVideos.some(rv => rv.id === lastV?.id);
+
+        let cardBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>`;
+        if (ch.twitterId) cardBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>`;
+        if (ch.twitchId)  cardBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-tw">Twitch</a>`;
+        if (ch.tiktokId)  cardBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" class="btn">TikTok</a>`;
+
+        const safeTextColor = adjustColorForText(ch.color);
+
+        const card = `
+        <div class="card ${isLive?'is-live':''} ${isNew?'is-new':''}">
+            <a href="https://youtube.com/watch?v=${lastV?.id || ''}" target="_blank" style="text-decoration:none; color:inherit;">
+                <div class="thumb-wrap">
+                    ${isLive ? '<div class="badge-live">LIVE</div>' : isNew ? '<div class="badge-new">NEW</div>' : ''}
+                    ${(isLive || isUpcoming || isNew)
+                        ? `<img class="thumb" src="${lastV.snippet.thumbnails.maxres?.url || lastV.snippet.thumbnails.medium.url}">`
+                        : `<div class="thumb-bg" style="background:${ch.color}"></div><img class="thumb-profile" src="${chInfo.icon}">`}
+                </div>
+                <div class="info">
+                    <div class="name" style="color:${safeTextColor}">${ch.name}</div>
+                    <div class="title">${timeStr}</div>
+                </div>
+            </a>
+            <div class="btn-area">
+                ${cardBtnsHtml}
+                ${(isUpcoming && startTime) ? `<button class="btn btn-reserve ${isReserved?'active':''}" onclick="toggleReserve('${lastV.id}', '${ch.name}', '${startTime}')">🔔 ${isReserved?'予約中':'通知予約'}</button>` : ''}
+            </div>
+        </div>`;
+
+        let listBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn-square-mini btn-yt" title="YouTube">${SVG_ICONS.youtube}</a>`;
+        if (ch.twitterId)  listBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn-square-mini btn-x" title="X">${SVG_ICONS.x}</a>`;
+        if (ch.twitchId)   listBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn-square-mini btn-tw" title="Twitch">${SVG_ICONS.twitch}</a>`;
+        if (ch.tiktokId)   listBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" class="btn-square-mini btn-tt" title="TikTok">${SVG_ICONS.tiktok}</a>`;
+        if (ch.instaId)    listBtnsHtml += `<a href="https://instagram.com/${ch.instaId}" target="_blank" class="btn-square-mini btn-inst" title="Instagram">${SVG_ICONS.instagram}</a>`;
+        if (ch.discordUrl) listBtnsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn-square-mini btn-disc" title="Discord">${SVG_ICONS.discord}</a>`;
+
+        const rawAvatar = ch.avatarImg   ? ch.avatarImg.trim()   : "";
+        const rawMcId   = ch.minecraftId ? ch.minecraftId.trim() : "";
+
+        let imgPath = "";
+        if (rawAvatar !== "") {
+            const withoutExt = rawAvatar.replace(/\.(png|jpg|jpeg|gif|svg)$/i, "");
+            imgPath = withoutExt.includes("/") ? `${withoutExt}.svg` : `avatars/${withoutExt}.svg`;
+        } else if (rawMcId !== "") {
+            imgPath = `avatars/${rawMcId}.svg`;
+        }
+
+        const resolvedImg = imgPath !== "" ? imgPath : "avatars/fallback.svg";
+        const mcHeadHtml = `<div class="mc-head-box" style="border-color:${ch.color || 'var(--border-color)'}">
+            <img class="mc-head-img" src="${resolvedImg}" alt="${ch.name}"
+                 onerror="this.onerror=null; this.src='avatars/fallback.svg';">
+        </div>`;
+
+        const row = `
+        <div class="row-item">
+            <div class="row-top">
+                ${mcHeadHtml}
+                <div class="row-name">${ch.name}</div>
+            </div>
+            <div class="row-bottom">
+                <div class="row-btns">${listBtnsHtml}</div>
+            </div>
+        </div>`;
+
+        if (isLive) { htmls.live += card; counts.live++; }
+        else if (isNew) { htmls.new += card; counts.new++; }
+        else if (isUpcoming) { htmls.upcoming += card; counts.upcoming++; }
+        htmls.all += row;
+    });
+
+    document.getElementById("liveSection").style.display = counts.live ? "block" : "none";
+    document.getElementById("liveGrid").innerHTML = htmls.live;
+    document.getElementById("upcomingSection").style.display = counts.upcoming ? "block" : "none";
+    document.getElementById("upcomingGrid").innerHTML = htmls.upcoming;
+    document.getElementById("newSection").style.display = counts.new ? "block" : "none";
+    document.getElementById("newGrid").innerHTML = htmls.new;
+    document.getElementById("allList").innerHTML = htmls.all;
+}
+
+function toggleReserve(id, name, startTime) {
+    const idx = reservedVideos.findIndex(rv => rv.id === id);
+    if (idx > -1) reservedVideos.splice(idx, 1);
+    else {
+        reservedVideos.push({ id, name, startTime, notified: false });
+        if (Notification.permission !== "granted") Notification.requestPermission();
+    }
+    localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
+    loadPortal();
+}
+
+function checkNotifications() {
+    const now = new Date();
+    let changed = false;
+    reservedVideos.forEach(rv => {
+        if (!rv.notified && new Date(rv.startTime) <= now) {
+            new Notification("配信開始！", { body: `${rv.name}さんの配信が始まるよ！`, icon: "icon.png" });
+            rv.notified = true; changed = true;
+        }
+    });
+    if (changed) localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
+}
+
+// ─── 更新ボタン：キャッシュクリアしてAPIを再取得 ───────────────────────────
+function manualRefresh() {
+    disableRefreshBtn(REFRESH_DISABLE_SEC);
+    localStorage.removeItem(CACHE_KEY);   // キャッシュ削除
+    timeLeft = 600;
+    loadPortal();                          // location.reload() ではなく再取得
+}
+// ──────────────────────────────────────────────────────────────────────
+
+// ─── タイマー（キャッシュ切れで再取得、F5はキャッシュ利用で吸収）────────────
+setInterval(() => {
+    timeLeft--;
+    if (timeLeft < 0) {
+        // タイマー切れ → キャッシュ削除して再取得（画面リロードなし）
+        localStorage.removeItem(CACHE_KEY);
+        timeLeft = 600;
+        loadPortal();
+    }
+    document.getElementById('timer').innerText =
+        `Next Update: ${String(Math.floor(timeLeft/60)).padStart(2,'0')}:${String(timeLeft%60).padStart(2,'0')}`;
+    document.getElementById('progress-bar').style.width = (timeLeft/600)*100 + "%";
+}, 1000);
+
+// ─── QRコードモーダル ─────────────────────────────────────────────────
+let _qrInstance = null;
+
+function openQrModal() {
+    const modal = document.getElementById('qr-modal');
+    const wrap  = document.getElementById('qr-canvas-wrap');
+    const label = document.getElementById('qr-url-label');
+    const url   = location.href;
+
+    label.textContent = url;
+
+    // 既存QR破棄
+    if (_qrInstance) { _qrInstance.clear(); _qrInstance = null; }
+    wrap.innerHTML = '<canvas id="qr-canvas"></canvas>';
+
+    if (typeof QRCode !== 'undefined') {
+        _qrInstance = new QRCode(document.getElementById('qr-canvas'), {
+            text: url,
+            width: 192,
+            height: 192,
+            colorDark: '#2d5a27',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+        });
+    } else {
+        wrap.innerHTML = '<p style="font-size:12px;color:#888;">QRコードの読み込み中...</p>';
+    }
+
+    modal.classList.add('open');
+}
+
+function closeQrModal() {
+    document.getElementById('qr-modal').classList.remove('open');
+}
+
+// モーダル背景クリックで閉じる
+document.getElementById('qr-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeQrModal();
+});
+
+// Escキーで閉じる
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeQrModal(); });
+// ──────────────────────────────────────────────────────────────────────
+
+init();
+</script>
+<!-- QRコードモーダル -->
+<div id="qr-modal" role="dialog" aria-modal="true" aria-label="QRコード">
+    <div id="qr-modal-inner">
+        <h3>📱 スマホでブックマーク</h3>
+        <p>カメラでスキャンしてアクセス</p>
+        <div id="qr-canvas-wrap">
+            <canvas id="qr-canvas"></canvas>
+        </div>
+        <div id="qr-url-label"></div>
+        <button id="qr-close-btn" onclick="closeQrModal()">閉じる</button>
+    </div>
+</div>
+
+<!-- QRコード生成ライブラリ (qrcode.js CDN) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</body>
+</html>
