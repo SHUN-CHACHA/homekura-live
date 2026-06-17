@@ -629,7 +629,7 @@ function addMember() {
     const name       = document.getElementById('m_name').value.trim();
     const id         = document.getElementById('m_id').value.trim();
     const minecraftId = cleanMcId(document.getElementById('m_mc').value);
-    const twitterId  = document.getElementById('m_x').value.trim();
+    const twitterId  = document.getElementById('m_x').value.trim().replace(/^@/, '');
     const twitchId   = document.getElementById('m_tw').value.trim();
     const tiktokId   = document.getElementById('m_tt').value.trim().replace(/^@/, '');
     const instaId    = document.getElementById('m_inst').value.trim();
@@ -639,7 +639,8 @@ function addMember() {
     if (!name || !id) { alert("名前とYouTubeチャンネルIDは必須です！"); return; }
     if (!color.match(/^#[0-9a-fA-F]{6}$/)) { alert("カラーコードは #ffffff のような形式で入力してください！"); return; }
 
-    const memberData = { name, id, minecraftId, uuid: currentUUID, twitterId, twitchId, tiktokId, instaId, discordUrl, color };
+    const pureMcId = cleanMcId(minecraftId);
+    const memberData = { name, id, minecraftId, uuid: currentUUID, twitterId, twitchId, tiktokId, instaId, discordUrl, color, avatarImg: pureMcId ? `avatars/${pureMcId}.svg` : "" };
 
     if (editIndex > -1) {
         channels[editIndex] = memberData;
