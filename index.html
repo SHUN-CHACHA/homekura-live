@@ -451,7 +451,9 @@ async function loadPortal() {
     if (!channels.length) return;
 
     // ── キャッシュ優先（有効なキャッシュがあれば即描画）────────────────────
-    const cached = loadCache();
+    // URLに ?nocache または ?dev をつけるとキャッシュをスキップしてAPI取得
+    const devMode = location.search.includes('nocache') || location.search.includes('dev');
+    const cached = devMode ? null : loadCache();
     if (cached) {
         renderGrids(cached.chInfoMap, cached.vItems);
         return;
