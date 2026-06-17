@@ -678,16 +678,22 @@ function closeQrModal() {
     document.getElementById('qr-modal').classList.remove('open');
 }
 
-// モーダル背景クリックで閉じる
-document.getElementById('qr-modal').addEventListener('click', function(e) {
-    if (e.target === this) closeQrModal();
+document.addEventListener('DOMContentLoaded', () => {
+
+    const qrModal = document.getElementById('qr-modal');
+
+    if (qrModal) {
+        qrModal.addEventListener('click', function(e) {
+            if (e.target === this) closeQrModal();
+        });
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeQrModal();
+    });
+
+    init();
 });
-
-// Escキーで閉じる
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeQrModal(); });
-// ──────────────────────────────────────────────────────────────────────
-
-init();
 </script>
 <!-- QRコードモーダル -->
 <div id="qr-modal" role="dialog" aria-modal="true" aria-label="QRコード">
