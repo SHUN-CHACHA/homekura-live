@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>homeクラ 機能一覧</title>
+    <link rel="icon" href="https://shun-chacha.github.io/homekura-live/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="https://shun-chacha.github.io/homekura-live/icon.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/apple-touch-icon.png">
+    <style>
+        :root {
+            --bg:        #eef3ee;
+            --surface:   #f7faf7;
+            --green:     #2d5a27;
+            --green-lt:  #e8f5e8;
+            --border:    #d8e2d7;
+            --text:      #1a2418;
+            --sub:       #414d3f;
+            --blue:      #2563eb;
+            --yellow:    #ca8a04;
+            --red:       #dc2626;
+            --purple:    #7c3aed;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+
+        /* ── ヘッダー ── */
+        .page-header {
+            background: var(--green);
+            padding: 0;
+        }
+        .banner-container {
+            width: 100%;
+            background: var(--green);
+            aspect-ratio: 16 / 1.75;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .header-logo {
+            height: 75%;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0px 2px 6px rgba(0,0,0,0.15));
+        }
+
+        /* ── ナビ ── */
+        .nav-bar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .nav-bar a {
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--sub);
+            padding: 5px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            transition: 0.2s;
+        }
+        .nav-bar a:hover { background: var(--green-lt); color: var(--green); border-color: var(--green); }
+        .nav-bar a.current { background: var(--green); color: #fff; border-color: var(--green); }
+
+        /* ── ページタイトル ── */
+        .page-title-area {
+            max-width: 960px;
+            margin: 28px auto 0;
+            padding: 0 16px;
+        }
+        .page-title-area h1 {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .page-title-area p {
+            font-size: 13px;
+            color: var(--sub);
+            margin-top: 6px;
+        }
+
+        /* ── セクション ── */
+        .section {
+            max-width: 960px;
+            margin: 24px auto 0;
+            padding: 0 16px;
+        }
+        .section-label {
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--sub);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-label::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* ── カードグリッド ── */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 14px;
+        }
+
+        /* ── 機能カード ── */
+        .feat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 18px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .feat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -4px rgba(45,90,39,0.1);
+        }
+
+        .feat-card-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .feat-icon {
+            font-size: 26px;
+            line-height: 1;
+            flex-shrink: 0;
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .feat-icon.green  { background: #d1fae5; }
+        .feat-icon.blue   { background: #dbeafe; }
+        .feat-icon.yellow { background: #fef3c7; }
+        .feat-icon.red    { background: #fee2e2; }
+        .feat-icon.purple { background: #ede9fe; }
+        .feat-icon.gray   { background: #f1f5f9; }
+        .feat-icon.orange { background: #ffedd5; }
+        .feat-icon.teal   { background: #ccfbf1; }
+
+        .feat-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1.3;
+        }
+        .feat-file {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 1px 6px;
+            border-radius: 4px;
+            margin-top: 2px;
+        }
+        .feat-file.index { background: #d1fae5; color: #065f46; }
+        .feat-file.admin { background: #dbeafe; color: #1e40af; }
+        .feat-file.both  { background: #ede9fe; color: #5b21b6; }
+
+        .feat-desc {
+            font-size: 12px;
+            color: var(--sub);
+            line-height: 1.65;
+        }
+
+        .feat-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 2px;
+        }
+        .tag {
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--sub);
+        }
+        .tag.api    { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+        .tag.cache  { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+        .tag.local  { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+        .tag.ui     { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
+        .tag.guard  { background: #ede9fe; color: #5b21b6; border-color: #c4b5fd; }
+        .tag.mc     { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+        .tag.notif  { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+
+        /* ── フッター ── */
+        .page-footer {
+            max-width: 960px;
+            margin: 40px auto 0;
+            padding: 0 16px;
+            font-size: 12px;
+            color: #94a3b8;
+            text-align: center;
+        }
+
+        /* ── レスポンシブ ── */
+        @media (max-width: 480px) {
+            .page-title-area h1 { font-size: 18px; }
+            .card-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- バナー -->
+<div class="banner-container">
+    <img src="logo.png" alt="homeクラ" class="header-logo">
+</div>
+
+<!-- ナビゲーション -->
+<nav class="nav-bar">
+    <a href="index.html">🏠 ポータル</a>
+    <a href="admin-7b9a4c2e.html">⚙️ 管理画面</a>
+    <a href="features.html" class="current">📋 機能一覧</a>
+</nav>
+
+<!-- ページタイトル -->
+<div class="page-title-area">
+    <h1>📋 homeクラ 機能一覧</h1>
+    <p>配信ポータル（index.html）と管理画面（admin）に組み込まれている機能の一覧です。</p>
+</div>
+
+<!-- ────────── INDEX：配信表示 ────────── -->
+<div class="section">
+    <div class="section-label">🏠 index.html ― 配信ポータル（表示系）</div>
+    <div class="card-grid">
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon red">🔴</div>
+                <div>
+                    <div class="feat-name">LIVE 中メンバー表示</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">YouTube Live APIでリアルタイムに配信中チャンネルを検出し、サムネ付きカードで最上部に表示。緑ボーダー＋LIVEバッジで強調。</div>
+            <div class="feat-tags"><span class="tag api">YouTube API</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon yellow">🕒</div>
+                <div>
+                    <div class="feat-name">配信予定（Upcoming）表示</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">liveStreamingDetailsの scheduledStartTime を取得し、日時をフォーマットして「配信予定のメンバー」セクションに表示。</div>
+            <div class="feat-tags"><span class="tag api">YouTube API</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon blue">🎬</div>
+                <div>
+                    <div class="feat-name">24時間以内の新着動画</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">公開から24時間以内の動画を「新着」として検出し、NEWバッジ付きカードで表示。</div>
+            <div class="feat-tags"><span class="tag api">YouTube API</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon gray">👥</div>
+                <div>
+                    <div class="feat-name">メンバー一覧（リスト表示）</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">全メンバーをMinecraftアバター＋SNSリンクボタン付きでグリッド表示。YouTube / X / Twitch / TikTok / Instagram / Discord に対応。</div>
+            <div class="feat-tags"><span class="tag ui">UI</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon teal">🎲</div>
+                <div>
+                    <div class="feat-name">ルーレットボタン</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">ヘッダー左に配置。外部の旬茶作ルーレットページ（roulette.html）を新しいタブで開くリンク。</div>
+            <div class="feat-tags"><span class="tag ui">UI</span></div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ────────── INDEX：更新・キャッシュ ────────── -->
+<div class="section">
+    <div class="section-label">🔄 index.html ― 更新・キャッシュ・節約</div>
+    <div class="card-grid">
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon green">💾</div>
+                <div>
+                    <div class="feat-name">10分キャッシュ</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">YouTube APIレスポンスをlocalStorageに保存し、10分間は再取得せずキャッシュを描画。API quota消費を大幅に削減。取得失敗時はキャッシュにフォールバック。</div>
+            <div class="feat-tags"><span class="tag cache">キャッシュ</span><span class="tag local">localStorage</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon yellow">⏱️</div>
+                <div>
+                    <div class="feat-name">カウントダウンタイマー＋プログレスバー</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">次回更新まで「MM:SS」形式でカウントダウン表示。上部の緑バーも残り時間に連動して縮小。タイマー切れは画面リロードなしでAPI再取得。</div>
+            <div class="feat-tags"><span class="tag ui">UI</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon purple">🛡️</div>
+                <div>
+                    <div class="feat-name">更新ボタン連打防止（disabled）</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">「更新」ボタン押下後、15秒間 disabled にしてカウントダウン表示（「更新 (14s)」…）。キャッシュを消去してAPI再取得するため、連打によるquota浪費を防ぐ。</div>
+            <div class="feat-tags"><span class="tag guard">連打防止</span><span class="tag ui">UI</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon orange">🚧</div>
+                <div>
+                    <div class="feat-name">F5連打ガード</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">beforeunloadでリロード時刻を記録し、20秒以内の再読み込みはAPIを呼ばずキャッシュを強制使用。F5連打によるAPI quota浪費を防止。</div>
+            <div class="feat-tags"><span class="tag guard">F5対策</span><span class="tag cache">キャッシュ</span></div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ────────── INDEX：通知・予約 ────────── -->
+<div class="section">
+    <div class="section-label">🔔 index.html ― 通知・予約</div>
+    <div class="card-grid">
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon yellow">🔔</div>
+                <div>
+                    <div class="feat-name">配信開始 通知予約</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">Upcoming動画に「🔔 通知予約」ボタンを表示。予約するとブラウザ通知の許可を求め、開始時刻に「配信開始！」をプッシュ通知。予約状態はlocalStorageに保存。</div>
+            <div class="feat-tags"><span class="tag notif">通知API</span><span class="tag local">localStorage</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon green">✅</div>
+                <div>
+                    <div class="feat-name">通知状態の永続化</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">通知済みかどうかを `notified` フラグでlocalStorageに管理。30秒ごとにポーリングして重複通知を防ぐ。</div>
+            <div class="feat-tags"><span class="tag local">localStorage</span></div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ────────── INDEX：QR ────────── -->
+<div class="section">
+    <div class="section-label">📱 index.html ― スマホ連携</div>
+    <div class="card-grid">
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon teal">📱</div>
+                <div>
+                    <div class="feat-name">QRコード モーダル</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">ヘッダーの「QR」ボタンを押すと現在URLのQRコードをモーダル表示。スマホカメラでスキャンしてブックマーク登録が簡単にできる。閉じ方は×ボタン・背景クリック・Escキーの3通り。</div>
+            <div class="feat-tags"><span class="tag ui">UI</span><span class="tag ui">qrcode.js</span></div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ────────── ADMIN ────────── -->
+<div class="section">
+    <div class="section-label">⚙️ admin ― メンバー管理</div>
+    <div class="card-grid">
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon green">➕</div>
+                <div>
+                    <div class="feat-name">メンバー追加・編集・削除</div>
+                    <span class="feat-file admin">admin</span>
+                </div>
+            </div>
+            <div class="feat-desc">フォームから名前・YouTube CH ID・各SNS ID・メンバーカラーを入力して追加。メンバー一覧の名前クリックで再編集モードに切り替え。削除は確認ダイアログ付き。</div>
+            <div class="feat-tags"><span class="tag local">localStorage</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon mc">🎮</div>
+                <div>
+                    <div class="feat-name">UUID 自動取得（Ashcon API）</div>
+                    <span class="feat-file admin">admin</span>
+                </div>
+            </div>
+            <div class="feat-desc">Minecraft IDを入力すると700ms debounce後にashcon.app経由でUUIDを自動取得。MojangはCORSブロックのため中継APIを使用。取得成功・失敗・待機状態をバッジで表示。</div>
+            <div class="feat-tags"><span class="tag api">Ashcon API</span><span class="tag mc">UUID</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon yellow">✏️</div>
+                <div>
+                    <div class="feat-name">UUID 手動入力フォールバック</div>
+                    <span class="feat-file admin">admin</span>
+                </div>
+            </div>
+            <div class="feat-desc">自動取得に失敗した場合、「手動入力」ボタンが出現。ハイフンあり/なし両対応の正規表現バリデーション付き。32文字の場合は自動でハイフン付きに変換。</div>
+            <div class="feat-tags"><span class="tag mc">UUID</span><span class="tag ui">バリデーション</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon teal">🖼️</div>
+                <div>
+                    <div class="feat-name">Minecraftアバタープレビュー</div>
+                    <span class="feat-file admin">admin</span>
+                </div>
+            </div>
+            <div class="feat-desc">UUID取得後にMineatar（api.mineatar.io）から頭部3D画像をリアルタイムプレビュー。アウターレイヤーも反映。スマホでの外部APIブロック問題を回避するためローカル保存方式を採用。</div>
+            <div class="feat-tags"><span class="tag api">Mineatar API</span><span class="tag mc">スキン</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon orange">⬇️</div>
+                <div>
+                    <div class="feat-name">アバター SVG ダウンロード</div>
+                    <span class="feat-file admin">admin</span>
+                </div>
+            </div>
+            <div class="feat-desc">「画像を [マイクラID].svg で保存」ボタンでMineatar画像をBase64エンコードしてSVGラッパーに格納し、ローカルに保存。ファイル名は自動で「{minecraftId}.svg」になる。</div>
+            <div class="feat-tags"><span class="tag mc">SVG</span><span class="tag ui">ダウンロード</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon blue">📋</div>
+                <div>
+                    <div class="feat-name">config.js 出力＆コピー</div>
+                    <span class="feat-file admin">admin</span>
+                </div>
+            </div>
+            <div class="feat-desc">メンバー追加・編集するたびにconfig.js形式のコードを自動生成。「コピー」ボタンでクリップボードにコピーし、ローカルのconfig.jsに貼り付けて使う。avatarImgパスも自動補完。</div>
+            <div class="feat-tags"><span class="tag ui">コピー</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon gray">🎨</div>
+                <div>
+                    <div class="feat-name">メンバーカラー選択</div>
+                    <span class="feat-file admin">admin</span>
+                </div>
+            </div>
+            <div class="feat-desc">カラーピッカーとHEXコード入力が連動。入力した色はポータル側のメンバー名やアバターボーダーに反映される。明度が高い色は自動で暗色補正してテキストの視認性を確保。</div>
+            <div class="feat-tags"><span class="tag ui">カラーピッカー</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon green">📊</div>
+                <div>
+                    <div class="feat-name">メンバー一覧テーブル</div>
+                    <span class="feat-file admin">admin</span>
+                </div>
+            </div>
+            <div class="feat-desc">登録済みメンバーをカラー・顔アイコン・各SNSリンク付きの横スクロールテーブルで確認。UUIDは先頭8文字を表示しホバーでフル表示（title属性）。</div>
+            <div class="feat-tags"><span class="tag ui">テーブル</span></div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ────────── 共通 ────────── -->
+<div class="section">
+    <div class="section-label">🔗 共通 ― データ連携</div>
+    <div class="card-grid">
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon green">🔗</div>
+                <div>
+                    <div class="feat-name">config.js 共有データ</div>
+                    <span class="feat-file both">index / admin</span>
+                </div>
+            </div>
+            <div class="feat-desc">APIキーとデフォルトメンバー定義を config.js に集約。index・adminどちらもこのファイルを読み込み、localStorageの上書きデータがあればそちらを優先使用する。</div>
+            <div class="feat-tags"><span class="tag local">localStorage</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon purple">💡</div>
+                <div>
+                    <div class="feat-name">テキストカラー自動補正</div>
+                    <span class="feat-file both">index / admin</span>
+                </div>
+            </div>
+            <div class="feat-desc">adjustColorForText()関数でluma輝度値を計算し、明るすぎる色のメンバー名テキストを自動的に50%暗色化して視認性を確保。</div>
+            <div class="feat-tags"><span class="tag ui">アクセシビリティ</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon teal">📱</div>
+                <div>
+                    <div class="feat-name">マルチプラットフォーム SNS 対応</div>
+                    <span class="feat-file both">index / admin</span>
+                </div>
+            </div>
+            <div class="feat-desc">YouTube / X(Twitter) / Twitch / TikTok / Instagram / Discord の6プラットフォームに対応。各SNS IDの有無でボタンを動的表示。TikTokは@プレフィックスを自動除去。</div>
+            <div class="feat-tags"><span class="tag ui">SNS</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon mc">🟩</div>
+                <div>
+                    <div class="feat-name">Minecraft アバター表示（SVG）</div>
+                    <span class="feat-file both">index / admin</span>
+                </div>
+            </div>
+            <div class="feat-desc">avatars/{minecraftId}.svg を優先参照し、なければ avatars/fallback.svg を表示。onerrorハンドラで読み込み失敗時も自動フォールバック。拡張子の表記ゆれ（png/jpg等）も.svgに正規化。</div>
+            <div class="feat-tags"><span class="tag mc">SVG</span><span class="tag ui">フォールバック</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon gray">📐</div>
+                <div>
+                    <div class="feat-name">レスポンシブ対応</div>
+                    <span class="feat-file both">index / admin</span>
+                </div>
+            </div>
+            <div class="feat-desc">スマホ（〜599px）・タブレット（600px〜）・PC（950px〜）の3段階でグリッド列数・カードサイズを切り替え。管理画面はスマホで縦積みレイアウトに変形。</div>
+            <div class="feat-tags"><span class="tag ui">レスポンシブ</span></div>
+        </div>
+
+    </div>
+</div>
+
+<p class="page-footer">homeクラ 配信ポータル ＠旬茶 — features.html</p>
+
+</body>
+</html>
