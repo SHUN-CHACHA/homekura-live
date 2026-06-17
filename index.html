@@ -189,13 +189,6 @@
             .list-container { grid-template-columns: repeat(3, 1fr); gap: 14px; }
         }
 
-        /* 更新ボタン disabled スタイル */
-        .btn-tool:disabled {
-            opacity: 0.45;
-            cursor: not-allowed;
-            background: #888;
-        }
-
         /* QRボタン */
         .btn-qr {
             background: var(--container-bg);
@@ -340,57 +333,6 @@ let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 let timeLeft = 600;
 
-// ─── キャッシュ設定 ────────────────────────────────────────────────────
-const CACHE_KEY      = 'portal_cache';
-const CACHE_TTL_MS   = 10 * 60 * 1000; // 10分
-
-function saveCache(data) {
-    try {
-        localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));
-    } catch(e) { /* quota超過等を無視 */ }
-}
-function loadCache() {
-    try {
-        const raw = localStorage.getItem(CACHE_KEY);
-        if (!raw) return null;
-        const obj = JSON.parse(raw);
-        if (Date.now() - obj.ts > CACHE_TTL_MS) { localStorage.removeItem(CACHE_KEY); return null; }
-        return obj.data;   // { chInfoMap, vItems, cachedAt }
-    } catch(e) { return null; }
-}
-function cacheAge() {
-    try {
-        const raw = localStorage.getItem(CACHE_KEY);
-        if (!raw) return null;
-        return Date.now() - JSON.parse(raw).ts;
-    } catch(e) { return null; }
-}
-// ──────────────────────────────────────────────────────────────────────
-
-// ─── 更新ボタン disabled 制御 ─────────────────────────────────────────
-const REFRESH_DISABLE_SEC = 15; // 押してから何秒間無効化するか
-
-function disableRefreshBtn(sec) {
-    const btn = document.getElementById('refresh-btn');
-    if (!btn || btn.disabled) return;
-    btn.disabled = true;
-    let remain = sec;
-    btn.textContent = `更新 (${remain}s)`;
-    const iv = setInterval(() => {
-        remain--;
-        if (remain <= 0) {
-            clearInterval(iv);
-            btn.disabled = false;
-            btn.textContent = '更新';
-        } else {
-            btn.textContent = `更新 (${remain}s)`;
-        }
-    }, 1000);
-}
-// ──────────────────────────────────────────────────────────────────────
-
-// ──────────────────────────────────────────────────────────────────────
-
 const SVG_ICONS = {
     youtube:   `<svg viewBox="0 0 24 24"><path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.516 0-9.387.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.387.508 9.387.508s7.517 0 9.387-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`,
     x:         `<svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
@@ -419,13 +361,6 @@ function init() {
     else if (typeof CONFIG !== 'undefined' && CONFIG.DEFAULT_CHANNELS) { channels = [...CONFIG.DEFAULT_CHANNELS]; }
     else { channels = []; }
 
-    // キャッシュ残量でタイマー初期値を合わせる
-    const age = cacheAge();
-    if (age !== null) {
-        const remainSec = Math.max(0, Math.floor((CACHE_TTL_MS - age) / 1000));
-        timeLeft = remainSec;
-    }
-
     loadPortal();
     setInterval(checkNotifications, 30000);
 }
@@ -433,16 +368,6 @@ function init() {
 async function loadPortal() {
     if (!channels.length) return;
 
-    // ── キャッシュ優先（有効なキャッシュがあれば即描画）────────────────────
-    // URLに ?nocache または ?dev をつけるとキャッシュをスキップしてAPI取得
-    const devMode = location.search.includes('nocache') || location.search.includes('dev');
-    const cached = devMode ? null : loadCache();
-    if (cached) {
-        renderGrids(cached.chInfoMap, cached.vItems);
-        return;
-    }
-
-    // ── キャッシュなし → API取得 ─────────────────────────────────────────
     const channelIds = channels.map(c => c.id).join(',');
     try {
         const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${channelIds}&part=snippet`);
@@ -457,10 +382,9 @@ async function loadPortal() {
                     .then(r => r.json()).catch(() => null);
             })
         );
-        // 各チャンネルの最新3件からlive/upcomingを優先して1件選ぶ
+
         const videoIds = playlistResults.map(r => {
             const items = r?.items || [];
-            // live または upcoming の動画を優先
             const priority = items.find(i => {
                 const bc = i.snippet?.liveBroadcastContent;
                 return bc === 'live' || bc === 'upcoming';
@@ -468,26 +392,18 @@ async function loadPortal() {
             const target = priority || items[0];
             return target?.snippet?.resourceId?.videoId;
         }).filter(Boolean);
+
         let vItems = [];
         if (videoIds.length > 0) {
             const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
             const vData = await vRes.json();
             vItems = vData.items || [];
         }
-        // 取得成功 → キャッシュ保存
-        saveCache({ chInfoMap, vItems });
-        timeLeft = 600; // タイマーリセット
+
         renderGrids(chInfoMap, vItems);
     } catch (e) {
         console.error("ポータル読み込みエラー:", e);
-        // エラー時はキャッシュがあれば使う
-        const fallback = loadCache();
-        if (fallback) {
-            renderGrids(fallback.chInfoMap, fallback.vItems);
-        } else {
-            // キャッシュもなければ空のchInfoMapでもメンバー一覧だけ表示
-            renderGrids({}, []);
-        }
+        renderGrids({}, []);
     }
 }
 
@@ -497,7 +413,7 @@ function renderGrids(chInfoMap, vItems) {
     const now = new Date();
 
     channels.forEach(ch => {
-        const chInfo = chInfoMap[ch.id] || { icon: '' };  // アイコン取得失敗でもスキップしない
+        const chInfo = chInfoMap[ch.id] || { icon: '' };
         const lastV = vItems.find(v => v.snippet.channelId === ch.id);
         const status = lastV?.snippet.liveBroadcastContent || 'none';
         const isLive = status === 'live';
@@ -548,7 +464,7 @@ function renderGrids(chInfoMap, vItems) {
         let listBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn-square-mini btn-yt" title="YouTube">${SVG_ICONS.youtube}</a>`;
         if (ch.twitterId)  listBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn-square-mini btn-x" title="X">${SVG_ICONS.x}</a>`;
         if (ch.twitchId)   listBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn-square-mini btn-tw" title="Twitch">${SVG_ICONS.twitch}</a>`;
-        if (ch.tiktokId)   listBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" class="btn-square-mini btn-tt" title="TikTok">${SVG_ICONS.tiktok}</a>`;
+        if (ch.tiktokId)  listBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" class="btn-square-mini btn-tt" title="TikTok">${SVG_ICONS.tiktok}</a>`;
         if (ch.instaId)    listBtnsHtml += `<a href="https://instagram.com/${ch.instaId}" target="_blank" class="btn-square-mini btn-inst" title="Instagram">${SVG_ICONS.instagram}</a>`;
         if (ch.discordUrl) listBtnsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn-square-mini btn-disc" title="Discord">${SVG_ICONS.discord}</a>`;
 
@@ -618,21 +534,14 @@ function checkNotifications() {
     if (changed) localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
 }
 
-// ─── 更新ボタン：キャッシュクリアしてAPIを再取得 ───────────────────────────
 function manualRefresh() {
-    disableRefreshBtn(REFRESH_DISABLE_SEC);
-    localStorage.removeItem(CACHE_KEY);   // キャッシュ削除
     timeLeft = 600;
-    loadPortal();                          // location.reload() ではなく再取得
+    loadPortal();
 }
-// ──────────────────────────────────────────────────────────────────────
 
-// ─── タイマー（キャッシュ切れで再取得、F5はキャッシュ利用で吸収）────────────
 setInterval(() => {
     timeLeft--;
     if (timeLeft < 0) {
-        // タイマー切れ → キャッシュ削除して再取得（画面リロードなし）
-        localStorage.removeItem(CACHE_KEY);
         timeLeft = 600;
         loadPortal();
     }
@@ -641,18 +550,16 @@ setInterval(() => {
     document.getElementById('progress-bar').style.width = (timeLeft/600)*100 + "%";
 }, 1000);
 
-// ─── QRコードモーダル ─────────────────────────────────────────────────
 let _qrInstance = null;
 
 function openQrModal() {
     const modal = document.getElementById('qr-modal');
     const wrap  = document.getElementById('qr-canvas-wrap');
     const label = document.getElementById('qr-url-label');
-    const url   = location.origin + location.pathname;  // ?nocache等のパラメータを除去
+    const url   = location.origin + location.pathname;
 
     label.textContent = url;
 
-    // 既存QR破棄
     if (_qrInstance) { _qrInstance.clear(); _qrInstance = null; }
     wrap.innerHTML = '<div id="qr-canvas"></div>';
 
@@ -677,23 +584,19 @@ function closeQrModal() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-
     const qrModal = document.getElementById('qr-modal');
-
     if (qrModal) {
         qrModal.addEventListener('click', function(e) {
             if (e.target === this) closeQrModal();
         });
     }
-
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') closeQrModal();
     });
-
     init();
 });
 </script>
-<!-- QRコードモーダル -->
+
 <div id="qr-modal" role="dialog" aria-modal="true" aria-label="QRコード">
     <div id="qr-modal-inner">
         <h3>📱 スマホでブックマーク</h3>
@@ -706,7 +609,6 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
 </div>
 
-<!-- QRコード生成ライブラリ (qrcode.js CDN) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </body>
 </html>
