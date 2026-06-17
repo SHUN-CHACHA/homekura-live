@@ -244,7 +244,7 @@ const CONFIG = {
                 "twitchId": "",
                 "tiktokId": "",
                 "instaId": "",
-                "discordUrl": "discord.gg/ZwZ8nrecY",
+                "discordUrl": "https://discord.gg/ZwZ8nrecY",
                 "color": "#afebf3",
                 "avatarImg": "avatars/Kunashiki_Lin.svg"
         },
@@ -318,26 +318,13 @@ const CONFIG = {
                 "id": "UCrfGCEk3MPYap72t0TX_sdQ",
                 "minecraftId": "yurimosaaan",
                 "uuid": "0e6b9c2a-560a-4593-b0c0-983ecb209c4f",
-                "twitterId": "@yurimotosuzu",
+                "twitterId": "yurimotosuzu",
                 "twitchId": "yurimotosuzu",
                 "tiktokId": "yurimotosuzu",
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#aae4d3",
                 "avatarImg": "avatars/yurimosaaan.svg"
-        },
-        {
-                "name": "TEST",
-                "id": "UCMP7QuS4suoONg47Nbi-wrg",
-                "minecraftId": "",
-                "uuid": "",
-                "twitterId": "",
-                "twitchId": "",
-                "tiktokId": "",
-                "instaId": "",
-                "discordUrl": "",
-                "color": "#ff9900",
-                "avatarImg": ""
         }
 ]
 };
