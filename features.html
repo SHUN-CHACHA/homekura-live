@@ -321,61 +321,6 @@
     </div>
 </div>
 
-<!-- ────────── INDEX：更新・キャッシュ ────────── -->
-<div class="section">
-    <div class="section-label">🔄 index.html ― 更新・キャッシュ・節約</div>
-    <div class="card-grid">
-
-        <div class="feat-card">
-            <div class="feat-card-top">
-                <div class="feat-icon green">💾</div>
-                <div>
-                    <div class="feat-name">10分キャッシュ</div>
-                    <span class="feat-file index">index</span>
-                </div>
-            </div>
-            <div class="feat-desc">YouTube APIレスポンスをlocalStorageに保存し、10分間は再取得せずキャッシュを描画。API quota消費を大幅に削減。取得失敗時はキャッシュにフォールバック。</div>
-            <div class="feat-tags"><span class="tag cache">キャッシュ</span><span class="tag local">localStorage</span></div>
-        </div>
-
-        <div class="feat-card">
-            <div class="feat-card-top">
-                <div class="feat-icon yellow">⏱️</div>
-                <div>
-                    <div class="feat-name">カウントダウンタイマー＋プログレスバー</div>
-                    <span class="feat-file index">index</span>
-                </div>
-            </div>
-            <div class="feat-desc">次回更新まで「MM:SS」形式でカウントダウン表示。上部の緑バーも残り時間に連動して縮小。タイマー切れは画面リロードなしでAPI再取得。</div>
-            <div class="feat-tags"><span class="tag ui">UI</span></div>
-        </div>
-
-        <div class="feat-card">
-            <div class="feat-card-top">
-                <div class="feat-icon purple">🛡️</div>
-                <div>
-                    <div class="feat-name">更新ボタン連打防止（disabled）</div>
-                    <span class="feat-file index">index</span>
-                </div>
-            </div>
-            <div class="feat-desc">「更新」ボタン押下後、15秒間 disabled にしてカウントダウン表示（「更新 (14s)」…）。キャッシュを消去してAPI再取得するため、連打によるquota浪費を防ぐ。</div>
-            <div class="feat-tags"><span class="tag guard">連打防止</span><span class="tag ui">UI</span></div>
-        </div>
-
-        <div class="feat-card">
-            <div class="feat-card-top">
-                <div class="feat-icon orange">🚧</div>
-                <div>
-                    <div class="feat-name">F5連打ガード</div>
-                    <span class="feat-file index">index</span>
-                </div>
-            </div>
-            <div class="feat-desc">beforeunloadでリロード時刻を記録し、20秒以内の再読み込みはAPIを呼ばずキャッシュを強制使用。F5連打によるAPI quota浪費を防止。</div>
-            <div class="feat-tags"><span class="tag guard">F5対策</span><span class="tag cache">キャッシュ</span></div>
-        </div>
-
-    </div>
-</div>
 
 <!-- ────────── INDEX：通知・予約 ────────── -->
 <div class="section">
