@@ -331,6 +331,8 @@
 <script>
 // config.jsが先に読み込まれているので、正常にAPI_KEYが代入されます
 const API_KEY = window.CONFIG?.YOUTUBE_API_KEY || '';
+const CACHE_DURATION_MS         = window.CONFIG?.CACHE_DURATION_MS          ?? (5  * 60 * 1000);
+const CHANNEL_ICON_CACHE_DURATION_MS = window.CONFIG?.CHANNEL_ICON_CACHE_DURATION_MS ?? (24 * 60 * 60 * 1000);
 let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 let timeLeft = 600;
@@ -367,20 +369,48 @@ function init() {
     setInterval(checkNotifications, 30000);
 }
 
-async function loadPortal() {
+async function loadPortal(forceRefresh = false) {
     if (!channels.length) return;
+
+    const now = Date.now();
+
+    // ── ポータルキャッシュ（動画情報・5分） ──────────────────────────
+    if (!forceRefresh) {
+        try {
+            const cached = JSON.parse(localStorage.getItem('portal_cache') || 'null');
+            if (cached && (now - cached.timestamp) < CACHE_DURATION_MS) {
+                console.log(`[homeクラ] キャッシュ使用（残り ${Math.ceil((CACHE_DURATION_MS - (now - cached.timestamp)) / 1000)} 秒）`);
+                renderGrids(cached.chInfoMap, cached.vItems);
+                return;
+            }
+        } catch (_) { /* キャッシュ破損時は無視してAPI取得へ */ }
+    }
 
     const channelIds = channels.map(c => c.id).join(',');
     try {
-        const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${channelIds}&part=snippet`);
-        const chData = await chRes.json();
-        const chInfoMap = {};
-        chData.items?.forEach(i => chInfoMap[i.id] = { icon: i.snippet?.thumbnails?.medium?.url || '' });
+        // ── チャンネルアイコンキャッシュ（24時間） ──────────────────────
+        let chInfoMap = {};
+        try {
+            const iconCache = JSON.parse(localStorage.getItem('channel_icon_cache') || 'null');
+            if (iconCache && (now - iconCache.timestamp) < CHANNEL_ICON_CACHE_DURATION_MS) {
+                chInfoMap = iconCache.data;
+                console.log('[homeクラ] チャンネルアイコン: キャッシュ使用');
+            } else {
+                throw new Error('icon cache miss');
+            }
+        } catch (_) {
+            const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${channelIds}&part=snippet`);
+            const chData = await chRes.json();
+            chData.items?.forEach(i => { chInfoMap[i.id] = { icon: i.snippet?.thumbnails?.medium?.url || '' }; });
+            localStorage.setItem('channel_icon_cache', JSON.stringify({ timestamp: now, data: chInfoMap }));
+            console.log('[homeクラ] チャンネルアイコン: API取得・キャッシュ保存');
+        }
 
+        // ── playlistItems（maxResults=2）──────────────────────────────
         const playlistResults = await Promise.all(
             channels.map(ch => {
                 const pId = ch.id.replace(/^UC/, 'UU');
-                return fetch(`https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${pId}&part=snippet&maxResults=3`)
+                return fetch(`https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${pId}&part=snippet&maxResults=2`)
                     .then(r => r.json()).catch(() => null);
             })
         );
@@ -402,9 +432,18 @@ async function loadPortal() {
             vItems = vData.items || [];
         }
 
+        // ── ポータルキャッシュ保存 ──────────────────────────────────────
+        localStorage.setItem('portal_cache', JSON.stringify({ timestamp: now, chInfoMap, vItems }));
+        console.log('[homeクラ] ポータル: API取得・キャッシュ保存');
+
         renderGrids(chInfoMap, vItems);
     } catch (e) {
         console.error("ポータル読み込みエラー:", e);
+        // エラー時は古いキャッシュがあれば使う
+        try {
+            const cached = JSON.parse(localStorage.getItem('portal_cache') || 'null');
+            if (cached) { renderGrids(cached.chInfoMap, cached.vItems); return; }
+        } catch (_) {}
         renderGrids({}, []);
     }
 }
@@ -538,7 +577,7 @@ function checkNotifications() {
 
 function manualRefresh() {
     timeLeft = 600;
-    loadPortal();
+    loadPortal(true); // キャッシュを無視して強制更新
 }
 
 setInterval(() => {
