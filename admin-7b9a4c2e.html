@@ -297,7 +297,7 @@ let uuidTimer   = null;
 function initAdmin() {
     const saved = localStorage.getItem('custom_channels');
     if (saved) { channels = JSON.parse(saved); }
-    else if (typeof CONFIG !== 'undefined' && CONFIG.DEFAULT_CHANNELS) { channels = [...CONFIG.DEFAULT_CHANNELS]; }
+    else if (window.CONFIG?.DEFAULT_CHANNELS) { channels = [...window.CONFIG.DEFAULT_CHANNELS]; }
     renderMemberList();
     updateConfigOutput();
 }
@@ -673,9 +673,13 @@ function updateConfigOutput() {
         const pureMcId = cleanMcId(ch.minecraftId);
         return { ...ch, avatarImg: pureMcId ? `avatars/${pureMcId}.svg` : "" };
     });
-    const apiKey = (typeof CONFIG !== 'undefined' && CONFIG.YOUTUBE_API_KEY) ? CONFIG.YOUTUBE_API_KEY : "YOUR_API_KEY";
+    const cfg    = (typeof CONFIG !== 'undefined') ? CONFIG : (window.CONFIG || {});
+    const apiKey = cfg.YOUTUBE_API_KEY || "YOUR_API_KEY";
+    // キャッシュ設定は元の値を引き継ぐ（なければデフォルト）
+    const cacheDuration     = cfg.CACHE_DURATION_MS          ?? (5  * 60 * 1000);
+    const iconCacheDuration = cfg.CHANNEL_ICON_CACHE_DURATION_MS ?? (24 * 60 * 60 * 1000);
     document.getElementById('configOutput').value =
-        `const CONFIG = {\n    YOUTUBE_API_KEY: "${apiKey}",\n    DEFAULT_CHANNELS: ${JSON.stringify(formatted, null, 8)}\n};`;
+        `window.CONFIG = {\n    // YouTube Data API v3 の本物のAPIキーをダブルクォーテーションの中に貼り付けてください\n    YOUTUBE_API_KEY: "${apiKey}",\n    // キャッシュ有効期間（ミリ秒）。デフォルト5分。\n    CACHE_DURATION_MS: ${cacheDuration},\n    // チャンネルアイコンのキャッシュ有効期間（ミリ秒）。デフォルト24時間。\n    CHANNEL_ICON_CACHE_DURATION_MS: ${iconCacheDuration},\n    DEFAULT_CHANNELS: ${JSON.stringify(formatted, null, 8)}\n};`;
 }
 
 function exportConfig() {
