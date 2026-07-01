@@ -278,7 +278,7 @@
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">liveStreamingDetailsの scheduledStartTime を取得し、日時をフォーマットして「配信予定のメンバー」セクションに表示。</div>
+            <div class="feat-desc">liveStreamingDetails の scheduledStartTime を取得し、日時をフォーマットして「配信予定のメンバー」セクションに表示。</div>
             <div class="feat-tags"><span class="tag api">YouTube API</span></div>
         </div>
 
@@ -302,8 +302,32 @@
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">全メンバーをMinecraftアバター＋SNSリンクボタン付きでグリッド表示。YouTube / X / Twitch / TikTok / Instagram / Discord に対応。</div>
+            <div class="feat-desc">全メンバーをMinecraftアバター＋SNSアイコンボタン付きでグリッド表示。YouTube / X / Twitch / TikTok / Instagram / Discord / ホームページに対応。<code id="member"</code>アンカーで直接スクロール可能。</div>
             <div class="feat-tags"><span class="tag ui">UI</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon teal">🔗</div>
+                <div>
+                    <div class="feat-name">SNS ポップアップモーダル</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">カードの「🔗 詳細」ボタンを押すと、そのメンバーの登録済み SNS リンクをポップアップ表示。YouTube / X / Twitch / TikTok / Instagram / Discord / ホームページを色分けリストで一覧表示。「👥 メンバー一覧へ」ボタンも内包。背景クリック・Escキーで閉じる。</div>
+            <div class="feat-tags"><span class="tag ui">モーダル</span><span class="tag ui">SNS</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon green">👥</div>
+                <div>
+                    <div class="feat-name">一覧ジャンプボタン</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">各カードの「👥 一覧」ボタンを押すと、ページ内の <code>#member</code>（メンバー一覧セクション）へスクロール。SNSポップアップ内の「メンバー一覧へ」も同様。</div>
+            <div class="feat-tags"><span class="tag ui">アンカーリンク</span></div>
         </div>
 
         <div class="feat-card">
@@ -316,6 +340,63 @@
             </div>
             <div class="feat-desc">ヘッダー左に配置。外部の旬茶作ルーレットページ（roulette.html）を新しいタブで開くリンク。</div>
             <div class="feat-tags"><span class="tag ui">UI</span></div>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- ────────── INDEX：キャッシュ ────────── -->
+<div class="section">
+    <div class="section-label">⚡ index.html ― API クォータ最適化・キャッシュ</div>
+    <div class="card-grid">
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon green">💾</div>
+                <div>
+                    <div class="feat-name">ポータルキャッシュ（5分）</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">動画情報（chInfoMap・vItems）を <code>portal_cache</code> キーで localStorage に保存。5分以内の再ロードは API を叩かずキャッシュを使用。API エラー時も古いキャッシュでフォールバック表示する。有効期間は config.js の <code>CACHE_DURATION_MS</code> で変更可能（デフォルト 5 分）。</div>
+            <div class="feat-tags"><span class="tag cache">キャッシュ</span><span class="tag local">localStorage</span><span class="tag api">YouTube API</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon teal">🖼️</div>
+                <div>
+                    <div class="feat-name">チャンネルアイコン長期キャッシュ（24時間）</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">channels API で取得したアイコン URL を <code>channel_icon_cache</code> に保存。24時間以内は channels API を呼ばない。有効期間は config.js の <code>CHANNEL_ICON_CACHE_DURATION_MS</code> で変更可能。</div>
+            <div class="feat-tags"><span class="tag cache">キャッシュ</span><span class="tag local">localStorage</span><span class="tag api">YouTube API</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon yellow">🔄</div>
+                <div>
+                    <div class="feat-name">強制更新（キャッシュ無視）</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">ヘッダーの「更新」ボタン押下時は <code>loadPortal(true)</code> を呼び、キャッシュを無視して API から最新データを取得・保存し直す。</div>
+            <div class="feat-tags"><span class="tag api">YouTube API</span><span class="tag cache">強制更新</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon blue">📉</div>
+                <div>
+                    <div class="feat-name">playlistItems maxResults=2</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">playlistItems の取得件数を maxResults=2 に設定。LIVE / Upcoming 優先ロジック（先頭2件からステータス付き動画を優先）を維持しつつ、不要な取得を削減。</div>
+            <div class="feat-tags"><span class="tag api">YouTube API</span></div>
         </div>
 
     </div>
@@ -347,7 +428,7 @@
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">通知済みかどうかを `notified` フラグでlocalStorageに管理。30秒ごとにポーリングして重複通知を防ぐ。</div>
+            <div class="feat-desc">通知済みかどうかを <code>notified</code> フラグでlocalStorageに管理。30秒ごとにポーリングして重複通知を防ぐ。</div>
             <div class="feat-tags"><span class="tag local">localStorage</span></div>
         </div>
 
@@ -368,7 +449,7 @@
                 </div>
             </div>
             <div class="feat-desc">ヘッダーの「QR」ボタンを押すと現在URLのQRコードをモーダル表示。スマホカメラでスキャンしてブックマーク登録が簡単にできる。閉じ方は×ボタン・背景クリック・Escキーの3通り。</div>
-            <div class="feat-tags"><span class="tag ui">UI</span><span class="tag ui">qrcode.js</span></div>
+            <div class="feat-tags"><span class="tag ui">UI</span><span class="tag ui">qrious.js</span></div>
         </div>
 
     </div>
@@ -387,8 +468,20 @@
                     <span class="feat-file admin">admin</span>
                 </div>
             </div>
-            <div class="feat-desc">フォームから名前・YouTube CH ID・各SNS ID・メンバーカラーを入力して追加。メンバー一覧の名前クリックで再編集モードに切り替え。削除は確認ダイアログ付き。</div>
+            <div class="feat-desc">フォームから名前・YouTube CH ID・各SNS ID・ホームページURL・メンバーカラーを入力して追加。メンバー一覧の名前クリックで再編集モードに切り替え。削除は確認ダイアログ付き。</div>
             <div class="feat-tags"><span class="tag local">localStorage</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon green">🏠</div>
+                <div>
+                    <div class="feat-name">ホームページURL 登録</div>
+                    <span class="feat-file admin">admin</span>
+                </div>
+            </div>
+            <div class="feat-desc">メンバーごとにホームページURLを登録可能。登録するとポータルの SNS ポップアップモーダルに「ホームページ」リンクとして表示される。未登録の場合は非表示。</div>
+            <div class="feat-tags"><span class="tag ui">SNS</span></div>
         </div>
 
         <div class="feat-card">
@@ -443,11 +536,11 @@
             <div class="feat-card-top">
                 <div class="feat-icon blue">📋</div>
                 <div>
-                    <div class="feat-name">config.js 出力＆コピー</div>
+                    <div class="feat-name">config.js 出力・コピー（window.CONFIG 形式）</div>
                     <span class="feat-file admin">admin</span>
                 </div>
             </div>
-            <div class="feat-desc">メンバー追加・編集するたびにconfig.js形式のコードを自動生成。「コピー」ボタンでクリップボードにコピーし、ローカルのconfig.jsに貼り付けて使う。avatarImgパスも自動補完。</div>
+            <div class="feat-desc">メンバー追加・編集するたびに <code>window.CONFIG = {...}</code> 形式のコードを自動生成。APIキー・キャッシュ設定値（CACHE_DURATION_MS・CHANNEL_ICON_CACHE_DURATION_MS）・homepageUrl も含めて出力。「コピー」でクリップボードにコピーしてローカルの config.js に貼り付けて使う。</div>
             <div class="feat-tags"><span class="tag ui">コピー</span></div>
         </div>
 
@@ -471,7 +564,7 @@
                     <span class="feat-file admin">admin</span>
                 </div>
             </div>
-            <div class="feat-desc">登録済みメンバーをカラー・顔アイコン・各SNSリンク付きの横スクロールテーブルで確認。UUIDは先頭8文字を表示しホバーでフル表示（title属性）。</div>
+            <div class="feat-desc">登録済みメンバーをカラー・顔アイコン・各SNSリンク・ホームページリンク付きの横スクロールテーブルで確認。UUIDは先頭8文字を表示しホバーでフル表示（title属性）。</div>
             <div class="feat-tags"><span class="tag ui">テーブル</span></div>
         </div>
 
@@ -491,7 +584,7 @@
                     <span class="feat-file both">index / admin</span>
                 </div>
             </div>
-            <div class="feat-desc">APIキーとデフォルトメンバー定義を config.js に集約。index・adminどちらもこのファイルを読み込み、localStorageの上書きデータがあればそちらを優先使用する。</div>
+            <div class="feat-desc">APIキー・キャッシュ設定・デフォルトメンバー定義を <code>window.CONFIG</code> として config.js に集約。index・admin どちらもこのファイルを読み込み、localStorage の上書きデータがあればそちらを優先使用する。</div>
             <div class="feat-tags"><span class="tag local">localStorage</span></div>
         </div>
 
@@ -503,7 +596,7 @@
                     <span class="feat-file both">index / admin</span>
                 </div>
             </div>
-            <div class="feat-desc">adjustColorForText()関数でluma輝度値を計算し、明るすぎる色のメンバー名テキストを自動的に50%暗色化して視認性を確保。</div>
+            <div class="feat-desc">adjustColorForText() 関数で luma 輝度値を計算し、明るすぎる色のメンバー名テキストを自動的に50%暗色化して視認性を確保。</div>
             <div class="feat-tags"><span class="tag ui">アクセシビリティ</span></div>
         </div>
 
@@ -515,7 +608,7 @@
                     <span class="feat-file both">index / admin</span>
                 </div>
             </div>
-            <div class="feat-desc">YouTube / X(Twitter) / Twitch / TikTok / Instagram / Discord の6プラットフォームに対応。各SNS IDの有無でボタンを動的表示。TikTokは@プレフィックスを自動除去。</div>
+            <div class="feat-desc">YouTube / X(Twitter) / Twitch / TikTok / Instagram / Discord / ホームページの7プラットフォームに対応。各 SNS ID・URL の有無でリンクを動的表示。TikTok は @ プレフィックスを自動除去。</div>
             <div class="feat-tags"><span class="tag ui">SNS</span></div>
         </div>
 
@@ -527,7 +620,7 @@
                     <span class="feat-file both">index / admin</span>
                 </div>
             </div>
-            <div class="feat-desc">avatars/{minecraftId}.svg を優先参照し、なければ avatars/fallback.svg を表示。onerrorハンドラで読み込み失敗時も自動フォールバック。拡張子の表記ゆれ（png/jpg等）も.svgに正規化。</div>
+            <div class="feat-desc">avatars/{minecraftId}.svg を優先参照し、なければ avatars/fallback.svg を表示。onerror ハンドラで読み込み失敗時も自動フォールバック。拡張子の表記ゆれ（png/jpg等）も .svg に正規化。</div>
             <div class="feat-tags"><span class="tag mc">SVG</span><span class="tag ui">フォールバック</span></div>
         </div>
 
