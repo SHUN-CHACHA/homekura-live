@@ -167,12 +167,14 @@
         .name-wrap { display: flex; align-items: center; gap: 4px; overflow: hidden; }
         .homepage-icon-inline {
             display: inline-flex; align-items: center; justify-content: center;
-            flex-shrink: 0; width: 16px; height: 16px;
-            border-radius: 3px; background: #dbeafe; text-decoration: none;
+            flex-shrink: 0; gap: 3px; padding: 1px 5px; height: 20px;
+            border-radius: 4px; background: #dbeafe; text-decoration: none;
+            font-size: 9px; font-weight: bold; color: #2563eb;
+            letter-spacing: 0.02em; white-space: nowrap;
             transition: background 0.2s;
         }
-        .homepage-icon-inline:hover { background: #93c5fd; }
-        .homepage-icon-inline svg { width: 10px; height: 10px; fill: #2563eb; }
+        .homepage-icon-inline:hover { background: #93c5fd; color: #1d4ed8; }
+        .homepage-icon-inline svg { width: 13px; height: 13px; fill: #2563eb; flex-shrink: 0; }
         .btn-square-mini.btn-tw svg { fill: #9146ff; }
         .btn-square-mini.btn-inst svg { fill: #e1306c; }
         .btn-square-mini.btn-disc svg { fill: #5865f2; }
@@ -488,7 +490,7 @@ function renderGrids(chInfoMap, vItems) {
         const isReserved = reservedVideos.some(rv => rv.id === lastV?.id);
 
         const homepageIconInline = ch.homepageUrl
-            ? `<a href="${ch.homepageUrl}" target="_blank" class="homepage-icon-inline" title="ホームページ">${SVG_ICONS.homepage}</a>`
+            ? `<a href="${ch.homepageUrl}" target="_blank" class="homepage-icon-inline" title="ホームページ">${SVG_ICONS.homepage}HP</a>`
             : '';
 
         let cardBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>`;
@@ -705,4 +707,3 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 </body>
 </html>
-
