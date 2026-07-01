@@ -201,6 +201,7 @@
                 </div>
                 <div class="form-group"><label>Instagram ID</label><input type="text" id="m_inst" placeholder="例: "></div>
                 <div class="form-group"><label>Discord 招待URL</label><input type="text" id="m_discord" placeholder="https://discord.gg/..."></div>
+                <div class="form-group"><label>ホームページURL</label><input type="text" id="m_homepage" placeholder="https://..."></div>
 
                 <div class="form-group">
                     <label>メンバーカラー</label>
@@ -279,6 +280,7 @@
                 <th style="min-width: 80px;">TikTok</th>
                 <th style="min-width: 80px;">Instagram</th>
                 <th style="min-width: 100px;">Discord</th>
+                <th style="min-width: 100px;">ホームページ</th>
                 <th style="width: 60px;">操作</th>
             </tr>
         </thead>
@@ -534,7 +536,8 @@ function renderMemberList() {
         const twitchCell  = ch.twitchId  ? `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" style="font-size:12px;color:#9146ff;">@${ch.twitchId}</a>` : "";
         const tiktokCell  = ch.tiktokId  ? `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" style="font-size:12px;color:#010101;">@${ch.tiktokId}</a>` : "";
         const instaCell   = ch.instaId   ? `<a href="https://instagram.com/${ch.instaId}" target="_blank" style="font-size:12px;color:#e1306c;">@${ch.instaId}</a>` : "";
-        const discordCell = ch.discordUrl ? `<a href="${ch.discordUrl}" target="_blank" style="font-size:12px;color:#5865f2;">リンク</a>` : "";
+        const discordCell  = ch.discordUrl  ? `<a href="${ch.discordUrl}" target="_blank" style="font-size:12px;color:#5865f2;">リンク</a>` : "";
+        const homepageCell = ch.homepageUrl ? `<a href="${ch.homepageUrl}" target="_blank" style="font-size:12px;color:#2563eb;">🏠 リンク</a>` : "";
 
         tbody.innerHTML += `
             <tr>
@@ -549,6 +552,7 @@ function renderMemberList() {
                 <td>${tiktokCell}</td>
                 <td>${instaCell}</td>
                 <td>${discordCell}</td>
+                <td>${homepageCell}</td>
                 <td><button class="btn-del" onclick="deleteMember(${idx})">削除</button></td>
             </tr>`;
     });
@@ -590,7 +594,8 @@ function editMember(idx) {
     document.getElementById('m_tw').value       = ch.twitchId   || "";
     document.getElementById('m_tt').value       = ch.tiktokId   || "";
     document.getElementById('m_inst').value     = ch.instaId    || "";
-    document.getElementById('m_discord').value  = ch.discordUrl || "";
+    document.getElementById('m_discord').value   = ch.discordUrl  || "";
+    document.getElementById('m_homepage').value  = ch.homepageUrl || "";
 
     const c = ch.color || "#ff9900";
     document.getElementById('m_color').value      = c;
@@ -614,7 +619,7 @@ function cancelEdit() {
 }
 
 function clearForm() {
-    ['m_name','m_id','m_mc','m_x','m_tw','m_tt','m_inst','m_discord'].forEach(id => document.getElementById(id).value = "");
+    ['m_name','m_id','m_mc','m_x','m_tw','m_tt','m_inst','m_discord','m_homepage'].forEach(id => document.getElementById(id).value = "");
     currentUUID = "";
     resetUuidUI();
     document.getElementById('uuidManualToggleBtn').style.display = "none";
@@ -633,14 +638,15 @@ function addMember() {
     const twitchId   = document.getElementById('m_tw').value.trim();
     const tiktokId   = document.getElementById('m_tt').value.trim().replace(/^@/, '');
     const instaId    = document.getElementById('m_inst').value.trim();
-    const discordUrl = document.getElementById('m_discord').value.trim();
+    const discordUrl  = document.getElementById('m_discord').value.trim();
+    const homepageUrl = document.getElementById('m_homepage').value.trim();
     const color      = document.getElementById('m_color_text').value.trim().toLowerCase();
 
     if (!name || !id) { alert("名前とYouTubeチャンネルIDは必須です！"); return; }
     if (!color.match(/^#[0-9a-fA-F]{6}$/)) { alert("カラーコードは #ffffff のような形式で入力してください！"); return; }
 
     const pureMcId = cleanMcId(minecraftId);
-    const memberData = { name, id, minecraftId, uuid: currentUUID, twitterId, twitchId, tiktokId, instaId, discordUrl, color, avatarImg: pureMcId ? `avatars/${pureMcId}.svg` : "" };
+    const memberData = { name, id, minecraftId, uuid: currentUUID, twitterId, twitchId, tiktokId, instaId, discordUrl, homepageUrl, color, avatarImg: pureMcId ? `avatars/${pureMcId}.svg` : "" };
 
     if (editIndex > -1) {
         channels[editIndex] = memberData;
@@ -693,3 +699,4 @@ initAdmin();
 </script>
 </body>
 </html>
+
