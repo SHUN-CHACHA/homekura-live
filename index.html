@@ -163,18 +163,6 @@
         .btn-square-mini.btn-yt svg { fill: #ff0000; }
         .btn-square-mini.btn-x svg { fill: #14171a; }
         .btn-square-mini.btn-hp svg { fill: #2563eb; }
-
-        .name-wrap { display: flex; align-items: center; gap: 4px; overflow: hidden; }
-        .homepage-icon-inline {
-            display: inline-flex; align-items: center; justify-content: center;
-            flex-shrink: 0; gap: 3px; padding: 1px 5px; height: 20px;
-            border-radius: 4px; background: #dbeafe; text-decoration: none;
-            font-size: 9px; font-weight: bold; color: #2563eb;
-            letter-spacing: 0.02em; white-space: nowrap;
-            transition: background 0.2s;
-        }
-        .homepage-icon-inline:hover { background: #93c5fd; color: #1d4ed8; }
-        .homepage-icon-inline svg { width: 13px; height: 13px; fill: #2563eb; flex-shrink: 0; }
         .btn-square-mini.btn-tw svg { fill: #9146ff; }
         .btn-square-mini.btn-inst svg { fill: #e1306c; }
         .btn-square-mini.btn-disc svg { fill: #5865f2; }
@@ -202,7 +190,55 @@
             .list-container { grid-template-columns: repeat(3, 1fr); gap: 14px; }
         }
 
-        /* QRボタン */
+        /* SNSポップアップモーダル */
+        #sns-modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 9998;
+            align-items: center; justify-content: center;
+        }
+        #sns-modal.open { display: flex; }
+        #sns-modal-inner {
+            background: #fff; border-radius: 20px; padding: 24px 28px 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25); min-width: 240px; max-width: 88vw;
+            animation: modalIn 0.2s ease;
+        }
+        #sns-modal-inner h3 { margin: 0 0 4px; font-size: 16px; color: var(--accent-green); }
+        #sns-modal-inner .sns-subtitle { font-size: 11px; color: var(--secondary-text); margin: 0 0 16px; }
+        .sns-link-list { display: flex; flex-direction: column; gap: 8px; }
+        .sns-link-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 14px; border-radius: 10px; text-decoration: none;
+            font-size: 13px; font-weight: bold; color: #333;
+            background: #f0f5f0; border: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+        .sns-link-item:hover { background: #e2eae2; }
+        .sns-link-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+        .sns-link-item.yt  { background: #fde2e2; } .sns-link-item.yt svg  { fill: #dc2626; }
+        .sns-link-item.tw  { background: #ede9fe; } .sns-link-item.tw svg  { fill: #9146ff; }
+        .sns-link-item.x   { background: #f3f4f6; } .sns-link-item.x svg   { fill: #14171a; }
+        .sns-link-item.tt  { background: #f0f0f0; } .sns-link-item.tt svg  { fill: #010101; }
+        .sns-link-item.ig  { background: #fce7f3; } .sns-link-item.ig svg  { fill: #e1306c; }
+        .sns-link-item.dc  { background: #eef2ff; } .sns-link-item.dc svg  { fill: #5865f2; }
+        .sns-link-item.hp  { background: #dbeafe; } .sns-link-item.hp svg  { fill: #2563eb; }
+        #sns-modal-member-btn {
+            display: block; margin-top: 14px; text-align: center; text-decoration: none;
+            font-size: 12px; font-weight: bold; color: var(--secondary-text);
+            padding: 8px; border-radius: 10px; background: #f0f5f0;
+            border: 1px solid var(--border-color); transition: background 0.2s;
+        }
+        #sns-modal-member-btn:hover { background: #e2eae2; }
+        #sns-close-btn {
+            display: block; width: 100%; margin-top: 10px; padding: 9px 0;
+            background: var(--accent-green); color: #fff; border: none;
+            border-radius: 20px; font-size: 14px; font-weight: bold; cursor: pointer;
+        }
+
+        /* 詳細ボタン */
+        .btn-detail { background: #e8f5e8; color: var(--accent-green) !important; font-weight: bold; }
+        .btn-detail:hover { background: #d1ead1; }
+        .btn-member { background: #f0f0f0; color: var(--secondary-text) !important; }
+        .btn-member:hover { background: #e0e0e0; }
         .btn-qr {
             background: var(--container-bg);
             color: var(--secondary-text);
@@ -333,7 +369,7 @@
         <div id="newGrid" class="grid"></div>
     </div>
 
-    <div class="section-box">
+    <div class="section-box" id="member">
         <div class="section-title">👥 メンバー一覧</div>
         <div id="allList" class="list-container"></div>
     </div>
@@ -489,17 +525,19 @@ function renderGrids(chInfoMap, vItems) {
 
         const isReserved = reservedVideos.some(rv => rv.id === lastV?.id);
 
-        const homepageIconInline = ch.homepageUrl
-            ? `<a href="${ch.homepageUrl}" target="_blank" class="homepage-icon-inline" title="ホームページ">${SVG_ICONS.homepage}HP</a>`
-            : '';
-
-        let cardBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn btn-yt">YouTube</a>`;
-        if (ch.twitterId)   cardBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn">X</a>`;
-        if (ch.twitchId)    cardBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn btn-tw">Twitch</a>`;
-        if (ch.tiktokId)    cardBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" class="btn">TikTok</a>`;
-        if (ch.homepageUrl) cardBtnsHtml += `<a href="${ch.homepageUrl}" target="_blank" class="btn">HP</a>`;
-
         const safeTextColor = adjustColorForText(ch.color);
+
+        // SNSポップアップ用データをJSON化（シングルクォート等をエスケープ）
+        const chJson = JSON.stringify({
+            name: ch.name,
+            id: ch.id,
+            twitterId: ch.twitterId || '',
+            twitchId: ch.twitchId || '',
+            tiktokId: ch.tiktokId || '',
+            instaId: ch.instaId || '',
+            discordUrl: ch.discordUrl || '',
+            homepageUrl: ch.homepageUrl || ''
+        }).replace(/'/g, '&#39;');
 
         const card = `
         <div class="card ${isLive?'is-live':''} ${isNew?'is-new':''}">
@@ -511,15 +549,13 @@ function renderGrids(chInfoMap, vItems) {
                         : `<div class="thumb-bg" style="background:${ch.color}"></div>${chInfo.icon ? `<img class="thumb-profile" src="${chInfo.icon}">` : ''}`}
                 </div>
                 <div class="info">
-                    <div class="name-wrap">
-                        <div class="name" style="color:${safeTextColor}">${ch.name}</div>
-                        ${homepageIconInline}
-                    </div>
+                    <div class="name" style="color:${safeTextColor}">${ch.name}</div>
                     <div class="title">${timeStr}</div>
                 </div>
             </a>
             <div class="btn-area">
-                ${cardBtnsHtml}
+                <button class="btn btn-detail" onclick='openSnsModal(${chJson})'>🔗 詳細</button>
+                <a href="#member" class="btn btn-member">👥 一覧</a>
                 ${(isUpcoming && startTime) ? `<button class="btn btn-reserve ${isReserved?'active':''}" onclick="toggleReserve('${lastV.id}', '${ch.name}', '${startTime}')">🔔 ${isReserved?'予約中':'通知予約'}</button>` : ''}
             </div>
         </div>`;
@@ -553,10 +589,7 @@ function renderGrids(chInfoMap, vItems) {
         <div class="row-item">
             <div class="row-top">
                 ${mcHeadHtml}
-                <div class="name-wrap" style="overflow:hidden;">
-                    <div class="row-name">${ch.name}</div>
-                    ${homepageIconInline}
-                </div>
+                <div class="row-name">${ch.name}</div>
             </div>
             <div class="row-bottom">
                 <div class="row-btns">${listBtnsHtml}</div>
@@ -678,19 +711,58 @@ function closeQrModal() {
     document.getElementById('qr-modal').classList.remove('open');
 }
 
+function openSnsModal(ch) {
+    const modal = document.getElementById('sns-modal');
+    document.getElementById('sns-modal-name').textContent = ch.name;
+
+    const SNS_DEFS = [
+        { key: 'id',         cls: 'yt', label: 'YouTube',     icon: SVG_ICONS.youtube,   url: `https://youtube.com/channel/${ch.id}` },
+        { key: 'twitterId',  cls: 'x',  label: 'X (Twitter)', icon: SVG_ICONS.x,         url: ch.twitterId  ? `https://x.com/${ch.twitterId}` : '' },
+        { key: 'twitchId',   cls: 'tw', label: 'Twitch',      icon: SVG_ICONS.twitch,    url: ch.twitchId   ? `https://twitch.tv/${ch.twitchId}` : '' },
+        { key: 'tiktokId',   cls: 'tt', label: 'TikTok',      icon: SVG_ICONS.tiktok,    url: ch.tiktokId   ? `https://www.tiktok.com/@${ch.tiktokId}` : '' },
+        { key: 'instaId',    cls: 'ig', label: 'Instagram',   icon: SVG_ICONS.instagram, url: ch.instaId    ? `https://instagram.com/${ch.instaId}` : '' },
+        { key: 'discordUrl', cls: 'dc', label: 'Discord',     icon: SVG_ICONS.discord,   url: ch.discordUrl || '' },
+        { key: 'homepageUrl',cls: 'hp', label: 'ホームページ', icon: SVG_ICONS.homepage,  url: ch.homepageUrl || '' },
+    ];
+
+    const list = document.getElementById('sns-link-list');
+    list.innerHTML = SNS_DEFS
+        .filter(s => s.url)
+        .map(s => `<a href="${s.url}" target="_blank" class="sns-link-item ${s.cls}">${s.icon}${s.label}</a>`)
+        .join('');
+
+    modal.classList.add('open');
+}
+
+function closeSnsModal() {
+    document.getElementById('sns-modal').classList.remove('open');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const qrModal = document.getElementById('qr-modal');
     if (qrModal) {
-        qrModal.addEventListener('click', function(e) {
-            if (e.target === this) closeQrModal();
-        });
+        qrModal.addEventListener('click', function(e) { if (e.target === this) closeQrModal(); });
+    }
+    const snsModal = document.getElementById('sns-modal');
+    if (snsModal) {
+        snsModal.addEventListener('click', function(e) { if (e.target === this) closeSnsModal(); });
     }
     document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeQrModal();
+        if (e.key === 'Escape') { closeQrModal(); closeSnsModal(); }
     });
     init();
 });
 </script>
+
+<div id="sns-modal" role="dialog" aria-modal="true" aria-label="SNSリンク">
+    <div id="sns-modal-inner">
+        <h3 id="sns-modal-name"></h3>
+        <p class="sns-subtitle">リンクを選んでください</p>
+        <div id="sns-link-list" class="sns-link-list"></div>
+        <a href="#member" class="sns-link-item" id="sns-modal-member-btn" onclick="closeSnsModal()">👥 メンバー一覧へ</a>
+        <button id="sns-close-btn" onclick="closeSnsModal()">閉じる</button>
+    </div>
+</div>
 
 <div id="qr-modal" role="dialog" aria-modal="true" aria-label="QRコード">
     <div id="qr-modal-inner">
