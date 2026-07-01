@@ -17,7 +17,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "https://discord.gg/bRuT74X7sS",
                 "color": "#2bff00",
-                "avatarImg": "avatars/maguro29.svg"
+                "avatarImg": "avatars/maguro29.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "じゃじゃーん菊池",
@@ -30,7 +31,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#ffa200",
-                "avatarImg": "avatars/jajaankikuchi.svg"
+                "avatarImg": "avatars/jajaankikuchi.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "さかいさんだー",
@@ -43,7 +45,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#ff00ff",
-                "avatarImg": "avatars/Sakai_Thunder.svg"
+                "avatarImg": "avatars/Sakai_Thunder.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "Ｍさん",
@@ -56,7 +59,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#00ffff",
-                "avatarImg": "avatars/MrMsan.svg"
+                "avatarImg": "avatars/MrMsan.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "タツナミ先生",
@@ -69,7 +73,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#00ff00",
-                "avatarImg": "avatars/syuutan.svg"
+                "avatarImg": "avatars/syuutan.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "神近",
@@ -82,7 +87,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#f59324",
-                "avatarImg": "avatars/kamichika.svg"
+                "avatarImg": "avatars/kamichika.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "しろくる",
@@ -95,7 +101,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#ffffff",
-                "avatarImg": "avatars/sirokuru.svg"
+                "avatarImg": "avatars/sirokuru.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "たにし",
@@ -108,7 +115,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#00ff7b",
-                "avatarImg": "avatars/Tanish1.svg"
+                "avatarImg": "avatars/Tanish1.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "凸もり",
@@ -121,7 +129,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#888888",
-                "avatarImg": "avatars/totsumori.svg"
+                "avatarImg": "avatars/totsumori.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "神宮寺ちゃんねる",
@@ -134,7 +143,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#00bfff",
-                "avatarImg": "avatars/jingujich.svg"
+                "avatarImg": "avatars/jingujich.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "カズクラ",
@@ -147,7 +157,8 @@ window.CONFIG = {
                 "instaId": "kazuch0924",
                 "discordUrl": "",
                 "color": "#ff0000",
-                "avatarImg": "avatars/kazuchannel.svg"
+                "avatarImg": "avatars/kazuchannel.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "たいたい",
@@ -160,7 +171,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#ffdd00",
-                "avatarImg": "avatars/taitai0904.svg"
+                "avatarImg": "avatars/taitai0904.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "岐阜のこみちん",
@@ -173,7 +185,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#ffcc00",
-                "avatarImg": "avatars/komichin.svg"
+                "avatarImg": "avatars/komichin.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "ナナホシナナ",
@@ -186,7 +199,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#ff33ff",
-                "avatarImg": "avatars/nanahoshiNanaVT.svg"
+                "avatarImg": "avatars/nanahoshiNanaVT.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "月成るくす",
@@ -199,7 +213,8 @@ window.CONFIG = {
                 "instaId": "tsukinarilux",
                 "discordUrl": "",
                 "color": "#bcec55",
-                "avatarImg": "avatars/tsukinarilux.svg"
+                "avatarImg": "avatars/tsukinarilux.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "メッス",
@@ -212,7 +227,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#ffffff",
-                "avatarImg": "avatars/messu009.svg"
+                "avatarImg": "avatars/messu009.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "よいよい",
@@ -225,7 +241,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#ff0000",
-                "avatarImg": "avatars/yoiy0i.svg"
+                "avatarImg": "avatars/yoiy0i.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "うえまさ",
@@ -238,7 +255,8 @@ window.CONFIG = {
                 "instaId": "uema5a",
                 "discordUrl": "",
                 "color": "#0008ff",
-                "avatarImg": "avatars/uema5a.svg"
+                "avatarImg": "avatars/uema5a.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "久那式リン",
@@ -251,7 +269,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "https://discord.gg/ZwZ8nrecY",
                 "color": "#afebf3",
-                "avatarImg": "avatars/Kunashiki_Lin.svg"
+                "avatarImg": "avatars/Kunashiki_Lin.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "犬野はる",
@@ -264,7 +283,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#ccffcc",
-                "avatarImg": "avatars/INUNOHARU.svg"
+                "avatarImg": "avatars/INUNOHARU.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "珍珠花こまり",
@@ -277,7 +297,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#ffe5e5",
-                "avatarImg": "avatars/yukiyanagiKOMARI.svg"
+                "avatarImg": "avatars/yukiyanagiKOMARI.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "ぽこにゃん",
@@ -290,7 +311,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#00ff00",
-                "avatarImg": "avatars/pokonyan_0603.svg"
+                "avatarImg": "avatars/pokonyan_0603.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "KtR（こーたろー）",
@@ -303,7 +325,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#ff3333",
-                "avatarImg": "avatars/HAOgame_KtR.svg"
+                "avatarImg": "avatars/HAOgame_KtR.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "桜咲千依",
@@ -316,7 +339,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#ffffff",
-                "avatarImg": "avatars/chiyohamstar.svg"
+                "avatarImg": "avatars/chiyohamstar.svg",
+                "homepageUrl": ""
         },
         {
                 "name": "ゆりも",
@@ -329,7 +353,8 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#aae4d3",
-                "avatarImg": "avatars/yurimosaaan.svg"
+                "avatarImg": "avatars/yurimosaaan.svg",
+                "homepageUrl": ""
         }
 ]
 };
