@@ -413,6 +413,20 @@ window.CONFIG = {
                 "homepageUrl": "",
                 "color": "#df96e8",
                 "avatarImg": "avatars/kuronosuzu.svg"
+        },
+        {
+                "name": "28（ふたば）Games",
+                "id": "UCpONKlVEdkBeKsE1hlPvrfg",
+                "minecraftId": "ftb28",
+                "uuid": "a2bdc570-3b2c-464a-9c38-e9a681c0d506",
+                "twitterId": "28ftb_sub",
+                "twitchId": "",
+                "tiktokId": "",
+                "instaId": "",
+                "discordUrl": "",
+                "homepageUrl": "",
+                "color": "#ff9900",
+                "avatarImg": "avatars/ftb28.svg"
         }
 ]
 };
