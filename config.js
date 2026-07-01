@@ -427,6 +427,20 @@ window.CONFIG = {
                 "homepageUrl": "",
                 "color": "#ff9900",
                 "avatarImg": "avatars/ftb28.svg"
+        },
+        {
+                "name": "UDON",
+                "id": "UC8WvsghW1a2JUIuHBu8qz7w",
+                "minecraftId": "UDON130",
+                "uuid": "1065ce22-9f3a-4ce6-ac18-063be1411086",
+                "twitterId": "UDON130",
+                "twitchId": "",
+                "tiktokId": "",
+                "instaId": "",
+                "discordUrl": "",
+                "homepageUrl": "",
+                "color": "#ffea00",
+                "avatarImg": "avatars/UDON130.svg"
         }
 ]
 };
