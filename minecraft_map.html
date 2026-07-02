@@ -146,19 +146,19 @@
 <body class="text-gray-100 bg-[#121214]">
 
     
-<div class="max-w-[1800px] mx-auto p-4">
-<div class="flex gap-4 h-screen">
-<aside class="w-[430px] flex flex-col gap-4">
-<div class="bg-[#1a1a1f] border-b border-gray-800 py-6 px-4 text-center relative">
+<div class="max-w-[1800px] mx-auto p-2 sm:p-4">
+<div class="flex flex-col lg:flex-row gap-4 lg:h-screen">
+<aside class="w-full lg:w-[430px] flex flex-col gap-4 flex-shrink-0">
+<div class="bg-[#1a1a1f] border-b border-gray-800 py-4 sm:py-6 px-4 text-center relative">
         
-        <h1 class="text-3xl font-extrabold text-green-500 tracking-wider">homeクラ Season２ メンバー拠点マップ</h1>
-        <p class="text-gray-400 mt-2 text-sm">X=0, Z=0 を中心としたマルチサーバーの勢力図・拠点位置リスト</p>
+        <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-green-500 tracking-wider">homeクラ Season２ メンバー拠点マップ</h1>
+        <p class="text-gray-400 mt-2 text-xs sm:text-sm">X=0, Z=0 を中心としたマルチサーバーの勢力図・拠点位置リスト</p>
     </div>
-<section class="w-full lg:w-[450px] bg-[#1a1a1f] rounded-xl border border-gray-800 p-4 flex flex-col h-[650px]">
+<section class="w-full lg:w-[450px] bg-[#1a1a1f] rounded-xl border border-gray-800 p-4 flex flex-col h-[320px] lg:h-[650px]">
             
             <!-- 検索窓と情報統計 -->
             <div class="mb-4">
-                <div class="flex justify-between items-center mb-3">
+                <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
                     <span class="text-sm font-semibold text-gray-400">登録メンバー: <span id="member-count" class="text-green-500 font-bold">0</span>名</span>
                     <a href="background_image_guide.html"
    class="text-xs bg-[#26262b] hover:bg-[#333339]
@@ -179,7 +179,7 @@
             </div>
 
             <!-- テーブルヘッダー固定の一覧表 -->
-            <div class="flex-1 overflow-y-auto border border-gray-800 rounded-lg bg-[#141417]">
+            <div class="flex-1 overflow-y-auto overflow-x-auto border border-gray-800 rounded-lg bg-[#141417]">
                 <table class="w-full text-left border-collapse">
                     <thead class="sticky top-0 bg-[#26262b] text-gray-300 text-xs uppercase tracking-wider border-b border-gray-800 z-10">
                         <tr>
@@ -200,7 +200,7 @@
             </div>
         </section>
 </aside>
-<section class="flex-1">
+<section class="flex-1 h-[65vh] lg:h-auto">
 <section class="flex-1 bg-[#1a1a1f] rounded-xl border border-gray-800 p-4 flex flex-col h-full relative">
             
             <!-- 地図上のコントローラー・凡例 -->
@@ -230,10 +230,10 @@
             </div>
 
             <!-- 画面下部：カーソル位置のマイクラ座標リアルタイム表示 -->
-            <div class="mt-3 flex justify-between items-center bg-[#141417] border border-gray-800 rounded-lg px-4 py-2 text-sm text-gray-400">
+            <div class="mt-3 flex flex-wrap gap-2 justify-between items-center bg-[#141417] border border-gray-800 rounded-lg px-4 py-2 text-xs sm:text-sm text-gray-400">
                 <div class="flex items-center gap-2">
                     <span class="inline-block w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
-                    <span>現在のカーソル位置:</span>
+                    <span class="hidden sm:inline">現在のカーソル位置:</span>
                     <strong class="text-white font-mono" id="cursor-coords">X: 0, Z: 0</strong>
                 </div>
                 <button 
@@ -259,41 +259,41 @@
         //       空欄のままだとプレースホルダー画像が表示されます
         // ==========================================================
         const memberData = [
-            { area: "エリア01", name: "Ｍさん", icon: "MrMsan.svg", x: 720, z: 0 }, // 01人目
-            { area: "エリア02", name: "２８（ふたば）", icon: "ftb28.svg", x: 624, z: 360 }, // 02人目
+            { area: "エリア01", name: "Ｍさん", icon: "", x: 720, z: 0 }, // 01人目
+            { area: "エリア02", name: "２８（ふたば）", icon: "", x: 624, z: 360 }, // 02人目
             { area: "", name: "", icon: "", x: 0, z: 0 }, // 03人目
             { area: "", name: "", icon: "", x: 0, z: 0 }, // 04人目
             { area: "", name: "", icon: "", x: 0, z: 0 }, // 05人目
-            { area: "エリア06", name: "黎乃鈴 -Kurono Suzu-", icon: "kuronosuzu.svg", x: -624, z: 360 }, // 06人目
-            { area: "エリア07", name: "ナナホシナナ", icon: "nanahoshiNanaVT.svg", x: -720, z: 0 }, // 07人目
+            { area: "エリア06", name: "黎乃鈴 -Kurono Suzu-", icon: "", x: -624, z: 360 }, // 06人目
+            { area: "エリア07", name: "ナナホシナナ", icon: "", x: -720, z: 0 }, // 07人目
             { area: "", name: "", icon: "", x: 0, z: 0 }, // 08人目
             { area: "", name: "", icon: "", x: 0, z: 0 }, // 09人目
             { area: "", name: "", icon: "", x: 0, z: 0 }, // 10人目
-            { area: "エリア11", name: "月成るくす", icon: "tsukinarilux.svg", x: 360, z: -624 }, // 11人目
+            { area: "エリア11", name: "月成るくす", icon: "", x: 360, z: -624 }, // 11人目
             { area: "", name: "", icon: "", x: 0, z: 0 }, // 12人目
-            { area: "エリア13", name: "ぽこにゃん", icon: "pokonyan_0603.svg", x: 966, z: 259 }, // 13人目
-            { area: "エリア14", name: "久那式リン", icon: "Kunashiki_Lin.svg", x: 707, z: 707 }, // 14人目
+            { area: "エリア13", name: "ぽこにゃん", icon: "", x: 966, z: 259 }, // 13人目
+            { area: "エリア14", name: "久那式リン", icon: "", x: 707, z: 707 }, // 14人目
             { area: "", name: "", icon: "", x: 0, z: 0 }, // 15人目
-            { area: "エリア16", name: "神近", icon: "kamichika.svg", x: -259, z: 966 }, // 16人目
-            { area: "エリア17", name: "早乙女燈真", icon: "saotomeirix.svg", x: -707, z: 707 }, // 17人目
+            { area: "エリア16", name: "神近", icon: "", x: -259, z: 966 }, // 16人目
+            { area: "エリア17", name: "早乙女燈真", icon: "", x: -707, z: 707 }, // 17人目
             { area: "", name: "", icon: "", x: 0, z: 0 }, // 18人目
             { area: "", name: "", icon: "", x: 0, z: 0 }, // 19人目
-            { area: "エリア20", name: "じゃじゃーん菊池", icon: "jajaankikuchi.svg", x: -707, z: -707 }, // 20人目
+            { area: "エリア20", name: "じゃじゃーん菊池", icon: "", x: -707, z: -707 }, // 20人目
             { area: "", name: "", icon: "", x: 0, z: 0 }, // 21人目
             { area: "", name: "", icon: "", x: 0, z: 0 }, // 22人目
             { area: "", name: "", icon: "", x: 0, z: 0 }, // 23人目
-            { area: "エリア24", name: "よいよい", icon: "yoiy0i.svg", x: 966, z: -259 }, // 24人目
-            { area: "エリア25", name: "LeftLily/レフトリリー", icon: "LeftLily0427.svg", x: 1280, z: 0 }, // 25人目
-            { area: "エリア26", name: "まぐにぃ", icon: "maguro29.svg", x: 1109, z: 640 }, // 26人目
-            { area: "エリア27", name: "うえまさ", icon: "uema5a.svg", x: 640, z: 1109 }, // 27人目
-            { area: "エリア28", name: "珍珠花こまり", icon: "yukiyanagiKOMARI.svg", x: 0, z: 1280 }, // 28人目
-            { area: "エリア29", name: "うが", icon: "uga_youtube.svg", x: -640, z: 1109 }, // 29人目
-            { area: "エリア30", name: "ゆりも", icon: "yurimosaaan.svg", x: -1109, z: 640 }, // 30人目
-            { area: "エリア31", name: "神宮寺", icon: "jingujich.svg", x: -1280, z: 0 }, // 31人目
-            { area: "エリア32", name: "タツナミ先生、むっこ氏", icon: "syuutan.svg", x: -1109, z: -640 }, // 32人目
+            { area: "エリア24", name: "よいよい", icon: "", x: 966, z: -259 }, // 24人目
+            { area: "エリア25", name: "LeftLily/レフトリリー", icon: "", x: 1280, z: 0 }, // 25人目
+            { area: "エリア26", name: "まぐにぃ", icon: "", x: 1109, z: 640 }, // 26人目
+            { area: "エリア27", name: "うえまさ", icon: "", x: 640, z: 1109 }, // 27人目
+            { area: "エリア28", name: "珍珠花こまり", icon: "", x: 0, z: 1280 }, // 28人目
+            { area: "エリア29", name: "うが", icon: "", x: -640, z: 1109 }, // 29人目
+            { area: "エリア30", name: "ゆりも", icon: "", x: -1109, z: 640 }, // 30人目
+            { area: "エリア31", name: "神宮寺", icon: "", x: -1280, z: 0 }, // 31人目
+            { area: "エリア32", name: "タツナミ先生、むっこ氏", icon: "", x: -1109, z: -640 }, // 32人目
             { area: "", name: "", icon: "", x: 0, z: 0 }, // 33人目
-            { area: "エリア34", name: "鶴太郎", icon: "turu0004.svg", x: 0, z: -1280 }, // 34人目
-            { area: "エリア35", name: "久遠星那", icon: "kuon_irix.svg", x: 640, z: -1109 }, // 35人目
+            { area: "エリア34", name: "鶴太郎", icon: "", x: 0, z: -1280 }, // 34人目
+            { area: "エリア35", name: "久遠星那", icon: "", x: 640, z: -1109 }, // 35人目
             { area: "", name: "", icon: "", x: 0, z: 0 }  // 36人目
         ];
 
@@ -547,6 +547,14 @@
             loadBackgroundImage(); // 初期表示の段階から画像をロード
             map.invalidateSize();
             setTimeout(() => { map.invalidateSize(); }, 200);
+        });
+
+        // 📱 スマホの画面回転・リサイズ時に地図サイズを再計算
+        window.addEventListener('resize', () => {
+            map.invalidateSize();
+        });
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => { map.invalidateSize(); }, 300);
         });
     </script>
 </body>
