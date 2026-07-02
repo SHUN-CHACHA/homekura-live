@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>homeクラ Season２ メンバー拠点マップ</title>
+    
+    <!-- Leaflet.js (地図ライブラリ) のCSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Tailwind CSS (スタイリング用) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body {
+            background-color: #121214;
+        }
+        /* Leafletの地図の背景をマイクラの奈落（Void）のような黒基調にし、グリッド模様を薄く敷く */
+        #map-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height:100%;
+        }
+        #map {
+            background-color: #141417;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0; bottom: 0; left: 0; right: 0;
+        }
+        /* スクロールバーのカスタマイズ */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e1e24;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4caf50;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #45a049;
+        }
+        
+        /* 💡 マップ上に「常に表示されるメンバー名ネームタグ」のカスタムスタイル */
+        .permanent-name-label {
+            background: rgba(26, 26, 31, 0.85) !important;
+            border: 1px solid #4caf50 !important;
+            color: #ffffff !important;
+            font-weight: bold !important;
+            font-size: 11px !important;
+            padding: 2px 6px !important;
+            border-radius: 4px !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.6) !important;
+            white-space: nowrap;
+        }
+        /* 💡 未登録状態のネームタグを少し目立たなくするスタイル */
+        .permanent-name-label.unregistered {
+            border: 1px solid #55555d !important;
+            color: #88888f !important;
+            opacity: 0.6;
+        }
+        /* 吹き出しの小さな矢印を非表示にする */
+        .permanent-name-label::before {
+            display: none !important;
+        }
+        
+        /* 外部画像を使わない「光るアニメーションピン」のCSS */
+        .pulse-marker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pulse-core {
+            width: 10px;
+            height: 10px;
+            background-color: #4caf50;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #4caf50;
+            z-index: 2;
+        }
+        /* 未登録（名前が空白）のピンはグレーにする */
+        .pulse-marker.unregistered .pulse-core {
+            background-color: #55555d;
+            border: 2px solid #aaaaaa;
+            box-shadow: none;
+        }
+        .pulse-wave {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: rgba(76, 175, 80, 0.4);
+            border-radius: 50%;
+            animation: pulse 1.8s infinite ease-out;
+            z-index: 1;
+        }
+        .pulse-marker.unregistered .pulse-wave {
+            display: none; /* 未登録のピンは波打つアニメーションをオフにする */
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(0.2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* 👤 顔アイコン（メンバーの顔画像）マーカーのスタイル */
+        .avatar-marker {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .avatar-marker img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            image-rendering: pixelated;
+            border: 2px solid #4caf50;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+            background-color: #26262b;
+        }
+        /* 未登録（名前が空白）の場合は少し目立たなく */
+        .avatar-marker.unregistered img {
+            border: 2px solid #55555d;
+            box-shadow: none;
+            opacity: 0.55;
+            filter: grayscale(1);
+        }
+    </style>
+</head>
+<body class="text-gray-100 bg-[#121214]">
+
+    
+<div class="max-w-[1800px] mx-auto p-4">
+<div class="flex gap-4 h-screen">
+<aside class="w-[430px] flex flex-col gap-4">
+<div class="bg-[#1a1a1f] border-b border-gray-800 py-6 px-4 text-center relative">
+        
+        <h1 class="text-3xl font-extrabold text-green-500 tracking-wider">homeクラ Season２ メンバー拠点マップ</h1>
+        <p class="text-gray-400 mt-2 text-sm">X=0, Z=0 を中心としたマルチサーバーの勢力図・拠点位置リスト</p>
+    </div>
+<section class="w-full lg:w-[450px] bg-[#1a1a1f] rounded-xl border border-gray-800 p-4 flex flex-col h-[650px]">
+            
+            <!-- 検索窓と情報統計 -->
+            <div class="mb-4">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-sm font-semibold text-gray-400">登録メンバー: <span id="member-count" class="text-green-500 font-bold">0</span>名</span>
+                    <a href="background_image_guide.html"
+   class="text-xs bg-[#26262b] hover:bg-[#333339]
+          border border-gray-700 hover:border-green-500
+          text-gray-300 hover:text-green-400
+          font-bold px-3 py-1.5 rounded-full
+          transition-colors inline-flex items-center gap-1.5">
+    <span>🛠️</span>
+    <span>背景画像の設定ガイド</span>
+</a>
+                </div>
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder="メンバー名やエリアで検索..." 
+                    class="w-full bg-[#26262b] border border-gray-700 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-green-500 transition-colors"
+                />
+            </div>
+
+            <!-- テーブルヘッダー固定の一覧表 -->
+            <div class="flex-1 overflow-y-auto border border-gray-800 rounded-lg bg-[#141417]">
+                <table class="w-full text-left border-collapse">
+                    <thead class="sticky top-0 bg-[#26262b] text-gray-300 text-xs uppercase tracking-wider border-b border-gray-800 z-10">
+                        <tr>
+                            <th class="py-3 px-4 font-bold text-green-500">エリア</th>
+                            <th class="py-3 px-4">メンバー名</th>
+                            <th class="py-3 px-4 text-right">X座標</th>
+                            <th class="py-3 px-4 text-right">Z座標</th>
+                        </tr>
+                    </thead>
+                    <tbody id="member-table-body" class="text-sm divide-y divide-gray-800">
+                        <!-- JavaScriptで動的に生成 -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-3 text-xs text-gray-500 text-center">
+                ※行をクリックすると地図上の拠点にジャンプします
+            </div>
+        </section>
+</aside>
+<section class="flex-1">
+<section class="flex-1 bg-[#1a1a1f] rounded-xl border border-gray-800 p-4 flex flex-col h-full relative">
+            
+            <!-- 地図上のコントローラー・凡例 -->
+            <div class="absolute top-6 right-6 z-[1000] bg-[#222227] border border-gray-700 rounded-lg p-3 text-xs shadow-lg hidden md:block">
+                <div class="font-bold text-gray-300 mb-2">座標軸の見方</div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="w-3 h-0.5 bg-red-500 block"></span>
+                    <span>X軸（左右：東がプラス / 西がマイナス）</span>
+                </div>
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="w-3 h-0.5 bg-blue-500 block"></span>
+                    <span>Z軸（上下：南がプラス / 北がマイナス）</span>
+                </div>
+                
+                <!-- 💡 地形マップ切り替えチェックボックス -->
+                <div class="border-t border-gray-700 pt-2 mt-2">
+                    <label class="flex items-center gap-2 cursor-pointer text-gray-300 hover:text-white transition-colors">
+                        <input type="checkbox" id="toggle-bg-image" class="rounded bg-gray-850 border-gray-600 text-green-500 focus:ring-green-500 focus:ring-offset-gray-900" checked>
+                        <span>Chunkbase背景を表示</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- マップ本体コンテナ -->
+            <div id="map-container" class="flex-1 w-full rounded-lg border border-gray-800 overflow-hidden">
+                <div id="map"></div>
+            </div>
+
+            <!-- 画面下部：カーソル位置のマイクラ座標リアルタイム表示 -->
+            <div class="mt-3 flex justify-between items-center bg-[#141417] border border-gray-800 rounded-lg px-4 py-2 text-sm text-gray-400">
+                <div class="flex items-center gap-2">
+                    <span class="inline-block w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                    <span>現在のカーソル位置:</span>
+                    <strong class="text-white font-mono" id="cursor-coords">X: 0, Z: 0</strong>
+                </div>
+                <button 
+                    onclick="resetMapView()" 
+                    class="bg-green-600 hover:bg-green-500 text-white font-bold py-1 px-3 rounded text-xs transition-colors"
+                >
+                    中心 (0, 0) に戻る
+                </button>
+            </div>
+        </section>
+</section>
+</div>
+</div>
+
+
+    <!-- Leaflet.js のJavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // ==========================================================
+        // 📊 1. メンバーデータ定義
+        // icon: avatars フォルダに入れた顔画像のファイル名をそのまま記入してください（例: "yamachan.png"）
+        //       空欄のままだとプレースホルダー画像が表示されます
+        // ==========================================================
+        const memberData = [
+            { area: "エリア01", name: "Ｍさん", icon: "MrMsan.svg", x: 720, z: 0 }, // 01人目
+            { area: "エリア02", name: "２８（ふたば）", icon: "ftb28.svg", x: 624, z: 360 }, // 02人目
+            { area: "", name: "", icon: "", x: 0, z: 0 }, // 03人目
+            { area: "", name: "", icon: "", x: 0, z: 0 }, // 04人目
+            { area: "", name: "", icon: "", x: 0, z: 0 }, // 05人目
+            { area: "エリア06", name: "黎乃鈴 -Kurono Suzu-", icon: "kuronosuzu.svg", x: -624, z: 360 }, // 06人目
+            { area: "エリア07", name: "ナナホシナナ", icon: "nanahoshiNanaVT.svg", x: -720, z: 0 }, // 07人目
+            { area: "", name: "", icon: "", x: 0, z: 0 }, // 08人目
+            { area: "", name: "", icon: "", x: 0, z: 0 }, // 09人目
+            { area: "", name: "", icon: "", x: 0, z: 0 }, // 10人目
+            { area: "エリア11", name: "月成るくす", icon: "tsukinarilux.svg", x: 360, z: -624 }, // 11人目
+            { area: "", name: "", icon: "", x: 0, z: 0 }, // 12人目
+            { area: "エリア13", name: "ぽこにゃん", icon: "pokonyan_0603.svg", x: 966, z: 259 }, // 13人目
+            { area: "エリア14", name: "久那式リン", icon: "Kunashiki_Lin.svg", x: 707, z: 707 }, // 14人目
+            { area: "", name: "", icon: "", x: 0, z: 0 }, // 15人目
+            { area: "エリア16", name: "神近", icon: "kamichika.svg", x: -259, z: 966 }, // 16人目
+            { area: "エリア17", name: "早乙女燈真", icon: "saotomeirix.svg", x: -707, z: 707 }, // 17人目
+            { area: "", name: "", icon: "", x: 0, z: 0 }, // 18人目
+            { area: "", name: "", icon: "", x: 0, z: 0 }, // 19人目
+            { area: "エリア20", name: "じゃじゃーん菊池", icon: "jajaankikuchi.svg", x: -707, z: -707 }, // 20人目
+            { area: "", name: "", icon: "", x: 0, z: 0 }, // 21人目
+            { area: "", name: "", icon: "", x: 0, z: 0 }, // 22人目
+            { area: "", name: "", icon: "", x: 0, z: 0 }, // 23人目
+            { area: "エリア24", name: "よいよい", icon: "yoiy0i.svg", x: 966, z: -259 }, // 24人目
+            { area: "エリア25", name: "LeftLily/レフトリリー", icon: "LeftLily0427.svg", x: 1280, z: 0 }, // 25人目
+            { area: "エリア26", name: "まぐにぃ", icon: "maguro29.svg", x: 1109, z: 640 }, // 26人目
+            { area: "エリア27", name: "うえまさ", icon: "uema5a.svg", x: 640, z: 1109 }, // 27人目
+            { area: "エリア28", name: "珍珠花こまり", icon: "yukiyanagiKOMARI.svg", x: 0, z: 1280 }, // 28人目
+            { area: "エリア29", name: "うが", icon: "uga_youtube.svg", x: -640, z: 1109 }, // 29人目
+            { area: "エリア30", name: "ゆりも", icon: "yurimosaaan.svg", x: -1109, z: 640 }, // 30人目
+            { area: "エリア31", name: "神宮寺", icon: "jingujich.svg", x: -1280, z: 0 }, // 31人目
+            { area: "エリア32", name: "タツナミ先生、むっこ氏", icon: "syuutan.svg", x: -1109, z: -640 }, // 32人目
+            { area: "", name: "", icon: "", x: 0, z: 0 }, // 33人目
+            { area: "エリア34", name: "鶴太郎", icon: "turu0004.svg", x: 0, z: -1280 }, // 34人目
+            { area: "エリア35", name: "久遠星那", icon: "kuon_irix.svg", x: 640, z: -1109 }, // 35人目
+            { area: "", name: "", icon: "", x: 0, z: 0 }  // 36人目
+        ];
+
+        // ==========================================================
+        // 🗺️ 2. ★背景画像の設定（画像を入手したらここを変更します！）
+        // ==========================================================
+        const bgConfig = {
+            fileName: 'world_map.png', // 保存した地形画像のファイル名
+            // [Z軸の南端(プラス), X軸の西端(マイナス)], [Z軸の北端(マイナス), X軸の東端(プラス)] の順で指定します。
+            // 例：Chunkbaseで切り抜いた範囲が「X: -1600〜1600、Z: -1600〜1600」の場合
+            bounds: [[1536, -1536], [-1536, 1536]],
+            opacity: 0.75 // 画像の透明度 (0.0 〜 1.0)
+        };
+
+        // ==========================================================
+        // ⚙️ 3. マップ初期設定 (マイクラ平面座標)
+        // ==========================================================
+        const map = L.map('map', {
+            crs: L.CRS.Simple,
+            minZoom: -4,
+            maxZoom: 3,
+            zoomDelta: 0.5,
+            zoomSnap: 0.5,
+            attributionControl: false
+        });
+
+        map.setView([0, 0], -2);
+
+        // ==========================================================
+        // 🖼️ 4. 背景画像のオーバーレイ配置
+        // ==========================================================
+        let bgImageOverlay = null;
+
+        function loadBackgroundImage() {
+            // 既存の画像レイヤーがあれば一旦地図から削除する
+            if (bgImageOverlay) {
+                map.removeLayer(bgImageOverlay);
+                bgImageOverlay = null;
+            }
+
+            // チェックボックスがON、かつ設定した画像ファイル名がある場合にのみ重ねる
+            const isChecked = document.getElementById('toggle-bg-image').checked;
+            if (isChecked && bgConfig.fileName) {
+                bgImageOverlay = L.imageOverlay(bgConfig.fileName, bgConfig.bounds, {
+                    opacity: bgConfig.opacity,
+                    interactive: false // 画像がクリック操作を遮らないようにする
+                });
+                
+                // 画像が見つからなくても地図全体がクラッシュしないためのエラー対策
+                bgImageOverlay.on('error', function() {
+                    console.log("背景画像 world_map.png が見つからないか、ローカル制限でロードできません。");
+                });
+                
+                bgImageOverlay.addTo(map);
+            }
+        }
+
+        // ==========================================================
+        // 🗺️ 5. 安全なグリッド(格子線)と座標文字の描画
+        // ==========================================================
+        try {
+            const MinecraftGrid = L.GridLayer.extend({
+                createTile: function (coords) {
+                    const tile = document.createElement('div');
+                    tile.style.borderLeft = '1px solid rgba(255,255,255,0.12)';
+                    tile.style.borderBottom = '1px solid rgba(255,255,255,0.12)';
+                    tile.style.position = 'relative';
+                    
+                    const label = document.createElement('span');
+                    label.style.position = 'absolute';
+                    label.style.bottom = '4px';
+                    label.style.left = '4px';
+                    label.style.fontSize = '9px';
+                    label.style.color = 'rgba(255, 255, 255, 0.15)';
+                    label.style.fontFamily = 'monospace';
+                    label.style.pointerEvents = 'none';
+                    
+                    const scale = Math.pow(2, this._map.getZoom());
+                    const tileSize = 256;
+                    const x = Math.round((coords.x * tileSize) / scale);
+                    const z = Math.round((-coords.y * tileSize) / scale);
+                    
+                    label.textContent = `X:${x}, Z:${z}`;
+                    tile.appendChild(label);
+                    
+                    return tile;
+                }
+            });
+            new MinecraftGrid().addTo(map);
+        } catch (e) {
+            console.error("Grid skipped:", e);
+        }
+
+        // ==========================================================
+        // 📏 6. 十字の基準線（X軸・Z軸）の描画
+        // ==========================================================
+        L.polyline([[4000, 0], [-4000, 0]], { color: '#3b82f6', weight: 2, opacity: 0.6, dashArray: '6, 6' }).addTo(map);
+        L.polyline([[0, -4000], [0, 4000]], { color: '#ef4444', weight: 2, opacity: 0.6, dashArray: '6, 6' }).addTo(map);
+
+        // ==========================================================
+        // 📌 7. メンバーのピン（マーカー）の配置と一覧表生成
+        // ==========================================================
+        const markers = {};
+
+        // 顔アイコンが見つからない場合のプレースホルダー画像（灰色のシルエット）
+        const AVATAR_FALLBACK = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><rect width="36" height="36" fill="#26262b"/><circle cx="18" cy="14" r="7" fill="#55555d"/><rect x="6" y="23" width="24" height="11" rx="3" fill="#55555d"/></svg>'
+        );
+        // 画像の読み込みに失敗した場合、プレースホルダーに差し替える
+        function avatarFallback(img) {
+            img.onerror = null;
+            img.src = AVATAR_FALLBACK;
+        }
+
+        const tableBody = document.getElementById('member-table-body');
+        const countSpan = document.getElementById('member-count');
+        countSpan.textContent = memberData.length;
+
+        // データ並び替え (エリアが空白でないものを優先、基本は登録順)
+        memberData.sort((a, b) => {
+            if (!a.area && b.area) return 1;
+            if (a.area && !b.area) return -1;
+            return a.area.localeCompare(b.area, undefined, {numeric: true, sensitivity: 'base'});
+        });
+
+        // 動的アイコン生成用（顔アイコン版）
+        // memberData の icon 欄に指定されたファイル名を avatars フォルダから読み込みます
+        function getIcon(member, isRegistered) {
+            const avatarSrc = (isRegistered && member.icon)
+                ? `avatars/${member.icon}`
+                : AVATAR_FALLBACK;
+            return L.divIcon({
+                className: 'custom-div-icon',
+                html: `
+                    <div class="avatar-marker ${isRegistered ? '' : 'unregistered'}">
+                        <img src="${avatarSrc}" alt="${member.name}" onerror="avatarFallback(this)" />
+                    </div>
+                `,
+                iconSize: [36, 36],
+                iconAnchor: [18, 18]
+            });
+        }
+
+        function initApp() {
+            tableBody.innerHTML = '';
+            
+            memberData.forEach((member, index) => {
+                const leafletY = -member.z;
+                const leafletX = member.x;
+                const isRegistered = member.name.trim() !== ""; // 名前が入っているかどうか
+
+                // マーカーの設置（顔アイコン）
+                const marker = L.marker([leafletY, leafletX], { icon: getIcon(member, isRegistered) }).addTo(map);
+                
+                // メンバー名を「常に表示」するネームタグを設定（顔アイコン＋名前のみのシンプル表示）
+                const tooltipText = isRegistered 
+                    ? member.name 
+                    : `未登録 (枠No.${String(index + 1).padStart(2, '0')})`;
+                
+                marker.bindTooltip(tooltipText, {
+                    permanent: true,
+                    direction: 'bottom',
+                    offset: [0, 10],
+                    className: `permanent-name-label ${isRegistered ? '' : 'unregistered'}`
+                });
+                
+                // 一覧でキーとして使うための名前
+                const lookupName = isRegistered ? member.name : `unregistered-${index}`;
+                markers[lookupName] = marker;
+
+                // テーブル行作成 (空白の場合は仮の値を薄く表示)
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-[#222227] cursor-pointer transition-colors border-b border-gray-800 text-gray-300';
+                
+                const searchName = isRegistered ? member.name.toLowerCase() : "";
+                const searchArea = member.area ? member.area.toLowerCase() : "";
+                tr.setAttribute('data-name', searchName);
+                tr.setAttribute('data-area', searchArea);
+                
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-mono font-bold ${isRegistered ? 'text-green-500' : 'text-gray-600'}">
+                        ${member.area || "-"}
+                    </td>
+                    <td class="py-3 px-4 ${isRegistered ? 'font-medium text-gray-100' : 'text-gray-600 italic'}">
+                        ${member.name || `(未登録 No.${index + 1})`}
+                    </td>
+                    <td class="py-3 px-4 text-right font-mono ${isRegistered ? 'text-gray-300' : 'text-gray-600'}">
+                        ${member.x}
+                    </td>
+                    <td class="py-3 px-4 text-right font-mono ${isRegistered ? 'text-gray-300' : 'text-gray-600'}">
+                        ${member.z}
+                    </td>
+                `;
+
+                tr.addEventListener('click', () => {
+                    focusOnBase(lookupName, leafletY, leafletX);
+                });
+
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // カメラ移動
+        function focusOnBase(name, y, x) {
+            map.setView([y, x], 1, { animate: true, duration: 0.8 });
+        }
+
+        // 中心 (0, 0) に戻る
+        function resetMapView() {
+            map.setView([0, 0], -2, { animate: true });
+        }
+
+        // 🔍 8. リアルタイム検索機能
+        const searchInput = document.getElementById('search-input');
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const rows = tableBody.getElementsByTagName('tr');
+            
+            for (let row of rows) {
+                const name = row.getAttribute('data-name');
+                const area = row.getAttribute('data-area');
+                
+                // 未登録の行でも、検索欄が空なら表示し、文字が入力されたら非表示にする
+                if (query === "") {
+                    row.style.display = '';
+                } else if (name.includes(query) || area.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        });
+
+        // 🧭 9. マウス位置の座標追跡
+        const cursorCoords = document.getElementById('cursor-coords');
+        map.on('mousemove', (e) => {
+            const x = Math.round(e.latlng.lng);
+            const z = Math.round(-e.latlng.lat);
+            cursorCoords.textContent = `X: ${x}, Z: ${z}`;
+        });
+
+        // ==========================================================
+        // 🚀 10. アプリ起動とイベント登録
+        // ==========================================================
+        initApp();
+
+        // 画像切り替えチェックボックスの連動イベント
+        document.getElementById('toggle-bg-image').addEventListener('change', loadBackgroundImage);
+
+        window.addEventListener('load', () => {
+            loadBackgroundImage(); // 初期表示の段階から画像をロード
+            map.invalidateSize();
+            setTimeout(() => { map.invalidateSize(); }, 200);
+        });
+    </script>
+</body>
+</html>

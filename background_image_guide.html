@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>背景地形画像の作成ガイド | homeクラ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+
+        <!-- ヘッダー -->
+        <div class="flex items-center justify-between mb-8 border-b border-gray-700 pb-4">
+            <h1 class="text-3xl font-bold text-green-500">背景地形画像の作成ガイド</h1>
+            <a href="minecraft_map.html" class="bg-[#26262b] hover:bg-[#333339] border border-gray-700 hover:border-green-500 text-gray-300 hover:text-green-400 font-bold py-2 px-4 rounded-lg text-xs transition-colors inline-flex items-center gap-1.5 whitespace-nowrap">
+                <span>🗺️</span>
+                <span>拠点マップへ戻る</span>
+            </a>
+        </div>
+
+        <p class="text-gray-400 text-sm mb-8 leading-relaxed">
+            Chunkbase Seed Mapを使って、UIノイズ（グリッド線・アイコン・マーカー）のないクリーンな地形画像を作成する手順です。X=0, Z=0 を中心とした ±1500 ブロックの範囲を撮影します。
+        </p>
+
+        <div class="space-y-6">
+
+            <!-- STEP 1 -->
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-xl font-bold mb-4 text-white flex items-center gap-2">
+                    <span class="bg-green-600 text-white text-sm font-mono w-7 h-7 flex items-center justify-center rounded-full">1</span>
+                    初期設定
+                </h2>
+                <ol class="list-decimal list-inside text-gray-300 text-sm space-y-2 leading-relaxed">
+                    <li><a href="https://www.chunkbase.com/apps/seed-map" target="_blank" class="text-green-400 underline font-bold">Chunkbase Seed Map</a> を開く</li>
+                    <li><strong class="text-white">homeクラのシード値</strong>を入力する</li>
+                    <li>Version: <code class="bg-black px-1 rounded text-pink-400">Java 26.2</code>（Chaos Cubed）を選択</li>
+                    <li>Dimension: <code class="bg-black px-1 rounded">Overworld</code></li>
+                </ol>
+            </section>
+
+            <!-- STEP 2 -->
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-xl font-bold mb-4 text-white flex items-center gap-2">
+                    <span class="bg-green-600 text-white text-sm font-mono w-7 h-7 flex items-center justify-center rounded-full">2</span>
+                    ノイズ要素を消す
+                </h2>
+                <ul class="list-disc list-inside text-gray-300 text-sm space-y-2 leading-relaxed">
+                    <li><strong class="text-white">Features</strong>（構造物アイコン）ボックスを展開 → 全項目のチェックを外す</li>
+                    <li><strong class="text-white">⚙️設定メニュー</strong>を開く
+                        <ul class="list-[circle] list-inside ml-5 mt-1 text-gray-400 space-y-1">
+                            <li>Grid Lines（グリッド線）→ オフ</li>
+                            <li>Coordinate labels（座標ラベル）→ オフ（あれば）</li>
+                            <li>Slime chunks 表示 → オフ</li>
+                        </ul>
+                    </li>
+                    <li>右クリックで作成したカスタムマーカーが残っていれば削除</li>
+                </ul>
+            </section>
+
+            <!-- STEP 3 -->
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-xl font-bold mb-4 text-white flex items-center gap-2">
+                    <span class="bg-green-600 text-white text-sm font-mono w-7 h-7 flex items-center justify-center rounded-full">3</span>
+                    全画面表示にする
+                </h2>
+                <p class="text-gray-300 text-sm leading-relaxed">
+                    マップをクリックしてキーボード操作を有効化した後、<code class="bg-black px-1 rounded text-pink-400">T</code> キー（または右上の拡大ボタン）で地図を画面いっぱいに表示します。ブラウザの余白やサイドバーが写り込まなくなります。
+                </p>
+            </section>
+
+            <!-- STEP 4 -->
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-xl font-bold mb-4 text-white flex items-center gap-2">
+                    <span class="bg-green-600 text-white text-sm font-mono w-7 h-7 flex items-center justify-center rounded-full">4</span>
+                    中心座標とズームを合わせる
+                </h2>
+                <ul class="list-disc list-inside text-gray-300 text-sm space-y-2 leading-relaxed">
+                    <li>座標入力欄に <code class="bg-black px-1 rounded">X: 0, Z: 0</code> を入力してジャンプ</li>
+                    <li>画面の四隅がだいたい <code class="bg-black px-1 rounded">±1500</code> になるようズームを調整</li>
+                    <li class="text-yellow-400">ズームは基本的に2倍刻みのため、ぴったり合わせるのは難しい → <strong>気持ち広め（±1600〜1700程度）</strong>に撮っておき、後でトリミングするのが確実</li>
+                </ul>
+            </section>
+
+            <!-- STEP 5 -->
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-xl font-bold mb-4 text-white flex items-center gap-2">
+                    <span class="bg-green-600 text-white text-sm font-mono w-7 h-7 flex items-center justify-center rounded-full">5</span>
+                    スクリーンショットを撮る
+                </h2>
+                <ul class="list-disc list-inside text-gray-300 text-sm space-y-2 leading-relaxed">
+                    <li>Windows: <code class="bg-black px-1 rounded">Win + Shift + S</code></li>
+                    <li>Mac: <code class="bg-black px-1 rounded">Cmd + Shift + 4</code></li>
+                    <li>地図部分だけを範囲選択（アドレスバーやタブは写り込ませない）</li>
+                </ul>
+            </section>
+
+            <!-- STEP 6 -->
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-xl font-bold mb-4 text-white flex items-center gap-2">
+                    <span class="bg-green-600 text-white text-sm font-mono w-7 h-7 flex items-center justify-center rounded-full">6</span>
+                    正方形にトリミング
+                </h2>
+                <p class="text-gray-300 text-sm mb-3 leading-relaxed">
+                    無料の画像編集ツール（<a href="https://www.photopea.com/" target="_blank" class="text-green-400 underline font-bold">Photopea</a> がPhotoshop感覚で使いやすくおすすめ）で開き、中心（X:0, Z:0）を基準に上下左右が対称になるよう正方形にクロップします。
+                </p>
+                <p class="text-gray-300 text-sm">
+                    完成したら <code class="bg-black px-1 rounded text-pink-400">world_map.png</code> として保存してください。
+                </p>
+            </section>
+
+            <!-- 注意点 -->
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700 border-l-4 border-l-yellow-500">
+                <h2 class="text-lg font-bold mb-2 text-yellow-500">位置合わせのヒント</h2>
+                <p class="text-gray-300 text-sm leading-relaxed">
+                    座標メモが最も重要です。「画像の上端がZ座標いくつか」「左端がX座標いくつか」をChunkbaseのグリッド上で確認して、<code class="bg-black px-1 rounded">minecraft_map.html</code> の <code class="bg-black px-1 rounded">bounds</code> 設定に正確に入力してください。
+                </p>
+            </section>
+
+        </div>
+
+        <!-- リンクボタン -->
+        <div class="flex justify-center mt-10">
+            <a href="minecraft_map.html" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-8 rounded-full transition-all shadow-lg hover:shadow-green-500/20">
+                拠点マップへ戻る
+            </a>
+        </div>
+
+    </div>
+</body>
+</html>
