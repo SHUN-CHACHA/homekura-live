@@ -302,7 +302,7 @@
             { area: "エリア29", name: "うが", icon: "uga_youtube.svg", name2: "", icon2: "", x: -640, z: 1109 }, // 29人目
             { area: "エリア30", name: "ゆりも", icon: "yurimosaaan.svg", name2: "", icon2: "", x: -1109, z: 640 }, // 30人目
             { area: "エリア31", name: "神宮寺", icon: "jingujich.svg", name2: "", icon2: "", x: -1280, z: 0 }, // 31人目
-            { area: "エリア32", name: "タツナミ先生", icon: "syuutan.svg", name2: "むっこ氏", icon2: "mukkoman.svg", x: -1109, z: -640 }, // 32人目（2名）
+            { area: "エリア32", name: "タツナミ先生", icon: "syuutan.svg", name2: "むっこ氏", icon2: "", x: -1109, z: -640 }, // 32人目（2名）
             { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }, // 33人目
             { area: "エリア34", name: "鶴太郎", icon: "turu0004.svg", name2: "", icon2: "", x: 0, z: -1280 }, // 34人目
             { area: "エリア35", name: "久遠星那", icon: "kuon_irix.svg", name2: "", icon2: "", x: 640, z: -1109 }, // 35人目
@@ -422,7 +422,7 @@
 
         const tableBody = document.getElementById('member-table-body');
         const countSpan = document.getElementById('member-count');
-        countSpan.textContent = memberData.length;
+        countSpan.textContent = memberData.filter(m => m.name && m.name.trim() !== "").length;
 
         // データ並び替え (エリアが空白でないものを優先、基本は登録順)
         memberData.sort((a, b) => {
@@ -477,52 +477,54 @@
             tableBody.innerHTML = '';
             
             memberData.forEach((member, index) => {
+                const isRegistered = member.name.trim() !== ""; // 名前が入っているかどうか
+
+                // 未登録（名前が空欄）のメンバーは地図にも一覧にも表示しない
+                if (!isRegistered) {
+                    return;
+                }
+
                 const leafletY = -member.z;
                 const leafletX = member.x;
-                const isRegistered = member.name.trim() !== ""; // 名前が入っているかどうか
 
                 // マーカーの設置（顔アイコン）
                 const marker = L.marker([leafletY, leafletX], { icon: getIcon(member, isRegistered) }).addTo(map);
                 
                 // メンバー名を「常に表示」するネームタグを設定（顔アイコン＋名前のみのシンプル表示）
-                const hasSecond = isRegistered && member.name2 && member.name2.trim() !== "";
-                const tooltipText = isRegistered 
-                    ? (hasSecond ? `${member.name}・${member.name2}` : member.name)
-                    : `未登録 (枠No.${String(index + 1).padStart(2, '0')})`;
+                const hasSecond = member.name2 && member.name2.trim() !== "";
+                const tooltipText = hasSecond ? `${member.name}・${member.name2}` : member.name;
                 
                 marker.bindTooltip(tooltipText, {
                     permanent: true,
                     direction: 'bottom',
                     offset: [0, 10],
-                    className: `permanent-name-label ${isRegistered ? '' : 'unregistered'}`
+                    className: 'permanent-name-label'
                 });
                 
                 // 一覧でキーとして使うための名前
-                const lookupName = isRegistered ? member.name : `unregistered-${index}`;
+                const lookupName = member.name;
                 markers[lookupName] = marker;
 
-                // テーブル行作成 (空白の場合は仮の値を薄く表示)
+                // テーブル行作成
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-[#222227] cursor-pointer transition-colors border-b border-gray-800 text-gray-300';
                 
-                const searchName = isRegistered 
-                    ? `${member.name} ${member.name2 || ""}`.trim().toLowerCase() 
-                    : "";
+                const searchName = `${member.name} ${member.name2 || ""}`.trim().toLowerCase();
                 const searchArea = member.area ? member.area.toLowerCase() : "";
                 tr.setAttribute('data-name', searchName);
                 tr.setAttribute('data-area', searchArea);
                 
                 tr.innerHTML = `
-                    <td class="py-3 px-4 font-mono font-bold ${isRegistered ? 'text-green-500' : 'text-gray-600'}">
+                    <td class="py-3 px-4 font-mono font-bold text-green-500">
                         ${member.area || "-"}
                     </td>
-                    <td class="py-3 px-4 ${isRegistered ? 'font-medium text-gray-100' : 'text-gray-600 italic'}">
-                        ${isRegistered ? (hasSecond ? `${member.name}・${member.name2}` : member.name) : `(未登録 No.${index + 1})`}
+                    <td class="py-3 px-4 font-medium text-gray-100">
+                        ${hasSecond ? `${member.name}・${member.name2}` : member.name}
                     </td>
-                    <td class="py-3 px-4 text-right font-mono ${isRegistered ? 'text-gray-300' : 'text-gray-600'}">
+                    <td class="py-3 px-4 text-right font-mono text-gray-300">
                         ${member.x}
                     </td>
-                    <td class="py-3 px-4 text-right font-mono ${isRegistered ? 'text-gray-300' : 'text-gray-600'}">
+                    <td class="py-3 px-4 text-right font-mono text-gray-300">
                         ${member.z}
                     </td>
                 `;
