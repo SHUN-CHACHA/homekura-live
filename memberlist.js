@@ -25,7 +25,7 @@ const memberData = [
     { area: "エリア14", name: "久那式リン", icon: "Kunashiki_Lin.svg", name2: "", icon2: "", x: 707, z: 707 }, // 14人目
     { area: "エリア15", name: "しろくる", icon: "sirokuru.svg", name2: "", icon2: "", x: 259, z: 966 }, // 15人目
     { area: "エリア16", name: "神近", icon: "kamichika.svg", name2: "", icon2: "", x: -259, z: 966 }, // 16人目
-    { area: "エリア17", name: "早乙女燈真", icon: "saotomeirix.svg", name2: "", icon2: "", x: -707, z: 707 }, // 17人目
+    { area: "エリア17", name: "早乙女燈真", icon: "saotomeirix.svg", name2: "久遠星那", icon2: "kuon_irix.svg", x: -707, z: 707 }, // 17人目
     { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }, // 18人目
     { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }, // 19人目
     { area: "エリア20", name: "じゃじゃーん菊池", icon: "jajaankikuchi.svg", name2: "", icon2: "", x: -707, z: -707 }, // 20人目
@@ -43,6 +43,6 @@ const memberData = [
     { area: "エリア32", name: "タツナミ先生", icon: "shyutan.svg", name2: "むっこさん", icon2: "mukkoman.svg", x: -1109, z: -640 }, // 32人目（2名）
     { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }, // 33人目
     { area: "エリア34", name: "鶴太郎", icon: "turu0004.svg", name2: "", icon2: "", x: 0, z: -1280 }, // 34人目
-    { area: "引越し中", name: "久遠星那", icon: "kuon_irix.svg", name2: "", icon2: "", x: 640, z: -1109 }, // 35人目
+    { area: "引越し中", name: "", icon: "", name2: "", icon2: "", x: 640, z: -1109 }, // 35人目
     { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }  // 36人目
 ];
