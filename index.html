@@ -135,12 +135,12 @@
 
         .list-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
         .row-item {
-            background: #f0f5f0; border-radius: 10px; padding: 6px 8px;
-            display: flex; flex-direction: column; align-items: stretch; justify-content: center; gap: 6px;
+            background: #f0f5f0; border-radius: 10px; padding: 8px 10px;
+            display: flex; flex-direction: column; align-items: stretch; justify-content: center; gap: 5px;
             border: 1px solid var(--border-color); box-sizing: border-box;
         }
-        .row-top { display: flex; align-items: center; gap: 8px; overflow: hidden; width: 100%; }
-        .row-bottom { display: flex; align-items: center; justify-content: flex-start; width: 100%; }
+        .row-top { display: flex; align-items: center; gap: 8px; width: 100%; min-width: 0; }
+        .row-bottom { display: flex; align-items: center; width: 100%; }
 
         .mc-head-box {
             display: flex;
@@ -151,15 +151,16 @@
         }
         .mc-head-img { width: 100%; height: 100%; object-fit: contain; transform: scale(1.1); }
 
-        .row-name { font-weight: bold; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-color); }
+        .row-name { font-weight: bold; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-color); min-width: 0; flex: 1; }
 
-        .row-btns { display: flex; gap: 4px; align-items: center; width: 100%; justify-content: space-between; }
+        .row-btns { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; width: 100%; }
         .btn-square-mini { 
-            flex: 1; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; 
+            width: 26px; height: 26px; border-radius: 5px;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
             text-decoration: none; transition: all 0.2s ease; background: #ffffff; border: 1px solid var(--border-color);
         }
         .btn-square-mini:hover { transform: scale(1.05); background: #e2eae2; filter: grayscale(100%) contrast(120%); }
-        .btn-square-mini svg { width: 12px; height: 12px; }
+        .btn-square-mini svg { width: 13px; height: 13px; }
         .btn-square-mini.btn-yt svg { fill: #ff0000; }
         .btn-square-mini.btn-x svg { fill: #14171a; }
         .btn-square-mini.btn-hp svg { fill: #2563eb; }
@@ -174,16 +175,13 @@
             .card .title { font-size: 12px; }
             .btn-area { padding: 0 12px 12px; gap: 6px; }
             .btn { font-size: 11px; padding: 6px 0; }
-            
-            .list-container { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
-            .row-item { flex-direction: row; justify-content: space-between; padding: 8px 14px; height: auto; }
-            .row-bottom { width: auto; }
-            .row-btns { justify-content: flex-end; gap: 6px; }
-            .btn-square-mini { width: 30px; height: 30px; border-radius: 50%; flex: none; }
-            .btn-square-mini svg { width: 14px; height: 14px; }
-            
+
+            .list-container { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .row-item { padding: 10px 14px; gap: 6px; }
             .mc-head-box { width: 34px; height: 34px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
             .row-name { font-size: 14px; }
+            .btn-square-mini { width: 30px; height: 30px; border-radius: 50%; }
+            .btn-square-mini svg { width: 14px; height: 14px; }
         }
 
         @media (min-width: 950px) {
