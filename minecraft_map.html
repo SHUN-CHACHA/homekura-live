@@ -56,16 +56,27 @@
             color: #ffffff !important;
             font-weight: bold !important;
             font-size: 11px !important;
-            padding: 2px 6px !important;
+            padding: 3px 6px !important;
             border-radius: 4px !important;
             box-shadow: 0 2px 6px rgba(0,0,0,0.6) !important;
             white-space: nowrap;
+            text-align: center;
+            line-height: 1.3;
+        }
+        .permanent-name-label .coord-line {
+            font-weight: normal;
+            font-size: 9px;
+            color: #8fd694;
+            margin-top: 1px;
         }
         /* 💡 未登録状態のネームタグを少し目立たなくするスタイル */
         .permanent-name-label.unregistered {
             border: 1px solid #55555d !important;
             color: #88888f !important;
             opacity: 0.6;
+        }
+        .permanent-name-label.unregistered .coord-line {
+            color: #88888f;
         }
         /* 吹き出しの小さな矢印を非表示にする */
         .permanent-name-label::before {
@@ -302,7 +313,7 @@
             { area: "エリア29", name: "うが", icon: "uga_youtube.svg", name2: "", icon2: "", x: -640, z: 1109 }, // 29人目
             { area: "エリア30", name: "ゆりも", icon: "yurimosaaan.svg", name2: "", icon2: "", x: -1109, z: 640 }, // 30人目
             { area: "エリア31", name: "神宮寺", icon: "jingujich.svg", name2: "", icon2: "", x: -1280, z: 0 }, // 31人目
-            { area: "エリア32", name: "タツナミ先生", icon: "syuutan.svg", name2: "むっこ氏", icon2: "mukkoman.svg", x: -1109, z: -640 }, // 32人目（2名）
+            { area: "エリア32", name: "タツナミ先生", icon: "syuutan.svg", name2: "むっこ氏", icon2: "", x: -1109, z: -640 }, // 32人目（2名）
             { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }, // 33人目
             { area: "エリア34", name: "鶴太郎", icon: "turu0004.svg", name2: "", icon2: "", x: 0, z: -1280 }, // 34人目
             { area: "エリア35", name: "久遠星那", icon: "kuon_irix.svg", name2: "", icon2: "", x: 640, z: -1109 }, // 35人目
@@ -492,7 +503,10 @@
                 
                 // メンバー名を「常に表示」するネームタグを設定（顔アイコン＋名前のみのシンプル表示）
                 const hasSecond = member.name2 && member.name2.trim() !== "";
-                const tooltipText = hasSecond ? `${member.name}・${member.name2}` : member.name;
+                const tooltipText = `
+                    <div class="name-line">${hasSecond ? `${member.name}・${member.name2}` : member.name}</div>
+                    <div class="coord-line">X: ${member.x}, Z: ${member.z}</div>
+                `;
                 
                 marker.bindTooltip(tooltipText, {
                     permanent: true,
