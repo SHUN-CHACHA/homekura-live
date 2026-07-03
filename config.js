@@ -442,6 +442,20 @@ window.CONFIG = {
                 "homepageUrl": "",
                 "color": "#ffea00",
                 "avatarImg": "avatars/UDON130.svg"
+        },
+        {
+                "name": "よし",
+                "id": "UCFkfHzxpDGEDAjsg34tKu_g",
+                "minecraftId": "yoshi_38_",
+                "uuid": "17376ad0-a16a-4b66-85de-1a133bafb2bf",
+                "twitterId": "yoshi38_dog",
+                "twitchId": "",
+                "tiktokId": "",
+                "instaId": "",
+                "discordUrl": "",
+                "homepageUrl": "",
+                "color": "#ff9900",
+                "avatarImg": "avatars/yoshi_38_.svg"
         }
 ]
 };
