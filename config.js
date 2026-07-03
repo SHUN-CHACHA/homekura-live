@@ -64,15 +64,16 @@ window.CONFIG = {
         {
                 "name": "タツナミ先生",
                 "id": "UCedenULTLYf3DanflEXdRCQ",
-                "minecraftId": "syuutan",
-                "uuid": "a73d2578-4b8d-4c9d-a552-aca11f93aa27",
+                "minecraftId": "shyutan",
+                "uuid": "aafa14d7-39e7-4777-b7bd-facd49eea0fc",
                 "twitterId": "tatsunami",
                 "twitchId": "",
                 "tiktokId": "",
                 "instaId": "",
                 "discordUrl": "",
+                "homepageUrl": "",
                 "color": "#00ff00",
-                "avatarImg": "avatars/syuutan.svg"
+                "avatarImg": "avatars/shyutan.svg"
         },
         {
                 "name": "神近",
