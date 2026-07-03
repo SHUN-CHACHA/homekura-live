@@ -13,7 +13,7 @@ const memberData = [
     { area: "エリア02", name: "２８（ふたば）", icon: "ftb28.svg", name2: "", icon2: "", x: 624, z: 360 }, // 02人目
     { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }, // 03人目
     { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }, // 04人目
-    { area: "エリア05", name: "うどん", icon: "", name2: "", icon2: "", x: -360, z: 624 }, // 05人目
+    { area: "エリア05", name: "うどん", icon: "UDON130.svg", name2: "", icon2: "", x: -360, z: 624 }, // 05人目
     { area: "エリア06", name: "黎乃鈴 -Kurono Suzu-", icon: "kuronosuzu.svg", name2: "", icon2: "", x: -624, z: 360 }, // 06人目
     { area: "エリア07", name: "神宮寺ナナホシナナ", icon: "jingujich.svg", name2: "", icon2: "", x: -720, z: 0 }, // 07人目
     { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }, // 08人目
