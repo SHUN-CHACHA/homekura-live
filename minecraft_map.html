@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -338,14 +337,12 @@
         }
 
         // ==========================================================
-        // 🗺️ 5. 安全なグリッド(格子線)と座標文字の描画
+        // 🗺️ 5. 安全な座標ラベルの描画（ズームに応じて再生成されるタイル）
         // ==========================================================
         try {
             const MinecraftGrid = L.GridLayer.extend({
                 createTile: function (coords) {
                     const tile = document.createElement('div');
-                    tile.style.borderLeft = '1px solid rgba(255,255,255,0.12)';
-                    tile.style.borderBottom = '1px solid rgba(255,255,255,0.12)';
                     tile.style.position = 'relative';
                     
                     const label = document.createElement('span');
@@ -372,6 +369,24 @@
         } catch (e) {
             console.error("Grid skipped:", e);
         }
+
+        // ==========================================================
+        // 📏 5-2. 固定格子線（X:0, Z:0 を起点に256ブロックごと）
+        // ==========================================================
+        (function drawFixedGrid() {
+            const GRID_INTERVAL = 256; // グリッドの間隔（ブロック数）
+            const GRID_RANGE = 3072;   // 原点(0,0)から何ブロック分の格子を引くか
+            const gridStyle = { color: '#ffffff', weight: 1, opacity: 0.12, interactive: false };
+
+            for (let x = -GRID_RANGE; x <= GRID_RANGE; x += GRID_INTERVAL) {
+                // 縦線（Z軸方向）… X座標が一定の線
+                L.polyline([[GRID_RANGE, x], [-GRID_RANGE, x]], gridStyle).addTo(map);
+            }
+            for (let z = -GRID_RANGE; z <= GRID_RANGE; z += GRID_INTERVAL) {
+                // 横線（X軸方向）… Z座標が一定の線（leafletY = -z）
+                L.polyline([[-z, -GRID_RANGE], [-z, GRID_RANGE]], gridStyle).addTo(map);
+            }
+        })();
 
         // ==========================================================
         // 📏 6. 十字の基準線（X軸・Z軸）の描画
