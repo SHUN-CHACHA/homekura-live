@@ -177,7 +177,17 @@
             <div class="mb-4">
                 <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
                     <span class="text-sm font-semibold text-gray-400">登録メンバー: <span id="member-count" class="text-green-500 font-bold">0</span>名</span>
-                    <a href="background_image_guide.html"
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button id="download-files-btn"
+   class="text-xs bg-[#26262b] hover:bg-[#333339]
+          border border-gray-700 hover:border-green-500
+          text-gray-300 hover:text-green-400
+          font-bold px-3 py-1.5 rounded-full
+          transition-colors inline-flex items-center gap-1.5">
+    <span>📦</span>
+    <span id="download-files-label">ファイル一式をDL</span>
+</button>
+                        <a href="background_image_guide.html"
    class="text-xs bg-[#26262b] hover:bg-[#333339]
           border border-gray-700 hover:border-green-500
           text-gray-300 hover:text-green-400
@@ -186,6 +196,7 @@
     <span>🛠️</span>
     <span>背景画像の設定ガイド</span>
 </a>
+                    </div>
                 </div>
                 <input 
                     type="text" 
@@ -268,6 +279,7 @@
 
     <!-- Leaflet.js のJavaScript -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <!-- 📊 メンバーデータは memberlist.js に分離（編集はそちらのファイルで） -->
     <script src="memberlist.js"></script>
@@ -554,6 +566,56 @@
 
         // 画像切り替えチェックボックスの連動イベント
         document.getElementById('toggle-bg-image').addEventListener('change', loadBackgroundImage);
+
+        // ==========================================================
+        // 📦 必要ファイル一式をZIPにまとめてダウンロード
+        // サーバー上（同じフォルダ）にある最新のファイルを取得してZIP化します
+        // ※ file:// で直接開いた場合はブラウザの制限で失敗します（GitHub Pagesなど
+        //    サーバー経由で開いている場合のみ動作します）
+        // ==========================================================
+        const DOWNLOAD_FILES = [
+            'minecraft_map.html',
+            'background_image_guide.html',
+            'memberlist.js',
+            'world_map.png'
+        ];
+
+        async function downloadAllFiles() {
+            const btn = document.getElementById('download-files-btn');
+            const label = document.getElementById('download-files-label');
+            const originalLabel = label.textContent;
+            btn.disabled = true;
+            label.textContent = '準備中...';
+
+            try {
+                const zip = new JSZip();
+
+                await Promise.all(DOWNLOAD_FILES.map(async (fileName) => {
+                    const res = await fetch(fileName, { cache: 'no-store' });
+                    if (!res.ok) throw new Error(`${fileName} の取得に失敗しました (HTTP ${res.status})`);
+                    const blob = await res.blob();
+                    zip.file(fileName, blob);
+                }));
+
+                const zipBlob = await zip.generateAsync({ type: 'blob' });
+                const url = URL.createObjectURL(zipBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'homekura_map_files.zip';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error(err);
+                alert('ファイルの取得に失敗しました。\nGitHub Pagesなどサーバー経由で開いているか確認してください（ローカルでファイルをダブルクリックして開いている場合はブラウザの制限で失敗します）。\n\n詳細: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                label.textContent = originalLabel;
+            }
+        }
+
+        document.getElementById('download-files-btn').addEventListener('click', downloadAllFiles);
 
         window.addEventListener('load', () => {
             loadBackgroundImage(); // 初期表示の段階から画像をロード
