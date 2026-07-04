@@ -29,6 +29,39 @@
             position: absolute;
             top: 0; bottom: 0; left: 0; right: 0;
         }
+        /* 📏 512刻みのX軸・Z軸ラベル（ルーラー風表示） */
+        #axis-labels {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 450;
+        }
+        .axis-label-x {
+            position: absolute;
+            top: 4px;
+            transform: translateX(-50%);
+            font-size: 10px;
+            font-family: monospace;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.65);
+            background: rgba(20, 20, 23, 0.55);
+            padding: 1px 5px;
+            border-radius: 3px;
+            white-space: nowrap;
+        }
+        .axis-label-z {
+            position: absolute;
+            right: 4px;
+            transform: translateY(-50%);
+            font-size: 10px;
+            font-family: monospace;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.65);
+            background: rgba(20, 20, 23, 0.55);
+            padding: 1px 5px;
+            border-radius: 3px;
+            white-space: nowrap;
+        }
         /* スクロールバーのカスタマイズ */
         ::-webkit-scrollbar {
             width: 6px;
@@ -255,6 +288,7 @@
             <!-- マップ本体コンテナ -->
             <div id="map-container" class="flex-1 w-full rounded-lg border border-gray-800 overflow-hidden">
                 <div id="map"></div>
+                <div id="axis-labels"></div>
             </div>
 
             <!-- 画面下部：カーソル位置のマイクラ座標リアルタイム表示 -->
@@ -378,6 +412,49 @@
         }
 
         map.on('moveend zoomend', updateGrid);
+
+        // ==========================================================
+        // 📏 5-3. 512刻みのX軸・Z軸ラベル（画面上端・右端に表示するルーラー）
+        // ==========================================================
+        const AXIS_LABEL_INTERVAL = 512;
+        const axisLabelContainer = document.getElementById('axis-labels');
+
+        function updateAxisLabels() {
+            axisLabelContainer.innerHTML = '';
+
+            const bounds = map.getBounds();
+            const west = bounds.getWest();
+            const east = bounds.getEast();
+            const south = bounds.getSouth();
+            const north = bounds.getNorth();
+
+            // 画面上端：X座標のラベル（512刻み）
+            const xStart = Math.ceil(west / AXIS_LABEL_INTERVAL) * AXIS_LABEL_INTERVAL;
+            const xEnd = Math.floor(east / AXIS_LABEL_INTERVAL) * AXIS_LABEL_INTERVAL;
+            for (let x = xStart; x <= xEnd; x += AXIS_LABEL_INTERVAL) {
+                const point = map.latLngToContainerPoint([north, x]);
+                const label = document.createElement('div');
+                label.className = 'axis-label-x';
+                label.textContent = x;
+                label.style.left = `${point.x}px`;
+                axisLabelContainer.appendChild(label);
+            }
+
+            // 画面右端：Z座標のラベル（512刻み。leafletY = -z）
+            const yStart = Math.ceil(south / AXIS_LABEL_INTERVAL) * AXIS_LABEL_INTERVAL;
+            const yEnd = Math.floor(north / AXIS_LABEL_INTERVAL) * AXIS_LABEL_INTERVAL;
+            for (let y = yStart; y <= yEnd; y += AXIS_LABEL_INTERVAL) {
+                const z = -y;
+                const point = map.latLngToContainerPoint([y, east]);
+                const label = document.createElement('div');
+                label.className = 'axis-label-z';
+                label.textContent = z;
+                label.style.top = `${point.y}px`;
+                axisLabelContainer.appendChild(label);
+            }
+        }
+
+        map.on('moveend zoomend move zoom', updateAxisLabels);
 
         // ==========================================================
         // 📏 6. 十字の基準線（X軸・Z軸）の描画
@@ -621,16 +698,18 @@
             loadBackgroundImage(); // 初期表示の段階から画像をロード
             map.invalidateSize();
             updateGrid();
-            setTimeout(() => { map.invalidateSize(); updateGrid(); }, 200);
+            updateAxisLabels();
+            setTimeout(() => { map.invalidateSize(); updateGrid(); updateAxisLabels(); }, 200);
         });
 
         // 📱 スマホの画面回転・リサイズ時に地図サイズを再計算
         window.addEventListener('resize', () => {
             map.invalidateSize();
             updateGrid();
+            updateAxisLabels();
         });
         window.addEventListener('orientationchange', () => {
-            setTimeout(() => { map.invalidateSize(); updateGrid(); }, 300);
+            setTimeout(() => { map.invalidateSize(); updateGrid(); updateAxisLabels(); }, 300);
         });
     </script>
 </body>
