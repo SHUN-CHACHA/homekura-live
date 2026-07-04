@@ -324,6 +324,23 @@
             transition: 0.2s;
         }
         #qr-close-btn:hover { opacity: 0.85; }
+
+        /* 🗺️ 拠点マップへのリンクボタン */
+        .map-link-container { text-align: center; margin: 14px 0; }
+        .map-link-btn {
+            display: inline-block;
+            background: var(--accent-green);
+            color: #ffffff;
+            font-weight: bold;
+            padding: 10px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 15px;
+            letter-spacing: 0.02em;
+            box-shadow: 0 2px 6px rgba(45, 90, 39, 0.35);
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .map-link-btn:hover { opacity: 0.88; transform: translateY(-1px); }
     </style>
 </head>
 <body>
@@ -356,6 +373,10 @@
 
 <div class="progress-container">
     <div id="progress-bar"></div>
+</div>
+
+<div class="map-link-container">
+    <a href="minecraft_map.html" target="_blank" class="map-link-btn">homeクラ Season２ メンバー拠点マップ</a>
 </div>
 
 <div class="main-wrapper">
