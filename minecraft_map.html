@@ -15,7 +15,7 @@
         body {
             background-color: #121214;
         }
-        /* Leafletの地図の背景をマイクラの奈落（Void）のような黒基調にし、グリッド模様を薄く敷く */
+        /* Leafletの地図の背景をマイクラの奈落（Void）のような黒基調にする */
         #map-container {
             position: relative;
             width: 100%;
@@ -24,11 +24,6 @@
         }
         #map {
             background-color: #141417;
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
-            background-size: 40px 40px;
-            background-position: center;
             width: 100%;
             height: 100%;
             position: absolute;
@@ -337,56 +332,40 @@
         }
 
         // ==========================================================
-        // 🗺️ 5. 安全な座標ラベルの描画（ズームに応じて再生成されるタイル）
+        // 📏 5-2. 動的格子線（X:0, Z:0 を起点に256ブロックごと）
+        // 表示範囲（パン・ズーム）に合わせて、見えている範囲全体をカバーするように再描画する
         // ==========================================================
-        try {
-            const MinecraftGrid = L.GridLayer.extend({
-                createTile: function (coords) {
-                    const tile = document.createElement('div');
-                    tile.style.position = 'relative';
-                    
-                    const label = document.createElement('span');
-                    label.style.position = 'absolute';
-                    label.style.bottom = '4px';
-                    label.style.left = '4px';
-                    label.style.fontSize = '9px';
-                    label.style.color = 'rgba(255, 255, 255, 0.15)';
-                    label.style.fontFamily = 'monospace';
-                    label.style.pointerEvents = 'none';
-                    
-                    const scale = Math.pow(2, this._map.getZoom());
-                    const tileSize = 256;
-                    const x = Math.round((coords.x * tileSize) / scale);
-                    const z = Math.round((-coords.y * tileSize) / scale);
-                    
-                    label.textContent = `X:${x}, Z:${z}`;
-                    tile.appendChild(label);
-                    
-                    return tile;
-                }
-            });
-            new MinecraftGrid().addTo(map);
-        } catch (e) {
-            console.error("Grid skipped:", e);
-        }
+        const GRID_INTERVAL = 256;
+        const gridLayerGroup = L.layerGroup().addTo(map);
 
-        // ==========================================================
-        // 📏 5-2. 固定格子線（X:0, Z:0 を起点に256ブロックごと）
-        // ==========================================================
-        (function drawFixedGrid() {
-            const GRID_INTERVAL = 256; // グリッドの間隔（ブロック数）
-            const GRID_RANGE = 3072;   // 原点(0,0)から何ブロック分の格子を引くか
+        function updateGrid() {
+            gridLayerGroup.clearLayers();
+
+            const bounds = map.getBounds();
+            const west = bounds.getWest();
+            const east = bounds.getEast();
+            const south = bounds.getSouth();
+            const north = bounds.getNorth();
+
+            // 現在の表示範囲より少し広めに、256の倍数へスナップして描画開始/終了位置を決める
+            const xStart = Math.floor(west / GRID_INTERVAL) * GRID_INTERVAL - GRID_INTERVAL;
+            const xEnd = Math.ceil(east / GRID_INTERVAL) * GRID_INTERVAL + GRID_INTERVAL;
+            const yStart = Math.floor(south / GRID_INTERVAL) * GRID_INTERVAL - GRID_INTERVAL;
+            const yEnd = Math.ceil(north / GRID_INTERVAL) * GRID_INTERVAL + GRID_INTERVAL;
+
             const gridStyle = { color: '#ffffff', weight: 1, opacity: 0.12, interactive: false };
 
-            for (let x = -GRID_RANGE; x <= GRID_RANGE; x += GRID_INTERVAL) {
-                // 縦線（Z軸方向）… X座標が一定の線
-                L.polyline([[GRID_RANGE, x], [-GRID_RANGE, x]], gridStyle).addTo(map);
+            // 縦線（X座標が一定の線）
+            for (let x = xStart; x <= xEnd; x += GRID_INTERVAL) {
+                L.polyline([[yStart, x], [yEnd, x]], gridStyle).addTo(gridLayerGroup);
             }
-            for (let z = -GRID_RANGE; z <= GRID_RANGE; z += GRID_INTERVAL) {
-                // 横線（X軸方向）… Z座標が一定の線（leafletY = -z）
-                L.polyline([[-z, -GRID_RANGE], [-z, GRID_RANGE]], gridStyle).addTo(map);
+            // 横線（Z座標が一定の線。leafletY = -z）
+            for (let y = yStart; y <= yEnd; y += GRID_INTERVAL) {
+                L.polyline([[y, xStart], [y, xEnd]], gridStyle).addTo(gridLayerGroup);
             }
-        })();
+        }
+
+        map.on('moveend zoomend', updateGrid);
 
         // ==========================================================
         // 📏 6. 十字の基準線（X軸・Z軸）の描画
@@ -579,15 +558,17 @@
         window.addEventListener('load', () => {
             loadBackgroundImage(); // 初期表示の段階から画像をロード
             map.invalidateSize();
-            setTimeout(() => { map.invalidateSize(); }, 200);
+            updateGrid();
+            setTimeout(() => { map.invalidateSize(); updateGrid(); }, 200);
         });
 
         // 📱 スマホの画面回転・リサイズ時に地図サイズを再計算
         window.addEventListener('resize', () => {
             map.invalidateSize();
+            updateGrid();
         });
         window.addEventListener('orientationchange', () => {
-            setTimeout(() => { map.invalidateSize(); }, 300);
+            setTimeout(() => { map.invalidateSize(); updateGrid(); }, 300);
         });
     </script>
 </body>
