@@ -283,12 +283,15 @@
                     <span>Z軸（上下：南がプラス / 北がマイナス）</span>
                 </div>
                 
-                <!-- 💡 地形マップ切り替えチェックボックス -->
+                <!-- 💡 地形マップ切り替えチェックボックス・月別マップ選択 -->
                 <div class="border-t border-gray-700 pt-2 mt-2">
                     <label class="flex items-center gap-2 cursor-pointer text-gray-300 hover:text-white transition-colors">
                         <input type="checkbox" id="toggle-bg-image" class="rounded bg-gray-850 border-gray-600 text-green-500 focus:ring-green-500 focus:ring-offset-gray-900" checked>
-                        <span>Chunkbase背景を表示</span>
+                        <span>地図背景を表示</span>
                     </label>
+                    <select id="map-image-select" class="mt-2 w-full bg-[#26262b] border border-gray-700 rounded px-2 py-1 text-xs text-gray-200 focus:outline-none focus:border-green-500">
+                        <!-- JavaScriptで mapImageList から動的に生成 -->
+                    </select>
                 </div>
             </div>
 
@@ -331,18 +334,40 @@
         // ==========================================================
 
         // ==========================================================
-        // 🗺️ 2. ★背景画像の設定（画像を入手したらここを変更します！）
+        // 🗺️ 2. ★背景画像の設定（新しい月の地図ができたらここに追記します！）
         // ==========================================================
-        const bgConfig = {
-            fileName: 'world_map.png', // 保存した地形画像のファイル名
-            // [X座標, Z座標] の順で、画像の対角の2点を指定します（順不同でOK）。
-            // 例：Chunkbaseで切り抜いた範囲が「X: -1600〜1600、Z: -1600〜1600」の場合
-            //     bounds: [[-1600, -1600], [1600, 1600]]
-            bounds: [[-1600, -1600], [1984, 1472]],
-            opacity: 0.75 // 画像の透明度 (0.0 〜 1.0)
-        };
+        // 毎月の地図画像は "map" フォルダの中に入れてください（ファイル名: MMDDworld_map.png）
+        // 例：7月4日の画像なら map/0704world_map.png
+        // 一番上（配列の先頭）が「初期表示される最新の地図」になります。新しい月の画像は
+        // 配列の先頭に追加してください。
+        const mapImageList = [
+            {
+                fileName: 'map/0704world_map.png',
+                // [X座標, Z座標] の順で、画像の対角の2点を指定します（順不同でOK）。
+                // 例：Chunkbaseで切り抜いた範囲が「X: -1600〜1600、Z: -1600〜1600」の場合
+                //     bounds: [[-1600, -1600], [1600, 1600]]
+                bounds: [[-1600, -1600], [1984, 1472]],
+                opacity: 0.75 // 画像の透明度 (0.0 〜 1.0)
+            }
+            // 新しい月の地図を追加する例（先頭に追加）：
+            // {
+            //     fileName: 'map/0801world_map.png',
+            //     bounds: [[-1600, -1600], [1984, 1472]],
+            //     opacity: 0.75
+            // },
+        ];
 
-        // bgConfig.bounds([X, Z]の順)をLeafletが要求する[Z由来の緯度, X由来の経度]の順に変換する
+        // ファイル名の先頭4桁（MMDD）から「◯月◯日 地図」というラベルを自動生成する
+        function getMapLabel(fileName) {
+            const base = fileName.split('/').pop();
+            const match = base.match(/^(\d{2})(\d{2})/);
+            if (!match) return base;
+            const month = parseInt(match[1], 10);
+            const day = parseInt(match[2], 10);
+            return `${month}月${day}日 地図`;
+        }
+
+        // bounds([X, Z]の順)をLeafletが要求する[Z由来の緯度, X由来の経度]の順に変換する
         function toLeafletBounds(bounds) {
             return bounds.map(([x, z]) => [-z, x]);
         }
@@ -365,6 +390,18 @@
         // 🖼️ 4. 背景画像のオーバーレイ配置
         // ==========================================================
         let bgImageOverlay = null;
+        const mapImageSelect = document.getElementById('map-image-select');
+
+        // ドロップダウンに mapImageList の一覧を反映する（先頭＝最新が選択された状態で開始）
+        function populateMapImageSelect() {
+            mapImageSelect.innerHTML = '';
+            mapImageList.forEach((entry, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = getMapLabel(entry.fileName);
+                mapImageSelect.appendChild(option);
+            });
+        }
 
         function loadBackgroundImage() {
             // 既存の画像レイヤーがあれば一旦地図から削除する
@@ -373,17 +410,19 @@
                 bgImageOverlay = null;
             }
 
-            // チェックボックスがON、かつ設定した画像ファイル名がある場合にのみ重ねる
+            // チェックボックスがON、かつ選択中の地図画像がある場合にのみ重ねる
             const isChecked = document.getElementById('toggle-bg-image').checked;
-            if (isChecked && bgConfig.fileName) {
-                bgImageOverlay = L.imageOverlay(bgConfig.fileName, toLeafletBounds(bgConfig.bounds), {
-                    opacity: bgConfig.opacity,
+            const selectedEntry = mapImageList[Number(mapImageSelect.value)] || mapImageList[0];
+
+            if (isChecked && selectedEntry && selectedEntry.fileName) {
+                bgImageOverlay = L.imageOverlay(selectedEntry.fileName, toLeafletBounds(selectedEntry.bounds), {
+                    opacity: selectedEntry.opacity,
                     interactive: false // 画像がクリック操作を遮らないようにする
                 });
                 
                 // 画像が見つからなくても地図全体がクラッシュしないためのエラー対策
                 bgImageOverlay.on('error', function() {
-                    console.log("背景画像 world_map.png が見つからないか、ローカル制限でロードできません。");
+                    console.log(`背景画像 ${selectedEntry.fileName} が見つからないか、ローカル制限でロードできません。`);
                 });
                 
                 bgImageOverlay.addTo(map);
@@ -670,8 +709,10 @@
         // ==========================================================
         initApp();
 
-        // 画像切り替えチェックボックスの連動イベント
+        // 画像切り替えチェックボックス・地図画像選択ドロップダウンの連動イベント
+        populateMapImageSelect();
         document.getElementById('toggle-bg-image').addEventListener('change', loadBackgroundImage);
+        document.getElementById('map-image-select').addEventListener('change', loadBackgroundImage);
 
         // ==========================================================
         // 📦 必要ファイル一式をZIPにまとめてダウンロード
@@ -679,12 +720,31 @@
         // ※ file:// で直接開いた場合はブラウザの制限で失敗します（GitHub Pagesなど
         //    サーバー経由で開いている場合のみ動作します）
         // ==========================================================
-        const DOWNLOAD_FILES = [
+
+        // 必須ファイル（1つでも取得に失敗したらZIP作成自体を中止する）
+        const REQUIRED_DOWNLOAD_FILES = [
             'minecraft_map.html',
             'background_image_guide.html',
-            'memberlist.js',
-            'world_map.png'
+            'memberlist.js'
         ];
+
+        // memberlist.js に登録されているアバター画像のファイル名一覧を集める（重複なし）
+        function getAvatarFileList() {
+            const files = new Set();
+            memberData.forEach((m) => {
+                if (m.icon) files.add(`avatars/${m.icon}`);
+                if (m.icon2) files.add(`avatars/${m.icon2}`);
+            });
+            return Array.from(files);
+        }
+
+        // 画像類（map・avatars）：1つ見つからなくても他は続行し、ZIPには入れるだけ入れる
+        function getOptionalDownloadFiles() {
+            return [
+                ...mapImageList.map((entry) => entry.fileName),
+                ...getAvatarFileList()
+            ];
+        }
 
         async function downloadAllFiles() {
             const btn = document.getElementById('download-files-btn');
@@ -696,11 +756,26 @@
             try {
                 const zip = new JSZip();
 
-                await Promise.all(DOWNLOAD_FILES.map(async (fileName) => {
+                // 必須ファイル：1つでも失敗したら中止
+                await Promise.all(REQUIRED_DOWNLOAD_FILES.map(async (fileName) => {
                     const res = await fetch(fileName, { cache: 'no-store' });
                     if (!res.ok) throw new Error(`${fileName} の取得に失敗しました (HTTP ${res.status})`);
                     const blob = await res.blob();
                     zip.file(fileName, blob);
+                }));
+
+                // 画像類：見つからないものはスキップして続行（欠けていてもZIP自体は作る）
+                const missingFiles = [];
+                await Promise.all(getOptionalDownloadFiles().map(async (fileName) => {
+                    try {
+                        const res = await fetch(fileName, { cache: 'no-store' });
+                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                        const blob = await res.blob();
+                        zip.file(fileName, blob);
+                    } catch (e) {
+                        missingFiles.push(fileName);
+                        console.warn(`${fileName} が見つからなかったためZIPに含めていません。`, e);
+                    }
                 }));
 
                 const zipBlob = await zip.generateAsync({ type: 'blob' });
@@ -712,6 +787,10 @@
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
+
+                if (missingFiles.length > 0) {
+                    alert(`ZIPを作成しましたが、以下のファイルは見つからなかったため含まれていません:\n\n${missingFiles.join('\n')}`);
+                }
             } catch (err) {
                 console.error(err);
                 alert('ファイルの取得に失敗しました。\nGitHub Pagesなどサーバー経由で開いているか確認してください（ローカルでファイルをダブルクリックして開いている場合はブラウザの制限で失敗します）。\n\n詳細: ' + err.message);
