@@ -328,11 +328,17 @@
         // ==========================================================
         const bgConfig = {
             fileName: 'world_map.png', // 保存した地形画像のファイル名
-            // [Z軸の南端(プラス), X軸の西端(マイナス)], [Z軸の北端(マイナス), X軸の東端(プラス)] の順で指定します。
+            // [X座標, Z座標] の順で、画像の対角の2点を指定します（順不同でOK）。
             // 例：Chunkbaseで切り抜いた範囲が「X: -1600〜1600、Z: -1600〜1600」の場合
-            bounds: [[1536, -1792], [-1536, 1792]],
+            //     bounds: [[-1600, -1600], [1600, 1600]]
+            bounds: [[-1600, -1600], [1984, 1472]],
             opacity: 0.75 // 画像の透明度 (0.0 〜 1.0)
         };
+
+        // bgConfig.bounds([X, Z]の順)をLeafletが要求する[Z由来の緯度, X由来の経度]の順に変換する
+        function toLeafletBounds(bounds) {
+            return bounds.map(([x, z]) => [-z, x]);
+        }
 
         // ==========================================================
         // ⚙️ 3. マップ初期設定 (マイクラ平面座標)
@@ -363,7 +369,7 @@
             // チェックボックスがON、かつ設定した画像ファイル名がある場合にのみ重ねる
             const isChecked = document.getElementById('toggle-bg-image').checked;
             if (isChecked && bgConfig.fileName) {
-                bgImageOverlay = L.imageOverlay(bgConfig.fileName, bgConfig.bounds, {
+                bgImageOverlay = L.imageOverlay(bgConfig.fileName, toLeafletBounds(bgConfig.bounds), {
                     opacity: bgConfig.opacity,
                     interactive: false // 画像がクリック操作を遮らないようにする
                 });
