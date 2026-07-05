@@ -97,6 +97,10 @@
             color: #ffffff;
             margin-top: 1px;
         }
+        /* 🔍 ズームアウト時はアイコン同士が密集して見にくくなるため、座標は非表示にする */
+        #map.low-zoom .permanent-name-label .coord-line {
+            display: none;
+        }
         /* 💡 未登録状態のネームタグを少し目立たなくするスタイル */
         .permanent-name-label.unregistered {
             border: 1px solid #55555d !important;
@@ -420,6 +424,22 @@
         map.on('moveend zoomend', updateGrid);
 
         // ==========================================================
+        // 🔍 5-1b. ズームアウト時は座標表示を隠して密集を緩和する
+        // ==========================================================
+        const LOW_ZOOM_THRESHOLD = 0; // これより低いズームレベルでは座標を非表示にする
+        const mapEl = document.getElementById('map');
+
+        function updateZoomDensityClass() {
+            if (map.getZoom() < LOW_ZOOM_THRESHOLD) {
+                mapEl.classList.add('low-zoom');
+            } else {
+                mapEl.classList.remove('low-zoom');
+            }
+        }
+
+        map.on('zoomend', updateZoomDensityClass);
+
+        // ==========================================================
         // 📏 5-3. 512刻みのX軸・Z軸ラベル（画面上端・右端に表示するルーラー）
         // ==========================================================
         const AXIS_LABEL_INTERVAL = 512;
@@ -705,6 +725,7 @@
             map.invalidateSize();
             updateGrid();
             updateAxisLabels();
+            updateZoomDensityClass();
             setTimeout(() => { map.invalidateSize(); updateGrid(); updateAxisLabels(); }, 200);
         });
 
