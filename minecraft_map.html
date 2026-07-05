@@ -97,9 +97,12 @@
             color: #ffffff;
             margin-top: 1px;
         }
-        /* 🔍 ズームアウト時はアイコン同士が密集して見にくくなるため、座標は非表示にする */
-        #map.low-zoom .permanent-name-label .coord-line {
-            display: none;
+        /* 🔍 スマホ幅ではズームアウト時にアイコン同士が密集して見にくくなるため、座標を非表示にする */
+        /* PC幅では常に座標を表示する（このメディアクエリの外なので対象外） */
+        @media (max-width: 768px) {
+            #map.low-zoom .permanent-name-label .coord-line {
+                display: none;
+            }
         }
         /* 💡 未登録状態のネームタグを少し目立たなくするスタイル */
         .permanent-name-label.unregistered {
