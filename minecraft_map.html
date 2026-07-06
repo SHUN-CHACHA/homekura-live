@@ -233,7 +233,7 @@
             #map-wrap > section {
                 border-radius: 0 !important;
                 border: none !important;
-                padding-top: 56px !important; /* 上部の固定バーの高さ分だけ余白を確保 */
+                padding-top: var(--mobile-topbar-height, 116px) !important; /* 上部の固定バーの高さ分だけ余白を確保（JSで実測して更新） */
             }
 
             /* ドロワー全体：index.htmlと同じライトテーマに */
@@ -360,14 +360,19 @@
 </head>
 <body class="text-gray-100 bg-[#121214]">
 
-    <!-- 📱 スマホ専用：常に表示される上部バー（タイトル・地図切り替え・戻る・メニュー） -->
-    <div id="mobile-topbar" class="lg:hidden fixed top-0 left-0 right-0 z-[1300] bg-[#1a1a1f]/95 backdrop-blur border-b border-gray-800 px-3 py-2 flex flex-wrap items-center gap-2">
-        <a href="index.html" class="pill-btn-light" style="flex-shrink:0;">🏠 ポータルに戻る</a>
-        <span class="flex-shrink-0 text-green-500 font-extrabold text-xs truncate max-w-[30vw]">homeクラ Season２ メンバー拠点マップ</span>
-        <select class="map-image-select flex-1 min-w-0 bg-[#26262b] border border-gray-700 rounded px-2 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-green-500">
+    <!-- 📱 スマホ専用：常に表示される上部バー（タイトル・戻る/メニュー・地図切り替え） -->
+    <div id="mobile-topbar" class="lg:hidden fixed top-0 left-0 right-0 z-[1300] bg-[#1a1a1f]/95 backdrop-blur border-b border-gray-800 px-3 py-2 flex flex-col gap-2">
+        <!-- 1行目：タイトル -->
+        <div class="text-green-500 font-extrabold text-sm text-center truncate">homeクラ　Season2　メンバー一覧</div>
+        <!-- 2行目：戻る・MENU -->
+        <div class="flex items-center justify-between gap-2">
+            <a href="index.html" class="pill-btn-light">🏠 ポータルに戻る</a>
+            <button id="member-drawer-toggle" class="pill-btn-light">☰ MENU</button>
+        </div>
+        <!-- 3行目：地図画像の切り替え -->
+        <select class="map-image-select w-full bg-[#26262b] border border-gray-700 rounded px-2 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-green-500">
             <!-- JavaScriptで mapImageList から動的に生成 -->
         </select>
-        <button id="member-drawer-toggle" class="pill-btn-light" style="flex-shrink:0;">☰ MENU</button>
     </div>
 
     <!-- 📱 スマホ専用：ドロワーを開いた時の背景オーバーレイ（タップで閉じる） -->
@@ -1046,13 +1051,22 @@
 
         document.getElementById('download-files-btn').addEventListener('click', downloadAllFiles);
 
+        // 📱 上部バーの実際の高さを測って、マップの余白(padding-top)に反映する
+        const mobileTopbarEl = document.getElementById('mobile-topbar');
+        function updateMobileTopbarHeight() {
+            if (mobileTopbarEl && mobileTopbarEl.offsetHeight > 0) {
+                document.documentElement.style.setProperty('--mobile-topbar-height', `${mobileTopbarEl.offsetHeight}px`);
+            }
+        }
+
         window.addEventListener('load', () => {
             loadBackgroundImage(); // 初期表示の段階から画像をロード
             map.invalidateSize();
             updateGrid();
             updateAxisLabels();
             updateZoomDensityClass();
-            setTimeout(() => { map.invalidateSize(); updateGrid(); updateAxisLabels(); }, 200);
+            updateMobileTopbarHeight();
+            setTimeout(() => { map.invalidateSize(); updateGrid(); updateAxisLabels(); updateMobileTopbarHeight(); }, 200);
         });
 
         // 📱 スマホの画面回転・リサイズ時に地図サイズを再計算
@@ -1060,9 +1074,10 @@
             map.invalidateSize();
             updateGrid();
             updateAxisLabels();
+            updateMobileTopbarHeight();
         });
         window.addEventListener('orientationchange', () => {
-            setTimeout(() => { map.invalidateSize(); updateGrid(); updateAxisLabels(); }, 300);
+            setTimeout(() => { map.invalidateSize(); updateGrid(); updateAxisLabels(); updateMobileTopbarHeight(); }, 300);
         });
     </script>
 </body>
