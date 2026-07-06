@@ -29,7 +29,7 @@ const memberData = [
     { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }, // 18人目
     { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }, // 19人目
     { area: "エリア20", name: "じゃじゃーん菊池", icon: "jajaankikuchi.svg", name2: "", icon2: "", x: -707, z: -707 }, // 20人目
-    { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }, // 21人目
+    { area: "エリア21", name: "さかいさんだー", icon: "Sakai_Thunder.svg", name2: "", icon2: "", x: -259, z: -966 }, // 21人目
     { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }, // 22人目
     { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }, // 23人目
     { area: "エリア24", name: "よいよい", icon: "yoiy0i.svg", name2: "", icon2: "", x: 966, z: -259 }, // 24人目
