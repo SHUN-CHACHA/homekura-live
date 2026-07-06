@@ -319,10 +319,10 @@ window.CONFIG = {
         },
         {
                 "name": "むっこ氏",
-                "id": "UCedenULTLYf3DanflEXdRCQ",
+                "id": "UCZf78JzSJj9mDQOBIr4mPqg",
                 "minecraftId": "mukkoman",
                 "uuid": "4d72d173-dc5e-4e31-b913-eda903e260b2",
-                "twitterId": "",
+                "twitterId": "mukkkkko",
                 "twitchId": "",
                 "tiktokId": "",
                 "instaId": "",
