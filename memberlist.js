@@ -2,7 +2,7 @@
 // 📊 homeクラ メンバー拠点マップ - メンバーデータ
 // ここを編集すればマップ・一覧に反映されます。
 //
-// icon  : avatars フォルダに入れた顔画像のファイル名（例: "yamachan.png"）
+// icon  : avatars フォルダに入れた顔画像のファイル名（例: "xxxxxx.png"）
 //         空欄のままだとプレースホルダー画像が表示されます
 // name2 / icon2 : 同じ拠点に2人目がいる場合はここに記入すると
 //                 アイコンが2つ並んで表示されます
@@ -44,5 +44,5 @@ const memberData = [
     { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }, // 33人目
     { area: "エリア34", name: "鶴太郎", icon: "turu0004.svg", name2: "", icon2: "", x: 0, z: -1280 }, // 34人目
     { area: "引越し中", name: "", icon: "", name2: "", icon2: "", x: 640, z: -1109 }, // 35人目
-    { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }  // 36人目
+    { area: "エリア36", name: "凸もり", icon: "totsumori.svg", name2: "", icon2: "", x: 1109, z: -640 }  // 36人目
 ];
