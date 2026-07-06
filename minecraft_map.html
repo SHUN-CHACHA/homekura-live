@@ -198,14 +198,66 @@
             width: 30px;
             height: 30px;
         }
+
+        /* 📱 スマホ幅（lg未満）：マップを全画面表示にし、メンバー一覧はドロワー化する */
+        @media (max-width: 1023px) {
+            #map-wrap {
+                position: fixed !important;
+                inset: 0 !important;
+                height: 100vh !important;
+                width: 100vw !important;
+                z-index: 10;
+            }
+            #map-wrap > section {
+                border-radius: 0 !important;
+                border: none !important;
+                padding-top: 56px !important; /* 上部の固定バーの高さ分だけ余白を確保 */
+            }
+            #member-drawer {
+                position: fixed !important;
+                top: 0;
+                left: 0;
+                width: 85% !important;
+                max-width: 360px;
+                height: 100vh !important;
+                z-index: 1280;
+                transform: translateX(-100%);
+                transition: transform 0.25s ease-out;
+                overflow-y: auto;
+                padding: 12px;
+                background: #121214;
+            }
+            #member-drawer.drawer-open {
+                transform: translateX(0);
+            }
+        }
     </style>
 </head>
 <body class="text-gray-100 bg-[#121214]">
 
+    <!-- 📱 スマホ専用：常に表示される上部バー（タイトル・地図切り替え・戻るボタン） -->
+    <div id="mobile-topbar" class="lg:hidden fixed top-0 left-0 right-0 z-[1300] bg-[#1a1a1f]/95 backdrop-blur border-b border-gray-800 px-3 py-2 flex items-center gap-2">
+        <a href="index.html" class="flex-shrink-0 text-xs bg-[#26262b] hover:bg-[#333339] border border-gray-700 text-gray-300 font-bold px-2.5 py-1.5 rounded-lg transition-colors">
+            ← 戻る
+        </a>
+        <span class="flex-shrink-0 text-green-500 font-extrabold text-xs whitespace-nowrap">拠点マップ</span>
+        <select class="map-image-select flex-1 min-w-0 bg-[#26262b] border border-gray-700 rounded px-2 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-green-500">
+            <!-- JavaScriptで mapImageList から動的に生成 -->
+        </select>
+    </div>
+
+    <!-- 📱 スマホ専用：メンバー一覧を引き出すフローティングボタン -->
+    <button id="member-drawer-toggle" class="lg:hidden fixed bottom-5 right-5 z-[1300] bg-green-600 hover:bg-green-500 text-white font-bold w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-xl transition-colors">
+        👥
+    </button>
+
+    <!-- 📱 スマホ専用：ドロワーを開いた時の背景オーバーレイ（タップで閉じる） -->
+    <div id="drawer-backdrop" class="lg:hidden fixed inset-0 bg-black/60 z-[1250] hidden"></div>
+
     
 <div class="max-w-[1800px] mx-auto p-2 sm:p-4">
 <div class="flex flex-col lg:flex-row gap-4 lg:h-screen">
-<aside class="w-full lg:w-[430px] flex flex-col gap-4 flex-shrink-0">
+<aside id="member-drawer" class="w-full lg:w-[430px] flex flex-col gap-4 flex-shrink-0">
 <div class="bg-[#1a1a1f] border-b border-gray-800 py-4 sm:py-6 px-4 text-center relative">
         
         <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-green-500 tracking-wider">homeクラ Season２ メンバー拠点マップ</h1>
@@ -268,7 +320,7 @@
             </div>
         </section>
 </aside>
-<section class="h-[65vh] lg:h-auto lg:flex-1">
+<section id="map-wrap" class="h-[65vh] lg:h-auto lg:flex-1">
 <section class="flex-1 bg-[#1a1a1f] rounded-xl border border-gray-800 p-4 flex flex-col h-full relative">
             
             <!-- 地図上のコントローラー・凡例 -->
@@ -289,7 +341,7 @@
                         <input type="checkbox" id="toggle-bg-image" class="rounded bg-gray-850 border-gray-600 text-green-500 focus:ring-green-500 focus:ring-offset-gray-900" checked>
                         <span>地図背景を表示</span>
                     </label>
-                    <select id="map-image-select" class="mt-2 w-full bg-[#26262b] border border-gray-700 rounded px-2 py-1 text-xs text-gray-200 focus:outline-none focus:border-green-500">
+                    <select id="map-image-select" class="map-image-select mt-2 w-full bg-[#26262b] border border-gray-700 rounded px-2 py-1 text-xs text-gray-200 focus:outline-none focus:border-green-500">
                         <!-- JavaScriptで mapImageList から動的に生成 -->
                     </select>
                 </div>
@@ -390,17 +442,25 @@
         // 🖼️ 4. 背景画像のオーバーレイ配置
         // ==========================================================
         let bgImageOverlay = null;
-        const mapImageSelect = document.getElementById('map-image-select');
+        const mapImageSelects = () => Array.from(document.querySelectorAll('.map-image-select'));
 
         // ドロップダウンに mapImageList の一覧を反映する（先頭＝最新が選択された状態で開始）
+        // デスクトップ用・スマホ用など、複数箇所にある .map-image-select すべてに反映する
         function populateMapImageSelect() {
-            mapImageSelect.innerHTML = '';
-            mapImageList.forEach((entry, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = getMapLabel(entry.fileName);
-                mapImageSelect.appendChild(option);
+            mapImageSelects().forEach((sel) => {
+                sel.innerHTML = '';
+                mapImageList.forEach((entry, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = getMapLabel(entry.fileName);
+                    sel.appendChild(option);
+                });
             });
+        }
+
+        // どれか1つのドロップダウンが変更されたら、他のドロップダウンにも同じ選択を反映する
+        function syncMapImageSelects(value) {
+            mapImageSelects().forEach((sel) => { sel.value = value; });
         }
 
         function loadBackgroundImage() {
@@ -412,7 +472,8 @@
 
             // チェックボックスがON、かつ選択中の地図画像がある場合にのみ重ねる
             const isChecked = document.getElementById('toggle-bg-image').checked;
-            const selectedEntry = mapImageList[Number(mapImageSelect.value)] || mapImageList[0];
+            const currentSelect = mapImageSelects()[0];
+            const selectedEntry = mapImageList[Number(currentSelect ? currentSelect.value : 0)] || mapImageList[0];
 
             if (isChecked && selectedEntry && selectedEntry.fileName) {
                 bgImageOverlay = L.imageOverlay(selectedEntry.fileName, toLeafletBounds(selectedEntry.bounds), {
@@ -712,7 +773,41 @@
         // 画像切り替えチェックボックス・地図画像選択ドロップダウンの連動イベント
         populateMapImageSelect();
         document.getElementById('toggle-bg-image').addEventListener('change', loadBackgroundImage);
-        document.getElementById('map-image-select').addEventListener('change', loadBackgroundImage);
+        document.querySelectorAll('.map-image-select').forEach((sel) => {
+            sel.addEventListener('change', (e) => {
+                syncMapImageSelects(e.target.value);
+                loadBackgroundImage();
+            });
+        });
+
+        // ==========================================================
+        // 📱 スマホ用：メンバー一覧ドロワーの開閉
+        // ==========================================================
+        const memberDrawer = document.getElementById('member-drawer');
+        const drawerBackdrop = document.getElementById('drawer-backdrop');
+        const drawerToggleBtn = document.getElementById('member-drawer-toggle');
+
+        function openMemberDrawer() {
+            memberDrawer.classList.add('drawer-open');
+            drawerBackdrop.classList.remove('hidden');
+        }
+        function closeMemberDrawer() {
+            memberDrawer.classList.remove('drawer-open');
+            drawerBackdrop.classList.add('hidden');
+        }
+        drawerToggleBtn.addEventListener('click', () => {
+            if (memberDrawer.classList.contains('drawer-open')) {
+                closeMemberDrawer();
+            } else {
+                openMemberDrawer();
+            }
+        });
+        drawerBackdrop.addEventListener('click', closeMemberDrawer);
+
+        // 一覧の行をタップして地図にジャンプしたら、ドロワーは自動で閉じる
+        tableBody.addEventListener('click', (e) => {
+            if (e.target.closest('tr')) closeMemberDrawer();
+        });
 
         // ==========================================================
         // 📦 必要ファイル一式をZIPにまとめてダウンロード
