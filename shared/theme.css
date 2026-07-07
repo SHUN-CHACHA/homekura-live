@@ -1,0 +1,61 @@
+/* ==========================================================
+   homeクラ 共通ライトテーマ CSS
+   index.html / admin-7b9a4c2e.html / background_image_guide.html /
+   features.html / minecraft_map.html（一部）で共通利用します。
+
+   このファイルを編集すると、上記ページの配色をまとめて変更できます。
+   ※ minecraft_map.html の地図表示部分（ダークテーマ・Void背景など）は
+     対象外です。あちらは独自のカラーカスタマイズ機能を持っています。
+========================================================== */
+
+:root {
+    /* --- 基本カラートークン（正式名） --- */
+    --bg-color: #eef3ee;
+    --container-bg: #f7faf7;
+    --input-bg: #f0f5f0;
+    --text-color: #1a2418;
+    --secondary-text: #414d3f;
+    --accent-green: #2d5a27;
+    --accent-green-light: #e8f5e8;
+    --accent-green-tint: #e2eae2;
+    --border-color: #d8e2d7;
+    --accent-yellow: #ca8a04;
+    --accent-blue: #2563eb;
+    --accent-red: #dc2626;
+    --accent-purple: #7c3aed;
+
+    /* --- features.html が使っていた別名（互換のためのエイリアス） --- */
+    --bg: var(--bg-color);
+    --surface: var(--container-bg);
+    --green: var(--accent-green);
+    --green-lt: var(--accent-green-light);
+    --border: var(--border-color);
+    --text: var(--text-color);
+    --sub: var(--secondary-text);
+    --blue: var(--accent-blue);
+    --yellow: var(--accent-yellow);
+    --red: var(--accent-red);
+    --purple: var(--accent-purple);
+}
+
+/* --- 共通の丸ピルボタン（「戻る」ボタンなどで使用） --- */
+.pill-btn-light {
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--secondary-text);
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background: var(--container-bg);
+    transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.pill-btn-light:hover {
+    background: var(--accent-green-light);
+    color: var(--accent-green);
+}
