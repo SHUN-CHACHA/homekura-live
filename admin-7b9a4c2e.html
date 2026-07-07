@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>homeクラ 配信ポータル 管理画面</title>
+    <link rel="stylesheet" href="shared/theme.css">
     <style>
         body { 
             font-family: sans-serif; 
             padding: 20px; 
-            background: #eef3ee;
-            color: #1a2418; 
+            background: var(--bg-color);
+            color: var(--text-color); 
         }
         
-        h2 { border-bottom: 2px solid #2d5a27; padding-bottom: 8px; color: #2d5a27; }
+        h2 { border-bottom: 2px solid var(--accent-green); padding-bottom: 8px; color: var(--accent-green); }
         
         #memberFormContainer {
-            background: #f7faf7;
+            background: var(--container-bg);
             padding: 15px;
             border-radius: 8px;
-            border: 1px solid #d8e2d7;
+            border: 1px solid var(--border-color);
             margin-bottom: 20px;
         }
 
@@ -36,16 +37,16 @@
         
         input[type="text"] { 
             width: 400px; padding: 6px; 
-            background: #f0f5f0; border: 1px solid #d8e2d7; border-radius: 4px; color: #1a2418;
+            background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color);
         }
-        input[type="text"]:focus { background: #ffffff; border-color: #2d5a27; outline: none; }
-        input[type="color"] { width: 50px; height: 30px; vertical-align: middle; border: 1px solid #d8e2d7; background: #f0f5f0; cursor: pointer; }
+        input[type="text"]:focus { background: #ffffff; border-color: var(--accent-green); outline: none; }
+        input[type="color"] { width: 50px; height: 30px; vertical-align: middle; border: 1px solid var(--border-color); background: var(--input-bg); cursor: pointer; }
         .color-code-input { width: 100px !important; margin-left: 10px; vertical-align: middle; font-family: monospace; text-transform: uppercase; }
 
         button { padding: 6px 12px; margin-top: 10px; cursor: pointer; border-radius: 4px; }
-        .btn-save { background: #2d5a27; color: white; border: none; font-weight: bold; }
+        .btn-save { background: var(--accent-green); color: white; border: none; font-weight: bold; }
         .btn-save:hover { opacity: 0.9; }
-        .btn-export { background: #2563eb; color: white; border: none; font-weight: bold; padding: 10px 20px; }
+        .btn-export { background: var(--accent-blue); color: white; border: none; font-weight: bold; padding: 10px 20px; }
         .btn-export:hover { opacity: 0.9; }
         .btn-download-avatar { background: #d97706; color: white; border: none; font-weight: bold; margin-left: 10px; padding: 4px 10px; font-size: 13px; }
         .btn-download-avatar:hover { opacity: 0.9; }
@@ -56,7 +57,7 @@
         .uuid-label { font-size: 12px; font-weight: bold; color: #5c6b5a; white-space: nowrap; }
         .uuid-display {
             font-family: monospace; font-size: 11px; color: #5c6b5a;
-            background: #e2eae2; border: 1px solid #d8e2d7; border-radius: 4px;
+            background: var(--accent-green-tint); border: 1px solid var(--border-color); border-radius: 4px;
             padding: 4px 8px; min-width: 240px; letter-spacing: 0.03em;
         }
         .uuid-display.ok  { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
@@ -72,18 +73,18 @@
         .editing { background: #fffbeb !important; border: 1px solid #fde68a !important; }
         .edit-badge { display: inline-block; background: #b45309; color: white; padding: 2px 8px; font-size: 12px; border-radius: 4px; margin-bottom: 10px; font-weight: bold; }
 
-        .member-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #f7faf7; }
-        .member-table th, .member-table td { border: 1px solid #d8e2d7; padding: 10px; text-align: left; vertical-align: middle; }
-        .member-table th { background: #e2eae2; color: #2d5a27; }
+        .member-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: var(--container-bg); }
+        .member-table th, .member-table td { border: 1px solid var(--border-color); padding: 10px; text-align: left; vertical-align: middle; }
+        .member-table th { background: var(--accent-green-tint); color: var(--accent-green); }
         
-        .clickable-name { color: #2d5a27; text-decoration: underline; cursor: pointer; }
-        .clickable-name:hover { color: #143311; background: #e2eae2; }
+        .clickable-name { color: var(--accent-green); text-decoration: underline; cursor: pointer; }
+        .clickable-name:hover { color: #143311; background: var(--accent-green-tint); }
 
         .mc-head-box {
             width: 28px; height: 28px; border-radius: 4px; overflow: hidden;
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1); background: #ffffff;
-            border: 1px solid #d8e2d7; margin: 0 auto;
+            border: 1px solid var(--border-color); margin: 0 auto;
         }
         .mc-head-img { width: 100%; height: 100%; object-fit: contain; transform: scale(1.1); }
         .coming-soon-lbl {
@@ -99,28 +100,28 @@
         #cancelBtn:hover { opacity: 0.9; }
 
         .label-badge-tt { display: inline-block; background: #010101; color: #ffffff; font-size: 10px; font-weight: bold; padding: 1px 5px; border-radius: 3px; margin-left: 4px; vertical-align: middle; }
-        .label-badge-ma { display: inline-block; background: #2563eb; color: #ffffff; font-size: 10px; font-weight: bold; padding: 1px 5px; border-radius: 3px; margin-left: 4px; vertical-align: middle; }
+        .label-badge-ma { display: inline-block; background: var(--accent-blue); color: #ffffff; font-size: 10px; font-weight: bold; padding: 1px 5px; border-radius: 3px; margin-left: 4px; vertical-align: middle; }
 
         .btn-uuid-manual  { background: #f59e0b; color: white; border: none; font-size: 11px; font-weight: bold; padding: 3px 10px; border-radius: 4px; cursor: pointer; margin-top: 0; }
         .btn-uuid-manual:hover  { opacity: 0.85; }
-        .btn-uuid-confirm { background: #2d5a27; color: white; border: none; font-size: 12px; font-weight: bold; padding: 5px 14px; border-radius: 4px; cursor: pointer; margin-top: 0; }
+        .btn-uuid-confirm { background: var(--accent-green); color: white; border: none; font-size: 12px; font-weight: bold; padding: 5px 14px; border-radius: 4px; cursor: pointer; margin-top: 0; }
         .btn-uuid-confirm:hover  { opacity: 0.9; }
         .btn-uuid-confirm:disabled { background: #cbd5e1; cursor: not-allowed; }
         .btn-uuid-cancel  { background: #64748b; color: white; border: none; font-size: 12px; font-weight: bold; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-top: 0; }
         .btn-uuid-cancel:hover { opacity: 0.9; }
 
-        .helper-card { background: #ffffff; border: 1px solid #d8e2d7; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .helper-card h3 { margin-top: 0; margin-bottom: 10px; font-size: 14px; font-weight: bold; color: #2d5a27; border-bottom: 1px solid #d8e2d7; padding-bottom: 6px; }
+        .helper-card { background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .helper-card h3 { margin-top: 0; margin-bottom: 10px; font-size: 14px; font-weight: bold; color: var(--accent-green); border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
 
-        .steps-list-lg { margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.8; color: #1a2418; }
+        .steps-list-lg { margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.8; color: var(--text-color); }
         .steps-list-lg > li { margin-bottom: 14px; }
-        .steps-list-lg > li > strong { font-size: 14px; color: #2d5a27; display: block; margin-bottom: 4px; }
+        .steps-list-lg > li > strong { font-size: 14px; color: var(--accent-green); display: block; margin-bottom: 4px; }
         .steps-list-lg ul { margin: 4px 0 0 0; padding-left: 18px; list-style: disc; }
         .steps-list-lg ul li { margin-bottom: 4px; }
-        .steps-list-lg code { background: #e2eae2; padding: 1px 5px; border-radius: 3px; font-size: 12px; color: #2d5a27; }
-        .helper-note { margin: 12px 0 0 0; padding: 10px 12px; background: #fffbeb; border-left: 3px solid #ca8a04; border-radius: 4px; font-size: 12px; color: #5c4a00; line-height: 1.7; }
+        .steps-list-lg code { background: var(--accent-green-tint); padding: 1px 5px; border-radius: 3px; font-size: 12px; color: var(--accent-green); }
+        .helper-note { margin: 12px 0 0 0; padding: 10px 12px; background: #fffbeb; border-left: 3px solid var(--accent-yellow); border-radius: 4px; font-size: 12px; color: #5c4a00; line-height: 1.7; }
         
-        #configOutput { width: 100%; height: 160px; font-family: monospace; font-size: 11px; box-sizing: border-box; padding: 8px; border-radius: 4px; border: 1px solid #d8e2d7; background: #fafafa; color: #1a2418; resize: vertical; }
+        #configOutput { width: 100%; height: 160px; font-family: monospace; font-size: 11px; box-sizing: border-box; padding: 8px; border-radius: 4px; border: 1px solid var(--border-color); background: #fafafa; color: var(--text-color); resize: vertical; }
 
         .uuid-cell { font-family: monospace; font-size: 10px; color: #5c6b5a; word-break: break-all; max-width: 130px; }
 
@@ -134,8 +135,8 @@
 
     <!-- ナビゲーション -->
     <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
-        <a href="index.html" style="text-decoration:none; font-size:13px; font-weight:bold; color:#414d3f; padding:5px 14px; border-radius:20px; border:1px solid #d8e2d7; background:#eef3ee; transition:0.2s;" onmouseover="this.style.background='#e8f5e8';this.style.color='#2d5a27'" onmouseout="this.style.background='#eef3ee';this.style.color='#414d3f'">🏠 ポータルに戻る</a>
-        <a href="features.html" style="text-decoration:none; font-size:13px; font-weight:bold; color:#414d3f; padding:5px 14px; border-radius:20px; border:1px solid #d8e2d7; background:#eef3ee; transition:0.2s;" onmouseover="this.style.background='#e8f5e8';this.style.color='#2d5a27'" onmouseout="this.style.background='#eef3ee';this.style.color='#414d3f'">📋 機能一覧を見る</a>
+        <a href="index.html" class="pill-btn-light">🏠 ポータルに戻る</a>
+        <a href="features.html" class="pill-btn-light">📋 機能一覧を見る</a>
     </div>
 
     <h2>👥 メンバー追加・編集</h2>
@@ -166,8 +167,8 @@
                             ⚠️ UUID手動入力（自動取得に失敗した場合）
                         </div>
                         <div style="font-size:11px; color:#5c4a00; margin-bottom:8px; line-height:1.6;">
-                            <a href="https://minecraftuuid.com" target="_blank" style="color:#2563eb;">minecraftuuid.com</a> や
-                            <a href="https://namemc.com" target="_blank" style="color:#2563eb;">namemc.com</a> でMinecraft IDを検索し、UUIDをコピーして貼り付けてください。
+                            <a href="https://minecraftuuid.com" target="_blank" style="color:var(--accent-blue);">minecraftuuid.com</a> や
+                            <a href="https://namemc.com" target="_blank" style="color:var(--accent-blue);">namemc.com</a> でMinecraft IDを検索し、UUIDをコピーして貼り付けてください。
                         </div>
                         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
                             <input type="text" id="uuidManualInput"
@@ -181,14 +182,14 @@
                     </div>
 
                     <!-- プレビュー -->
-                    <div id="avatarPreviewArea" style="margin-top: 10px; display: flex; align-items: center; gap: 15px; background: #e2eae2; padding: 10px; border-radius: 6px; width: fit-content;">
-                        <span style="font-size: 13px; font-weight: bold; color: #2d5a27;">頭部プレビュー:</span>
+                    <div id="avatarPreviewArea" style="margin-top: 10px; display: flex; align-items: center; gap: 15px; background: var(--accent-green-tint); padding: 10px; border-radius: 6px; width: fit-content;">
+                        <span style="font-size: 13px; font-weight: bold; color: var(--accent-green);">頭部プレビュー:</span>
                         <div class="mc-head-box" id="previewHeadBox">
                             <div class="coming-soon-lbl">CS</div>
                         </div>
                         <button type="button" id="downloadAvatarBtn" class="btn-download-avatar" onclick="downloadMinecraftAvatar()" disabled>画像を [マイクラID].svg でPCに保存</button>
                     </div>
-                    <div id="mineafarNote" style="font-size:11px; color:#2563eb; margin-top:4px; display:none;">
+                    <div id="mineafarNote" style="font-size:11px; color:var(--accent-blue); margin-top:4px; display:none;">
                         ✅ Mineatar（api.mineatar.io）でアウターレイヤー込みの頭部3D画像を取得しています
                     </div>
                 </div>
@@ -471,7 +472,7 @@ async function downloadMinecraftAvatar() {
         const base64data = await blobToBase64(blob);
 
         const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
-  <rect width="40" height="40" fill="#e2eae2" rx="4"/>
+  <rect width="40" height="40" fill="var(--accent-green-tint)" rx="4"/>
   <image href="${base64data}" x="2" y="2" width="36" height="36" style="image-rendering: pixelated;"/>
 </svg>`;
 
@@ -521,7 +522,7 @@ function renderMemberList() {
             ? ch.avatarImg.trim()
             : (pureMcId ? `avatars/${pureMcId}.svg` : "avatars/fallback.svg");
 
-        const mcHeadHtml = `<div class="mc-head-box" style="border-color:${ch.color||'#d8e2d7'}">
+        const mcHeadHtml = `<div class="mc-head-box" style="border-color:${ch.color||'var(--border-color)'}">
             <img class="mc-head-img" src="${avatarPath}" alt="${ch.name||''}"
                 onerror="this.onerror=null; this.src='avatars/fallback.svg';"></div>`;
 
@@ -537,14 +538,14 @@ function renderMemberList() {
         const tiktokCell  = ch.tiktokId  ? `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" style="font-size:12px;color:#010101;">@${ch.tiktokId}</a>` : "";
         const instaCell   = ch.instaId   ? `<a href="https://instagram.com/${ch.instaId}" target="_blank" style="font-size:12px;color:#e1306c;">@${ch.instaId}</a>` : "";
         const discordCell  = ch.discordUrl  ? `<a href="${ch.discordUrl}" target="_blank" style="font-size:12px;color:#5865f2;">リンク</a>` : "";
-        const homepageCell = ch.homepageUrl ? `<a href="${ch.homepageUrl}" target="_blank" style="font-size:12px;color:#2563eb;">🏠 リンク</a>` : "";
+        const homepageCell = ch.homepageUrl ? `<a href="${ch.homepageUrl}" target="_blank" style="font-size:12px;color:var(--accent-blue);">🏠 リンク</a>` : "";
 
         tbody.innerHTML += `
             <tr>
-                <td style="text-align:center;"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:${ch.color||'#ff9900'};border:1px solid #d8e2d7;"></span></td>
+                <td style="text-align:center;"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:${ch.color||'#ff9900'};border:1px solid var(--border-color);"></span></td>
                 <td style="text-align:center;">${mcHeadHtml}</td>
                 <td><strong class="clickable-name" onclick="editMember(${idx})" title="クリックして編集">${ch.name||''}</strong></td>
-                <td style="font-size:12px;color:#414d3f;">${mcText}</td>
+                <td style="font-size:12px;color:var(--secondary-text);">${mcText}</td>
                 <td>${uuidCell}</td>
                 <td>${ytCell}</td>
                 <td>${xCell}</td>

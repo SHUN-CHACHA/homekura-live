@@ -4,86 +4,226 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>背景地図画像の作成ガイド | homeクラ</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="shared/theme.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 32px 16px 60px;
+        }
+
+        .page-wrapper {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 16px;
+            margin-bottom: 12px;
+        }
+        .page-header h1 {
+            color: var(--accent-green);
+            font-size: 26px;
+            margin: 0;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--secondary-text);
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--container-bg);
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .back-btn:hover { background: #e8f5e8; color: var(--accent-green); }
+
+        .intro-text {
+            color: var(--secondary-text);
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .steps { display: flex; flex-direction: column; gap: 20px; }
+
+        .step-box {
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 22px 24px;
+        }
+        .step-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 17px;
+            font-weight: bold;
+            color: var(--text-color);
+            margin: 0 0 12px;
+        }
+        .step-number {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            color: #fff;
+            font-size: 13px;
+            font-family: monospace;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .step-body {
+            font-size: 14px;
+            color: var(--secondary-text);
+            margin: 0;
+        }
+        .step-note {
+            font-size: 14px;
+            color: var(--accent-yellow);
+            margin: 10px 0 0;
+        }
+
+        code {
+            background: #e2eae2;
+            color: var(--accent-green);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+            font-size: 13px;
+        }
+
+        .customize-box {
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-blue);
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin-top: 32px;
+        }
+        .customize-box h2 {
+            color: var(--accent-blue);
+            font-size: 16px;
+            margin: 0 0 10px;
+        }
+        .customize-box p {
+            font-size: 14px;
+            color: var(--secondary-text);
+            margin: 0 0 16px;
+        }
+        .code-block {
+            background: #f0f5f0;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+            font-size: 12.5px;
+            color: #1a2418;
+            overflow-x: auto;
+            line-height: 1.6;
+            white-space: pre;
+        }
+
+        .footer-cta {
+            display: flex;
+            justify-content: center;
+            margin-top: 36px;
+        }
+        .cta-btn {
+            text-decoration: none;
+            background: var(--accent-green);
+            color: #fff;
+            font-weight: bold;
+            padding: 12px 32px;
+            border-radius: 24px;
+            font-size: 14px;
+            transition: 0.2s;
+            box-shadow: 0 4px 10px rgba(45, 90, 39, 0.2);
+        }
+        .cta-btn:hover { opacity: 0.9; }
+    </style>
 </head>
-<body class="bg-gray-900 text-gray-100 p-8">
-    <div class="max-w-4xl mx-auto">
+<body>
+    <div class="page-wrapper">
 
         <!-- ヘッダー -->
-        <div class="flex items-center justify-between mb-8 border-b border-gray-700 pb-4">
-            <h1 class="text-3xl font-bold text-green-500">背景地図画像の作成ガイド</h1>
-            <a href="minecraft_map.html" class="bg-[#26262b] hover:bg-[#333339] border border-gray-700 hover:border-green-500 text-gray-300 hover:text-green-400 font-bold py-2 px-4 rounded-lg text-xs transition-colors inline-flex items-center gap-1.5 whitespace-nowrap">
-                <span>🗺️</span>
-                <span>拠点マップへ戻る</span>
-            </a>
+        <div class="page-header">
+            <h1>背景地図画像の作成ガイド</h1>
+            <a href="minecraft_map.html" class="back-btn">🗺️ 拠点マップへ戻る</a>
         </div>
 
-        <p class="text-gray-400 text-sm mb-8 leading-relaxed">
+        <p class="intro-text">
             homeクラ Season２の地図絵をもとに、拠点マップの背景画像を毎月更新するための手順です。
         </p>
 
-        <div class="space-y-6">
+        <div class="steps">
 
             <!-- STEP 1 -->
-            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
-                <h2 class="text-xl font-bold mb-4 text-white flex items-center gap-2">
-                    <span class="bg-green-600 text-white text-sm font-mono w-7 h-7 flex items-center justify-center rounded-full">1</span>
-                    地図画像を準備
-                </h2>
-                <p class="text-gray-300 text-sm leading-relaxed">
+            <section class="step-box">
+                <h2 class="step-title"><span class="step-number">1</span>地図画像を準備</h2>
+                <p class="step-body">
                     配信中の地図絵の画像をベースにする場合、できるだけ大きな解像度でスクリーンショットを取ってください。
                 </p>
-                <p class="text-yellow-400 text-sm leading-relaxed mt-2">
+                <p class="step-note">
                     ※ 注意点：スクリーンショットが傾いていないか要注意。最初から綺麗に切り取るのではなく、余分な部分も含めて広めに撮っておくと、後の加工がしやすくなります。
                 </p>
             </section>
 
             <!-- STEP 2 -->
-            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
-                <h2 class="text-xl font-bold mb-4 text-white flex items-center gap-2">
-                    <span class="bg-green-600 text-white text-sm font-mono w-7 h-7 flex items-center justify-center rounded-full">2</span>
-                    綺麗に切り取る
-                </h2>
-                <p class="text-gray-300 text-sm leading-relaxed">
+            <section class="step-box">
+                <h2 class="step-title"><span class="step-number">2</span>綺麗に切り取る</h2>
+                <p class="step-body">
                     保存したスクリーンショットを、画像加工ソフトやWEBの画像トリミングツールなどで綺麗に切り取ります。
                 </p>
-                <p class="text-yellow-400 text-sm leading-relaxed mt-2">
-                    ※ 注意点：地図部の地図絵は額縁を横に7枚、縦に6枚で、縮尺1：4の構成になっています。切り取る際も、できるだけでいいので横縦の比率を<strong class="text-white">7：6</strong>に近づけることを意識してください。
+                <p class="step-note">
+                    ※ 注意点：地図部の地図絵は額縁を横に7枚、縦に6枚で、縮尺1：4の構成になっています。切り取る際も、できるだけでいいので横縦の比率を<strong>7：6</strong>に近づけることを意識してください。
                 </p>
             </section>
 
             <!-- STEP 3 -->
-            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
-                <h2 class="text-xl font-bold mb-4 text-white flex items-center gap-2">
-                    <span class="bg-green-600 text-white text-sm font-mono w-7 h-7 flex items-center justify-center rounded-full">3</span>
-                    ファイル名を付けて保存
-                </h2>
-                <p class="text-gray-300 text-sm leading-relaxed">
-                    上記のように保存した地図画像のファイル名を<code class="bg-black px-1 rounded text-pink-400">◯月◯日world_map.png</code>（7月4日なら<code class="bg-black px-1 rounded text-pink-400">0704world_map.png</code>）のように名付けして、<code class="bg-black px-1 rounded text-pink-400">map</code> フォルダに保存してください。
+            <section class="step-box">
+                <h2 class="step-title"><span class="step-number">3</span>ファイル名を付けて保存</h2>
+                <p class="step-body">
+                    上記のように保存した地図画像のファイル名を<code>◯月◯日world_map.png</code>（7月4日なら<code>0704world_map.png</code>）のように名付けして、<code>map</code> フォルダに保存してください。
                 </p>
             </section>
 
             <!-- STEP 4 -->
-            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
-                <h2 class="text-xl font-bold mb-4 text-white flex items-center gap-2">
-                    <span class="bg-green-600 text-white text-sm font-mono w-7 h-7 flex items-center justify-center rounded-full">4</span>
-                    動作確認
-                </h2>
-                <p class="text-gray-300 text-sm leading-relaxed">
-                    <code class="bg-black px-1 rounded">minecraft_map.html</code> をダブルクリックした時に、右上のプルダウンメニューで地図画像の切り替えができれば成功です。
+            <section class="step-box">
+                <h2 class="step-title"><span class="step-number">4</span>動作確認</h2>
+                <p class="step-body">
+                    <code>minecraft_map.html</code> をダブルクリックした時に、右上のプルダウンメニューで地図画像の切り替えができれば成功です。
                 </p>
             </section>
 
         </div>
 
         <!-- カスタマイズ用の注意点 -->
-        <section class="bg-gray-800 p-6 rounded-lg border border-gray-700 border-l-4 border-l-blue-500 mt-8">
-            <h2 class="text-lg font-bold mb-3 text-blue-400">改造したい場合</h2>
-            <p class="text-gray-300 text-sm leading-relaxed mb-4">
-                ※ この地図表示HTMLは homeクラ Season２ に特化しています。改造したい場合は <code class="bg-black px-1 rounded">minecraft_map.html</code> のコードの以下の部分を編集してください。
+        <section class="customize-box">
+            <h2>改造したい場合</h2>
+            <p>
+                ※ この地図表示HTMLは homeクラ Season２ に特化しています。改造したい場合は <code>minecraft_map.html</code> のコードの以下の部分を編集してください。
             </p>
 
-            <pre class="bg-black/60 border border-gray-700 rounded-lg p-4 text-xs text-gray-200 overflow-x-auto leading-relaxed"><code>// ==========================================================
+            <div class="code-block">// ==========================================================
 // 🗺️ 2. ★背景画像の設定（新しい月の地図ができたらここに追記します！）
 // ==========================================================
 // 毎月の地図画像は "map" フォルダの中に入れてください（ファイル名: MMDDworld_map.png）
@@ -105,18 +245,16 @@ const mapImageList = [
     //     bounds: [[-1600, -1600], [1984, 1472]],
     //     opacity: 0.75
     // },
-];</code></pre>
+];</div>
 
-            <p class="text-gray-300 text-sm leading-relaxed mt-4">
-                <code class="bg-black px-1 rounded text-pink-400">bounds: [[-1600, -1600], [1984, 1472]]</code>（左上の座標～右下の座標）の数字をいじって画像の大きさと座標を合わせることで、様々な背景画像を利用できます。
+            <p style="margin-top: 16px;">
+                <code>bounds: [[-1600, -1600], [1984, 1472]]</code>（左上の座標～右下の座標）の数字をいじって画像の大きさと座標を合わせることで、様々な背景画像を利用できます。
             </p>
         </section>
 
         <!-- リンクボタン -->
-        <div class="flex justify-center mt-10">
-            <a href="minecraft_map.html" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-8 rounded-full transition-all shadow-lg hover:shadow-green-500/20">
-                拠点マップへ戻る
-            </a>
+        <div class="footer-cta">
+            <a href="minecraft_map.html" class="cta-btn">拠点マップへ戻る</a>
         </div>
 
     </div>

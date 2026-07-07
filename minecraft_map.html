@@ -10,6 +10,9 @@
     
     <!-- Tailwind CSS (スタイリング用) -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 🏠 ライトテーマ共通CSS（戻るボタン・スマホ用ドロワーの配色に使用） -->
+    <link rel="stylesheet" href="shared/theme.css">
     
     <style>
         :root {
@@ -210,28 +213,6 @@
             height: 30px;
         }
 
-        /* 🏠 ライトテーマの丸ピルボタン（index.html / admin.htmlと共通デザイン） */
-        .pill-btn-light {
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: bold;
-            color: #414d3f;
-            padding: 6px 12px;
-            border-radius: 20px;
-            border: 1px solid #d8e2d7;
-            background: #eef3ee;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .pill-btn-light:hover {
-            background: #e8f5e8;
-            color: #2d5a27;
-        }
-
         /* 🎨 左パネル（一覧・UI）の背景色をカスタム変数に対応させる（PC表示のみ有効） */
         .drawer-header,
         .drawer-panel {
@@ -357,7 +338,7 @@
                 transition: transform 0.25s ease-out;
                 overflow-y: auto;
                 padding: 16px 12px;
-                background: #eef3ee !important;
+                background: var(--bg-color, #eef3ee) !important;
                 display: block !important; /* テーブル用の固定高さレイアウトをやめ、自然な縦積みにする */
             }
             #member-drawer.drawer-open {
@@ -370,11 +351,11 @@
                 text-align: left !important;
             }
             #member-drawer .drawer-header h1 {
-                color: #2d5a27 !important;
+                color: var(--accent-green, #2d5a27) !important;
                 font-size: 18px !important;
             }
             #member-drawer .drawer-header p {
-                color: #414d3f !important;
+                color: var(--secondary-text, #414d3f) !important;
                 font-size: 12px !important;
             }
             #member-drawer .drawer-panel {
@@ -385,26 +366,26 @@
                 display: block !important;
             }
             #member-drawer #member-count {
-                color: #2d5a27 !important;
+                color: var(--accent-green, #2d5a27) !important;
             }
             #member-drawer #member-count-label {
-                color: #414d3f !important;
+                color: var(--secondary-text, #414d3f) !important;
             }
             #member-drawer #download-files-btn,
             #member-drawer a[href="background_image_guide.html"] {
-                background: #eef3ee !important;
-                border-color: #d8e2d7 !important;
-                color: #414d3f !important;
+                background: var(--bg-color, #eef3ee) !important;
+                border-color: var(--border-color, #d8e2d7) !important;
+                color: var(--secondary-text, #414d3f) !important;
             }
             #member-drawer #download-files-btn:hover,
             #member-drawer a[href="background_image_guide.html"]:hover {
-                background: #e8f5e8 !important;
-                color: #2d5a27 !important;
+                background: var(--accent-green-light, #e8f5e8) !important;
+                color: var(--accent-green, #2d5a27) !important;
             }
             #member-drawer #search-input {
                 background: #ffffff !important;
-                border: 1px solid #d8e2d7 !important;
-                color: #1a2418 !important;
+                border: 1px solid var(--border-color, #d8e2d7) !important;
+                color: var(--text-color, #1a2418) !important;
             }
             #member-drawer #search-input::placeholder {
                 color: #7c8a79 !important;
@@ -432,7 +413,7 @@
             align-items: center;
             gap: 10px;
             background: #ffffff;
-            border: 1px solid #d8e2d7;
+            border: 1px solid var(--border-color, #d8e2d7);
             border-radius: 10px;
             padding: 8px 10px;
             cursor: pointer;
@@ -440,22 +421,22 @@
         }
         #mobile-member-list .mobile-member-row:active,
         #mobile-member-list .mobile-member-row:hover {
-            background: #e8f5e8;
+            background: var(--accent-green-light, #e8f5e8);
         }
         #mobile-member-list .mm-avatar {
             width: 36px;
             height: 36px;
             border-radius: 8px;
             object-fit: cover;
-            background: #eef3ee;
-            border: 1px solid #d8e2d7;
+            background: var(--bg-color, #eef3ee);
+            border: 1px solid var(--border-color, #d8e2d7);
             flex-shrink: 0;
         }
         #mobile-member-list .mm-text { min-width: 0; }
         #mobile-member-list .mm-name {
             font-weight: bold;
             font-size: 13px;
-            color: #1a2418;
+            color: var(--text-color, #1a2418);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -662,103 +643,17 @@
     <!-- 📊 メンバーデータは memberlist.js に分離（編集はそちらのファイルで） -->
     <script src="memberlist.js"></script>
 
+    <!-- 🧩 機能ごとに分割したJSコンポーネント（js/フォルダ） -->
+    <script src="js/color-customizer.js"></script>
+    <script src="js/map-config.js"></script>
+    <script src="js/map-grid.js"></script>
+    <script src="js/member-list.js"></script>
+    <script src="js/mobile-ui.js"></script>
+    <script src="js/download-zip.js"></script>
+
     <script>
         // ==========================================================
-        // 🎨 0. カラーカスタマイズ機能（PC専用・この端末にのみ保存）
-        // ==========================================================
-        const CUSTOM_COLOR_STORAGE_KEY = 'homekura_map_custom_colors';
-        const defaultCustomColors = {
-            voidBg: '#141417',
-            gridColor: '#ffffff',
-            xAxisColor: '#ef4444',
-            zAxisColor: '#3b82f6',
-            panelBg: '#1a1a1f',
-            iconBorder: '#4caf50',
-            iconBg: '#26262b',
-            textColor: '#ffffff',
-            textBg: '#1a1a1f'
-        };
-
-        function loadCustomColors() {
-            try {
-                const saved = JSON.parse(localStorage.getItem(CUSTOM_COLOR_STORAGE_KEY));
-                return { ...defaultCustomColors, ...(saved || {}) };
-            } catch (e) {
-                return { ...defaultCustomColors };
-            }
-        }
-
-        // 16進カラーコードを rgba() 文字列に変換する（ネームタグ背景の半透明化に使用）
-        function hexToRgba(hex, alpha) {
-            const h = hex.replace('#', '');
-            const r = parseInt(h.substring(0, 2), 16);
-            const g = parseInt(h.substring(2, 4), 16);
-            const b = parseInt(h.substring(4, 6), 16);
-            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-        }
-
-        let customColors = loadCustomColors();
-
-        function applyCustomColors() {
-            const root = document.documentElement.style;
-            root.setProperty('--custom-void-bg', customColors.voidBg);
-            root.setProperty('--custom-panel-bg', customColors.panelBg);
-            root.setProperty('--custom-icon-border', customColors.iconBorder);
-            root.setProperty('--custom-icon-bg', customColors.iconBg);
-            root.setProperty('--custom-text-color', customColors.textColor);
-            root.setProperty('--custom-text-bg', hexToRgba(customColors.textBg, 0.85));
-
-            // グリッド線・軸線はLeafletの図形なので、既存レイヤーがあれば直接色を更新する
-            if (typeof updateGrid === 'function') updateGrid();
-            if (typeof xAxisLine !== 'undefined' && xAxisLine) xAxisLine.setStyle({ color: customColors.xAxisColor });
-            if (typeof zAxisLine !== 'undefined' && zAxisLine) zAxisLine.setStyle({ color: customColors.zAxisColor });
-        }
-
-        // ==========================================================
-        // 📊 1. メンバーデータ定義（memberlist.js から読み込み済み）
-        // ==========================================================
-
-        // ==========================================================
-        // 🗺️ 2. ★背景画像の設定（新しい月の地図ができたらここに追記します！）
-        // ==========================================================
-        // 毎月の地図画像は "map" フォルダの中に入れてください（ファイル名: MMDDworld_map.png）
-        // 例：7月4日の画像なら map/0704world_map.png
-        // 一番上（配列の先頭）が「初期表示される最新の地図」になります。新しい月の画像は
-        // 配列の先頭に追加してください。
-        const mapImageList = [
-            {
-                fileName: 'map/0704world_map.png',
-                // [X座標, Z座標] の順で、画像の対角の2点を指定します（順不同でOK）。
-                // 例：Chunkbaseで切り抜いた範囲が「X: -1600〜1600、Z: -1600〜1600」の場合
-                //     bounds: [[-1600, -1600], [1600, 1600]]
-                bounds: [[-1600, -1600], [1984, 1472]],
-                opacity: 0.75 // 画像の透明度 (0.0 〜 1.0)
-            }
-            // 新しい月の地図を追加する例（先頭に追加）：
-            // {
-            //     fileName: 'map/0801world_map.png',
-            //     bounds: [[-1600, -1600], [1984, 1472]],
-            //     opacity: 0.75
-            // },
-        ];
-
-        // ファイル名の先頭4桁（MMDD）から「◯月◯日 地図」というラベルを自動生成する
-        function getMapLabel(fileName) {
-            const base = fileName.split('/').pop();
-            const match = base.match(/^(\d{2})(\d{2})/);
-            if (!match) return base;
-            const month = parseInt(match[1], 10);
-            const day = parseInt(match[2], 10);
-            return `${month}月${day}日 地図`;
-        }
-
-        // bounds([X, Z]の順)をLeafletが要求する[Z由来の緯度, X由来の経度]の順に変換する
-        function toLeafletBounds(bounds) {
-            return bounds.map(([x, z]) => [-z, x]);
-        }
-
-        // ==========================================================
-        // ⚙️ 3. マップ初期設定 (マイクラ平面座標)
+        // ⚙️ マップ初期設定 (マイクラ平面座標)
         // ==========================================================
         const map = L.map('map', {
             crs: L.CRS.Simple,
@@ -772,562 +667,48 @@
         map.setView([0, 0], -2);
 
         // ==========================================================
-        // 🖼️ 4. 背景画像のオーバーレイ配置
+        // 🚀 各コンポーネントの初期化（map-config → map-grid → member-list → mobile-ui → download-zip）
         // ==========================================================
-        let bgImageOverlay = null;
-        const mapImageSelects = () => Array.from(document.querySelectorAll('.map-image-select'));
-
-        // ドロップダウンに mapImageList の一覧を反映する（先頭＝最新が選択された状態で開始）
-        // デスクトップ用・スマホ用など、複数箇所にある .map-image-select すべてに反映する
-        function populateMapImageSelect() {
-            mapImageSelects().forEach((sel) => {
-                sel.innerHTML = '';
-                mapImageList.forEach((entry, index) => {
-                    const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = getMapLabel(entry.fileName);
-                    sel.appendChild(option);
-                });
-            });
-        }
-
-        // どれか1つのドロップダウンが変更されたら、他のドロップダウンにも同じ選択を反映する
-        function syncMapImageSelects(value) {
-            mapImageSelects().forEach((sel) => { sel.value = value; });
-        }
-
-        function loadBackgroundImage() {
-            // 既存の画像レイヤーがあれば一旦地図から削除する
-            if (bgImageOverlay) {
-                map.removeLayer(bgImageOverlay);
-                bgImageOverlay = null;
-            }
-
-            // チェックボックスがON、かつ選択中の地図画像がある場合にのみ重ねる
-            const isChecked = document.getElementById('toggle-bg-image').checked;
-            const currentSelect = mapImageSelects()[0];
-            const selectedEntry = mapImageList[Number(currentSelect ? currentSelect.value : 0)] || mapImageList[0];
-
-            if (isChecked && selectedEntry && selectedEntry.fileName) {
-                bgImageOverlay = L.imageOverlay(selectedEntry.fileName, toLeafletBounds(selectedEntry.bounds), {
-                    opacity: selectedEntry.opacity,
-                    interactive: false // 画像がクリック操作を遮らないようにする
-                });
-                
-                // 画像が見つからなくても地図全体がクラッシュしないためのエラー対策
-                bgImageOverlay.on('error', function() {
-                    console.log(`背景画像 ${selectedEntry.fileName} が見つからないか、ローカル制限でロードできません。`);
-                });
-                
-                bgImageOverlay.addTo(map);
-            }
-        }
+        MapApp.mapConfig.init(map);
+        MapApp.mapGrid.init(map);
+        MapApp.memberList.init(map);
+        MapApp.mobileUI.init();
+        MapApp.downloadZip.init();
+        MapApp.colorCustomizer.initUI();
 
         // ==========================================================
-        // 📏 5-2. 動的格子線（X:0, Z:0 を起点に256ブロックごと）
-        // 表示範囲（パン・ズーム）に合わせて、見えている範囲全体をカバーするように再描画する
+        // 🖼️ 画面読み込み・リサイズ時の再計算まわり（各コンポーネントへ委譲するオーケストレーション）
         // ==========================================================
-        const GRID_INTERVAL = 256;
-        const gridLayerGroup = L.layerGroup().addTo(map);
-
-        function updateGrid() {
-            gridLayerGroup.clearLayers();
-
-            const bounds = map.getBounds();
-            const west = bounds.getWest();
-            const east = bounds.getEast();
-            const south = bounds.getSouth();
-            const north = bounds.getNorth();
-
-            // 現在の表示範囲より少し広めに、256の倍数へスナップして描画開始/終了位置を決める
-            const xStart = Math.floor(west / GRID_INTERVAL) * GRID_INTERVAL - GRID_INTERVAL;
-            const xEnd = Math.ceil(east / GRID_INTERVAL) * GRID_INTERVAL + GRID_INTERVAL;
-            const yStart = Math.floor(south / GRID_INTERVAL) * GRID_INTERVAL - GRID_INTERVAL;
-            const yEnd = Math.ceil(north / GRID_INTERVAL) * GRID_INTERVAL + GRID_INTERVAL;
-
-            const gridStyle = { color: customColors.gridColor, weight: 1, opacity: 0.12, interactive: false };
-
-            // 縦線（X座標が一定の線）
-            for (let x = xStart; x <= xEnd; x += GRID_INTERVAL) {
-                L.polyline([[yStart, x], [yEnd, x]], gridStyle).addTo(gridLayerGroup);
-            }
-            // 横線（Z座標が一定の線。leafletY = -z）
-            for (let y = yStart; y <= yEnd; y += GRID_INTERVAL) {
-                L.polyline([[y, xStart], [y, xEnd]], gridStyle).addTo(gridLayerGroup);
-            }
-        }
-
-        map.on('moveend zoomend', updateGrid);
-
-        // ==========================================================
-        // 🔍 5-1b. ズームアウト時は座標表示を隠して密集を緩和する
-        // ==========================================================
-        const LOW_ZOOM_THRESHOLD = 0; // これより低いズームレベルでは座標を非表示にする
-        const mapEl = document.getElementById('map');
-
-        function updateZoomDensityClass() {
-            if (map.getZoom() < LOW_ZOOM_THRESHOLD) {
-                mapEl.classList.add('low-zoom');
-            } else {
-                mapEl.classList.remove('low-zoom');
-            }
-        }
-
-        map.on('zoomend', updateZoomDensityClass);
-
-        // ==========================================================
-        // 📏 5-3. 512刻みのX軸・Z軸ラベル（画面上端・右端に表示するルーラー）
-        // ==========================================================
-        const AXIS_LABEL_INTERVAL = 512;
-        const axisLabelContainer = document.getElementById('axis-labels');
-
-        function updateAxisLabels() {
-            axisLabelContainer.innerHTML = '';
-
-            const bounds = map.getBounds();
-            const west = bounds.getWest();
-            const east = bounds.getEast();
-            const south = bounds.getSouth();
-            const north = bounds.getNorth();
-
-            // 画面上端：X座標のラベル（512刻み）
-            const xStart = Math.ceil(west / AXIS_LABEL_INTERVAL) * AXIS_LABEL_INTERVAL;
-            const xEnd = Math.floor(east / AXIS_LABEL_INTERVAL) * AXIS_LABEL_INTERVAL;
-            for (let x = xStart; x <= xEnd; x += AXIS_LABEL_INTERVAL) {
-                const point = map.latLngToContainerPoint([north, x]);
-                const label = document.createElement('div');
-                label.className = 'axis-label-x';
-                label.textContent = x;
-                label.style.left = `${point.x}px`;
-                axisLabelContainer.appendChild(label);
-            }
-
-            // 画面右端：Z座標のラベル（512刻み。leafletY = -z）
-            const yStart = Math.ceil(south / AXIS_LABEL_INTERVAL) * AXIS_LABEL_INTERVAL;
-            const yEnd = Math.floor(north / AXIS_LABEL_INTERVAL) * AXIS_LABEL_INTERVAL;
-            for (let y = yStart; y <= yEnd; y += AXIS_LABEL_INTERVAL) {
-                const z = -y;
-                const point = map.latLngToContainerPoint([y, east]);
-                const label = document.createElement('div');
-                label.className = 'axis-label-z';
-                label.textContent = z;
-                label.style.top = `${point.y}px`;
-                axisLabelContainer.appendChild(label);
-            }
-        }
-
-        map.on('moveend zoomend move zoom', updateAxisLabels);
-
-        // ==========================================================
-        // 📏 6. 十字の基準線（X軸・Z軸）の描画
-        // ==========================================================
-        const zAxisLine = L.polyline([[4000, 0], [-4000, 0]], { color: customColors.zAxisColor, weight: 2, opacity: 0.6, dashArray: '6, 6' }).addTo(map);
-        const xAxisLine = L.polyline([[0, -4000], [0, 4000]], { color: customColors.xAxisColor, weight: 2, opacity: 0.6, dashArray: '6, 6' }).addTo(map);
-
-        // ==========================================================
-        // 📌 7. メンバーのピン（マーカー）の配置と一覧表生成
-        // ==========================================================
-        const markers = {};
-
-        // 顔アイコンが見つからない場合のプレースホルダー画像（灰色のシルエット）
-        const AVATAR_FALLBACK = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
-            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><rect width="36" height="36" fill="#26262b"/><circle cx="18" cy="14" r="7" fill="#55555d"/><rect x="6" y="23" width="24" height="11" rx="3" fill="#55555d"/></svg>'
-        );
-        // 画像の読み込みに失敗した場合、プレースホルダーに差し替える
-        function avatarFallback(img) {
-            img.onerror = null;
-            img.src = AVATAR_FALLBACK;
-        }
-
-        const tableBody = document.getElementById('member-table-body');
-        const mobileMemberList = document.getElementById('mobile-member-list');
-        const countSpan = document.getElementById('member-count');
-        countSpan.textContent = memberData.filter(m => m.name && m.name.trim() !== "").length;
-
-        // データ並び替え (エリアが空白でないものを優先、基本は登録順)
-        memberData.sort((a, b) => {
-            if (!a.area && b.area) return 1;
-            if (a.area && !b.area) return -1;
-            return a.area.localeCompare(b.area, undefined, {numeric: true, sensitivity: 'base'});
-        });
-
-        // 動的アイコン生成用（顔アイコン版）
-        // memberData の icon 欄に指定されたファイル名を avatars フォルダから読み込みます
-        // name2 が入っている場合は2人分のアイコンを並べて表示します
-        function getIcon(member, isRegistered) {
-            const hasSecond = isRegistered && member.name2 && member.name2.trim() !== "";
-
-            if (!hasSecond) {
-                const avatarSrc = (isRegistered && member.icon)
-                    ? `avatars/${member.icon}`
-                    : AVATAR_FALLBACK;
-                return L.divIcon({
-                    className: 'custom-div-icon',
-                    html: `
-                        <div class="avatar-marker ${isRegistered ? '' : 'unregistered'}">
-                            <img src="${avatarSrc}" alt="${member.name}" onerror="avatarFallback(this)" />
-                        </div>
-                    `,
-                    iconSize: [36, 36],
-                    iconAnchor: [18, 18]
-                });
-            }
-
-            // 2人分のアイコンを並べて表示
-            const avatarSrc1 = member.icon ? `avatars/${member.icon}` : AVATAR_FALLBACK;
-            const avatarSrc2 = member.icon2 ? `avatars/${member.icon2}` : AVATAR_FALLBACK;
-            return L.divIcon({
-                className: 'custom-div-icon',
-                html: `
-                    <div class="avatar-marker-group">
-                        <div class="avatar-marker">
-                            <img src="${avatarSrc1}" alt="${member.name}" onerror="avatarFallback(this)" />
-                        </div>
-                        <div class="avatar-marker">
-                            <img src="${avatarSrc2}" alt="${member.name2}" onerror="avatarFallback(this)" />
-                        </div>
-                    </div>
-                `,
-                iconSize: [63, 30],
-                iconAnchor: [31, 15]
-            });
-        }
-
-        function initApp() {
-            tableBody.innerHTML = '';
-            mobileMemberList.innerHTML = '';
-            
-            memberData.forEach((member, index) => {
-                const isRegistered = member.name.trim() !== ""; // 名前が入っているかどうか
-
-                // 未登録（名前が空欄）のメンバーは地図にも一覧にも表示しない
-                if (!isRegistered) {
-                    return;
-                }
-
-                const leafletY = -member.z;
-                const leafletX = member.x;
-
-                // マーカーの設置（顔アイコン）
-                const marker = L.marker([leafletY, leafletX], { icon: getIcon(member, isRegistered) }).addTo(map);
-                
-                // メンバー名を「常に表示」するネームタグを設定（顔アイコン＋名前のみのシンプル表示）
-                const hasSecond = member.name2 && member.name2.trim() !== "";
-                const tooltipText = `
-                    <div class="name-line">${hasSecond ? `${member.name}・${member.name2}` : member.name}</div>
-                    <div class="coord-line">X: ${member.x}, Z: ${member.z}</div>
-                `;
-                
-                marker.bindTooltip(tooltipText, {
-                    permanent: true,
-                    direction: 'bottom',
-                    offset: [0, 10],
-                    className: 'permanent-name-label'
-                });
-                
-                // 一覧でキーとして使うための名前
-                const lookupName = member.name;
-                markers[lookupName] = marker;
-
-                const displayName = hasSecond ? `${member.name}・${member.name2}` : member.name;
-                const searchName = `${member.name} ${member.name2 || ""}`.trim().toLowerCase();
-                const searchArea = member.area ? member.area.toLowerCase() : "";
-
-                // テーブル行作成（PC表示）
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-[#222227] cursor-pointer transition-colors border-b border-gray-800 text-gray-300';
-                tr.setAttribute('data-name', searchName);
-                tr.setAttribute('data-area', searchArea);
-                
-                tr.innerHTML = `
-                    <td class="py-3 px-4 font-mono font-bold text-green-500">
-                        ${member.area || "-"}
-                    </td>
-                    <td class="py-3 px-4 font-medium text-gray-100">
-                        ${displayName}
-                    </td>
-                    <td class="py-3 px-4 text-right font-mono text-gray-300">
-                        ${member.x}
-                    </td>
-                    <td class="py-3 px-4 text-right font-mono text-gray-300">
-                        ${member.z}
-                    </td>
-                `;
-
-                tr.addEventListener('click', () => {
-                    focusOnBase(lookupName, leafletY, leafletX);
-                });
-
-                tableBody.appendChild(tr);
-
-                // 顔アイコン付きカード作成（スマホ表示）
-                const avatarSrc = member.icon ? `avatars/${member.icon}` : AVATAR_FALLBACK;
-                const row = document.createElement('div');
-                row.className = 'mobile-member-row';
-                row.setAttribute('data-name', searchName);
-                row.setAttribute('data-area', searchArea);
-                row.innerHTML = `
-                    <img class="mm-avatar" src="${avatarSrc}" alt="${member.name}" onerror="avatarFallback(this)" />
-                    <div class="mm-text">
-                        <div class="mm-name">${displayName}</div>
-                        <div class="mm-area">${member.area || ''}</div>
-                    </div>
-                `;
-                row.addEventListener('click', () => {
-                    focusOnBase(lookupName, leafletY, leafletX);
-                    closeMemberDrawer();
-                });
-                mobileMemberList.appendChild(row);
-            });
-        }
-
-        // カメラ移動
-        function focusOnBase(name, y, x) {
-            map.setView([y, x], 1, { animate: true, duration: 0.8 });
-        }
-
-        // 中心 (0, 0) に戻る
-        function resetMapView() {
-            map.setView([0, 0], -2, { animate: true });
-        }
-
-        // 🔍 8. リアルタイム検索機能
-        const searchInput = document.getElementById('search-input');
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase().trim();
-            const rows = tableBody.getElementsByTagName('tr');
-            const mobileRows = mobileMemberList.getElementsByClassName('mobile-member-row');
-
-            const applyFilter = (el) => {
-                const name = el.getAttribute('data-name');
-                const area = el.getAttribute('data-area');
-
-                if (query === "") {
-                    el.style.display = '';
-                } else if (name.includes(query) || area.includes(query)) {
-                    el.style.display = '';
-                } else {
-                    el.style.display = 'none';
-                }
-            };
-
-            for (let row of rows) applyFilter(row);
-            for (let row of mobileRows) applyFilter(row);
-        });
-
-        // 🧭 9. マウス位置の座標追跡
-        const cursorCoords = document.getElementById('cursor-coords');
-        map.on('mousemove', (e) => {
-            const x = Math.round(e.latlng.lng);
-            const z = Math.round(-e.latlng.lat);
-            cursorCoords.textContent = `X: ${x}, Z: ${z}`;
-        });
-
-        // ==========================================================
-        // 🚀 10. アプリ起動とイベント登録
-        // ==========================================================
-        initApp();
-
-        // 画像切り替えチェックボックス・地図画像選択ドロップダウンの連動イベント
-        populateMapImageSelect();
-        document.getElementById('toggle-bg-image').addEventListener('change', loadBackgroundImage);
-        document.querySelectorAll('.map-image-select').forEach((sel) => {
-            sel.addEventListener('change', (e) => {
-                syncMapImageSelects(e.target.value);
-                loadBackgroundImage();
-            });
-        });
-
-        // ==========================================================
-        // 📱 スマホ用：メンバー一覧ドロワーの開閉
-        // ==========================================================
-        const memberDrawer = document.getElementById('member-drawer');
-        const drawerBackdrop = document.getElementById('drawer-backdrop');
-        const drawerToggleBtn = document.getElementById('member-drawer-toggle');
-
-        function openMemberDrawer() {
-            memberDrawer.classList.add('drawer-open');
-            drawerBackdrop.classList.remove('hidden');
-        }
-        function closeMemberDrawer() {
-            memberDrawer.classList.remove('drawer-open');
-            drawerBackdrop.classList.add('hidden');
-        }
-        drawerToggleBtn.addEventListener('click', () => {
-            if (memberDrawer.classList.contains('drawer-open')) {
-                closeMemberDrawer();
-            } else {
-                openMemberDrawer();
-            }
-        });
-        drawerBackdrop.addEventListener('click', closeMemberDrawer);
-
-        // 一覧の行をタップして地図にジャンプしたら、ドロワーは自動で閉じる
-        tableBody.addEventListener('click', (e) => {
-            if (e.target.closest('tr')) closeMemberDrawer();
-        });
-
-        // ==========================================================
-        // 📦 必要ファイル一式をZIPにまとめてダウンロード
-        // サーバー上（同じフォルダ）にある最新のファイルを取得してZIP化します
-        // ※ file:// で直接開いた場合はブラウザの制限で失敗します（GitHub Pagesなど
-        //    サーバー経由で開いている場合のみ動作します）
-        // ==========================================================
-
-        // 必須ファイル（1つでも取得に失敗したらZIP作成自体を中止する）
-        const REQUIRED_DOWNLOAD_FILES = [
-            'minecraft_map.html',
-            'background_image_guide.html',
-            'memberlist.js'
-        ];
-
-        // memberlist.js に登録されているアバター画像のファイル名一覧を集める（重複なし）
-        function getAvatarFileList() {
-            const files = new Set();
-            memberData.forEach((m) => {
-                if (m.icon) files.add(`avatars/${m.icon}`);
-                if (m.icon2) files.add(`avatars/${m.icon2}`);
-            });
-            return Array.from(files);
-        }
-
-        // 画像類（map・avatars）：1つ見つからなくても他は続行し、ZIPには入れるだけ入れる
-        function getOptionalDownloadFiles() {
-            return [
-                ...mapImageList.map((entry) => entry.fileName),
-                ...getAvatarFileList()
-            ];
-        }
-
-        async function downloadAllFiles() {
-            const btn = document.getElementById('download-files-btn');
-            const label = document.getElementById('download-files-label');
-            const originalLabel = label.textContent;
-            btn.disabled = true;
-            label.textContent = '準備中...';
-
-            try {
-                const zip = new JSZip();
-
-                // 必須ファイル：1つでも失敗したら中止
-                await Promise.all(REQUIRED_DOWNLOAD_FILES.map(async (fileName) => {
-                    const res = await fetch(fileName, { cache: 'no-store' });
-                    if (!res.ok) throw new Error(`${fileName} の取得に失敗しました (HTTP ${res.status})`);
-                    const blob = await res.blob();
-                    zip.file(fileName, blob);
-                }));
-
-                // 画像類：見つからないものはスキップして続行（欠けていてもZIP自体は作る）
-                const missingFiles = [];
-                await Promise.all(getOptionalDownloadFiles().map(async (fileName) => {
-                    try {
-                        const res = await fetch(fileName, { cache: 'no-store' });
-                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                        const blob = await res.blob();
-                        zip.file(fileName, blob);
-                    } catch (e) {
-                        missingFiles.push(fileName);
-                        console.warn(`${fileName} が見つからなかったためZIPに含めていません。`, e);
-                    }
-                }));
-
-                const zipBlob = await zip.generateAsync({ type: 'blob' });
-                const url = URL.createObjectURL(zipBlob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'homekura_map_files.zip';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-
-                if (missingFiles.length > 0) {
-                    alert(`ZIPを作成しましたが、以下のファイルは見つからなかったため含まれていません:\n\n${missingFiles.join('\n')}`);
-                }
-            } catch (err) {
-                console.error(err);
-                alert('ファイルの取得に失敗しました。\nGitHub Pagesなどサーバー経由で開いているか確認してください（ローカルでファイルをダブルクリックして開いている場合はブラウザの制限で失敗します）。\n\n詳細: ' + err.message);
-            } finally {
-                btn.disabled = false;
-                label.textContent = originalLabel;
-            }
-        }
-
-        document.getElementById('download-files-btn').addEventListener('click', downloadAllFiles);
-
-        // 📱 上部バーの実際の高さを測って、マップの余白(padding-top)に反映する
-        const mobileTopbarEl = document.getElementById('mobile-topbar');
-        function updateMobileTopbarHeight() {
-            if (mobileTopbarEl && mobileTopbarEl.offsetHeight > 0) {
-                document.documentElement.style.setProperty('--mobile-topbar-height', `${mobileTopbarEl.offsetHeight}px`);
-            }
-        }
-
-        // 🎨 カラーカスタマイズパネルの開閉・入力の連動
-        const colorInputMap = {
-            'cc-void-bg': 'voidBg',
-            'cc-grid-color': 'gridColor',
-            'cc-x-axis-color': 'xAxisColor',
-            'cc-z-axis-color': 'zAxisColor',
-            'cc-panel-bg': 'panelBg',
-            'cc-icon-border': 'iconBorder',
-            'cc-icon-bg': 'iconBg',
-            'cc-text-color': 'textColor',
-            'cc-text-bg': 'textBg'
-        };
-
-        function syncColorInputsFromState() {
-            Object.keys(colorInputMap).forEach((inputId) => {
-                const input = document.getElementById(inputId);
-                if (input) input.value = customColors[colorInputMap[inputId]];
-            });
-        }
-
-        Object.keys(colorInputMap).forEach((inputId) => {
-            const input = document.getElementById(inputId);
-            if (!input) return;
-            input.addEventListener('input', (e) => {
-                customColors[colorInputMap[inputId]] = e.target.value;
-                applyCustomColors();
-            });
-            input.addEventListener('change', () => {
-                localStorage.setItem(CUSTOM_COLOR_STORAGE_KEY, JSON.stringify(customColors));
-            });
-        });
-
-        document.getElementById('color-customizer-toggle').addEventListener('click', () => {
-            document.getElementById('color-customizer-panel').classList.toggle('open');
-        });
-
-        document.getElementById('color-customizer-reset').addEventListener('click', () => {
-            customColors = { ...defaultCustomColors };
-            localStorage.removeItem(CUSTOM_COLOR_STORAGE_KEY);
-            syncColorInputsFromState();
-            applyCustomColors();
-        });
-
-        syncColorInputsFromState();
-
         window.addEventListener('load', () => {
-            loadBackgroundImage(); // 初期表示の段階から画像をロード
+            MapApp.mapConfig.loadBackgroundImage(); // 初期表示の段階から画像をロード
             map.invalidateSize();
-            updateGrid();
-            updateAxisLabels();
-            updateZoomDensityClass();
-            updateMobileTopbarHeight();
-            applyCustomColors();
-            setTimeout(() => { map.invalidateSize(); updateGrid(); updateAxisLabels(); updateMobileTopbarHeight(); }, 200);
+            MapApp.mapGrid.updateGrid();
+            MapApp.mapGrid.updateAxisLabels();
+            MapApp.mapGrid.updateZoomDensityClass();
+            MapApp.mobileUI.updateMobileTopbarHeight();
+            MapApp.colorCustomizer.applyCustomColors();
+            setTimeout(() => {
+                map.invalidateSize();
+                MapApp.mapGrid.updateGrid();
+                MapApp.mapGrid.updateAxisLabels();
+                MapApp.mobileUI.updateMobileTopbarHeight();
+            }, 200);
         });
 
         // 📱 スマホの画面回転・リサイズ時に地図サイズを再計算
         window.addEventListener('resize', () => {
             map.invalidateSize();
-            updateGrid();
-            updateAxisLabels();
-            updateMobileTopbarHeight();
+            MapApp.mapGrid.updateGrid();
+            MapApp.mapGrid.updateAxisLabels();
+            MapApp.mobileUI.updateMobileTopbarHeight();
         });
         window.addEventListener('orientationchange', () => {
-            setTimeout(() => { map.invalidateSize(); updateGrid(); updateAxisLabels(); updateMobileTopbarHeight(); }, 300);
+            setTimeout(() => {
+                map.invalidateSize();
+                MapApp.mapGrid.updateGrid();
+                MapApp.mapGrid.updateAxisLabels();
+                MapApp.mobileUI.updateMobileTopbarHeight();
+            }, 300);
         });
     </script>
 </body>
