@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>homeクラ 機能一覧</title>
-    <link rel="icon" href="https://shun-chacha.github.io/homekura-live/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="https://shun-chacha.github.io/homekura-live/icon.png" type="image/png" sizes="192x192">
-    <link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/apple-touch-icon.png">
+    <link rel="icon" href="https://shun-chacha.github.io/homekura-live/img/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="https://shun-chacha.github.io/homekura-live/img/icon.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/img/apple-touch-icon.png">
     <link rel="stylesheet" href="shared/theme.css">
     <style>
 
@@ -225,7 +225,7 @@
 
 <!-- バナー -->
 <div class="banner-container">
-    <img src="logo.png" alt="homeクラ" class="header-logo">
+    <img src="img/logo.png" alt="homeクラ" class="header-logo">
 </div>
 
 <!-- ナビゲーション -->
@@ -347,7 +347,7 @@
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">動画情報（chInfoMap・vItems）を <code>portal_cache</code> キーで localStorage に保存。5分以内の再ロードは API を叩かずキャッシュを使用。API エラー時も古いキャッシュでフォールバック表示する。有効期間は config.js の <code>CACHE_DURATION_MS</code> で変更可能（デフォルト 5 分）。</div>
+            <div class="feat-desc">動画情報（chInfoMap・vItems）を <code>portal_cache</code> キーで localStorage に保存。5分以内の再ロードは API を叩かずキャッシュを使用。API エラー時も古いキャッシュでフォールバック表示する。有効期間は js/config.js の <code>CACHE_DURATION_MS</code> で変更可能（デフォルト 5 分）。</div>
             <div class="feat-tags"><span class="tag cache">キャッシュ</span><span class="tag local">localStorage</span><span class="tag api">YouTube API</span></div>
         </div>
 
@@ -359,7 +359,7 @@
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">channels API で取得したアイコン URL を <code>channel_icon_cache</code> に保存。24時間以内は channels API を呼ばない。有効期間は config.js の <code>CHANNEL_ICON_CACHE_DURATION_MS</code> で変更可能。</div>
+            <div class="feat-desc">channels API で取得したアイコン URL を <code>channel_icon_cache</code> に保存。24時間以内は channels API を呼ばない。有効期間は js/config.js の <code>CHANNEL_ICON_CACHE_DURATION_MS</code> で変更可能。</div>
             <div class="feat-tags"><span class="tag cache">キャッシュ</span><span class="tag local">localStorage</span><span class="tag api">YouTube API</span></div>
         </div>
 
@@ -524,11 +524,11 @@
             <div class="feat-card-top">
                 <div class="feat-icon blue">📋</div>
                 <div>
-                    <div class="feat-name">config.js 出力・コピー（window.CONFIG 形式）</div>
+                    <div class="feat-name">js/config.js 出力・コピー（window.CONFIG 形式）</div>
                     <span class="feat-file admin">admin</span>
                 </div>
             </div>
-            <div class="feat-desc">メンバー追加・編集するたびに <code>window.CONFIG = {...}</code> 形式のコードを自動生成。APIキー・キャッシュ設定値（CACHE_DURATION_MS・CHANNEL_ICON_CACHE_DURATION_MS）・homepageUrl も含めて出力。「コピー」でクリップボードにコピーしてローカルの config.js に貼り付けて使う。</div>
+            <div class="feat-desc">メンバー追加・編集するたびに <code>window.CONFIG = {...}</code> 形式のコードを自動生成。APIキー・キャッシュ設定値（CACHE_DURATION_MS・CHANNEL_ICON_CACHE_DURATION_MS）・homepageUrl も含めて出力。「コピー」でクリップボードにコピーしてローカルの js/config.js に貼り付けて使う。</div>
             <div class="feat-tags"><span class="tag ui">コピー</span></div>
         </div>
 
@@ -568,11 +568,11 @@
             <div class="feat-card-top">
                 <div class="feat-icon green">🔗</div>
                 <div>
-                    <div class="feat-name">config.js 共有データ</div>
+                    <div class="feat-name">js/config.js 共有データ</div>
                     <span class="feat-file both">index / admin</span>
                 </div>
             </div>
-            <div class="feat-desc">APIキー・キャッシュ設定・デフォルトメンバー定義を <code>window.CONFIG</code> として config.js に集約。index・admin どちらもこのファイルを読み込み、localStorage の上書きデータがあればそちらを優先使用する。</div>
+            <div class="feat-desc">APIキー・キャッシュ設定・デフォルトメンバー定義を <code>window.CONFIG</code> として js/config.js に集約。index・admin どちらもこのファイルを読み込み、localStorage の上書きデータがあればそちらを優先使用する。</div>
             <div class="feat-tags"><span class="tag local">localStorage</span></div>
         </div>
 

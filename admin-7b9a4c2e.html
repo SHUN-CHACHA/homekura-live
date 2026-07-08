@@ -217,7 +217,7 @@
             <div class="helper-card" style="margin-top: 20px;">
                 <h3>⚙️ config.js の書き換え</h3>
                 <p style="font-size: 13px; color: #5c6b5a; margin-bottom: 10px; margin-top: 0;">
-                    メンバーの追加・編集が終わったら、下のボタンで最新の設定をコピーし、ローカルの <code>config.js</code> を丸ごと上書き保存してください。
+                    メンバーの追加・編集が終わったら、下のボタンで最新の設定をコピーし、ローカルの <code>js/config.js</code> を丸ごと上書き保存してください。
                 </p>
                 <button type="button" class="btn-export" style="width: 100%; padding: 10px; margin-bottom: 10px; font-size: 13px;" onclick="exportConfig()">
                     📋 config.jsの内容をコピー
@@ -252,13 +252,13 @@
                         <strong>画像ファイルの紐づけ</strong>
                         <ul>
                             <li>「<b>⚙️ config.jsの書き換え</b>」から「<b>config.jsの内容をコピー</b>」ボタンをクリックするとクリップボードにコピーされます。</li>
-                            <li>コピーした内容をWEBの <code>config.js</code> に全文貼り替えて保存してください。</li>
+                            <li>コピーした内容をWEBの <code>js/config.js</code> に全文貼り替えて保存してください。</li>
                             <li>アップロードが完了したら反映されているか確認して終了です。</li>
                         </ul>
                     </li>
                 </ol>
                 <p class="helper-note">
-                    ※ <b>UUID取得について：</b>Mojang APIはブラウザからの直接アクセスがCORSでブロックされるため、CORS対応の <code>api.ashcon.app</code> を経由してUUIDを取得しています。取得したUUIDはconfig.jsに保存されます。<br>
+                    ※ <b>UUID取得について：</b>Mojang APIはブラウザからの直接アクセスがCORSでブロックされるため、CORS対応の <code>api.ashcon.app</code> を経由してUUIDを取得しています。取得したUUIDはjs/config.jsに保存されます。<br>
                     ※ 画像はMineatar（api.mineatar.io）から取得しローカルに保存することで、スマホ表示時の外部APIブロック問題を回避しています。
                 </p>
             </div>
@@ -289,7 +289,7 @@
     </table>
     </div>
 
-<script src="config.js"></script>
+<script src="js/config.js"></script>
 <script>
 let channels  = [];
 let editIndex = -1;
@@ -692,7 +692,7 @@ function updateConfigOutput() {
 function exportConfig() {
     updateConfigOutput();
     navigator.clipboard.writeText(document.getElementById('configOutput').value)
-        .then(() => alert("config.js 用のコードをコピーしました！config.jsファイルに貼り付けて保存してください。"))
+        .then(() => alert("js/config.js 用のコードをコピーしました！js/config.jsファイルに貼り付けて保存してください。"))
         .catch(() => { document.getElementById('configOutput').select(); alert('自動コピーに失敗しました。テキストエリアを全選択して手動でコピーしてください。'); });
 }
 
