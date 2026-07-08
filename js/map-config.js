@@ -19,8 +19,9 @@
             //     bounds: [[-1600, -1600], [1600, 1600]]
             bounds: [[-1600, -1600], [1984, 1472]],
             opacity: 0.75 // 画像の透明度 (0.0 〜 1.0)
-        }
-        // 新しい月の地図を追加する例（先頭に追加）：
+        },
+        // ↓ 新しい月の地図を追加する場合は、この下に同じ形でコピペしてください。
+        // 末尾の { } のブロックにも必ずカンマ「,」を付けてください（付け忘れると全体が動かなくなります）。
         // {
         //     fileName: 'map/0801world_map.png',
         //     bounds: [[-1600, -1600], [1984, 1472]],
@@ -28,14 +29,10 @@
         // },
     ];
 
-    // ファイル名の先頭4桁（MMDD）から「◯月◯日 地図」というラベルを自動生成する
+    // ファイル名から拡張子(.png)を除いた部分をそのままラベルとして使う
     function getMapLabel(fileName) {
         const base = fileName.split('/').pop();
-        const match = base.match(/^(\d{2})(\d{2})/);
-        if (!match) return base;
-        const month = parseInt(match[1], 10);
-        const day = parseInt(match[2], 10);
-        return `${month}月${day}日 地図`;
+        return base.replace(/\.[^/.]+$/, '');
     }
 
     // bounds([X, Z]の順)をLeafletが要求する[Z由来の緯度, X由来の経度]の順に変換する
