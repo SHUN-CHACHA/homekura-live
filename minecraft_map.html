@@ -25,9 +25,11 @@
             --custom-icon-bg: #26262b;
             --custom-text-color: #ffffff;
             --custom-text-bg: rgba(26, 26, 31, 0.85);
+            --custom-page-bg: #121214;
+            --custom-map-border: #1f2937;
         }
         body {
-            background-color: #121214;
+            background-color: var(--custom-page-bg);
         }
         /* Leafletの地図の背景をマイクラの奈落（Void）のような黒基調にする */
         #map-container {
@@ -35,6 +37,7 @@
             width: 100%;
             height: 100%;
             min-height:100%;
+            border-color: var(--custom-map-border) !important;
         }
         #map {
             background-color: var(--custom-void-bg);
@@ -285,6 +288,32 @@
             cursor: pointer;
             flex-shrink: 0;
         }
+        .color-row input[type="text"].hex-input {
+            width: 68px;
+            flex-shrink: 0;
+            font-size: 10px;
+            font-family: monospace;
+            background: #141417;
+            border: 1px solid #333339;
+            border-radius: 4px;
+            color: #cbd5c9;
+            padding: 3px 5px;
+        }
+        .color-row input[type="text"].hex-input:focus {
+            outline: none;
+            border-color: #4caf50;
+        }
+        .color-row input[type="checkbox"].transparent-check {
+            flex-shrink: 0;
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+        }
+        .color-row.is-transparent input[type="color"],
+        .color-row.is-transparent input[type="text"].hex-input {
+            opacity: 0.35;
+            pointer-events: none;
+        }
         #color-customizer-reset {
             width: 100%;
             margin-top: 8px;
@@ -511,42 +540,67 @@
                     <div id="color-customizer-panel">
                         <h3>🎨 カラー設定（この端末のみ保存）</h3>
 
-                        <div class="color-row">
+                        <div class="color-row" data-key="pageBg">
+                            <label>ページ全体の背景色</label>
+                            <input type="text" class="hex-input" id="cc-page-bg-text" value="#121214" maxlength="7">
+                            <input type="color" id="cc-page-bg" value="#121214">
+                        </div>
+                        <div class="color-row" data-key="voidBg">
                             <label>地図全体の背景色（Void）</label>
+                            <input type="text" class="hex-input" id="cc-void-bg-text" value="#141417" maxlength="7">
                             <input type="color" id="cc-void-bg" value="#141417">
                         </div>
-                        <div class="color-row">
+                        <div class="color-row" data-key="mapBorder">
+                            <label>地図の外側の表示枠の色</label>
+                            <input type="text" class="hex-input" id="cc-map-border-text" value="#1f2937" maxlength="7">
+                            <input type="color" id="cc-map-border" value="#1f2937">
+                        </div>
+                        <div class="color-row" data-key="gridColor">
                             <label>256刻みグリッド線の色</label>
+                            <input type="text" class="hex-input" id="cc-grid-color-text" value="#ffffff" maxlength="7">
                             <input type="color" id="cc-grid-color" value="#ffffff">
                         </div>
-                        <div class="color-row">
+                        <div class="color-row" data-key="xAxisColor">
                             <label>X軸（左右）中心線の色</label>
+                            <input type="text" class="hex-input" id="cc-x-axis-color-text" value="#ef4444" maxlength="7">
                             <input type="color" id="cc-x-axis-color" value="#ef4444">
                         </div>
-                        <div class="color-row">
+                        <div class="color-row" data-key="zAxisColor">
                             <label>Z軸（上下）中心線の色</label>
+                            <input type="text" class="hex-input" id="cc-z-axis-color-text" value="#3b82f6" maxlength="7">
                             <input type="color" id="cc-z-axis-color" value="#3b82f6">
                         </div>
-                        <div class="color-row">
+                        <div class="color-row" data-key="panelBg">
                             <label>左パネル（一覧）の背景色</label>
+                            <input type="text" class="hex-input" id="cc-panel-bg-text" value="#1a1a1f" maxlength="7">
                             <input type="color" id="cc-panel-bg" value="#1a1a1f">
                         </div>
-                        <div class="color-row">
+
+                        <div class="color-row" data-key="iconBorder">
                             <label>顔アイコンの枠線の色</label>
+                            <input type="checkbox" class="transparent-check" id="cc-icon-border-transparent" title="透明にする">
+                            <input type="text" class="hex-input" id="cc-icon-border-text" value="#4caf50" maxlength="7">
                             <input type="color" id="cc-icon-border" value="#4caf50">
                         </div>
-                        <div class="color-row">
+                        <div class="color-row" data-key="iconBg">
                             <label>顔アイコンの背景色</label>
+                            <input type="checkbox" class="transparent-check" id="cc-icon-bg-transparent" title="透明にする">
+                            <input type="text" class="hex-input" id="cc-icon-bg-text" value="#26262b" maxlength="7">
                             <input type="color" id="cc-icon-bg" value="#26262b">
                         </div>
-                        <div class="color-row">
+                        <div class="color-row" data-key="textColor">
                             <label>ネームタグの文字色</label>
+                            <input type="text" class="hex-input" id="cc-text-color-text" value="#ffffff" maxlength="7">
                             <input type="color" id="cc-text-color" value="#ffffff">
                         </div>
-                        <div class="color-row">
+                        <div class="color-row" data-key="textBg">
                             <label>ネームタグの背景色</label>
+                            <input type="checkbox" class="transparent-check" id="cc-text-bg-transparent" title="透明にする">
+                            <input type="text" class="hex-input" id="cc-text-bg-text" value="#1a1a1f" maxlength="7">
                             <input type="color" id="cc-text-bg" value="#1a1a1f">
                         </div>
+
+                        <div style="font-size:10px; color:#7a8a78; margin: 4px 0 8px;">☑ のチェックで、その項目を透明にできます</div>
 
                         <button id="color-customizer-reset">初期設定にリセット</button>
                     </div>
