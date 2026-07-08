@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>homeクラ 配信ポータル ＠旬茶</title>
 
-    <link rel="icon" href="https://shun-chacha.github.io/homekura-live/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="https://shun-chacha.github.io/homekura-live/icon.png" type="image/png" sizes="192x192">
-    <link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/apple-touch-icon.png">
+    <link rel="icon" href="https://shun-chacha.github.io/homekura-live/img/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="https://shun-chacha.github.io/homekura-live/img/icon.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/img/apple-touch-icon.png">
     <link rel="stylesheet" href="shared/theme.css">
 
     <style>
@@ -336,13 +336,13 @@
 <body>
 
 <div class="banner-container">
-    <img src="logo.png" alt="homeクラ" class="header-logo">
+    <img src="img/logo.png" alt="homeクラ" class="header-logo">
 </div>
 
 <div class="header-controls">
     <div class="controls-left">
         <a href="https://shun-chacha.github.io/homekura-live/roulette.html" class="roulette-btn" target="_blank">
-            <img src="roulette-icon.png" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
+            <img src="img/roulette-icon.png" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
             旬茶作 ルーレット
         </a>
     </div>
@@ -391,7 +391,7 @@
     </div>
 </div>
 
-<script src="config.js"></script>
+<script src="js/config.js"></script>
 
 <script>
 // config.jsが先に読み込まれているので、正常にAPI_KEYが代入されます
@@ -643,7 +643,7 @@ function checkNotifications() {
     let changed = false;
     reservedVideos.forEach(rv => {
         if (!rv.notified && new Date(rv.startTime) <= now) {
-            new Notification("配信開始！", { body: `${rv.name}さんの配信が始まるよ！`, icon: "icon.png" });
+            new Notification("配信開始！", { body: `${rv.name}さんの配信が始まるよ！`, icon: "img/icon.png" });
             rv.notified = true; changed = true;
         }
     });
@@ -697,7 +697,7 @@ function openQrModal() {
 
         // ロゴ画像をQRの中央に重ねる
         const logo = new Image();
-        logo.src = 'face100.png';
+        logo.src = 'img/face100.png';
         logo.onload = () => {
             const logoSize = 44;          // ロゴの描画サイズ
             const padding  = 6;           // 白背景の余白
