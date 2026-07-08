@@ -10,7 +10,9 @@
     const CUSTOM_COLOR_STORAGE_KEY = 'homekura_map_custom_colors';
 
     const defaultCustomColors = {
+        pageBg: '#121214',
         voidBg: '#141417',
+        mapBorder: '#1f2937',
         gridColor: '#ffffff',
         xAxisColor: '#ef4444',
         zAxisColor: '#3b82f6',
@@ -18,7 +20,11 @@
         iconBorder: '#4caf50',
         iconBg: '#26262b',
         textColor: '#ffffff',
-        textBg: '#1a1a1f'
+        textBg: '#1a1a1f',
+        // 透明にできる項目のON/OFF
+        iconBorderTransparent: false,
+        iconBgTransparent: false,
+        textBgTransparent: false
     };
 
     function loadCustomColors() {
@@ -39,16 +45,23 @@
         return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
 
+    // 簡易的な16進カラーコードの妥当性チェック（#付き6桁 or 3桁）
+    function isValidHex(value) {
+        return /^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/.test(value);
+    }
+
     let customColors = loadCustomColors();
 
     function applyCustomColors() {
         const root = document.documentElement.style;
+        root.setProperty('--custom-page-bg', customColors.pageBg);
         root.setProperty('--custom-void-bg', customColors.voidBg);
+        root.setProperty('--custom-map-border', customColors.mapBorder);
         root.setProperty('--custom-panel-bg', customColors.panelBg);
-        root.setProperty('--custom-icon-border', customColors.iconBorder);
-        root.setProperty('--custom-icon-bg', customColors.iconBg);
+        root.setProperty('--custom-icon-border', customColors.iconBorderTransparent ? 'transparent' : customColors.iconBorder);
+        root.setProperty('--custom-icon-bg', customColors.iconBgTransparent ? 'transparent' : customColors.iconBg);
         root.setProperty('--custom-text-color', customColors.textColor);
-        root.setProperty('--custom-text-bg', hexToRgba(customColors.textBg, 0.85));
+        root.setProperty('--custom-text-bg', customColors.textBgTransparent ? 'transparent' : hexToRgba(customColors.textBg, 0.85));
 
         // グリッド線・軸線の色更新は地図側(map-grid.js)に任せる。
         // このイベントを購読して色を反映してもらう。
@@ -66,13 +79,20 @@
         applyCustomColors();
     }
 
+    function setTransparent(key, isTransparent) {
+        customColors[key] = isTransparent;
+        applyCustomColors();
+    }
+
     function saveCustomColors() {
         localStorage.setItem(CUSTOM_COLOR_STORAGE_KEY, JSON.stringify(customColors));
     }
 
-    // 🎨 カラーカスタマイズパネルのUI（トグルボタン・色入力欄・リセットボタン）を配線する
+    // 🎨 カラーカスタマイズパネルのUI（トグルボタン・色入力欄・16進テキスト欄・透明チェック・リセットボタン）を配線する
     const colorInputMap = {
+        'cc-page-bg': 'pageBg',
         'cc-void-bg': 'voidBg',
+        'cc-map-border': 'mapBorder',
         'cc-grid-color': 'gridColor',
         'cc-x-axis-color': 'xAxisColor',
         'cc-z-axis-color': 'zAxisColor',
@@ -83,21 +103,79 @@
         'cc-text-bg': 'textBg'
     };
 
+    // 透明チェックボックスがある項目（input id -> customColorsのキー）
+    const transparentInputMap = {
+        'cc-icon-border-transparent': 'iconBorderTransparent',
+        'cc-icon-bg-transparent': 'iconBgTransparent',
+        'cc-text-bg-transparent': 'textBgTransparent'
+    };
+
     function syncColorInputsFromState() {
         Object.keys(colorInputMap).forEach((inputId) => {
-            const input = document.getElementById(inputId);
-            if (input) input.value = customColors[colorInputMap[inputId]];
+            const key = colorInputMap[inputId];
+            const colorInput = document.getElementById(inputId);
+            const textInput = document.getElementById(`${inputId}-text`);
+            const value = customColors[key];
+            if (colorInput) colorInput.value = value;
+            if (textInput) textInput.value = value;
+        });
+
+        Object.keys(transparentInputMap).forEach((checkboxId) => {
+            const checkbox = document.getElementById(checkboxId);
+            const key = transparentInputMap[checkboxId];
+            if (!checkbox) return;
+            checkbox.checked = !!customColors[key];
+            const row = checkbox.closest('.color-row');
+            if (row) row.classList.toggle('is-transparent', !!customColors[key]);
         });
     }
 
     function initUI() {
+        // 色ピッカー ⇔ 16進テキスト入力の相互連動
         Object.keys(colorInputMap).forEach((inputId) => {
-            const input = document.getElementById(inputId);
-            if (!input) return;
-            input.addEventListener('input', (e) => {
-                setColor(colorInputMap[inputId], e.target.value);
+            const key = colorInputMap[inputId];
+            const colorInput = document.getElementById(inputId);
+            const textInput = document.getElementById(`${inputId}-text`);
+            if (!colorInput) return;
+
+            colorInput.addEventListener('input', (e) => {
+                setColor(key, e.target.value);
+                if (textInput) textInput.value = e.target.value;
             });
-            input.addEventListener('change', saveCustomColors);
+            colorInput.addEventListener('change', saveCustomColors);
+
+            if (textInput) {
+                textInput.addEventListener('input', (e) => {
+                    const value = e.target.value.trim();
+                    if (isValidHex(value)) {
+                        setColor(key, value);
+                        colorInput.value = value;
+                    }
+                });
+                textInput.addEventListener('change', (e) => {
+                    const value = e.target.value.trim();
+                    if (isValidHex(value)) {
+                        saveCustomColors();
+                    } else {
+                        // 不正な値なら現在の色に戻す
+                        e.target.value = customColors[key];
+                    }
+                });
+            }
+        });
+
+        // 透明チェックボックスの配線
+        Object.keys(transparentInputMap).forEach((checkboxId) => {
+            const checkbox = document.getElementById(checkboxId);
+            const key = transparentInputMap[checkboxId];
+            if (!checkbox) return;
+
+            checkbox.addEventListener('change', (e) => {
+                setTransparent(key, e.target.checked);
+                saveCustomColors();
+                const row = checkbox.closest('.color-row');
+                if (row) row.classList.toggle('is-transparent', e.target.checked);
+            });
         });
 
         const toggleBtn = document.getElementById('color-customizer-toggle');
