@@ -10,9 +10,7 @@
     const CUSTOM_COLOR_STORAGE_KEY = 'homekura_map_custom_colors';
 
     const defaultCustomColors = {
-        pageBg: '#121214',
         voidBg: '#141417',
-        mapBorder: '#1f2937',
         gridColor: '#ffffff',
         xAxisColor: '#ef4444',
         zAxisColor: '#3b82f6',
@@ -54,9 +52,7 @@
 
     function applyCustomColors() {
         const root = document.documentElement.style;
-        root.setProperty('--custom-page-bg', customColors.pageBg);
         root.setProperty('--custom-void-bg', customColors.voidBg);
-        root.setProperty('--custom-map-border', customColors.mapBorder);
         root.setProperty('--custom-panel-bg', customColors.panelBg);
         root.setProperty('--custom-icon-border', customColors.iconBorderTransparent ? 'transparent' : customColors.iconBorder);
         root.setProperty('--custom-icon-bg', customColors.iconBgTransparent ? 'transparent' : customColors.iconBg);
@@ -90,9 +86,7 @@
 
     // 🎨 カラーカスタマイズパネルのUI（トグルボタン・色入力欄・16進テキスト欄・透明チェック・リセットボタン）を配線する
     const colorInputMap = {
-        'cc-page-bg': 'pageBg',
         'cc-void-bg': 'voidBg',
-        'cc-map-border': 'mapBorder',
         'cc-grid-color': 'gridColor',
         'cc-x-axis-color': 'xAxisColor',
         'cc-z-axis-color': 'zAxisColor',
