@@ -229,6 +229,45 @@
             border-radius: 20px; font-size: 14px; font-weight: bold; cursor: pointer;
         }
 
+        /* 3Dスキンビューアーモーダル */
+        #skin3d-modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6); z-index: 9998;
+            align-items: center; justify-content: center;
+        }
+        #skin3d-modal.open { display: flex; }
+        #skin3d-modal-inner {
+            background: #fff; border-radius: 20px; padding: 20px 24px 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25); max-width: 92vw;
+            animation: modalIn 0.2s ease; text-align: center;
+        }
+        #skin3d-modal-inner h3 { margin: 0 0 10px; font-size: 16px; color: var(--accent-green); }
+        #skin3d-canvas-wrap {
+            position: relative; width: 260px; height: 340px;
+            background: #2b2b2b; border-radius: 12px; overflow: hidden; margin: 0 auto;
+        }
+        #skin3d-canvas { display: block; width: 100%; height: 100%; }
+        #skin3d-loading {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            color: #bbb; font-size: 12px; pointer-events: none;
+        }
+        #skin3d-controls { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+        .skin3d-anim-btn {
+            font-size: 12px; font-weight: bold; padding: 6px 12px;
+            border-radius: 16px; border: 1px solid var(--border-color);
+            background: #f0f5f0; color: var(--secondary-text); cursor: pointer;
+            transition: 0.2s;
+        }
+        .skin3d-anim-btn:hover { background: #e2eae2; }
+        .skin3d-anim-btn.active { background: var(--accent-green); color: #fff; border-color: var(--accent-green); }
+        #skin3d-close-btn {
+            display: block; width: 100%; margin-top: 14px; padding: 9px 0;
+            background: var(--accent-green); color: #fff; border: none;
+            border-radius: 20px; font-size: 14px; font-weight: bold; cursor: pointer;
+        }
+        .mc-head-box.mc-head-clickable { cursor: pointer; }
+        .mc-head-box.mc-head-clickable:hover { filter: brightness(1.08); }
+
         /* 詳細ボタン */
         .btn-detail { background: #e8f5e8; color: var(--accent-green) !important; font-weight: bold; }
         .btn-detail:hover { background: #d1ead1; }
@@ -393,6 +432,12 @@
 
 <script src="js/config.js"></script>
 
+<!-- 🧊 3Dスキンビューアー用ライブラリ（ESM配信のみのためmoduleで読み込みwindowに公開） -->
+<script type="module">
+    import * as skinview3dLib from 'https://cdn.jsdelivr.net/npm/skinview3d@3.4.2/+esm';
+    window.skinview3d = skinview3dLib;
+</script>
+
 <script>
 // config.jsが先に読み込まれているので、正常にAPI_KEYが代入されます
 const API_KEY = window.CONFIG?.YOUTUBE_API_KEY || '';
@@ -555,6 +600,11 @@ function renderGrids(chInfoMap, vItems) {
             homepageUrl: ch.homepageUrl || ''
         }).replace(/'/g, '&#39;');
 
+        const rawMcId = ch.minecraftId ? ch.minecraftId.trim() : "";
+        const canShow3D = rawMcId !== "";
+        const safeMcIdAttr = rawMcId.replace(/'/g, "&#39;");
+        const safeNameAttr = ch.name.replace(/'/g, "&#39;");
+
         const card = `
         <div class="card ${isLive?'is-live':''} ${isNew?'is-new':''}">
             <a href="https://youtube.com/watch?v=${lastV?.id || ''}" target="_blank" style="text-decoration:none; color:inherit;">
@@ -572,6 +622,7 @@ function renderGrids(chInfoMap, vItems) {
             <div class="btn-area">
                 <button class="btn btn-detail" onclick='openSnsModal(${chJson})'>🔗 詳細</button>
                 <a href="#member" class="btn btn-member">👥 一覧</a>
+                ${canShow3D ? `<button class="btn btn-detail" onclick="openSkin3DModal('${safeMcIdAttr}', '${safeNameAttr}')">🧊 3Dスキン</button>` : ''}
                 ${(isUpcoming && startTime) ? `<button class="btn btn-reserve ${isReserved?'active':''}" onclick="toggleReserve('${lastV.id}', '${ch.name}', '${startTime}')">🔔 ${isReserved?'予約中':'通知予約'}</button>` : ''}
             </div>
         </div>`;
@@ -585,7 +636,6 @@ function renderGrids(chInfoMap, vItems) {
         if (ch.homepageUrl) listBtnsHtml += `<a href="${ch.homepageUrl}" target="_blank" class="btn-square-mini btn-hp" title="ホームページ">${SVG_ICONS.homepage}</a>`;
 
         const rawAvatar = ch.avatarImg   ? ch.avatarImg.trim()   : "";
-        const rawMcId   = ch.minecraftId ? ch.minecraftId.trim() : "";
 
         let imgPath = "";
         if (rawAvatar !== "") {
@@ -596,7 +646,7 @@ function renderGrids(chInfoMap, vItems) {
         }
 
         const resolvedImg = imgPath !== "" ? imgPath : "avatars/fallback.svg";
-        const mcHeadHtml = `<div class="mc-head-box" style="border-color:${ch.color || 'var(--border-color)'}">
+        const mcHeadHtml = `<div class="mc-head-box ${canShow3D ? 'mc-head-clickable' : ''}" style="border-color:${ch.color || 'var(--border-color)'}" ${canShow3D ? `onclick="openSkin3DModal('${safeMcIdAttr}', '${safeNameAttr}')" title="3Dスキンを見る"` : ''}>
             <img class="mc-head-img" src="${resolvedImg}" alt="${ch.name}"
                  onerror="this.onerror=null; this.src='avatars/fallback.svg';">
         </div>`;
@@ -754,6 +804,66 @@ function closeSnsModal() {
     document.getElementById('sns-modal').classList.remove('open');
 }
 
+// ==========================================================
+// 🧊 3Dスキンビューアー（skinview3d）
+// ==========================================================
+let skin3DViewer = null;
+
+function openSkin3DModal(minecraftId, memberName) {
+    if (!minecraftId) return;
+    const modal = document.getElementById('skin3d-modal');
+    const loading = document.getElementById('skin3d-loading');
+    document.getElementById('skin3d-modal-name').textContent = memberName;
+    loading.style.display = 'flex';
+    modal.classList.add('open');
+
+    const skinUrl = `https://api.mineatar.io/skin/${encodeURIComponent(minecraftId)}`;
+
+    if (typeof skinview3d === 'undefined') {
+        loading.textContent = '3D表示ライブラリの読み込みに失敗しました';
+        return;
+    }
+
+    try {
+        if (!skin3DViewer) {
+            skin3DViewer = new skinview3d.SkinViewer({
+                canvas: document.getElementById('skin3d-canvas'),
+                width: 260,
+                height: 340,
+                skin: skinUrl
+            });
+            skin3DViewer.autoRotate = true;
+            skin3DViewer.autoRotateSpeed = 0.8;
+            skin3DViewer.background = 0x2b2b2b;
+        } else {
+            skin3DViewer.loadSkin(skinUrl);
+        }
+        setSkin3DAnimation('walk');
+        setTimeout(() => { loading.style.display = 'none'; }, 500);
+    } catch (e) {
+        console.error('skinview3d error:', e);
+        loading.textContent = 'スキンの読み込みに失敗しました';
+    }
+}
+
+function setSkin3DAnimation(type) {
+    if (!skin3DViewer) return;
+    document.querySelectorAll('.skin3d-anim-btn').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.anim === type);
+    });
+    if (type === 'idle') {
+        skin3DViewer.animation = null;
+    } else if (type === 'walk') {
+        skin3DViewer.animation = new skinview3d.WalkingAnimation();
+    } else if (type === 'run') {
+        skin3DViewer.animation = new skinview3d.RunningAnimation();
+    }
+}
+
+function closeSkin3DModal() {
+    document.getElementById('skin3d-modal').classList.remove('open');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const qrModal = document.getElementById('qr-modal');
     if (qrModal) {
@@ -763,8 +873,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (snsModal) {
         snsModal.addEventListener('click', function(e) { if (e.target === this) closeSnsModal(); });
     }
+    const skin3dModal = document.getElementById('skin3d-modal');
+    if (skin3dModal) {
+        skin3dModal.addEventListener('click', function(e) { if (e.target === this) closeSkin3DModal(); });
+    }
     document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') { closeQrModal(); closeSnsModal(); }
+        if (e.key === 'Escape') { closeQrModal(); closeSnsModal(); closeSkin3DModal(); }
     });
     init();
 });
@@ -789,6 +903,22 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div id="qr-url-label"></div>
         <button id="qr-close-btn" onclick="closeQrModal()">閉じる</button>
+    </div>
+</div>
+
+<div id="skin3d-modal" role="dialog" aria-modal="true" aria-label="3Dスキンビューアー">
+    <div id="skin3d-modal-inner">
+        <h3 id="skin3d-modal-name"></h3>
+        <div id="skin3d-canvas-wrap">
+            <canvas id="skin3d-canvas"></canvas>
+            <div id="skin3d-loading">読み込み中...</div>
+        </div>
+        <div id="skin3d-controls">
+            <button class="skin3d-anim-btn" data-anim="idle" onclick="setSkin3DAnimation('idle')">🧍 静止</button>
+            <button class="skin3d-anim-btn" data-anim="walk" onclick="setSkin3DAnimation('walk')">🚶 歩く</button>
+            <button class="skin3d-anim-btn" data-anim="run" onclick="setSkin3DAnimation('run')">🏃 走る</button>
+        </div>
+        <button id="skin3d-close-btn" onclick="closeSkin3DModal()">閉じる</button>
     </div>
 </div>
 
