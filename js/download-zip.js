@@ -12,7 +12,13 @@
     const REQUIRED_DOWNLOAD_FILES = [
         'minecraft_map.html',
         'background_image_guide.html',
-        'memberlist.js'
+        'js/memberlist.js',
+        'js/color-customizer.js',
+        'js/map-config.js',
+        'js/map-grid.js',
+        'js/member-list.js',
+        'js/mobile-ui.js',
+        'js/download-zip.js'
     ];
 
     // memberlist.js に登録されているアバター画像のファイル名一覧を集める（重複なし）
@@ -26,12 +32,13 @@
         return Array.from(files);
     }
 
-    // 画像類（map・avatars）：1つ見つからなくても他は続行し、ZIPには入れるだけ入れる
+    // 画像類（map・avatars・装飾画像）：1つ見つからなくても他は続行し、ZIPには入れるだけ入れる
     function getOptionalDownloadFiles() {
         const mapImageList = (window.MapApp.mapConfig && window.MapApp.mapConfig.mapImageList) || [];
         return [
             ...mapImageList.map((entry) => entry.fileName),
-            ...getAvatarFileList()
+            ...getAvatarFileList(),
+            'img/compass.png'
         ];
     }
 
