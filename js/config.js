@@ -64,15 +64,16 @@ window.CONFIG = {
         {
                 "name": "タツナミ先生",
                 "id": "UCedenULTLYf3DanflEXdRCQ",
-                "minecraftId": "syuutan",
-                "uuid": "a73d2578-4b8d-4c9d-a552-aca11f93aa27",
+                "minecraftId": "shyutan",
+                "uuid": "1d0e9619-9d02-4925-b49e-220ce08aaf6e",
                 "twitterId": "tatsunami",
                 "twitchId": "",
                 "tiktokId": "",
                 "instaId": "",
                 "discordUrl": "",
-                "color": "#00ff00",
-                "avatarImg": "avatars/syuutan.svg"
+                "homepageUrl": "",
+                "color": "#080808",
+                "avatarImg": "avatars/shyutan.svg"
         },
         {
                 "name": "神近",
@@ -318,10 +319,10 @@ window.CONFIG = {
         },
         {
                 "name": "むっこ氏",
-                "id": "UCedenULTLYf3DanflEXdRCQ",
+                "id": "UCZf78JzSJj9mDQOBIr4mPqg",
                 "minecraftId": "mukkoman",
                 "uuid": "4d72d173-dc5e-4e31-b913-eda903e260b2",
-                "twitterId": "",
+                "twitterId": "mukkkkko",
                 "twitchId": "",
                 "tiktokId": "",
                 "instaId": "",
@@ -441,6 +442,20 @@ window.CONFIG = {
                 "homepageUrl": "",
                 "color": "#ffea00",
                 "avatarImg": "avatars/UDON130.svg"
+        },
+        {
+                "name": "よし",
+                "id": "UCFkfHzxpDGEDAjsg34tKu_g",
+                "minecraftId": "yoshi_38_",
+                "uuid": "17376ad0-a16a-4b66-85de-1a133bafb2bf",
+                "twitterId": "yoshi38_dog",
+                "twitchId": "",
+                "tiktokId": "",
+                "instaId": "",
+                "discordUrl": "",
+                "homepageUrl": "",
+                "color": "#ff9900",
+                "avatarImg": "avatars/yoshi_38_.svg"
         }
 ]
 };
