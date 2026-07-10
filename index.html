@@ -601,8 +601,9 @@ function renderGrids(chInfoMap, vItems) {
         }).replace(/'/g, '&#39;');
 
         const rawMcId = ch.minecraftId ? ch.minecraftId.trim() : "";
-        const canShow3D = rawMcId !== "";
-        const safeMcIdAttr = rawMcId.replace(/'/g, "&#39;");
+        const rawUuid = ch.uuid ? ch.uuid.trim() : "";
+        const canShow3D = rawUuid !== "";
+        const safeUuidAttr = rawUuid.replace(/'/g, "&#39;");
         const safeNameAttr = ch.name.replace(/'/g, "&#39;");
 
         const card = `
@@ -622,7 +623,7 @@ function renderGrids(chInfoMap, vItems) {
             <div class="btn-area">
                 <button class="btn btn-detail" onclick='openSnsModal(${chJson})'>🔗 詳細</button>
                 <a href="#member" class="btn btn-member">👥 一覧</a>
-                ${canShow3D ? `<button class="btn btn-detail" onclick="openSkin3DModal('${safeMcIdAttr}', '${safeNameAttr}')">🧊 3Dスキン</button>` : ''}
+                ${canShow3D ? `<button class="btn btn-detail" onclick="openSkin3DModal('${safeUuidAttr}', '${safeNameAttr}')">🧊 3Dスキン</button>` : ''}
                 ${(isUpcoming && startTime) ? `<button class="btn btn-reserve ${isReserved?'active':''}" onclick="toggleReserve('${lastV.id}', '${ch.name}', '${startTime}')">🔔 ${isReserved?'予約中':'通知予約'}</button>` : ''}
             </div>
         </div>`;
@@ -646,7 +647,7 @@ function renderGrids(chInfoMap, vItems) {
         }
 
         const resolvedImg = imgPath !== "" ? imgPath : "avatars/fallback.svg";
-        const mcHeadHtml = `<div class="mc-head-box ${canShow3D ? 'mc-head-clickable' : ''}" style="border-color:${ch.color || 'var(--border-color)'}" ${canShow3D ? `onclick="openSkin3DModal('${safeMcIdAttr}', '${safeNameAttr}')" title="3Dスキンを見る"` : ''}>
+        const mcHeadHtml = `<div class="mc-head-box ${canShow3D ? 'mc-head-clickable' : ''}" style="border-color:${ch.color || 'var(--border-color)'}" ${canShow3D ? `onclick="openSkin3DModal('${safeUuidAttr}', '${safeNameAttr}')" title="3Dスキンを見る"` : ''}>
             <img class="mc-head-img" src="${resolvedImg}" alt="${ch.name}"
                  onerror="this.onerror=null; this.src='avatars/fallback.svg';">
         </div>`;
@@ -809,15 +810,16 @@ function closeSnsModal() {
 // ==========================================================
 let skin3DViewer = null;
 
-function openSkin3DModal(minecraftId, memberName) {
-    if (!minecraftId) return;
+function openSkin3DModal(uuid, memberName) {
+    if (!uuid) return;
     const modal = document.getElementById('skin3d-modal');
     const loading = document.getElementById('skin3d-loading');
     document.getElementById('skin3d-modal-name').textContent = memberName;
+    loading.textContent = '読み込み中...';
     loading.style.display = 'flex';
     modal.classList.add('open');
 
-    const skinUrl = `https://api.mineatar.io/skin/${encodeURIComponent(minecraftId)}`;
+    const skinUrl = `https://api.mineatar.io/skin/${encodeURIComponent(uuid)}`;
 
     if (typeof skinview3d === 'undefined') {
         loading.textContent = '3D表示ライブラリの読み込みに失敗しました';
@@ -829,17 +831,26 @@ function openSkin3DModal(minecraftId, memberName) {
             skin3DViewer = new skinview3d.SkinViewer({
                 canvas: document.getElementById('skin3d-canvas'),
                 width: 260,
-                height: 340,
-                skin: skinUrl
+                height: 340
             });
             skin3DViewer.autoRotate = true;
             skin3DViewer.autoRotateSpeed = 0.8;
             skin3DViewer.background = 0x2b2b2b;
-        } else {
-            skin3DViewer.loadSkin(skinUrl);
         }
-        setSkin3DAnimation('walk');
-        setTimeout(() => { loading.style.display = 'none'; }, 500);
+
+        // loadSkinはPromiseを返すので、失敗した場合はキャッチしてデフォルトスキンにフォールバックする
+        skin3DViewer.loadSkin(skinUrl)
+            .then(() => {
+                setSkin3DAnimation('walk');
+                loading.style.display = 'none';
+            })
+            .catch((err) => {
+                console.warn(`スキンの取得に失敗しました（UUID: ${uuid}）。デフォルトスキンを表示します。`, err);
+                loading.textContent = 'スキンが見つかりませんでした';
+                skin3DViewer.loadSkin(null); // 標準のプレースホルダースキンを表示
+                setSkin3DAnimation('walk');
+                setTimeout(() => { loading.style.display = 'none'; }, 2000);
+            });
     } catch (e) {
         console.error('skinview3d error:', e);
         loading.textContent = 'スキンの読み込みに失敗しました';
