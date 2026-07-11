@@ -22,7 +22,9 @@
         // 透明にできる項目のON/OFF
         iconBorderTransparent: false,
         iconBgTransparent: false,
-        textBgTransparent: false
+        textBgTransparent: false,
+        xAxisTransparent: false,
+        zAxisTransparent: false
     };
 
     function loadCustomColors() {
@@ -101,7 +103,9 @@
     const transparentInputMap = {
         'cc-icon-border-transparent': 'iconBorderTransparent',
         'cc-icon-bg-transparent': 'iconBgTransparent',
-        'cc-text-bg-transparent': 'textBgTransparent'
+        'cc-text-bg-transparent': 'textBgTransparent',
+        'cc-x-axis-color-transparent': 'xAxisTransparent',
+        'cc-z-axis-color-transparent': 'zAxisTransparent'
     };
 
     function syncColorInputsFromState() {
