@@ -104,8 +104,8 @@
 
     function updateAxisLineColors() {
         const colors = getColors();
-        if (xAxisLine) xAxisLine.setStyle({ color: colors.xAxisColor });
-        if (zAxisLine) zAxisLine.setStyle({ color: colors.zAxisColor });
+        if (xAxisLine) xAxisLine.setStyle({ color: colors.xAxisColor, opacity: colors.xAxisTransparent ? 0 : 0.6 });
+        if (zAxisLine) zAxisLine.setStyle({ color: colors.zAxisColor, opacity: colors.zAxisTransparent ? 0 : 0.6 });
     }
 
     // ==========================================================
@@ -118,8 +118,8 @@
         axisLabelContainer = document.getElementById('axis-labels');
 
         const colors = getColors();
-        zAxisLine = L.polyline([[4000, 0], [-4000, 0]], { color: colors.zAxisColor, weight: 2, opacity: 0.6, dashArray: '6, 6' }).addTo(map);
-        xAxisLine = L.polyline([[0, -4000], [0, 4000]], { color: colors.xAxisColor, weight: 2, opacity: 0.6, dashArray: '6, 6' }).addTo(map);
+        zAxisLine = L.polyline([[4000, 0], [-4000, 0]], { color: colors.zAxisColor, weight: 2, opacity: colors.zAxisTransparent ? 0 : 0.6, dashArray: '6, 6' }).addTo(map);
+        xAxisLine = L.polyline([[0, -4000], [0, 4000]], { color: colors.xAxisColor, weight: 2, opacity: colors.xAxisTransparent ? 0 : 0.6, dashArray: '6, 6' }).addTo(map);
 
         map.on('moveend zoomend', updateGrid);
         map.on('zoomend', updateZoomDensityClass);
