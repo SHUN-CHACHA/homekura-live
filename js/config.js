@@ -318,7 +318,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/yurimosaaan.svg"
         },
         {
-                "name": "むっこ氏",
+                "name": "むっこさん",
                 "id": "UCZf78JzSJj9mDQOBIr4mPqg",
                 "minecraftId": "mukkoman",
                 "uuid": "4d72d173-dc5e-4e31-b913-eda903e260b2",
