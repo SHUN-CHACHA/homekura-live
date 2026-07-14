@@ -20,7 +20,7 @@ const memberData = [
     { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }, // 09人目
     { area: "エリア10", name: "たにし", icon: "Tanish1.svg", name2: "珍珠花こまり", icon2: "yukiyanagiKOMARI.svg", x: 0, z: -720 }, // 10人目
     { area: "エリア11", name: "月成るくす", icon: "tsukinarilux.svg", name2: "", icon2: "", x: 360, z: -624 }, // 11人目
-    { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }, // 12人目
+    { area: "エリア12", name: "メッス", icon: "messu009.svg", name2: "", icon2: "", x: 624, z: -360 }, // 12人目
     { area: "エリア13", name: "ぽこにゃん", icon: "pokonyan_0603.svg", name2: "", icon2: "", x: 966, z: 259 }, // 13人目
     { area: "エリア14", name: "久那式リン", icon: "Kunashiki_Lin.svg", name2: "", icon2: "", x: 707, z: 707 }, // 14人目
     { area: "共有地", name: "共有地", icon: "HOME.png", name2: "", icon2: "", x: 514, z: 817 }, // 共有地
