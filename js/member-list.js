@@ -203,7 +203,14 @@
         searchInput = document.getElementById('search-input');
         cursorCoords = document.getElementById('cursor-coords');
 
-        countSpan.textContent = memberData.filter(m => m.name && m.name.trim() !== "").length;
+        // 登録人数：同じ名前の人が複数拠点にいても1人として数える（重複除外、共有地は除外）
+        const uniqueMemberNames = new Set();
+        memberData.forEach((m) => {
+            if (m.area === "共有地") return;
+            if (m.name && m.name.trim() !== "") uniqueMemberNames.add(m.name.trim());
+            if (m.name2 && m.name2.trim() !== "") uniqueMemberNames.add(m.name2.trim());
+        });
+        countSpan.textContent = uniqueMemberNames.size;
 
         // データ並び替え (エリアが空白でないものを優先、基本は登録順)
         memberData.sort((a, b) => {
