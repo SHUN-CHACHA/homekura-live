@@ -456,6 +456,20 @@ window.CONFIG = {
                 "homepageUrl": "",
                 "color": "#ff9900",
                 "avatarImg": "avatars/yoshi_38_.svg"
+        },
+        {
+                "name": "瑞木ゆき",
+                "id": "UCdQ7Ik70o_c0Gsg0ZQ9C-eA",
+                "minecraftId": "MizukiYuki22",
+                "uuid": "bb3fd173-f4df-4f4c-9e4b-8c8951bd8e60",
+                "twitterId": "MizukiYuki18",
+                "twitchId": "MizukiYuki18",
+                "tiktokId": "mizukiyuki18",
+                "instaId": "",
+                "discordUrl": "",
+                "homepageUrl": "",
+                "color": "#ffffff",
+                "avatarImg": "avatars/MizukiYuki22.svg"
         }
 ]
 };
