@@ -1,7 +1,7 @@
 // ==========================================================
 // 📌 メンバーのピン（マーカー）・一覧表示コンポーネント
 // window.MapApp.memberList として公開します。
-// memberData は memberlist.js（<script src="memberlist.js">）で定義されたものを使います。
+// memberData は MAP_member.js（<script src="MAP_member.js">）で定義されたものを使います。
 // ==========================================================
 (function () {
     window.MapApp = window.MapApp || {};

@@ -12,7 +12,7 @@
     const REQUIRED_DOWNLOAD_FILES = [
         'minecraft_map.html',
         'background_image_guide.html',
-        'js/memberlist.js',
+        'js/MAP_member.js',
         'js/color-customizer.js',
         'js/map-config.js',
         'js/map-grid.js',
@@ -21,7 +21,7 @@
         'js/download-zip.js'
     ];
 
-    // memberlist.js に登録されているアバター画像のファイル名一覧を集める（重複なし）
+    // MAP_member.js に登録されているアバター画像のファイル名一覧を集める（重複なし）
     function getAvatarFileList() {
         const files = new Set();
         const memberData = (window.MapApp.memberList && window.MapApp.memberList.memberData()) || [];
