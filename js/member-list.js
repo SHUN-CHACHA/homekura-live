@@ -22,21 +22,36 @@
         img.src = AVATAR_FALLBACK;
     };
 
+    // メンバー1件から、登録されている人物（名前+アイコン）を最大3人分の配列にする
+    function getPeople(member) {
+        const people = [];
+        if (member.name && member.name.trim() !== "") {
+            people.push({ name: member.name, icon: member.icon });
+        }
+        if (member.name2 && member.name2.trim() !== "") {
+            people.push({ name: member.name2, icon: member.icon2 });
+        }
+        if (member.name3 && member.name3.trim() !== "") {
+            people.push({ name: member.name3, icon: member.icon3 });
+        }
+        return people;
+    }
+
     // 動的アイコン生成用（顔アイコン版）
     // memberData の icon 欄に指定されたファイル名を avatars フォルダから読み込みます
-    // name2 が入っている場合は2人分のアイコンを並べて表示します
+    // name2 / name3 が入っている場合は、その人数分アイコンを並べて表示します（最大3人）
     function getIcon(member, isRegistered) {
-        const hasSecond = isRegistered && member.name2 && member.name2.trim() !== "";
+        const people = isRegistered ? getPeople(member) : [];
 
-        if (!hasSecond) {
-            const avatarSrc = (isRegistered && member.icon)
-                ? `avatars/${member.icon}`
-                : AVATAR_FALLBACK;
+        if (people.length <= 1) {
+            const single = people[0];
+            const avatarSrc = (single && single.icon) ? `avatars/${single.icon}` : AVATAR_FALLBACK;
+            const altName = single ? single.name : member.name;
             return L.divIcon({
                 className: 'custom-div-icon',
                 html: `
                     <div class="avatar-marker ${isRegistered ? '' : 'unregistered'}">
-                        <img src="${avatarSrc}" alt="${member.name}" onerror="avatarFallback(this)" />
+                        <img src="${avatarSrc}" alt="${altName}" onerror="avatarFallback(this)" />
                     </div>
                 `,
                 iconSize: [36, 36],
@@ -44,23 +59,22 @@
             });
         }
 
-        // 2人分のアイコンを並べて表示
-        const avatarSrc1 = member.icon ? `avatars/${member.icon}` : AVATAR_FALLBACK;
-        const avatarSrc2 = member.icon2 ? `avatars/${member.icon2}` : AVATAR_FALLBACK;
+        // 2〜3人分のアイコンを並べて表示
+        const iconsHtml = people.map((p) => {
+            const avatarSrc = p.icon ? `avatars/${p.icon}` : AVATAR_FALLBACK;
+            return `
+                <div class="avatar-marker">
+                    <img src="${avatarSrc}" alt="${p.name}" onerror="avatarFallback(this)" />
+                </div>
+            `;
+        }).join('');
+
+        const groupWidth = people.length * 30 + (people.length - 1) * 3; // アイコン幅30px + 間隔3px
         return L.divIcon({
             className: 'custom-div-icon',
-            html: `
-                <div class="avatar-marker-group">
-                    <div class="avatar-marker">
-                        <img src="${avatarSrc1}" alt="${member.name}" onerror="avatarFallback(this)" />
-                    </div>
-                    <div class="avatar-marker">
-                        <img src="${avatarSrc2}" alt="${member.name2}" onerror="avatarFallback(this)" />
-                    </div>
-                </div>
-            `,
-            iconSize: [63, 30],
-            iconAnchor: [31, 15]
+            html: `<div class="avatar-marker-group">${iconsHtml}</div>`,
+            iconSize: [groupWidth, 30],
+            iconAnchor: [groupWidth / 2, 15]
         });
     }
 
@@ -82,10 +96,11 @@
             // マーカーの設置（顔アイコン）
             const marker = L.marker([leafletY, leafletX], { icon: getIcon(member, isRegistered) }).addTo(map);
 
-            // メンバー名を「常に表示」するネームタグを設定（顔アイコン＋名前のみのシンプル表示）
-            const hasSecond = member.name2 && member.name2.trim() !== "";
+            // メンバー名を「常に表示」するネームタグを設定（1人ずつ改行、最大3人まで対応）
+            const people = getPeople(member);
+            const nameLinesHtml = people.map((p) => `<div class="name-line">${p.name}</div>`).join('');
             const tooltipText = `
-                <div class="name-line">${hasSecond ? `${member.name}・${member.name2}` : member.name}</div>
+                ${nameLinesHtml}
                 <div class="coord-line">X: ${member.x}, Z: ${member.z}</div>
             `;
 
@@ -100,8 +115,8 @@
             const lookupName = member.name;
             markers[lookupName] = marker;
 
-            const displayName = hasSecond ? `${member.name}・${member.name2}` : member.name;
-            const searchName = `${member.name} ${member.name2 || ""}`.trim().toLowerCase();
+            const displayName = people.map((p) => p.name).join('・');
+            const searchName = people.map((p) => p.name).join(' ').trim().toLowerCase();
             const searchArea = member.area ? member.area.toLowerCase() : "";
 
             // テーブル行作成（PC表示）
@@ -209,6 +224,7 @@
             if (m.area === "共有地") return;
             if (m.name && m.name.trim() !== "") uniqueMemberNames.add(m.name.trim());
             if (m.name2 && m.name2.trim() !== "") uniqueMemberNames.add(m.name2.trim());
+            if (m.name3 && m.name3.trim() !== "") uniqueMemberNames.add(m.name3.trim());
         });
         countSpan.textContent = uniqueMemberNames.size;
 
