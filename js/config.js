@@ -462,7 +462,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/yoshi_38_.svg"
         },
         {
-                "name": "瑞木ゆき", "order": 03, "group": "イリクス学園",
+                "name": "瑞木ゆき / Mizuki Yuki", "order": 03, "group": "イリクス学園",
                 "id": "UCdQ7Ik70o_c0Gsg0ZQ9C-eA",
                 "minecraftId": "MizukiYuki22",
                 "uuid": "bb3fd173-f4df-4f4c-9e4b-8c8951bd8e60",
