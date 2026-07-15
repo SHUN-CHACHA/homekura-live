@@ -66,7 +66,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/MrMsan.svg"
         },
         {
-                "name": "タツナミ先生",
+                "name": "タツナミ先生", "order": 11, "group": "タツナミ家",
                 "id": "UCedenULTLYf3DanflEXdRCQ",
                 "minecraftId": "shyutan",
                 "uuid": "1d0e9619-9d02-4925-b49e-220ce08aaf6e",
@@ -226,7 +226,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/messu009.svg"
         },
         {
-                "name": "よいよい",
+                "name": "よいよい", "order": 22, "group": "うえまさ家",
                 "id": "UCzk-vAIbo3iVBGTNaJQS2qQ",
                 "minecraftId": "yoiy0i",
                 "uuid": "273c51d0-3e15-4445-8db9-1f4606e68dfe",
@@ -239,7 +239,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/yoiy0i.svg"
         },
         {
-                "name": "うえまさ",
+                "name": "うえまさ", "order": 21, "group": "うえまさ家",
                 "id": "UCIBDdDXnViOgN5tCpfX7NOA",
                 "minecraftId": "uema5a",
                 "uuid": "8b519650-3606-4e81-8c7a-5db5d00a9f95",
@@ -322,7 +322,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/yurimosaaan.svg"
         },
         {
-                "name": "むっこ氏",
+                "name": "むっこさん", "order": 12, "group": "タツナミ家",
                 "id": "UCZf78JzSJj9mDQOBIr4mPqg",
                 "minecraftId": "mukkoman",
                 "uuid": "4d72d173-dc5e-4e31-b913-eda903e260b2",
@@ -378,7 +378,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/LeftLily0427.svg"
         },
         {
-                "name": "イリクス学園/久遠星那",
+                "name": "久遠星那 / Kuon Seina", "order": 01, "group": "イリクス学園",
                 "id": "UC-jJgNH2jX-I6eyXoOuLfAg",
                 "minecraftId": "kuon_irix",
                 "uuid": "1d1a367d-27ef-4ca0-b5b0-c202fe0f6761",
@@ -392,7 +392,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/kuon_irix.svg"
         },
         {
-                "name": "早乙女燈真 / Saotome Touma",
+                "name": "早乙女燈真 / Saotome Touma", "order": 02, "group": "イリクス学園",
                 "id": "UCGSNOUcXKZ5IFYJLycyHR2A",
                 "minecraftId": "saotomeirix",
                 "uuid": "b039c461-602b-42f0-9283-ac9e35083ad0",
@@ -460,6 +460,20 @@ window.CONFIG = {
                 "homepageUrl": "",
                 "color": "#ff9900",
                 "avatarImg": "avatars/yoshi_38_.svg"
+        },
+        {
+                "name": "瑞木ゆき", "order": 03, "group": "イリクス学園",
+                "id": "UCdQ7Ik70o_c0Gsg0ZQ9C-eA",
+                "minecraftId": "MizukiYuki22",
+                "uuid": "bb3fd173-f4df-4f4c-9e4b-8c8951bd8e60",
+                "twitterId": "MizukiYuki18",
+                "twitchId": "MizukiYuki18",
+                "tiktokId": "mizukiyuki18",
+                "instaId": "",
+                "discordUrl": "",
+                "homepageUrl": "",
+                "color": "#ffffff",
+                "avatarImg": "avatars/MizukiYuki22.svg"
         }
 ]
 };
