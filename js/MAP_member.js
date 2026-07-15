@@ -20,7 +20,7 @@ const memberData = [
     { area: "エリア07", name: "神宮寺", icon: "jingujich.svg", name2: "", icon2: "", x: -720, z: 0 }, // 07人目
     { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }, // 08人目
     { area: "", name: "", icon: "", name2: "", icon2: "", x: 0, z: 0 }, // 09人目
-    { area: "エリア10", name: "たにし", icon: "Tanish1.svg", name2: "珍珠花こまり", icon2: "yukiyanagiKOMARI.svg", x: 0, z: -720 }, // 10人目
+    { area: "エリア10", name: "", icon: "Tanish1.svg", name2: "", icon2: "yukiyanagiKOMARI.svg", x: 0, z: -720 }, // 10人目
     { area: "エリア11", name: "月成るくす", icon: "tsukinarilux.svg", name2: "", icon2: "", x: 360, z: -624 }, // 11人目
     { area: "エリア12", name: "メッス", icon: "messu009.svg", name2: "", icon2: "", x: 624, z: -360 }, // 12人目
     { area: "エリア13", name: "ぽこにゃん", icon: "pokonyan_0603.svg", name2: "", icon2: "", x: 966, z: 259 }, // 13人目
