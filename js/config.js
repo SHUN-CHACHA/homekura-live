@@ -11,7 +11,7 @@ window.CONFIG = {
     // 　例: "group": "○○夫婦"
     DEFAULT_CHANNELS: [
         {
-                "name": "まぐにぃ", "order": 101, "group": "",
+                "name": "まぐにぃ", "order": 101, "group": "　",
                 "id": "UCMP7QuS4suoONg47Nbi-wrg",
                 "minecraftId": "maguro29",
                 "uuid": "482e3dfc-7bea-4afa-96a7-9ff6f549996c",
@@ -25,7 +25,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/maguro29.svg"
         },
         {
-                "name": "じゃじゃーん菊池", "order": 102, "group": "",
+                "name": "じゃじゃーん菊池", "order": 102, "group": "　",
                 "id": "UCi2kiw8hMo0vMAh5lXiafug",
                 "minecraftId": "jajaankikuchi",
                 "uuid": "563bd621-fd52-4a24-946d-aa8d199d3ecc",
@@ -39,7 +39,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/jajaankikuchi.svg"
         },
         {
-                "name": "さかいさんだー", "order": 116, "group": "",
+                "name": "さかいさんだー", "order": 116, "group": "　",
                 "id": "UCuk8ABJTVWiApYlEojW_QrA",
                 "minecraftId": "Sakai_Thunder",
                 "uuid": "77ca6cbf-3fbf-4bf7-8624-87044bb7c663",
@@ -53,7 +53,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/Sakai_Thunder.svg"
         },
         {
-                "name": "Ｍさん", "order": 103, "group": "",
+                "name": "Ｍさん", "order": 103, "group": "　",
                 "id": "UCGK0iFuXhfA5VnL64xiKEmQ",
                 "minecraftId": "MrMsan",
                 "uuid": "fe91adf4-7131-4da5-bcbf-b4a675d4ceef",
@@ -80,7 +80,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/shyutan.svg"
         },
         {
-                "name": "神近", "order": 111, "group": "",
+                "name": "神近", "order": 111, "group": "　",
                 "id": "UCdLe2q91fJkN9GEyDvItp-w",
                 "minecraftId": "kamichika",
                 "uuid": "f06cbdea-3f49-48ec-a9ca-39beade0e990",
@@ -93,7 +93,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/kamichika.svg"
         },
         {
-                "name": "しろくる", "order": 112, "group": "",
+                "name": "しろくる", "order": 112, "group": "　",
                 "id": "UCTl5XpFddyDsj5woStUPu0w",
                 "minecraftId": "sirokuru",
                 "uuid": "a6bc0a31-4641-44b5-af3f-4350c89528d4",
@@ -106,7 +106,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/sirokuru.svg"
         },
         {
-                "name": "たにし", "order": 113, "group": "",
+                "name": "たにし", "order": 113, "group": "　",
                 "id": "UCiC8VCiSLD3mxoO-QFKQnBQ",
                 "minecraftId": "Tanish1",
                 "uuid": "939aa8b1-7e6c-458b-9c25-af2a5e7becc0",
@@ -119,7 +119,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/Tanish1.svg"
         },
         {
-                "name": "凸もり", "order": 114, "group": "",
+                "name": "凸もり", "order": 114, "group": "　",
                 "id": "UCdN9GjPrqhcrzE27eWNNjxg",
                 "minecraftId": "totsumori",
                 "uuid": "e7312231-f09f-4b02-b71b-cefb5a4d87b1",
@@ -132,7 +132,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/totsumori.svg"
         },
         {
-                "name": "神宮寺ちゃんねる", "order": 104, "group": "",
+                "name": "神宮寺ちゃんねる", "order": 104, "group": "　",
                 "id": "UCou8IVB8jJPk56H0farYQdA",
                 "minecraftId": "jingujich",
                 "uuid": "9944cd57-19b4-4516-a232-48a6b6ec9f25",
@@ -145,7 +145,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/jingujich.svg"
         },
         {
-                "name": "カズクラ", "order": 115, "group": "",
+                "name": "カズクラ", "order": 115, "group": "　",
                 "id": "UCu3Mp1ZimtNvyA-bcfo9VrQ",
                 "minecraftId": "kazuchannel",
                 "uuid": "c85613bd-c3b6-43ea-8a12-a9649fa769b0",
@@ -158,7 +158,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/kazuchannel.svg"
         },
         {
-                "name": "たいたい", "order": 117, "group": "",
+                "name": "たいたい", "order": 117, "group": "　",
                 "id": "UCds-nvoKCcvixVXJ_54QcbQ",
                 "minecraftId": "taitai0904",
                 "uuid": "65620d1a-889e-407f-9b0a-cfbb579f8963",
@@ -171,7 +171,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/taitai0904.svg"
         },
         {
-                "name": "岐阜のこみちん", "order": 31, "group": "",
+                "name": "岐阜のこみちん", "order": 31, "group": "ぽこにゃん",
                 "id": "UCw4frqkotySLjJ_CFZR5-7w",
                 "minecraftId": "komichin",
                 "uuid": "81cb4bb1-5ba8-4a63-bdbe-570dccdf8ec2",
@@ -185,7 +185,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/komichin.svg"
         },
         {
-                "name": "ナナホシナナ", "order": 105, "group": "",
+                "name": "ナナホシナナ", "order": 105, "group": "　",
                 "id": "UCncsOsnMBAAaYb6WidBYIDw",
                 "minecraftId": "nanahoshiNanaVT",
                 "uuid": "a5ef6ef3-9cf1-4c05-ab1f-7c47d13f6d06",
@@ -199,7 +199,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/nanahoshiNanaVT.svg"
         },
         {
-                "name": "月成るくす", "order": 106, "group": "",
+                "name": "月成るくす", "order": 106, "group": "　",
                 "id": "UCP9rcDSyTRtnu8EsG2CmLMg",
                 "minecraftId": "tsukinarilux",
                 "uuid": "00fdc6a9-b63d-4456-86e5-271c91645cd9",
@@ -213,7 +213,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/tsukinarilux.svg"
         },
         {
-                "name": "メッス", "order": 118, "group": "",
+                "name": "メッス", "order": 118, "group": "　",
                 "id": "UCkJeBcOPRBs5bri5B3sFgVg",
                 "minecraftId": "messu009",
                 "uuid": "2d610d25-8c20-44d9-97ae-21f3212a401e",
@@ -253,7 +253,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/uema5a.svg"
         },
         {
-                "name": "久那式リン", "order": 107, "group": "",
+                "name": "久那式リン", "order": 107, "group": "　",
                 "id": "UCPs7s2VlkwVWWpjcyjviINA",
                 "minecraftId": "Kunashiki_Lin",
                 "uuid": "445a1617-cc6f-49b0-be6d-a102c5dcdf33",
@@ -267,7 +267,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/Kunashiki_Lin.svg"
         },
         {
-                "name": "珍珠花こまり", "order": 108, "group": "",
+                "name": "珍珠花こまり", "order": 108, "group": "　",
                 "id": "UCSLCZ5uhCYUMQ9TG9Cs1ERQ",
                 "minecraftId": "yukiyanagiKOMARI",
                 "uuid": "eab1fd9e-92b4-4594-86b0-5c4b6f00c520",
@@ -281,7 +281,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/yukiyanagiKOMARI.svg"
         },
         {
-                "name": "ぽこにゃん", "order": 32, "group": "",
+                "name": "ぽこにゃん", "order": 32, "group": "ぽこにゃん",
                 "id": "UCO06KZjWOe6b1tXrgzzakZA",
                 "minecraftId": "pokonyan_0603",
                 "uuid": "b1531516-40ac-46b1-baf9-5d2db7a44dca",
@@ -308,7 +308,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/HAOgame_KtR.svg"
         },
         {
-                "name": "ゆりも", "order": 119, "group": "",
+                "name": "ゆりも", "order": 119, "group": "　",
                 "id": "UCrfGCEk3MPYap72t0TX_sdQ",
                 "minecraftId": "yurimosaaan",
                 "uuid": "0e6b9c2a-560a-4593-b0c0-983ecb209c4f",
@@ -336,7 +336,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/mukkoman.svg"
         },
         {
-                "name": "うが", "order": 121, "group": "",
+                "name": "うが", "order": 121, "group": "　",
                 "id": "UCPqrIvS6LYOXa348ZucLDAg",
                 "minecraftId": "uga_youtube",
                 "uuid": "ed38df6a-3374-4ba4-ae36-1de9a049447d",
@@ -350,7 +350,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/uga_youtube.svg"
         },
         {
-                "name": "鶴太郎", "order": 120, "group": "",
+                "name": "鶴太郎", "order": 120, "group": "　",
                 "id": "UC44DZLHQJOW-of5m5XZunLQ",
                 "minecraftId": "turu0004",
                 "uuid": "ffe0bac5-b1d5-42e8-9f74-6e7ba8668fdc",
@@ -364,7 +364,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/turu0004.svg"
         },
         {
-                "name": "LeftLily / レフトリリー", "order": 122, "group": "",
+                "name": "LeftLily / レフトリリー", "order": 122, "group": "　",
                 "id": "UC2Oi_Pfzk-G3HyhnbP5vJLA",
                 "minecraftId": "LeftLily0427",
                 "uuid": "554d4e40-a120-4889-a8f3-933938e6cc1c",
@@ -406,7 +406,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/saotomeirix.svg"
         },
         {
-                "name": "黎乃鈴 -Kurono Suzu-", "order": 123, "group": "",
+                "name": "黎乃鈴 -Kurono Suzu-", "order": 123, "group": "　",
                 "id": "UCvq_7I63tALUzJJvFOrjHPg",
                 "minecraftId": "kuronosuzu",
                 "uuid": "200306b6-40e3-4b30-9b44-d5aa0d1c2b8f",
@@ -420,7 +420,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/kuronosuzu.svg"
         },
         {
-                "name": "28（ふたば）Games", "order": 109, "group": "",
+                "name": "28（ふたば）Games", "order": 109, "group": "　",
                 "id": "UCpONKlVEdkBeKsE1hlPvrfg",
                 "minecraftId": "ftb28",
                 "uuid": "a2bdc570-3b2c-464a-9c38-e9a681c0d506",
@@ -434,7 +434,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/ftb28.svg"
         },
         {
-                "name": "UDON", "order": 110, "group": "",
+                "name": "UDON", "order": 110, "group": "　",
                 "id": "UC8WvsghW1a2JUIuHBu8qz7w",
                 "minecraftId": "UDON130",
                 "uuid": "1065ce22-9f3a-4ce6-ac18-063be1411086",
@@ -448,7 +448,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/UDON130.svg"
         },
         {
-                "name": "よし", "order": 33, "group": "",
+                "name": "よし", "order": 33, "group": "ぽこにゃん",
                 "id": "UCFkfHzxpDGEDAjsg34tKu_g",
                 "minecraftId": "yoshi_38_",
                 "uuid": "17376ad0-a16a-4b66-85de-1a133bafb2bf",
