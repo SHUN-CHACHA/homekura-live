@@ -1,10 +1,14 @@
 window.CONFIG = {
     // YouTube Data API v3 の本物のAPIキーをダブルクォーテーションの中に貼り付けてください
-    YOUTUBE_API_KEY: "AIzaSyAj-96z_JFwqNr6Gl0d2p3UdDUHDk2wGEE",
+    YOUTUBE_API_KEY: "AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY",
     // キャッシュ有効期間（ミリ秒）。デフォルト5分。
     CACHE_DURATION_MS: 300000,
     // チャンネルアイコンのキャッシュ有効期間（ミリ秒）。デフォルト24時間。
     CHANNEL_ICON_CACHE_DURATION_MS: 86400000,
+    // 📋 表示順を変えたい場合は各メンバーに "order" を追加してください（数字が小さい順に表示。未設定は最後尾）
+    // 　例: "order": 10  →  次の人は "order": 20 のように間隔を空けておくと、後で挿入しやすくなります
+    // 👥 夫婦やグループをまとめたい場合は "group" に同じ見出し文字列を入れてください（隣接するorder同士でグループ化されます）
+    // 　例: "group": "○○夫婦"
     DEFAULT_CHANNELS: [
         {
                 "name": "まぐにぃ",
@@ -318,7 +322,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/yurimosaaan.svg"
         },
         {
-                "name": "むっこさん",
+                "name": "むっこ氏",
                 "id": "UCZf78JzSJj9mDQOBIr4mPqg",
                 "minecraftId": "mukkoman",
                 "uuid": "4d72d173-dc5e-4e31-b913-eda903e260b2",
@@ -456,20 +460,6 @@ window.CONFIG = {
                 "homepageUrl": "",
                 "color": "#ff9900",
                 "avatarImg": "avatars/yoshi_38_.svg"
-        },
-        {
-                "name": "瑞木ゆき",
-                "id": "UCdQ7Ik70o_c0Gsg0ZQ9C-eA",
-                "minecraftId": "MizukiYuki22",
-                "uuid": "bb3fd173-f4df-4f4c-9e4b-8c8951bd8e60",
-                "twitterId": "MizukiYuki18",
-                "twitchId": "MizukiYuki18",
-                "tiktokId": "mizukiyuki18",
-                "instaId": "",
-                "discordUrl": "",
-                "homepageUrl": "",
-                "color": "#ffffff",
-                "avatarImg": "avatars/MizukiYuki22.svg"
         }
 ]
 };
