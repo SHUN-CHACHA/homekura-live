@@ -11,7 +11,7 @@ window.CONFIG = {
     // 　例: "group": "○○夫婦"
     DEFAULT_CHANNELS: [
         {
-                "name": "まぐにぃ", "order": 101, "group": "　",
+                "name": "まぐにぃ", "order": 101, "group": "鯖主",
                 "id": "UCMP7QuS4suoONg47Nbi-wrg",
                 "minecraftId": "maguro29",
                 "uuid": "482e3dfc-7bea-4afa-96a7-9ff6f549996c",
@@ -25,7 +25,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/maguro29.svg"
         },
         {
-                "name": "じゃじゃーん菊池", "order": 102, "group": "　",
+                "name": "じゃじゃーん菊池", "order": 102, "group": "",
                 "id": "UCi2kiw8hMo0vMAh5lXiafug",
                 "minecraftId": "jajaankikuchi",
                 "uuid": "563bd621-fd52-4a24-946d-aa8d199d3ecc",
@@ -378,7 +378,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/LeftLily0427.svg"
         },
         {
-                "name": "久遠星那 / Kuon Seina", "order": 01, "group": "イリクス学園",
+                "name": "久遠星那 / Kuon Seina", "order": 41, "group": "イリクス学園",
                 "id": "UC-jJgNH2jX-I6eyXoOuLfAg",
                 "minecraftId": "kuon_irix",
                 "uuid": "1d1a367d-27ef-4ca0-b5b0-c202fe0f6761",
@@ -392,7 +392,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/kuon_irix.svg"
         },
         {
-                "name": "早乙女燈真 / Saotome Touma", "order": 02, "group": "イリクス学園",
+                "name": "早乙女燈真 / Saotome Touma", "order": 42, "group": "イリクス学園",
                 "id": "UCGSNOUcXKZ5IFYJLycyHR2A",
                 "minecraftId": "saotomeirix",
                 "uuid": "b039c461-602b-42f0-9283-ac9e35083ad0",
@@ -462,7 +462,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/yoshi_38_.svg"
         },
         {
-                "name": "瑞木ゆき / Mizuki Yuki", "order": 03, "group": "イリクス学園",
+                "name": "瑞木ゆき / Mizuki Yuki", "order": 43, "group": "イリクス学園",
                 "id": "UCdQ7Ik70o_c0Gsg0ZQ9C-eA",
                 "minecraftId": "MizukiYuki22",
                 "uuid": "bb3fd173-f4df-4f4c-9e4b-8c8951bd8e60",
