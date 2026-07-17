@@ -116,9 +116,7 @@ window.CONFIG = {
                 "avatarImg": "avatars/sirokuru.svg"
         },
         {
-                "name": "たにし",
-                "order": 113,
-                "group": "　",
+                "name": "たにしらいす",
                 "id": "UCiC8VCiSLD3mxoO-QFKQnBQ",
                 "minecraftId": "Tanish1",
                 "uuid": "939aa8b1-7e6c-458b-9c25-af2a5e7becc0",
@@ -127,8 +125,10 @@ window.CONFIG = {
                 "tiktokId": "",
                 "instaId": "",
                 "discordUrl": "",
+                "homepageUrl": "",
                 "color": "#00ff7b",
-                "avatarImg": "avatars/Tanish1.svg"
+                "avatarImg": "avatars/Tanish1.svg",
+                "order": 113
         },
         {
                 "name": "凸もり",
