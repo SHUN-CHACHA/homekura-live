@@ -40,19 +40,18 @@ window.CONFIG = {
         },
         {
                 "name": "さかいさんだー",
-                "order": 116,
-                "group": "　",
                 "id": "UCuk8ABJTVWiApYlEojW_QrA",
                 "minecraftId": "Sakai_Thunder",
                 "uuid": "77ca6cbf-3fbf-4bf7-8624-87044bb7c663",
                 "twitterId": "Sakai_Thunder",
                 "twitchId": "",
-                "tiktokId": "",
-                "instaId": "",
+                "tiktokId": "sakai_thunder0705",
+                "instaId": "sakaithunder",
                 "discordUrl": "",
                 "homepageUrl": "https://lit.link/sakaithunder",
                 "color": "#11e4d6",
-                "avatarImg": "avatars/Sakai_Thunder.svg"
+                "avatarImg": "avatars/Sakai_Thunder.svg",
+                "order": 116
         },
         {
                 "name": "Ｍさん",
