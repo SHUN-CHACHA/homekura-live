@@ -210,6 +210,15 @@
                     <input type="text" id="m_color_text" class="color-code-input" value="#ff9900" maxlength="7" placeholder="#ffffff" oninput="syncTextColorToPicker(this.value)">
                 </div>
 
+                <div class="form-group">
+                    <label>表示順（order）</label>
+                    <input type="number" id="m_order" placeholder="例: 10（空欄でもOK。数字が小さい順に表示されます）">
+                </div>
+                <div class="form-group">
+                    <label>グループ見出し（group）</label>
+                    <input type="text" id="m_group" placeholder="例: ○○夫婦（同じ名前の人同士が隣接表示され、見出しが付きます）">
+                </div>
+
                 <button id="saveBtn" class="btn-save" onclick="addMember()">メンバーを保存</button>
                 <button id="cancelBtn" style="display:none; margin-left:10px;" onclick="cancelEdit()">編集をキャンセル</button>
             </div>
@@ -223,6 +232,13 @@
                     📋 config.jsの内容をコピー
                 </button>
                 <textarea id="configOutput" readonly placeholder="メンバー情報を保存すると最新の設定データがここに自動同期されます"></textarea>
+
+                <p style="font-size: 12px; color: #5c6b5a; margin: 14px 0 6px;">
+                    <b>js/config.js を直接手入力で編集した場合</b>は、下のボタンでこのページのデータを最新のconfig.jsに合わせ直してください（このブラウザに保存されている編集中のデータは破棄されます）。
+                </p>
+                <button type="button" style="width: 100%; padding: 8px; font-size: 12px; background: #b45309; color: white; border: none; font-weight: bold;" onclick="reloadFromConfigJs()">
+                    🔄 config.jsを再読み込み（ローカルの編集を破棄）
+                </button>
             </div>
         </div>
 
@@ -472,7 +488,7 @@ async function downloadMinecraftAvatar() {
         const base64data = await blobToBase64(blob);
 
         const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
-  <rect width="40" height="40" fill="#e2eae2" rx="4"/>
+  <rect width="40" height="40" fill="var(--accent-green-tint)" rx="4"/>
   <image href="${base64data}" x="2" y="2" width="36" height="36" style="image-rendering: pixelated;"/>
 </svg>`;
 
@@ -602,6 +618,9 @@ function editMember(idx) {
     document.getElementById('m_color').value      = c;
     document.getElementById('m_color_text').value = c.toUpperCase();
 
+    document.getElementById('m_order').value = (typeof ch.order === 'number') ? ch.order : "";
+    document.getElementById('m_group').value = ch.group || "";
+
     document.getElementById('memberFormContainer').className = "editing";
     document.getElementById('editNotice').style.display      = "block";
     document.getElementById('saveBtn').innerText             = "変更を上書き保存";
@@ -620,7 +639,7 @@ function cancelEdit() {
 }
 
 function clearForm() {
-    ['m_name','m_id','m_mc','m_x','m_tw','m_tt','m_inst','m_discord','m_homepage'].forEach(id => document.getElementById(id).value = "");
+    ['m_name','m_id','m_mc','m_x','m_tw','m_tt','m_inst','m_discord','m_homepage','m_order','m_group'].forEach(id => document.getElementById(id).value = "");
     currentUUID = "";
     resetUuidUI();
     document.getElementById('uuidManualToggleBtn').style.display = "none";
@@ -642,12 +661,23 @@ function addMember() {
     const discordUrl  = document.getElementById('m_discord').value.trim();
     const homepageUrl = document.getElementById('m_homepage').value.trim();
     const color      = document.getElementById('m_color_text').value.trim().toLowerCase();
+    const orderRaw   = document.getElementById('m_order').value.trim();
+    const group      = document.getElementById('m_group').value.trim();
 
     if (!name || !id) { alert("名前とYouTubeチャンネルIDは必須です！"); return; }
     if (!color.match(/^#[0-9a-fA-F]{6}$/)) { alert("カラーコードは #ffffff のような形式で入力してください！"); return; }
 
     const pureMcId = cleanMcId(minecraftId);
     const memberData = { name, id, minecraftId, uuid: currentUUID, twitterId, twitchId, tiktokId, instaId, discordUrl, homepageUrl, color, avatarImg: pureMcId ? `avatars/${pureMcId}.svg` : "" };
+
+    // order は数字を入力した時だけ保存する（未入力なら一覧の一番最後に表示される仕様）
+    if (orderRaw !== "" && !isNaN(Number(orderRaw))) {
+        memberData.order = Number(orderRaw);
+    }
+    // group は入力した時だけ保存する（同じgroup名の人同士が隣接する時だけ見出しが出る仕様）
+    if (group !== "") {
+        memberData.group = group;
+    }
 
     if (editIndex > -1) {
         channels[editIndex] = memberData;
@@ -694,6 +724,24 @@ function exportConfig() {
     navigator.clipboard.writeText(document.getElementById('configOutput').value)
         .then(() => alert("js/config.js 用のコードをコピーしました！js/config.jsファイルに貼り付けて保存してください。"))
         .catch(() => { document.getElementById('configOutput').select(); alert('自動コピーに失敗しました。テキストエリアを全選択して手動でコピーしてください。'); });
+}
+
+// js/config.js を直接手入力で編集した場合に、このページ側のキャッシュ(localStorage)を破棄して
+// 実際に読み込まれている window.CONFIG.DEFAULT_CHANNELS の内容に同期し直す
+function reloadFromConfigJs() {
+    if (!window.CONFIG || !window.CONFIG.DEFAULT_CHANNELS) {
+        alert("js/config.js が読み込めていません。ページを開き直すか、config.js の内容をご確認ください。");
+        return;
+    }
+    if (!confirm("このブラウザに保存されている編集中のデータは破棄され、js/config.js の内容に置き換わります。よろしいですか？")) {
+        return;
+    }
+    localStorage.removeItem('custom_channels');
+    channels = [...window.CONFIG.DEFAULT_CHANNELS];
+    cancelEdit();
+    renderMemberList();
+    updateConfigOutput();
+    alert("js/config.js の内容を読み込み直しました！");
 }
 
 initAdmin();
