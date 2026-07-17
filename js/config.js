@@ -378,8 +378,6 @@ window.CONFIG = {
         },
         {
                 "name": "うが",
-                "order": 121,
-                "group": "　",
                 "id": "UCPqrIvS6LYOXa348ZucLDAg",
                 "minecraftId": "uga_youtube",
                 "uuid": "ed38df6a-3374-4ba4-ae36-1de9a049447d",
@@ -387,10 +385,11 @@ window.CONFIG = {
                 "twitchId": "",
                 "tiktokId": "uga_youtube",
                 "instaId": "",
-                "discordUrl": "",
+                "discordUrl": "https://discord.com/invite/huseFHRdSt",
                 "homepageUrl": "lit.link/uga_totemuman",
                 "color": "#e8c99c",
-                "avatarImg": "avatars/uga_youtube.svg"
+                "avatarImg": "avatars/uga_youtube.svg",
+                "order": 121
         },
         {
                 "name": "鶴太郎",
