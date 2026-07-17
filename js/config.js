@@ -1,6 +1,6 @@
 window.CONFIG = {
     // YouTube Data API v3 の本物のAPIキーをダブルクォーテーションの中に貼り付けてください
-    YOUTUBE_API_KEY: "AIzaSyDoy4uvy_4jXcpGw8fxTE33lFmBn18fAYY",
+    YOUTUBE_API_KEY: "AIzaSyAj-96z_JFwqNr6Gl0d2p3UdDUHDk2wGEE",
     // キャッシュ有効期間（ミリ秒）。デフォルト5分。
     CACHE_DURATION_MS: 300000,
     // チャンネルアイコンのキャッシュ有効期間（ミリ秒）。デフォルト24時間。
