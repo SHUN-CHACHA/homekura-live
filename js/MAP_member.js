@@ -39,7 +39,7 @@ const memberData = [
     { area: "エリア25", name: "LeftLily/レフトリリー", icon: "LeftLily0427.svg", name2: "", icon2: "", x: 1280, z: 0 }, // 25人目
     { area: "エリア26", name: "まぐにぃ", icon: "maguro29.svg", name2: "", icon2: "", x: 1109, z: 640 }, // 26人目
     { area: "エリア27", name: "うえまさ", icon: "uema5a.svg", name2: "", icon2: "", x: 640, z: 1109 }, // 27人目
-    { area: "エリア28", name: "珍珠花こまり", icon: "yukiyanagiKOMARI.svg", name2: "たにし", icon2: "Tanish1.svg", x: 0, z: 1280 }, // 28人目
+    { area: "エリア28", name: "珍珠花こまり", icon: "yukiyanagiKOMARI.svg", name2: "たにしらいす", icon2: "Tanish1.svg", x: 0, z: 1280 }, // 28人目
     { area: "エリア29", name: "うが", icon: "uga_youtube.svg", name2: "", icon2: "", x: -640, z: 1109 }, // 29人目
     { area: "エリア30", name: "ゆりも", icon: "yurimosaaan.svg", name2: "", icon2: "", x: -1109, z: 640 }, // 30人目
     { area: "エリア31", name: "ナナホシナナ", icon: "nanahoshiNanaVT.svg", name2: "", icon2: "", x: -1280, z: 0 }, // 31人目
