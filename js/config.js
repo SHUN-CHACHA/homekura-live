@@ -1,5 +1,10 @@
 window.CONFIG = {
-    // YouTube Data API v3 の本物のAPIキーをダブルクォーテーションの中に貼り付けてください
+    // ⚠️ APIキーはもうここに書きません。ブラウザから見えてしまうためです。
+    // 本物のAPIキーは Cloudflare Worker（プロキシ）側の環境変数(Secret)に設定してください。
+    // このプロパティは古い管理画面との互換性のためだけに残っています。空のままでOKです。
+    YOUTUBE_API_KEY: "",
+    // YouTube APIプロキシ（Cloudflare Worker）のURL。末尾に / は付けない。
+    // 例: "https://homekura-yt-proxy.your-subdomain.workers.dev"
     YOUTUBE_PROXY_URL: "https://homekura-yt-proxy.eisyun.workers.dev",
     // キャッシュ有効期間（ミリ秒）。デフォルト5分。
     CACHE_DURATION_MS: 300000,
