@@ -44,8 +44,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            row-gap: 10px;
         }
-        .controls-left { display: flex; align-items: center; gap: 12px; }
+        .controls-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; row-gap: 8px; }
         .controls-right { display: flex; align-items: center; gap: 12px; }
 
         .roulette-btn {
@@ -63,6 +65,24 @@
             transition: all 0.2s;
         }
         .roulette-btn:hover { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+
+        .orehighlighter-btn {
+            text-decoration: none;
+            color: var(--secondary-text);
+            padding: 4px 14px;
+            border-radius: 14px;
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            line-height: 1.3;
+            transition: all 0.2s;
+        }
+        .orehighlighter-btn:hover { background: #eef6ff; color: #1d4ed8; border-color: #bfdbfe; }
+        .orehighlighter-btn .oh-line1 { font-size: 13px; font-weight: bold; }
+        .orehighlighter-btn .oh-line2 { font-size: 10.5px; font-weight: normal; opacity: 0.75; }
 
         .btn-tool {
             background: var(--accent-green); color: #fff; border: none; padding: 6px 16px; border-radius: 20px;
@@ -393,6 +413,10 @@
         <a href="https://shun-chacha.github.io/homekura-live/roulette.html" class="roulette-btn" target="_blank">
             <img src="img/roulette-icon.png" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
             旬茶作 ルーレット
+        </a>
+        <a href="https://shun-chacha.github.io/homekura-live/tools/ore-highlighter/" class="orehighlighter-btn" target="_blank">
+            <span class="oh-line1">⛏ OreHighlighter</span>
+            <span class="oh-line2">・・・ゲーミングブロック作成アプリ</span>
         </a>
     </div>
     <div class="controls-right">
