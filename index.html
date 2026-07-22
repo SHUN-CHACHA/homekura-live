@@ -449,8 +449,10 @@
 </script>
 
 <script>
-// config.jsが先に読み込まれているので、正常にAPI_KEYが代入されます
-const API_KEY = window.CONFIG?.YOUTUBE_API_KEY || '';
+// config.jsが先に読み込まれているので、正常にPROXY_URLが代入されます
+// ※ YouTube APIキーはブラウザ側には一切渡さない設計です。
+//    実際のAPI呼び出しはCloudflare Worker等のプロキシがサーバー側で行います。
+const PROXY_URL = (window.CONFIG?.YOUTUBE_PROXY_URL || '').replace(/\/$/, '');
 const CACHE_DURATION_MS         = window.CONFIG?.CACHE_DURATION_MS          ?? (5  * 60 * 1000);
 const CHANNEL_ICON_CACHE_DURATION_MS = window.CONFIG?.CHANNEL_ICON_CACHE_DURATION_MS ?? (24 * 60 * 60 * 1000);
 let channels = [];
@@ -492,6 +494,7 @@ function init() {
 
 async function loadPortal(forceRefresh = false) {
     if (!channels.length) return;
+    if (!PROXY_URL) { console.error('[homeクラ] YOUTUBE_PROXY_URL が config.js に設定されていません。'); return; }
 
     const now = Date.now();
 
@@ -520,7 +523,7 @@ async function loadPortal(forceRefresh = false) {
                 throw new Error('icon cache miss');
             }
         } catch (_) {
-            const chRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${channelIds}&part=snippet`);
+            const chRes = await fetch(`${PROXY_URL}/channels?id=${channelIds}&part=snippet`);
             const chData = await chRes.json();
             chData.items?.forEach(i => { chInfoMap[i.id] = { icon: i.snippet?.thumbnails?.medium?.url || '' }; });
             localStorage.setItem('channel_icon_cache', JSON.stringify({ timestamp: now, data: chInfoMap }));
@@ -531,7 +534,7 @@ async function loadPortal(forceRefresh = false) {
         const playlistResults = await Promise.all(
             channels.map(ch => {
                 const pId = ch.id.replace(/^UC/, 'UU');
-                return fetch(`https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${pId}&part=snippet&maxResults=2`)
+                return fetch(`${PROXY_URL}/playlistItems?playlistId=${pId}&part=snippet&maxResults=2`)
                     .then(r => r.json()).catch(() => null);
             })
         );
@@ -548,7 +551,7 @@ async function loadPortal(forceRefresh = false) {
 
         let vItems = [];
         if (videoIds.length > 0) {
-            const vRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
+            const vRes = await fetch(`${PROXY_URL}/videos?id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
             const vData = await vRes.json();
             vItems = vData.items || [];
         }
