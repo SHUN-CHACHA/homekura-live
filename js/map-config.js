@@ -13,6 +13,11 @@
 
     const mapImageList = [
         {
+            fileName: 'map/7月24日.png',
+            bounds: [[-1600, -1600], [1984, 1472]],
+            opacity: 1
+        },
+        {
             fileName: 'map/7月4日.png',
             // [X座標, Z座標] の順で、画像の対角の2点を指定します（順不同でOK）。
             // 例：地図画像の切り抜いた範囲がminecraftのワールド内の「X: -1600〜1600、Z: -1600〜1600」の場合
