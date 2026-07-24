@@ -20,10 +20,47 @@
             background: #0d0d0f;
             overflow: hidden;
         }
+
+        /* 🔝 上部バー：戻るボタン + 拡大縮小スライダー（2つの地図は連動しているので共通で1つだけ） */
+        #top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            z-index: 1100;
+            background: rgba(26, 26, 31, 0.95);
+            border-bottom: 1px solid #333339;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 0 12px;
+            box-sizing: border-box;
+        }
+        #zoom-slider-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #zoom-slider-label {
+            font-size: 11px;
+            font-family: monospace;
+            color: #cbd5c9;
+            width: 40px;
+            flex-shrink: 0;
+            text-align: right;
+        }
+        #zoom-slider {
+            width: 160px;
+            accent-color: #4caf50;
+            cursor: pointer;
+        }
+
         #compare-wrap {
             display: flex;
             width: 100vw;
-            height: 100vh;
+            height: calc(100vh - 50px);
+            margin-top: 50px;
         }
         .compare-pane {
             position: relative;
@@ -41,7 +78,7 @@
         }
         .compare-select {
             position: absolute;
-            top: 64px;
+            top: 10px;
             left: 10px;
             z-index: 1000;
             background: rgba(26, 26, 31, 0.92);
@@ -53,16 +90,17 @@
             max-width: 60%;
         }
         .compare-select:focus { outline: none; border-color: #7ee787; }
-
-        #back-link {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            z-index: 1100;
-        }
     </style>
 </head>
 <body>
+
+<div id="top-bar">
+    <a href="minecraft_map.html" class="pill-btn-light">🏠 拠点マップに戻る</a>
+    <div id="zoom-slider-wrap">
+        <span id="zoom-slider-label">1.0×</span>
+        <input type="range" id="zoom-slider" min="-3.58496" max="-0.41504" step="0.001" value="-2">
+    </div>
+</div>
 
 <div id="compare-wrap">
     <div class="compare-pane">
@@ -75,8 +113,6 @@
     </div>
 </div>
 
-<a href="minecraft_map.html" class="pill-btn-light" id="back-link">🏠 拠点マップに戻る</a>
-
 <script>
     // ==========================================================
     // 🗺️ 2枚の地図画像を左右に並べて見比べるための最小限のページ
@@ -86,9 +122,10 @@
     function createCompareMap(elId) {
         const map = L.map(elId, {
             crs: L.CRS.Simple,
-            minZoom: -4,
-            maxZoom: 3,
-            zoomSnap: 0,
+            minZoom: -3.58496, // 1/3倍（初期表示を1倍とした場合）
+            maxZoom: -0.41504, // 3倍（初期表示を1倍とした場合）
+            zoomSnap: 0,        // 無段階ズーム
+            zoomControl: false, // +/-ボタンは使わず、共通のスライダーに一本化する
             attributionControl: false
         });
         map.setView([0, 0], -2);
@@ -160,6 +197,31 @@
     }
     mapLeft.on('move zoom', () => syncMaps(mapLeft, mapRight));
     mapRight.on('move zoom', () => syncMaps(mapRight, mapLeft));
+
+    // ==========================================================
+    // 🔍 共通のズームスライダー（2つの地図は連動しているので1本でOK）
+    // ==========================================================
+    const ZOOM_BASELINE = -2;
+    const zoomSlider = document.getElementById('zoom-slider');
+    const zoomSliderLabel = document.getElementById('zoom-slider-label');
+
+    function formatZoomLabel(zoomLevel) {
+        const multiplier = Math.pow(2, zoomLevel - ZOOM_BASELINE);
+        return `${multiplier.toFixed(2)}×`;
+    }
+
+    zoomSlider.addEventListener('input', (e) => {
+        const z = parseFloat(e.target.value);
+        mapLeft.setZoom(z); // 右側は連動ロジックで自動的に追従する
+    });
+
+    // マウスホイールなどで直接ズームされた場合もスライダーに反映する
+    mapLeft.on('zoom', () => {
+        const z = mapLeft.getZoom();
+        zoomSlider.value = z;
+        zoomSliderLabel.textContent = formatZoomLabel(z);
+    });
+    zoomSliderLabel.textContent = formatZoomLabel(mapLeft.getZoom());
 
     window.addEventListener('load', () => {
         mapLeft.invalidateSize();
