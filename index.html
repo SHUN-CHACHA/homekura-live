@@ -90,24 +90,34 @@
             padding: 0 16px;
             display: flex;
             justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
+            gap: 10px;
+            flex-wrap: nowrap;
         }
         .site-link-btn {
             text-decoration: none;
-            padding: 8px 16px;
+            padding: 10px 10px;
             border-radius: 14px;
             border: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            gap: 8px;
             transition: all 0.2s;
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            flex: 1 1 0;
+            min-width: 0;
+            height: 44px;
+            box-sizing: border-box;
         }
-        .site-link-btn .sl-icon { font-size: 20px; line-height: 1; flex-shrink: 0; }
-        .site-link-btn .sl-text { display: flex; flex-direction: column; line-height: 1.35; }
-        .site-link-btn .sl-line1 { font-size: 13.5px; font-weight: bold; }
-        .site-link-btn .sl-line2 { font-size: 10.5px; font-weight: normal; opacity: 0.8; }
+        .site-link-btn .sl-icon { font-size: 18px; line-height: 1; flex-shrink: 0; }
+        .site-link-btn .sl-line1 {
+            font-size: 13px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
+        }
 
         /* 🏠 しろくるさんのページ：マイクラの木材×ハチミツ色のあたたかい配色に準拠 */
         .site-link-btn.community-btn {
@@ -116,7 +126,6 @@
             border-color: #6b4a28;
         }
         .site-link-btn.community-btn:hover { background: #5a3c20; border-color: #f2cb7e; transform: translateY(-1px); }
-        .site-link-btn.community-btn .sl-line2 { color: #d9b876; }
 
         /* 📊 homeクラLIVE!：漆黒の背景×オレンジレッドのアクセントに準拠 */
         .site-link-btn.stats-btn {
@@ -126,7 +135,12 @@
         }
         .site-link-btn.stats-btn:hover { background: #1a1a1a; border-color: #e8622c; transform: translateY(-1px); }
         .site-link-btn.stats-btn .sl-line1 { color: #e8622c; }
-        .site-link-btn.stats-btn .sl-line2 { color: #b3b3b3; }
+
+        @media (max-width: 420px) {
+            .site-link-btn { padding: 8px 6px; gap: 5px; height: 40px; }
+            .site-link-btn .sl-icon { font-size: 15px; }
+            .site-link-btn .sl-line1 { font-size: 11px; }
+        }
 
         .btn-tool {
             background: var(--accent-green); color: #fff; border: none; padding: 6px 16px; border-radius: 20px;
@@ -455,17 +469,11 @@
 <div class="external-links-container">
     <a href="https://sirokuru.net/homecra/" target="_blank" class="site-link-btn community-btn">
         <span class="sl-icon">🏠</span>
-        <span class="sl-text">
-            <span class="sl-line1">しろくるさんのページ</span>
-            <span class="sl-line2">・・・homeクラ紹介ページ</span>
-        </span>
+        <span class="sl-line1">しろくるさんのページ</span>
     </a>
     <a href="https://anykura.live/t/homekura" target="_blank" class="site-link-btn stats-btn">
         <span class="sl-icon">📊</span>
-        <span class="sl-text">
-            <span class="sl-line1">homeクラ LIVE!</span>
-            <span class="sl-line2">・・・配信記録・統計アーカイブ</span>
-        </span>
+        <span class="sl-line1">homeクラ LIVE!</span>
     </a>
 </div>
 
