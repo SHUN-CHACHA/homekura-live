@@ -11,6 +11,8 @@
 
     <!-- 📊 地図画像の一覧（mapImageList）は minecraft_map.html と共通のものを使う -->
     <script src="js/map-config.js"></script>
+    <!-- 📍 メンバーの拠点名を表示するためのデータ -->
+    <script src="js/MAP_member.js"></script>
 
     <style>
         html, body {
@@ -90,6 +92,30 @@
             max-width: 60%;
         }
         .compare-select:focus { outline: none; border-color: #7ee787; }
+
+        #toggle-names-btn.names-off {
+            background: #26262b;
+            color: #888;
+            border-color: #4a4a52;
+        }
+        #toggle-names-btn.names-off:hover {
+            background: #333339;
+            color: #aaa;
+        }
+
+        /* 📍 メンバーの拠点名（文字だけ）のラベル */
+        .compare-name-tag {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            white-space: nowrap;
+            font-size: 11px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 4px #000;
+            pointer-events: none;
+            line-height: 1.3;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -100,6 +126,7 @@
         <span id="zoom-slider-label">1.0×</span>
         <input type="range" id="zoom-slider" min="-3.58496" max="-0.41504" step="0.001" value="-2">
     </div>
+    <button id="toggle-names-btn" class="pill-btn-light">📍 名前 ON</button>
 </div>
 
 <div id="compare-wrap">
@@ -197,6 +224,47 @@
     }
     mapLeft.on('move zoom', () => syncMaps(mapLeft, mapRight));
     mapRight.on('move zoom', () => syncMaps(mapRight, mapLeft));
+
+    // ==========================================================
+    // 📍 メンバーの拠点名（文字だけ）を両方の地図に表示する
+    // ==========================================================
+    function addNameLabels(map) {
+        if (typeof memberData === 'undefined') return;
+        memberData.forEach((member) => {
+            if (!member.name || member.name.trim() === "") return; // 未登録は表示しない
+
+            const names = [member.name, member.name2, member.name3]
+                .filter((n) => n && n.trim() !== "");
+            const labelHtml = names.join('<br>');
+
+            const leafletY = -member.z;
+            const leafletX = member.x;
+
+            L.marker([leafletY, leafletX], {
+                icon: L.divIcon({
+                    className: '',
+                    html: `<div class="compare-name-tag">${labelHtml}</div>`,
+                    iconSize: null
+                }),
+                interactive: false
+            }).addTo(map);
+        });
+    }
+
+    addNameLabels(mapLeft);
+    addNameLabels(mapRight);
+
+    // 📍 名前表示のON/OFF切り替え
+    const toggleNamesBtn = document.getElementById('toggle-names-btn');
+    let namesVisible = true;
+    toggleNamesBtn.addEventListener('click', () => {
+        namesVisible = !namesVisible;
+        document.querySelectorAll('.compare-name-tag').forEach((el) => {
+            el.style.display = namesVisible ? '' : 'none';
+        });
+        toggleNamesBtn.textContent = namesVisible ? '📍 名前 ON' : '📍 名前 OFF';
+        toggleNamesBtn.classList.toggle('names-off', !namesVisible);
+    });
 
     // ==========================================================
     // 🔍 共通のズームスライダー（2つの地図は連動しているので1本でOK）
