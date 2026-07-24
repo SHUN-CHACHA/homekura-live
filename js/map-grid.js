@@ -8,7 +8,7 @@
 
     const GRID_INTERVAL = 256;
     const AXIS_LABEL_INTERVAL = 512;
-    const LOW_ZOOM_THRESHOLD = 0; // これより低いズームレベルでは座標を非表示にする
+    const LOW_ZOOM_THRESHOLD = -2; // これより低いズームレベル（1倍未満）では座標を非表示にする
 
     let map = null;
     let gridLayerGroup = null;

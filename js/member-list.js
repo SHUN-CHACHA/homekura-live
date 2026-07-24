@@ -169,7 +169,7 @@
 
     // カメラ移動
     function focusOnBase(name, y, x) {
-        map.setView([y, x], 1, { animate: true, duration: 0.8 });
+        map.setView([y, x], map.getMaxZoom(), { animate: true, duration: 0.8 });
     }
 
     // 中心 (0, 0) に戻る
