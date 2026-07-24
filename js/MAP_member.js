@@ -48,4 +48,5 @@ const memberData = [
     { area: "エリア34", name: "鶴太郎", icon: "turu0004.svg", name2: "", icon2: "", x: 0, z: -1280 }, // 34人目
     { area: "引越し中", name: "", icon: "", name2: "", icon2: "", x: 640, z: -1109 }, // 35人目
     { area: "エリア36", name: "凸もり", icon: "totsumori.svg", name2: "", icon2: "", x: 1109, z: -640 }  // 36人目
+    { area: "夏祭り", name: "夏祭り", icon: "maturi.png", name2: "", icon2: "", x: -9, z: -388 }, // イベント会場
 ];
