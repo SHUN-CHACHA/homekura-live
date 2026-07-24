@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地図の比較 | homeクラ</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="shared/theme.css">
+
+    <!-- 📊 地図画像の一覧（mapImageList）は minecraft_map.html と共通のものを使う -->
+    <script src="js/map-config.js"></script>
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: #0d0d0f;
+            overflow: hidden;
+        }
+        #compare-wrap {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+        }
+        .compare-pane {
+            position: relative;
+            flex: 1 1 50%;
+            height: 100%;
+            min-width: 0;
+        }
+        .compare-pane + .compare-pane {
+            border-left: 2px solid #333339;
+        }
+        .compare-map {
+            width: 100%;
+            height: 100%;
+            background: #141417;
+        }
+        .compare-select {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+            background: rgba(26, 26, 31, 0.92);
+            color: #e5e5e5;
+            border: 1px solid #4caf50;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 13px;
+            max-width: 60%;
+        }
+        .compare-select:focus { outline: none; border-color: #7ee787; }
+
+        #back-link {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            z-index: 1100;
+        }
+    </style>
+</head>
+<body>
+
+<div id="compare-wrap">
+    <div class="compare-pane">
+        <select id="select-left" class="compare-select"></select>
+        <div id="map-left" class="compare-map"></div>
+    </div>
+    <div class="compare-pane">
+        <select id="select-right" class="compare-select"></select>
+        <div id="map-right" class="compare-map"></div>
+    </div>
+</div>
+
+<a href="minecraft_map.html" class="pill-btn-light" id="back-link">🏠 拠点マップに戻る</a>
+
+<script>
+    // ==========================================================
+    // 🗺️ 2枚の地図画像を左右に並べて見比べるための最小限のページ
+    // F11キーでブラウザを全画面表示にすると、地図だけを大きく見比べられます
+    // ==========================================================
+
+    function createCompareMap(elId) {
+        const map = L.map(elId, {
+            crs: L.CRS.Simple,
+            minZoom: -4,
+            maxZoom: 3,
+            zoomSnap: 0,
+            attributionControl: false
+        });
+        map.setView([0, 0], -2);
+        return map;
+    }
+
+    const mapLeft = createCompareMap('map-left');
+    const mapRight = createCompareMap('map-right');
+
+    const mapImageList = (window.MapApp && window.MapApp.mapConfig) ? window.MapApp.mapConfig.mapImageList : [];
+    const getMapLabel = (window.MapApp && window.MapApp.mapConfig) ? window.MapApp.mapConfig.getMapLabel : (f => f);
+    const toLeafletBounds = (window.MapApp && window.MapApp.mapConfig) ? window.MapApp.mapConfig.toLeafletBounds : (b => b);
+
+    function populateSelect(selectEl, defaultIndex) {
+        selectEl.innerHTML = '';
+        mapImageList.forEach((entry, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = getMapLabel(entry.fileName);
+            selectEl.appendChild(option);
+        });
+        selectEl.value = defaultIndex;
+    }
+
+    function makeOverlayController(map) {
+        let overlay = null;
+        return function setImage(index) {
+            if (overlay) {
+                map.removeLayer(overlay);
+                overlay = null;
+            }
+            const entry = mapImageList[index];
+            if (!entry) return;
+            overlay = L.imageOverlay(entry.fileName, toLeafletBounds(entry.bounds), {
+                opacity: entry.opacity,
+                interactive: false
+            });
+            overlay.on('error', () => {
+                console.log(`背景画像 ${entry.fileName} が見つからないか、ローカル制限でロードできません。`);
+            });
+            overlay.addTo(map);
+        };
+    }
+
+    const setLeftImage = makeOverlayController(mapLeft);
+    const setRightImage = makeOverlayController(mapRight);
+
+    const selectLeft = document.getElementById('select-left');
+    const selectRight = document.getElementById('select-right');
+
+    // 初期表示：左は一番新しい地図、右は2番目に新しい地図（無ければ同じもの）
+    populateSelect(selectLeft, 0);
+    populateSelect(selectRight, mapImageList.length > 1 ? 1 : 0);
+    setLeftImage(Number(selectLeft.value));
+    setRightImage(Number(selectRight.value));
+
+    selectLeft.addEventListener('change', (e) => setLeftImage(Number(e.target.value)));
+    selectRight.addEventListener('change', (e) => setRightImage(Number(e.target.value)));
+
+    // ==========================================================
+    // 🔗 2つの地図のパン・ズームを連動させる（見比べやすくするため）
+    // ==========================================================
+    let syncing = false;
+    function syncMaps(source, target) {
+        if (syncing) return;
+        syncing = true;
+        target.setView(source.getCenter(), source.getZoom(), { animate: false });
+        syncing = false;
+    }
+    mapLeft.on('move zoom', () => syncMaps(mapLeft, mapRight));
+    mapRight.on('move zoom', () => syncMaps(mapRight, mapLeft));
+
+    window.addEventListener('load', () => {
+        mapLeft.invalidateSize();
+        mapRight.invalidateSize();
+    });
+    window.addEventListener('resize', () => {
+        mapLeft.invalidateSize();
+        mapRight.invalidateSize();
+    });
+</script>
+</body>
+</html>
