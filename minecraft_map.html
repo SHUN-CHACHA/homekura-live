@@ -50,6 +50,34 @@
             pointer-events: none;
             z-index: 450;
         }
+        /* 🔍 ズームスライダー（無段階ズーム、1/3倍〜3倍） */
+        #zoom-slider-wrap {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 1000;
+            background: rgba(26, 26, 31, 0.9);
+            border: 1px solid #333339;
+            border-radius: 10px;
+            padding: 8px 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+        #zoom-slider-label {
+            font-size: 11px;
+            font-family: monospace;
+            color: #cbd5c9;
+            width: 34px;
+            flex-shrink: 0;
+            text-align: right;
+        }
+        #zoom-slider {
+            width: 110px;
+            accent-color: #4caf50;
+            cursor: pointer;
+        }
         .axis-label-x {
             position: absolute;
             top: 4px;
@@ -670,6 +698,10 @@
             <div id="map-container" class="flex-1 w-full rounded-lg border border-gray-800 overflow-hidden">
                 <div id="map"></div>
                 <div id="axis-labels"></div>
+                <div id="zoom-slider-wrap">
+                    <span id="zoom-slider-label">1.0×</span>
+                    <input type="range" id="zoom-slider" min="-3.58496" max="-0.41504" step="0.001" value="-2">
+                </div>
             </div>
         </section>
 </section>
@@ -698,14 +730,41 @@
         // ==========================================================
         const map = L.map('map', {
             crs: L.CRS.Simple,
-            minZoom: -4,
-            maxZoom: 3,
-            zoomDelta: 0.25,
-            zoomSnap: 0.25,
+            minZoom: -3.58496,  // 1/3倍（現在のデフォルト表示を1倍とした場合）
+            maxZoom: -0.41504,  // 3倍（現在のデフォルト表示を1倍とした場合）
+            zoomSnap: 0,        // 無段階ズームを可能にする
+            zoomDelta: 0,
+            zoomControl: false, // 標準の +/- ボタンは使わず、スライダーに置き換える
             attributionControl: false
         });
 
         map.setView([0, 0], -2);
+
+        // ==========================================================
+        // 🔍 ズームスライダーの連動（1/3倍〜3倍を無段階で操作できる）
+        // 「1.0倍」= このマップの初期表示（ズームレベル -2）を基準にしている
+        // ==========================================================
+        const ZOOM_BASELINE = -2;
+        const zoomSlider = document.getElementById('zoom-slider');
+        const zoomSliderLabel = document.getElementById('zoom-slider-label');
+
+        function formatZoomLabel(zoomLevel) {
+            const multiplier = Math.pow(2, zoomLevel - ZOOM_BASELINE);
+            return `${multiplier.toFixed(2)}×`;
+        }
+
+        // スライダーを動かしたら地図をズームする
+        zoomSlider.addEventListener('input', (e) => {
+            map.setZoom(parseFloat(e.target.value));
+        });
+
+        // 地図側がズームしたら（マウスホイール・ピンチ操作など）スライダー側も同期する
+        map.on('zoom', () => {
+            const z = map.getZoom();
+            zoomSlider.value = z;
+            zoomSliderLabel.textContent = formatZoomLabel(z);
+        });
+        zoomSliderLabel.textContent = formatZoomLabel(map.getZoom());
 
         // ==========================================================
         // 🚀 各コンポーネントの初期化（map-config → map-grid → member-list → mobile-ui → download-zip）
