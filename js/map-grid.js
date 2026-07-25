@@ -129,7 +129,8 @@
         // 200x200ブロック四方（-100〜100）に表示。画像の中心がちょうど原点に来る。
         L.imageOverlay('img/compass.png', [[100, -100], [-100, 100]], {
             interactive: false,
-            zIndex: 5
+            zIndex: 5,
+            className: 'compass-overlay-img'
         }).addTo(map);
 
         // カラーカスタマイズパネルからの変更を購読
