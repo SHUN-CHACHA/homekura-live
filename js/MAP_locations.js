@@ -9,8 +9,9 @@
 // 増減自由です。行ごとコピペして増やしたり、丸ごと削除して減らせます。
 // ==========================================================
 const locationData = [
-    { name: "初期地", icon: "compass.png", x: 0, z: 0 },
+    { name: "拠点マップの中心", icon: "compass.png", x: 0, z: 0 },
     { name: "共有地", icon: "HOME.png", x: 514, z: 817 },
+    { name: "祭会場", icon: "matsuri_chouchin.png", x: -9, z: -388 },
     // 新しい目印を追加する例：
     // { name: "◯◯タワー", icon: "xxx.png", x: 100, z: 200 },
 ];
