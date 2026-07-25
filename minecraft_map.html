@@ -78,6 +78,31 @@
             accent-color: #4caf50;
             cursor: pointer;
         }
+        /* 👁️ 顔アイコン・座標表示のON/OFFボタン */
+        #icon-toggle-btn {
+            flex-shrink: 0;
+            background: #26262b;
+            border: 1px solid #4a4a52;
+            color: #cbd5c9;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+        }
+        #icon-toggle-btn:hover { background: #333339; }
+        #icon-toggle-btn.is-off {
+            background: #3a2a2a;
+            border-color: #7a4a4a;
+            color: #e5a5a5;
+        }
+        /* アイコン・座標を非表示にした時のルール（顔アイコン・ネームタグ・座標ルーラー・方位磁針・共有地アイコンなどすべて対象） */
+        #map-container.icons-hidden .leaflet-marker-pane,
+        #map-container.icons-hidden .leaflet-tooltip-pane,
+        #map-container.icons-hidden #axis-labels,
+        #map-container.icons-hidden .compass-overlay-img {
+            display: none !important;
+        }
         .axis-label-x {
             position: absolute;
             top: 4px;
@@ -657,43 +682,49 @@
 <section id="map-wrap" class="h-[65vh] lg:h-auto lg:flex-1">
 <section class="flex-1 bg-[#1a1a1f] rounded-xl border border-gray-800 p-4 flex flex-col h-full relative">
             
-            <!-- 地図上のコントローラー・凡例（クリックで折りたたみ可能） -->
-            <details class="absolute top-6 right-6 z-[1000] bg-[#222227] border border-gray-700 rounded-lg p-3 text-xs shadow-lg hidden md:block" open>
-                <summary class="font-bold text-gray-300 mb-2 cursor-pointer select-none">座標軸の見方</summary>
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="w-3 h-0.5 bg-red-500 block"></span>
-                    <span>X軸（左右：東がプラス / 西がマイナス）</span>
-                </div>
-                <div class="flex items-center gap-2 mb-2">
-                    <span class="w-3 h-0.5 bg-blue-500 block"></span>
-                    <span>Z軸（上下：南がプラス / 北がマイナス）</span>
-                </div>
-
-                <!-- 📍 カーソル位置のリアルタイム表示・中心に戻るボタン -->
-                <div class="border-t border-gray-700 pt-2 mt-2">
-                    <div class="flex items-center gap-2 mb-2 text-gray-300">
-                        <span class="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0"></span>
-                        <span>現在地: <strong class="text-white font-mono" id="cursor-coords">X: 0, Z: 0</strong></span>
+            <!-- 地図上のコントローラー・凡例（クリックで折りたたみ可能。地図画像名は畳んでも表示） -->
+            <div class="absolute top-6 right-6 z-[1000] text-xs hidden md:block">
+                <details class="bg-[#222227] border border-gray-700 rounded-t-lg p-3 shadow-lg" open>
+                    <summary class="font-bold text-gray-300 mb-2 cursor-pointer select-none">座標軸の見方</summary>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="w-3 h-0.5 bg-red-500 block"></span>
+                        <span>X軸（左右：東がプラス / 西がマイナス）</span>
                     </div>
-                    <button 
-                        onclick="resetMapView()" 
-                        class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-1 px-3 rounded text-xs transition-colors"
-                    >
-                        中心 (0, 0) に戻る
-                    </button>
-                </div>
-                
-                <!-- 💡 地形マップ切り替えチェックボックス・月別マップ選択 -->
-                <div class="border-t border-gray-700 pt-2 mt-2">
-                    <label class="flex items-center gap-2 cursor-pointer text-gray-300 hover:text-white transition-colors">
-                        <input type="checkbox" id="toggle-bg-image" class="rounded bg-gray-850 border-gray-600 text-green-500 focus:ring-green-500 focus:ring-offset-gray-900" checked>
-                        <span>地図背景を表示</span>
-                    </label>
-                    <select id="map-image-select" class="map-image-select mt-2 w-full bg-[#26262b] border border-gray-700 rounded px-2 py-1 text-xs text-gray-200 focus:outline-none focus:border-green-500">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="w-3 h-0.5 bg-blue-500 block"></span>
+                        <span>Z軸（上下：南がプラス / 北がマイナス）</span>
+                    </div>
+
+                    <!-- 📍 カーソル位置のリアルタイム表示・中心に戻るボタン -->
+                    <div class="border-t border-gray-700 pt-2 mt-2">
+                        <div class="flex items-center gap-2 mb-2 text-gray-300">
+                            <span class="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0"></span>
+                            <span>現在地: <strong class="text-white font-mono" id="cursor-coords">X: 0, Z: 0</strong></span>
+                        </div>
+                        <button 
+                            onclick="resetMapView()" 
+                            class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-1 px-3 rounded text-xs transition-colors"
+                        >
+                            中心 (0, 0) に戻る
+                        </button>
+                    </div>
+                    
+                    <!-- 💡 地形マップ切り替えチェックボックス -->
+                    <div class="border-t border-gray-700 pt-2 mt-2">
+                        <label class="flex items-center gap-2 cursor-pointer text-gray-300 hover:text-white transition-colors">
+                            <input type="checkbox" id="toggle-bg-image" class="rounded bg-gray-850 border-gray-600 text-green-500 focus:ring-green-500 focus:ring-offset-gray-900" checked>
+                            <span>地図背景を表示</span>
+                        </label>
+                    </div>
+                </details>
+
+                <!-- 🗺️ 月別マップ選択：折りたたんでもここは常に表示されたままにする -->
+                <div class="bg-[#222227] border border-gray-700 border-t-0 rounded-b-lg p-2 shadow-lg">
+                    <select id="map-image-select" class="map-image-select w-full bg-[#26262b] border border-gray-700 rounded px-2 py-1 text-xs text-gray-200 focus:outline-none focus:border-green-500">
                         <!-- JavaScriptで mapImageList から動的に生成 -->
                     </select>
                 </div>
-            </details>
+            </div>
 
             <!-- マップ本体コンテナ -->
             <div id="map-container" class="flex-1 w-full rounded-lg border border-gray-800 overflow-hidden">
@@ -702,6 +733,7 @@
                 <div id="zoom-slider-wrap">
                     <span id="zoom-slider-label">1.0×</span>
                     <input type="range" id="zoom-slider" min="-3.58496" max="-0.41504" step="0.001" value="-2">
+                    <button id="icon-toggle-btn" title="顔アイコン・座標表示のON/OFF">👁️</button>
                 </div>
             </div>
         </section>
@@ -766,6 +798,21 @@
             zoomSliderLabel.textContent = formatZoomLabel(z);
         });
         zoomSliderLabel.textContent = formatZoomLabel(map.getZoom());
+
+        // ==========================================================
+        // 👁️ 顔アイコン・座標表示のON/OFFボタン
+        // （顔アイコン・ネームタグ・座標ルーラー・原点の方位磁針・共有地アイコンなどをまとめて切り替える）
+        // ==========================================================
+        const iconToggleBtn = document.getElementById('icon-toggle-btn');
+        const mapContainerEl = document.getElementById('map-container');
+        let iconsVisible = true;
+
+        iconToggleBtn.addEventListener('click', () => {
+            iconsVisible = !iconsVisible;
+            mapContainerEl.classList.toggle('icons-hidden', !iconsVisible);
+            iconToggleBtn.classList.toggle('is-off', !iconsVisible);
+            iconToggleBtn.textContent = iconsVisible ? '👁️' : '🚫';
+        });
 
         // ==========================================================
         // 🚀 各コンポーネントの初期化（map-config → map-grid → member-list → mobile-ui → download-zip）
