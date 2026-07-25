@@ -78,29 +78,31 @@
             accent-color: #4caf50;
             cursor: pointer;
         }
-        /* 👁️ 顔アイコン・座標表示のON/OFFボタン */
+        /* 👁️ 顔アイコン・座標表示のON/OFFボタン（map_compare.htmlの戻るボタンと同じ丸ピル型デザイン） */
         #icon-toggle-btn {
             flex-shrink: 0;
-            background: #26262b;
-            border: 1px solid #4a4a52;
-            color: #cbd5c9;
-            border-radius: 6px;
-            padding: 4px 8px;
+            background: #eef3ee;
+            border: 1px solid #d8e2d7;
+            color: #414d3f;
+            border-radius: 20px;
+            padding: 5px 10px;
             font-size: 14px;
+            font-weight: bold;
             cursor: pointer;
+            white-space: nowrap;
             transition: background 0.2s, border-color 0.2s, color 0.2s;
         }
-        #icon-toggle-btn:hover { background: #333339; }
+        #icon-toggle-btn:hover { background: #e8f5e8; color: #2d5a27; border-color: #2d5a27; }
         #icon-toggle-btn.is-off {
-            background: #3a2a2a;
-            border-color: #7a4a4a;
-            color: #e5a5a5;
+            background: #fdf2f2;
+            border-color: #f0b8b8;
+            color: #b91c1c;
         }
+        #icon-toggle-btn.is-off:hover { background: #fde2e2; border-color: #b91c1c; }
         /* アイコン・座標を非表示にした時のルール（顔アイコン・ネームタグ・座標ルーラー・方位磁針・共有地アイコンなどすべて対象） */
         #map-container.icons-hidden .leaflet-marker-pane,
         #map-container.icons-hidden .leaflet-tooltip-pane,
-        #map-container.icons-hidden #axis-labels,
-        #map-container.icons-hidden .compass-overlay-img {
+        #map-container.icons-hidden #axis-labels {
             display: none !important;
         }
         .axis-label-x {
@@ -246,6 +248,10 @@
             border-radius: 6px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.6);
             background-color: var(--custom-icon-bg);
+        }
+        /* 📍 メンバーではない「場所」の目印は、区別しやすいよう青系の枠線にする */
+        .avatar-marker.location-marker img {
+            border-color: #3b82f6;
         }
         /* 未登録（名前が空白）の場合は少し目立たなく */
         .avatar-marker.unregistered img {
@@ -733,7 +739,7 @@
                 <div id="zoom-slider-wrap">
                     <span id="zoom-slider-label">1.0×</span>
                     <input type="range" id="zoom-slider" min="-3.58496" max="-0.41504" step="0.001" value="-2">
-                    <button id="icon-toggle-btn" title="顔アイコン・座標表示のON/OFF">👁️</button>
+                    <button id="icon-toggle-btn" title="名前・アイコン表示のON/OFF">📍 名前 ON</button>
                 </div>
             </div>
         </section>
@@ -749,13 +755,18 @@
     <!-- 📊 メンバーデータは js/MAP_member.js に分離（編集はそちらのファイルで） -->
     <script src="js/MAP_member.js"></script>
 
+    <!-- 📍 メンバー以外の目印（方位磁針・共有地など）は js/MAP_locations.js に分離 -->
+    <script src="js/MAP_locations.js"></script>
+
     <!-- 🧩 機能ごとに分割したJSコンポーネント（js/フォルダ） -->
     <script src="js/color-customizer.js"></script>
     <script src="js/map-config.js"></script>
     <script src="js/map-grid.js"></script>
     <script src="js/member-list.js"></script>
+    <script src="js/location-list.js"></script>
     <script src="js/mobile-ui.js"></script>
     <script src="js/download-zip.js"></script>
+    <script src="js/name-toggle.js"></script>
 
     <script>
         // ==========================================================
@@ -800,28 +811,15 @@
         zoomSliderLabel.textContent = formatZoomLabel(map.getZoom());
 
         // ==========================================================
-        // 👁️ 顔アイコン・座標表示のON/OFFボタン
-        // （顔アイコン・ネームタグ・座標ルーラー・原点の方位磁針・共有地アイコンなどをまとめて切り替える）
-        // ==========================================================
-        const iconToggleBtn = document.getElementById('icon-toggle-btn');
-        const mapContainerEl = document.getElementById('map-container');
-        let iconsVisible = true;
-
-        iconToggleBtn.addEventListener('click', () => {
-            iconsVisible = !iconsVisible;
-            mapContainerEl.classList.toggle('icons-hidden', !iconsVisible);
-            iconToggleBtn.classList.toggle('is-off', !iconsVisible);
-            iconToggleBtn.textContent = iconsVisible ? '👁️' : '🚫';
-        });
-
-        // ==========================================================
         // 🚀 各コンポーネントの初期化（map-config → map-grid → member-list → mobile-ui → download-zip）
         // ==========================================================
         MapApp.mapConfig.init(map);
         MapApp.mapGrid.init(map);
         MapApp.memberList.init(map);
+        MapApp.mapLocations.init(map);
         MapApp.mobileUI.init();
         MapApp.downloadZip.init();
+        MapApp.nameToggle.init({ buttonId: 'icon-toggle-btn', targetSelector: '#map-container' });
         MapApp.colorCustomizer.initUI();
 
         // ==========================================================
