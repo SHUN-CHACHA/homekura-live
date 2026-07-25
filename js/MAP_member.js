@@ -25,7 +25,6 @@ const memberData = [
     { area: "エリア12", name: "メッス", icon: "messu009.svg", name2: "", icon2: "", x: 624, z: -360 }, // 12人目
     { area: "エリア13", name: "ぽこにゃん", icon: "pokonyan_0603.svg", name2: "", icon2: "", x: 966, z: 259 }, // 13人目
     { area: "エリア14", name: "久那式リン", icon: "Kunashiki_Lin.svg", name2: "", icon2: "", x: 707, z: 707 }, // 14人目
-    { area: "共有地", name: "共有地", icon: "HOME.png", name2: "", icon2: "", x: 514, z: 817 }, // 共有地
     { area: "エリア15", name: "しろくる", icon: "sirokuru.svg", name2: "", icon2: "", x: 259, z: 966 }, // 15人目
     { area: "エリア16", name: "神近", icon: "kamichika.svg", name2: "", icon2: "", x: -259, z: 966 }, // 16人目
     { area: "エリア17", name: "早乙女燈真", icon: "saotomeirix.svg", name2: "久遠星那", icon2: "kuon_irix.svg", x: -707, z: 707 }, // 17人目

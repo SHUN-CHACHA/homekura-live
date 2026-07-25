@@ -13,10 +13,13 @@
         'minecraft_map.html',
         'background_image_guide.html',
         'js/MAP_member.js',
+        'js/MAP_locations.js',
         'js/color-customizer.js',
         'js/map-config.js',
         'js/map-grid.js',
         'js/member-list.js',
+        'js/location-list.js',
+        'js/name-toggle.js',
         'js/mobile-ui.js',
         'js/download-zip.js'
     ];
@@ -32,13 +35,22 @@
         return Array.from(files);
     }
 
-    // 画像類（map・avatars・装飾画像）：1つ見つからなくても他は続行し、ZIPには入れるだけ入れる
+    // MAP_locations.js に登録されている「場所」画像のファイル名一覧を集める（重複なし）
+    function getLocationFileList() {
+        const files = new Set();
+        (typeof locationData !== 'undefined' ? locationData : []).forEach((loc) => {
+            if (loc.icon) files.add(`avatars/${loc.icon}`);
+        });
+        return Array.from(files);
+    }
+
+    // 画像類（map・avatars・場所アイコン）：1つ見つからなくても他は続行し、ZIPには入れるだけ入れる
     function getOptionalDownloadFiles() {
         const mapImageList = (window.MapApp.mapConfig && window.MapApp.mapConfig.mapImageList) || [];
         return [
             ...mapImageList.map((entry) => entry.fileName),
             ...getAvatarFileList(),
-            'img/compass.png'
+            ...getLocationFileList()
         ];
     }
 
