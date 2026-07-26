@@ -770,6 +770,7 @@
     <script src="js/mobile-ui.js"></script>
     <script src="js/download-zip.js"></script>
     <script src="js/name-toggle.js"></script>
+    <script src="js/zoom-slider.js"></script>
 
     <script>
         // ==========================================================
@@ -788,32 +789,6 @@
         map.setView([0, 0], -2);
 
         // ==========================================================
-        // 🔍 ズームスライダーの連動（1/3倍〜3倍を無段階で操作できる）
-        // 「1.0倍」= このマップの初期表示（ズームレベル -2）を基準にしている
-        // ==========================================================
-        const ZOOM_BASELINE = -2;
-        const zoomSlider = document.getElementById('zoom-slider');
-        const zoomSliderLabel = document.getElementById('zoom-slider-label');
-
-        function formatZoomLabel(zoomLevel) {
-            const multiplier = Math.pow(2, zoomLevel - ZOOM_BASELINE);
-            return `${multiplier.toFixed(2)}×`;
-        }
-
-        // スライダーを動かしたら地図をズームする
-        zoomSlider.addEventListener('input', (e) => {
-            map.setZoom(parseFloat(e.target.value));
-        });
-
-        // 地図側がズームしたら（マウスホイール・ピンチ操作など）スライダー側も同期する
-        map.on('zoom', () => {
-            const z = map.getZoom();
-            zoomSlider.value = z;
-            zoomSliderLabel.textContent = formatZoomLabel(z);
-        });
-        zoomSliderLabel.textContent = formatZoomLabel(map.getZoom());
-
-        // ==========================================================
         // 🚀 各コンポーネントの初期化（map-config → map-grid → member-list → mobile-ui → download-zip）
         // ==========================================================
         MapApp.mapConfig.init(map);
@@ -823,6 +798,7 @@
         MapApp.mobileUI.init();
         MapApp.downloadZip.init();
         MapApp.nameToggle.init({ buttonId: 'icon-toggle-btn', targetSelector: '#map-container' });
+        MapApp.zoomSlider.init({ map: map });
         MapApp.colorCustomizer.initUI();
 
         // ==========================================================
