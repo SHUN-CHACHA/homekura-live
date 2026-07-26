@@ -15,6 +15,9 @@
     <script src="js/MAP_member.js"></script>
     <!-- 📍 「場所」（メンバーではない目印）の名前を表示するためのデータ -->
     <script src="js/MAP_locations.js"></script>
+    <!-- 🧩 名前ON/OFFトグル・ズームスライダーは minecraft_map.html と共通のコンポーネントを使う -->
+    <script src="js/name-toggle.js"></script>
+    <script src="js/zoom-slider.js"></script>
 
     <style>
         html, body {
@@ -95,14 +98,19 @@
         }
         .compare-select:focus { outline: none; border-color: #7ee787; }
 
-        #toggle-names-btn.names-off {
+        #toggle-names-btn.is-off {
             background: #26262b;
             color: #888;
             border-color: #4a4a52;
         }
-        #toggle-names-btn.names-off:hover {
+        #toggle-names-btn.is-off:hover {
             background: #333339;
             color: #aaa;
+        }
+
+        /* 名前ON/OFF切り替え：OFF時は両方の地図のマーカー（名前・場所テキスト）をまとめて非表示にする */
+        #compare-wrap.icons-hidden .leaflet-marker-pane {
+            display: none !important;
         }
 
         /* 📍 メンバーの拠点名（文字だけ）のラベル */
@@ -285,42 +293,12 @@
     addLocationLabels(mapLeft);
     addLocationLabels(mapRight);
 
-    // 📍 名前表示のON/OFF切り替え
-    const toggleNamesBtn = document.getElementById('toggle-names-btn');
-    let namesVisible = true;
-    toggleNamesBtn.addEventListener('click', () => {
-        namesVisible = !namesVisible;
-        document.querySelectorAll('.compare-name-tag').forEach((el) => {
-            el.style.display = namesVisible ? '' : 'none';
-        });
-        toggleNamesBtn.textContent = namesVisible ? '📍 名前 ON' : '📍 名前 OFF';
-        toggleNamesBtn.classList.toggle('names-off', !namesVisible);
-    });
-
     // ==========================================================
-    // 🔍 共通のズームスライダー（2つの地図は連動しているので1本でOK）
+    // 🧩 名前ON/OFFトグル・ズームスライダーは minecraft_map.html と共通のコンポーネントを使う
+    // （右側の地図はパン・ズーム連動ロジックで自動的に追従するので、基準は左側の地図でOK）
     // ==========================================================
-    const ZOOM_BASELINE = -2;
-    const zoomSlider = document.getElementById('zoom-slider');
-    const zoomSliderLabel = document.getElementById('zoom-slider-label');
-
-    function formatZoomLabel(zoomLevel) {
-        const multiplier = Math.pow(2, zoomLevel - ZOOM_BASELINE);
-        return `${multiplier.toFixed(2)}×`;
-    }
-
-    zoomSlider.addEventListener('input', (e) => {
-        const z = parseFloat(e.target.value);
-        mapLeft.setZoom(z); // 右側は連動ロジックで自動的に追従する
-    });
-
-    // マウスホイールなどで直接ズームされた場合もスライダーに反映する
-    mapLeft.on('zoom', () => {
-        const z = mapLeft.getZoom();
-        zoomSlider.value = z;
-        zoomSliderLabel.textContent = formatZoomLabel(z);
-    });
-    zoomSliderLabel.textContent = formatZoomLabel(mapLeft.getZoom());
+    MapApp.nameToggle.init({ buttonId: 'toggle-names-btn', targetSelector: '#compare-wrap' });
+    MapApp.zoomSlider.init({ map: mapLeft });
 
     window.addEventListener('load', () => {
         mapLeft.invalidateSize();
