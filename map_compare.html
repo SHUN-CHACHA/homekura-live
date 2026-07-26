@@ -13,6 +13,8 @@
     <script src="js/map-config.js"></script>
     <!-- 📍 メンバーの拠点名を表示するためのデータ -->
     <script src="js/MAP_member.js"></script>
+    <!-- 📍 「場所」（メンバーではない目印）の名前を表示するためのデータ -->
+    <script src="js/MAP_locations.js"></script>
 
     <style>
         html, body {
@@ -256,6 +258,32 @@
 
     addNameLabels(mapLeft);
     addNameLabels(mapRight);
+
+    // ==========================================================
+    // 📍 「場所」（メンバーではない目印。祭会場・共有地など）の名前を
+    //     両方の地図にテキストのみで表示する
+    // ==========================================================
+    function addLocationLabels(map) {
+        if (typeof locationData === 'undefined') return;
+        locationData.forEach((loc) => {
+            if (!loc.name || loc.name.trim() === "") return;
+
+            const leafletY = -loc.z;
+            const leafletX = loc.x;
+
+            L.marker([leafletY, leafletX], {
+                icon: L.divIcon({
+                    className: '',
+                    html: `<div class="compare-name-tag">${loc.name}</div>`,
+                    iconSize: null
+                }),
+                interactive: false
+            }).addTo(map);
+        });
+    }
+
+    addLocationLabels(mapLeft);
+    addLocationLabels(mapRight);
 
     // 📍 名前表示のON/OFF切り替え
     const toggleNamesBtn = document.getElementById('toggle-names-btn');
