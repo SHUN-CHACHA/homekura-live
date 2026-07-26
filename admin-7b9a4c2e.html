@@ -129,6 +129,37 @@
             input[type="text"] { width: 100%; box-sizing: border-box; }
             label { display: block; margin-bottom: 4px; }
         }
+
+        /* 📍 拠点マップ編集セクション */
+        .loc-person-block {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            margin: 10px 0 16px;
+        }
+        .loc-person-block h4 {
+            margin: 0 0 8px 0;
+            font-size: 13px;
+            color: var(--accent-green);
+        }
+        .loc-person-select {
+            padding: 6px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-color);
+            width: 250px;
+            max-width: 100%;
+        }
+        input[type="number"].loc-coord {
+            width: 120px;
+            padding: 6px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-color);
+        }
     </style>
 </head>
 <body>
@@ -305,12 +336,125 @@
     </table>
     </div>
 
+    <hr style="margin: 40px 0; border: none; border-top: 2px solid var(--border-color);">
+
+    <h2>📍 拠点マップ 編集（MAP_member.js）</h2>
+
+    <div class="admin-main-layout">
+        <div class="admin-left-col">
+            <div id="locFormContainer">
+                <div id="locEditNotice" style="display:none;"><span class="edit-badge">✏️ 拠点編集モード中</span></div>
+
+                <div class="form-group"><label>エリア名（area）</label><input type="text" id="l_area" placeholder="例: エリア37（空欄でも可）"></div>
+                <div class="form-group">
+                    <label>X座標</label><input type="number" class="loc-coord" id="l_x" placeholder="例: 720">
+                </div>
+                <div class="form-group">
+                    <label>Z座標</label><input type="number" class="loc-coord" id="l_z" placeholder="例: 0">
+                </div>
+
+                <div class="loc-person-block" data-slot="1">
+                    <h4>1人目</h4>
+                    <div class="form-group">
+                        <label>登録メンバーから選択</label>
+                        <select class="loc-person-select" onchange="fillPersonFromChannel(1, this.value)">
+                            <option value="">— 自由入力 —</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>名前</label><input type="text" id="l_name1" placeholder="例: まぐにぃ"></div>
+                    <div class="form-group"><label>アイコンファイル名</label><input type="text" id="l_icon1" placeholder="例: maguro29.svg"></div>
+                </div>
+
+                <div class="loc-person-block" data-slot="2">
+                    <h4>2人目（同じ拠点にいる場合のみ）</h4>
+                    <div class="form-group">
+                        <label>登録メンバーから選択</label>
+                        <select class="loc-person-select" onchange="fillPersonFromChannel(2, this.value)">
+                            <option value="">— 自由入力 —</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>名前</label><input type="text" id="l_name2" placeholder=""></div>
+                    <div class="form-group"><label>アイコンファイル名</label><input type="text" id="l_icon2" placeholder=""></div>
+                </div>
+
+                <div class="loc-person-block" data-slot="3">
+                    <h4>3人目（同じ拠点にいる場合のみ）</h4>
+                    <div class="form-group">
+                        <label>登録メンバーから選択</label>
+                        <select class="loc-person-select" onchange="fillPersonFromChannel(3, this.value)">
+                            <option value="">— 自由入力 —</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>名前</label><input type="text" id="l_name3" placeholder=""></div>
+                    <div class="form-group"><label>アイコンファイル名</label><input type="text" id="l_icon3" placeholder=""></div>
+                </div>
+
+                <button id="locSaveBtn" class="btn-save" onclick="saveLocation()">拠点を保存</button>
+                <button id="locCancelBtn" style="display:none; margin-left:10px;" onclick="cancelLocEdit()">編集をキャンセル</button>
+            </div>
+
+            <div class="helper-card" style="margin-top: 20px;">
+                <h3>⚙️ MAP_member.js の書き換え</h3>
+                <p style="font-size: 13px; color: #5c6b5a; margin-bottom: 10px; margin-top: 0;">
+                    拠点の追加・編集が終わったら、下のボタンで最新のコードをコピーし、ローカルの <code>js/MAP_member.js</code> を丸ごと上書き保存してください。
+                </p>
+                <button type="button" class="btn-export" style="width: 100%; padding: 10px; margin-bottom: 10px; font-size: 13px;" onclick="exportMapMembers()">
+                    📋 MAP_member.jsの内容をコピー
+                </button>
+                <textarea id="mapMemberOutput" readonly placeholder="拠点情報を保存すると最新のコードがここに自動同期されます"></textarea>
+
+                <p style="font-size: 12px; color: #5c6b5a; margin: 14px 0 6px;">
+                    <b>js/MAP_member.js を直接手入力で編集した場合</b>は、下のボタンでこのページのデータを最新の内容に合わせ直してください（このブラウザに保存されている編集中のデータは破棄されます）。
+                </p>
+                <button type="button" style="width: 100%; padding: 8px; font-size: 12px; background: #b45309; color: white; font-weight: bold; border: none;" onclick="reloadFromMapMemberJs()">
+                    🔄 MAP_member.jsを再読み込み（ローカルの編集を破棄）
+                </button>
+            </div>
+        </div>
+
+        <div class="admin-right-col">
+            <div class="helper-card">
+                <h3>📝 使い方メモ</h3>
+                <ul class="steps-list-lg" style="padding-left: 18px;">
+                    <li>「登録メンバーから選択」で上の<b>👥 メンバー追加・編集</b>に登録済みの人を選ぶと、名前・アイコンが自動入力されます（表記ゆれ防止のため、名簿にいる人はできるだけこちらから選んでください）。</li>
+                    <li>名簿にいない人（配信者ではない参加者など）は自由入力欄に直接入力してください。</li>
+                    <li>アイコン画像ファイルは <code>avatars</code> フォルダに置く前提です。上の「👥 メンバー追加・編集」でアバターをダウンロードしてから使うと簡単です。</li>
+                    <li>座標（X・Z）はマイクラの F3 画面で確認した数値をそのまま入力してください。</li>
+                    <li>1つの拠点に最大3人まで登録できます。空欄のままでもOKです。</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 30px;">📋 現在の拠点一覧 <span style="font-size:13px; color:#5c6b5a; font-weight:normal;">（エリア名をクリックすると再編集できます）</span></h2>
+    <div style="overflow-x: auto;">
+    <table class="member-table">
+        <thead>
+            <tr>
+                <th style="min-width: 90px;">エリア</th>
+                <th style="min-width: 140px;">1人目</th>
+                <th style="min-width: 140px;">2人目</th>
+                <th style="min-width: 140px;">3人目</th>
+                <th style="width: 70px;">X</th>
+                <th style="width: 70px;">Z</th>
+                <th style="width: 60px;">操作</th>
+            </tr>
+        </thead>
+        <tbody id="locTableBody"></tbody>
+    </table>
+    </div>
+
 <script src="js/config.js"></script>
+<script src="js/MAP_member.js"></script>
 <script>
 let channels  = [];
 let editIndex = -1;
 let currentUUID = "";
 let uuidTimer   = null;
+
+// ─── 拠点マップ（MAP_member.js）編集用の状態 ───────────────
+let mapMembers   = [];
+let locEditIndex = -1;
 
 // ─── 初期化 ───────────────────────────────────────────
 function initAdmin() {
@@ -527,6 +671,7 @@ function renderMemberList() {
 
     if (!channels.length) {
         tbody.innerHTML = `<tr><td colspan="12" style="text-align:center; color:#8ca08a; padding:20px; font-size:13px;">まだメンバーが登録されていません。左のフォームから追加してください。</td></tr>`;
+        populateChannelSelects();
         return;
     }
 
@@ -573,6 +718,8 @@ function renderMemberList() {
                 <td><button class="btn-del" onclick="deleteMember(${idx})">削除</button></td>
             </tr>`;
     });
+
+    populateChannelSelects();
 }
 
 // ─── 編集モード ────────────────────────────────────────
@@ -745,7 +892,231 @@ function reloadFromConfigJs() {
     alert("js/config.js の内容を読み込み直しました！");
 }
 
+// ==========================================================
+// 📍 拠点マップ（js/MAP_member.js）編集機能
+// 「👥 メンバー追加・編集」（config.js）とは別データですが、
+// 同じ管理画面上から一貫した操作感で編集できるようにしたセクションです。
+// ==========================================================
+
+// ─── 「登録メンバーから選択」ドロップダウンの選択肢を、上の名簿（channels）から生成 ───
+function populateChannelSelects() {
+    document.querySelectorAll('.loc-person-select').forEach((sel) => {
+        const current = sel.value;
+        sel.innerHTML = '<option value="">— 自由入力 —</option>';
+        channels.forEach((ch, idx) => {
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.textContent = ch.name || `(名称未設定 ${idx})`;
+            sel.appendChild(opt);
+        });
+        sel.value = (current !== "" && channels[Number(current)]) ? current : "";
+    });
+}
+
+// 選択したチャンネルの名前・アイコンをフォームに自動入力する（表記ゆれ防止）
+function deriveIconFromChannel(ch) {
+    if (!ch) return "";
+    if (ch.avatarImg) return ch.avatarImg.replace(/^avatars\//, '');
+    const pureMcId = cleanMcId(ch.minecraftId);
+    return pureMcId ? `${pureMcId}.svg` : "";
+}
+
+function fillPersonFromChannel(slot, idxStr) {
+    if (idxStr === "") return; // 「自由入力」を選んだ場合は何もしない
+    const ch = channels[Number(idxStr)];
+    if (!ch) return;
+    document.getElementById(`l_name${slot}`).value = ch.name || "";
+    document.getElementById(`l_icon${slot}`).value = deriveIconFromChannel(ch);
+}
+
+// ─── フォーム⇔データ ────────────────────────────────────
+function collectFormLocation() {
+    return {
+        area:  document.getElementById('l_area').value.trim(),
+        name:  document.getElementById('l_name1').value.trim(),
+        icon:  document.getElementById('l_icon1').value.trim(),
+        name2: document.getElementById('l_name2').value.trim(),
+        icon2: document.getElementById('l_icon2').value.trim(),
+        name3: document.getElementById('l_name3').value.trim(),
+        icon3: document.getElementById('l_icon3').value.trim(),
+        x: Number(document.getElementById('l_x').value) || 0,
+        z: Number(document.getElementById('l_z').value) || 0
+    };
+}
+
+function saveLocation() {
+    const data = collectFormLocation();
+
+    if (locEditIndex > -1) {
+        mapMembers[locEditIndex] = data;
+        alert(`「${data.area || '(未登録)'}」の拠点情報を更新しました！`);
+        cancelLocEdit();
+    } else {
+        mapMembers.push(data);
+        alert(`「${data.area || '(未登録)'}」の拠点を新規保存しました！`);
+        clearLocForm();
+    }
+
+    localStorage.setItem('custom_map_members', JSON.stringify(mapMembers));
+    renderLocList();
+    updateMapMemberOutput();
+}
+
+function deleteLocation(idx) {
+    if (confirm(`「${mapMembers[idx].area || '(未登録)'}」の拠点データを削除しますか？`)) {
+        if (locEditIndex === idx) cancelLocEdit();
+        mapMembers.splice(idx, 1);
+        localStorage.setItem('custom_map_members', JSON.stringify(mapMembers));
+        renderLocList();
+        updateMapMemberOutput();
+    }
+}
+
+// ─── 拠点一覧レンダリング ──────────────────────────────
+function renderLocList() {
+    const tbody = document.getElementById('locTableBody');
+    tbody.innerHTML = "";
+
+    if (!mapMembers.length) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#8ca08a; padding:20px; font-size:13px;">拠点データがありません。</td></tr>`;
+        return;
+    }
+
+    const personCell = (name, icon) => {
+        if (!name && !icon) return `<span style="color:#94a3b8; font-size:11px;">—</span>`;
+        const avatarPath = icon ? `avatars/${icon}` : "avatars/fallback.svg";
+        return `<div style="display:flex; align-items:center; gap:6px;">
+            <div class="mc-head-box" style="width:24px; height:24px;">
+                <img class="mc-head-img" src="${avatarPath}" alt="${name || ''}" onerror="this.onerror=null; this.src='avatars/fallback.svg';">
+            </div>
+            <span style="font-size:12px;">${name || '(名前未入力)'}</span>
+        </div>`;
+    };
+
+    mapMembers.forEach((m, idx) => {
+        tbody.innerHTML += `
+            <tr>
+                <td><strong class="clickable-name" onclick="editLocation(${idx})" title="クリックして編集">${m.area || '(未登録)'}</strong></td>
+                <td>${personCell(m.name, m.icon)}</td>
+                <td>${personCell(m.name2, m.icon2)}</td>
+                <td>${personCell(m.name3, m.icon3)}</td>
+                <td style="font-family:monospace; font-size:12px;">${m.x}</td>
+                <td style="font-family:monospace; font-size:12px;">${m.z}</td>
+                <td><button class="btn-del" onclick="deleteLocation(${idx})">削除</button></td>
+            </tr>`;
+    });
+}
+
+// ─── 編集モード ────────────────────────────────────────
+function editLocation(idx) {
+    locEditIndex = idx;
+    const m = mapMembers[idx];
+
+    document.getElementById('l_area').value  = m.area || "";
+    document.getElementById('l_x').value     = (typeof m.x === 'number') ? m.x : 0;
+    document.getElementById('l_z').value     = (typeof m.z === 'number') ? m.z : 0;
+    document.getElementById('l_name1').value = m.name || "";
+    document.getElementById('l_icon1').value = m.icon || "";
+    document.getElementById('l_name2').value = m.name2 || "";
+    document.getElementById('l_icon2').value = m.icon2 || "";
+    document.getElementById('l_name3').value = m.name3 || "";
+    document.getElementById('l_icon3').value = m.icon3 || "";
+    document.querySelectorAll('.loc-person-select').forEach(sel => sel.value = "");
+
+    document.getElementById('locFormContainer').className = "editing";
+    document.getElementById('locEditNotice').style.display = "block";
+    document.getElementById('locSaveBtn').innerText = "変更を上書き保存";
+    document.getElementById('locCancelBtn').style.display = "inline-block";
+
+    window.scrollTo({ top: document.getElementById('locFormContainer').offsetTop - 20, behavior: 'smooth' });
+}
+
+function cancelLocEdit() {
+    locEditIndex = -1;
+    clearLocForm();
+    document.getElementById('locFormContainer').className = "";
+    document.getElementById('locEditNotice').style.display = "none";
+    document.getElementById('locSaveBtn').innerText = "拠点を保存";
+    document.getElementById('locCancelBtn').style.display = "none";
+}
+
+function clearLocForm() {
+    ['l_area','l_x','l_z','l_name1','l_icon1','l_name2','l_icon2','l_name3','l_icon3'].forEach(id => document.getElementById(id).value = "");
+    document.querySelectorAll('.loc-person-select').forEach(sel => sel.value = "");
+}
+
+// ─── js/MAP_member.js 出力 ─────────────────────────────
+function escJsString(s) {
+    return (s || "").toString().replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
+
+function formatMapMemberRow(m) {
+    const x = Number.isFinite(m.x) ? m.x : 0;
+    const z = Number.isFinite(m.z) ? m.z : 0;
+    return `    { area: "${escJsString(m.area)}", name: "${escJsString(m.name)}", icon: "${escJsString(m.icon)}", name2: "${escJsString(m.name2)}", icon2: "${escJsString(m.icon2)}", name3: "${escJsString(m.name3)}", icon3: "${escJsString(m.icon3)}", x: ${x}, z: ${z} }`;
+}
+
+function updateMapMemberOutput() {
+    const header = `// ==========================================================
+// 📊 homeクラ メンバー拠点マップ - メンバーデータ
+// ここを編集すればマップ・一覧に反映されます。
+//
+// icon  : avatars フォルダに入れた顔画像のファイル名（例: "xxxxxx.png"）
+//         空欄のままだとプレースホルダー画像が表示されます
+// name2 / icon2 : 同じ拠点に2人目がいる場合はここに記入すると
+//                 アイコンが2つ並んで表示されます
+// name3 / icon3 : 同じ拠点に3人目がいる場合はここに記入すると
+//                 アイコンが3つ並んで表示されます（1人1行で改行表示）
+// area / name が空欄の行は「未登録」として地図にも一覧にも表示されません
+// ==========================================================
+`;
+    const rows = mapMembers.map((m, idx) => {
+        const comma = (idx < mapMembers.length - 1) ? ',' : '';
+        return `${formatMapMemberRow(m)}${comma} // ${idx + 1}人目`;
+    });
+    const body = `const memberData = [\n${rows.join('\n')}\n];\n`;
+
+    document.getElementById('mapMemberOutput').value = header + body;
+}
+
+function exportMapMembers() {
+    updateMapMemberOutput();
+    navigator.clipboard.writeText(document.getElementById('mapMemberOutput').value)
+        .then(() => alert("js/MAP_member.js 用のコードをコピーしました！js/MAP_member.jsファイルに貼り付けて保存してください。"))
+        .catch(() => { document.getElementById('mapMemberOutput').select(); alert('自動コピーに失敗しました。テキストエリアを全選択して手動でコピーしてください。'); });
+}
+
+// js/MAP_member.js を直接手入力で編集した場合に、このページ側のキャッシュ(localStorage)を破棄して
+// 実際に読み込まれている memberData の内容に同期し直す
+function reloadFromMapMemberJs() {
+    if (typeof memberData === 'undefined') {
+        alert("js/MAP_member.js が読み込めていません。ページを開き直すか、MAP_member.js の内容をご確認ください。");
+        return;
+    }
+    if (!confirm("このブラウザに保存されている編集中のデータは破棄され、js/MAP_member.js の内容に置き換わります。よろしいですか？")) {
+        return;
+    }
+    localStorage.removeItem('custom_map_members');
+    mapMembers = JSON.parse(JSON.stringify(memberData));
+    cancelLocEdit();
+    renderLocList();
+    updateMapMemberOutput();
+    alert("js/MAP_member.js の内容を読み込み直しました！");
+}
+
+function initLocAdmin() {
+    const savedLoc = localStorage.getItem('custom_map_members');
+    if (savedLoc) {
+        mapMembers = JSON.parse(savedLoc);
+    } else if (typeof memberData !== 'undefined') {
+        mapMembers = JSON.parse(JSON.stringify(memberData));
+    }
+    renderLocList();
+    updateMapMemberOutput();
+}
+
 initAdmin();
+initLocAdmin();
 </script>
 </body>
 </html>
