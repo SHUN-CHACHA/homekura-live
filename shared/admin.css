@@ -73,7 +73,9 @@
         .member-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: var(--container-bg); }
         .member-table th, .member-table td { border: 1px solid var(--border-color); padding: 10px; text-align: left; vertical-align: middle; }
         .member-table th { background: var(--accent-green-tint); color: var(--accent-green); }
-        
+
+        .member-group-heading { background: #f0f5f0 !important; font-weight: bold; color: var(--accent-green); font-size: 13px; text-align: left !important; }
+
         .clickable-name { color: var(--accent-green); text-decoration: underline; cursor: pointer; }
         .clickable-name:hover { color: #143311; background: var(--accent-green-tint); }
 
