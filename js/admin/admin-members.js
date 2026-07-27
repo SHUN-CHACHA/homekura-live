@@ -220,7 +220,7 @@ function renderMemberList() {
     tbody.innerHTML = "";
 
     if (!channels.length) {
-        tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; color:#8ca08a; padding:20px; font-size:13px;">まだメンバーが登録されていません。左のフォームから追加してください。</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="15" style="text-align:center; color:#8ca08a; padding:20px; font-size:13px;">まだメンバーが登録されていません。左のフォームから追加してください。</td></tr>`;
         populateChannelSelects();
         return;
     }
@@ -242,7 +242,7 @@ function renderMemberList() {
     sorted.forEach(({ ch, origIdx }) => {
         if (ch.group && ch.group.trim() !== "") {
             if (ch.group !== lastGroupLabel) {
-                tbody.innerHTML += `<tr><td colspan="13" class="member-group-heading">${ch.group}</td></tr>`;
+                tbody.innerHTML += `<tr><td colspan="15" class="member-group-heading">${ch.group}</td></tr>`;
                 lastGroupLabel = ch.group;
             }
         } else {
@@ -268,6 +268,7 @@ function renderMemberList() {
 
         const mcText      = pureMcId || "";
         const ytCell      = ch.id       ? `<a href="https://youtube.com/channel/${ch.id}" target="_blank" style="font-family:monospace;font-size:11px;color:#dc2626;word-break:break-all;">${ch.id}</a>` : "";
+        const yt2Cell     = ch.id2      ? `<a href="https://youtube.com/channel/${ch.id2}" target="_blank" style="font-family:monospace;font-size:11px;color:#dc2626;word-break:break-all;">${ch.id2}</a>` : `<span style="color:#94a3b8; font-size:11px;">—</span>`;
         const xCell       = ch.twitterId ? `<a href="https://x.com/${ch.twitterId}" target="_blank" style="font-size:12px;color:#14171a;">@${ch.twitterId}</a>` : "";
         const twitchCell  = ch.twitchId  ? `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" style="font-size:12px;color:#9146ff;">@${ch.twitchId}</a>` : "";
         const tiktokCell  = ch.tiktokId  ? `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" style="font-size:12px;color:#010101;">@${ch.tiktokId}</a>` : "";
@@ -285,6 +286,7 @@ function renderMemberList() {
                 <td style="font-size:12px;color:var(--secondary-text);">${mcText}</td>
                 <td>${uuidCell}</td>
                 <td>${ytCell}</td>
+                <td>${yt2Cell}</td>
                 <td>${xCell}</td>
                 <td>${twitchCell}</td>
                 <td>${tiktokCell}</td>
@@ -305,6 +307,7 @@ function editMember(idx) {
 
     document.getElementById('m_name').value = ch.name || "";
     document.getElementById('m_id').value   = ch.id   || "";
+    document.getElementById('m_id2').value  = ch.id2  || "";
 
     const pureMcId = cleanMcId(ch.minecraftId);
     document.getElementById('m_mc').value = pureMcId;
@@ -362,7 +365,7 @@ function cancelEdit() {
 }
 
 function clearForm() {
-    ['m_name','m_id','m_mc','m_x','m_tw','m_tt','m_inst','m_discord','m_homepage','m_order','m_group'].forEach(id => document.getElementById(id).value = "");
+    ['m_name','m_id','m_id2','m_mc','m_x','m_tw','m_tt','m_inst','m_discord','m_homepage','m_order','m_group'].forEach(id => document.getElementById(id).value = "");
     currentUUID = "";
     resetUuidUI();
     document.getElementById('uuidManualToggleBtn').style.display = "none";
@@ -376,6 +379,7 @@ function clearForm() {
 function addMember() {
     const name       = document.getElementById('m_name').value.trim();
     const id         = document.getElementById('m_id').value.trim();
+    const id2        = document.getElementById('m_id2').value.trim();
     const minecraftId = cleanMcId(document.getElementById('m_mc').value);
     const twitterId  = document.getElementById('m_x').value.trim().replace(/^@/, '');
     const twitchId   = document.getElementById('m_tw').value.trim();
@@ -393,6 +397,10 @@ function addMember() {
     const pureMcId = cleanMcId(minecraftId);
     const memberData = { name, id, minecraftId, uuid: currentUUID, twitterId, twitchId, tiktokId, instaId, discordUrl, homepageUrl, color, avatarImg: pureMcId ? `avatars/${pureMcId}.svg` : "" };
 
+    // サブチャンネルは入力した時だけ保存する（配信中・予約・新着の判定にも反映される）
+    if (id2 !== "") {
+        memberData.id2 = id2;
+    }
     // order は数字を入力した時だけ保存する（未入力なら一覧の一番最後に表示される仕様）
     if (orderRaw !== "" && !isNaN(Number(orderRaw))) {
         memberData.order = Number(orderRaw);
