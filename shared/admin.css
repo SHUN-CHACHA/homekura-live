@@ -1,0 +1,199 @@
+/* ==========================================================
+   homeクラ 管理画面（admin-7b9a4c2e.html）専用スタイル
+   ライトテーマの共通トークンは shared/theme.css を参照しています。
+========================================================== */
+        body { 
+            font-family: sans-serif; 
+            padding: 20px; 
+            background: var(--bg-color);
+            color: var(--text-color); 
+        }
+        
+        h2 { border-bottom: 2px solid var(--accent-green); padding-bottom: 8px; color: var(--accent-green); }
+        
+        #memberFormContainer {
+            background: var(--container-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .admin-main-layout {
+                display: flex;
+                gap: 24px;
+                align-items: flex-start;
+            }
+            .admin-left-col { flex: 1; min-width: 0; }
+            .admin-right-col { width: 420px; flex-shrink: 0; }
+        }
+
+        .form-group { margin-bottom: 10px; }
+        label { display: inline-block; width: 180px; font-weight: bold; }
+        
+        input[type="text"] { 
+            width: 400px; padding: 6px; 
+            background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color);
+        }
+        input[type="text"]:focus { background: #ffffff; border-color: var(--accent-green); outline: none; }
+        input[type="color"] { width: 50px; height: 30px; vertical-align: middle; border: 1px solid var(--border-color); background: var(--input-bg); cursor: pointer; }
+        .color-code-input { width: 100px !important; margin-left: 10px; vertical-align: middle; font-family: monospace; text-transform: uppercase; }
+
+        button { padding: 6px 12px; margin-top: 10px; cursor: pointer; border-radius: 4px; }
+        .btn-save { background: var(--accent-green); color: white; border: none; font-weight: bold; }
+        .btn-save:hover { opacity: 0.9; }
+        .btn-export { background: var(--accent-blue); color: white; border: none; font-weight: bold; padding: 10px 20px; }
+        .btn-export:hover { opacity: 0.9; }
+        .btn-download-avatar { background: #d97706; color: white; border: none; font-weight: bold; margin-left: 10px; padding: 4px 10px; font-size: 13px; }
+        .btn-download-avatar:hover { opacity: 0.9; }
+        .btn-download-avatar:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+        /* UUID表示 */
+        .uuid-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+        .uuid-label { font-size: 12px; font-weight: bold; color: #5c6b5a; white-space: nowrap; }
+        .uuid-display {
+            font-family: monospace; font-size: 11px; color: #5c6b5a;
+            background: var(--accent-green-tint); border: 1px solid var(--border-color); border-radius: 4px;
+            padding: 4px 8px; min-width: 240px; letter-spacing: 0.03em;
+        }
+        .uuid-display.ok  { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+        .uuid-display.err { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+        .uuid-badge {
+            display: inline-block; font-size: 11px; padding: 2px 8px;
+            border-radius: 3px; font-weight: bold; white-space: nowrap;
+        }
+        .uuid-badge.wait { background: #fef3c7; color: #92400e; }
+        .uuid-badge.ok   { background: #d1fae5; color: #065f46; }
+        .uuid-badge.err  { background: #fee2e2; color: #991b1b; }
+
+        .editing { background: #fffbeb !important; border: 1px solid #fde68a !important; }
+        .edit-badge { display: inline-block; background: #b45309; color: white; padding: 2px 8px; font-size: 12px; border-radius: 4px; margin-bottom: 10px; font-weight: bold; }
+
+        .member-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: var(--container-bg); }
+        .member-table th, .member-table td { border: 1px solid var(--border-color); padding: 10px; text-align: left; vertical-align: middle; }
+        .member-table th { background: var(--accent-green-tint); color: var(--accent-green); }
+        
+        .clickable-name { color: var(--accent-green); text-decoration: underline; cursor: pointer; }
+        .clickable-name:hover { color: #143311; background: var(--accent-green-tint); }
+
+        .mc-head-box {
+            width: 28px; height: 28px; border-radius: 4px; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); background: #ffffff;
+            border: 1px solid var(--border-color); margin: 0 auto;
+        }
+        .mc-head-img { width: 100%; height: 100%; object-fit: contain; transform: scale(1.1); }
+        .coming-soon-lbl {
+            width: 100%; height: 100%; background: #94a3b8; color: #ffffff;
+            font-size: 7px; font-weight: bold; text-align: center; line-height: 1.1;
+            display: flex; align-items: center; justify-content: center;
+            text-transform: uppercase; letter-spacing: -0.2px;
+        }
+
+        .btn-del { background: #dc2626; color: white; border: none; padding: 4px 10px; cursor: pointer; border-radius: 4px; }
+        .btn-del:hover { opacity: 0.9; }
+        #cancelBtn { background: #64748b; color: white; border: none; }
+        #cancelBtn:hover { opacity: 0.9; }
+
+        .label-badge-tt { display: inline-block; background: #010101; color: #ffffff; font-size: 10px; font-weight: bold; padding: 1px 5px; border-radius: 3px; margin-left: 4px; vertical-align: middle; }
+        .label-badge-ma { display: inline-block; background: var(--accent-blue); color: #ffffff; font-size: 10px; font-weight: bold; padding: 1px 5px; border-radius: 3px; margin-left: 4px; vertical-align: middle; }
+
+        .btn-uuid-manual  { background: #f59e0b; color: white; border: none; font-size: 11px; font-weight: bold; padding: 3px 10px; border-radius: 4px; cursor: pointer; margin-top: 0; }
+        .btn-uuid-manual:hover  { opacity: 0.85; }
+        .btn-uuid-confirm { background: var(--accent-green); color: white; border: none; font-size: 12px; font-weight: bold; padding: 5px 14px; border-radius: 4px; cursor: pointer; margin-top: 0; }
+        .btn-uuid-confirm:hover  { opacity: 0.9; }
+        .btn-uuid-confirm:disabled { background: #cbd5e1; cursor: not-allowed; }
+        .btn-uuid-cancel  { background: #64748b; color: white; border: none; font-size: 12px; font-weight: bold; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-top: 0; }
+        .btn-uuid-cancel:hover { opacity: 0.9; }
+
+        .helper-card { background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .helper-card h3 { margin-top: 0; margin-bottom: 10px; font-size: 14px; font-weight: bold; color: var(--accent-green); border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
+
+        .steps-list-lg { margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.8; color: var(--text-color); }
+        .steps-list-lg > li { margin-bottom: 14px; }
+        .steps-list-lg > li > strong { font-size: 14px; color: var(--accent-green); display: block; margin-bottom: 4px; }
+        .steps-list-lg ul { margin: 4px 0 0 0; padding-left: 18px; list-style: disc; }
+        .steps-list-lg ul li { margin-bottom: 4px; }
+        .steps-list-lg code { background: var(--accent-green-tint); padding: 1px 5px; border-radius: 3px; font-size: 12px; color: var(--accent-green); }
+        .helper-note { margin: 12px 0 0 0; padding: 10px 12px; background: #fffbeb; border-left: 3px solid var(--accent-yellow); border-radius: 4px; font-size: 12px; color: #5c4a00; line-height: 1.7; }
+        
+        #configOutput { width: 100%; height: 160px; font-family: monospace; font-size: 11px; box-sizing: border-box; padding: 8px; border-radius: 4px; border: 1px solid var(--border-color); background: #fafafa; color: var(--text-color); resize: vertical; }
+
+        .uuid-cell { font-family: monospace; font-size: 10px; color: #5c6b5a; word-break: break-all; max-width: 130px; }
+
+        @media screen and (max-width: 768px) {
+            input[type="text"] { width: 100%; box-sizing: border-box; }
+            label { display: block; margin-bottom: 4px; }
+        }
+
+        /* 📍 拠点マップ編集セクション */
+        .loc-person-block {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            margin: 10px 0 16px;
+        }
+        .loc-person-block h4 {
+            margin: 0 0 8px 0;
+            font-size: 13px;
+            color: var(--accent-green);
+        }
+        .loc-person-select {
+            padding: 6px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-color);
+            width: 250px;
+            max-width: 100%;
+        }
+        input[type="number"].loc-coord {
+            width: 120px;
+            padding: 6px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-color);
+        }
+
+        /* 📑 セクション切り替えタブ（Excelのシートタブのようなイメージ） */
+        #admin-tab-bar {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid var(--accent-green);
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .admin-tab-btn {
+            appearance: none;
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            background: var(--accent-green-tint);
+            color: var(--secondary-text);
+            font-weight: bold;
+            font-size: 14px;
+            padding: 10px 18px;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            transition: 0.15s;
+            position: relative;
+            top: 2px;
+        }
+        .admin-tab-btn:hover {
+            background: #ffffff;
+            color: var(--accent-green);
+        }
+        .admin-tab-btn.active {
+            background: var(--container-bg);
+            color: var(--accent-green);
+            border-color: var(--accent-green);
+            border-bottom: 2px solid var(--container-bg);
+        }
+        .admin-tab-panel {
+            display: none;
+        }
+        .admin-tab-panel.active {
+            display: block;
+        }
