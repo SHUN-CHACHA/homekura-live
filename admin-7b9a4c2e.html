@@ -160,6 +160,46 @@
             border-radius: 4px;
             color: var(--text-color);
         }
+
+        /* 📑 セクション切り替えタブ（Excelのシートタブのようなイメージ） */
+        #admin-tab-bar {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid var(--accent-green);
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .admin-tab-btn {
+            appearance: none;
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            background: var(--accent-green-tint);
+            color: var(--secondary-text);
+            font-weight: bold;
+            font-size: 14px;
+            padding: 10px 18px;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            transition: 0.15s;
+            position: relative;
+            top: 2px;
+        }
+        .admin-tab-btn:hover {
+            background: #ffffff;
+            color: var(--accent-green);
+        }
+        .admin-tab-btn.active {
+            background: var(--container-bg);
+            color: var(--accent-green);
+            border-color: var(--accent-green);
+            border-bottom: 2px solid var(--container-bg);
+        }
+        .admin-tab-panel {
+            display: none;
+        }
+        .admin-tab-panel.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -170,8 +210,16 @@
         <a href="features.html" class="pill-btn-light">📋 機能一覧を見る</a>
     </div>
 
+    <!-- 📑 セクション切り替えタブ -->
+    <div id="admin-tab-bar">
+        <button type="button" class="admin-tab-btn" data-tab="members" onclick="switchAdminTab('members')">👥 メンバー</button>
+        <button type="button" class="admin-tab-btn" data-tab="locations" onclick="switchAdminTab('locations')">📍 拠点マップ</button>
+        <button type="button" class="admin-tab-btn" data-tab="places" onclick="switchAdminTab('places')">🗺️ 場所</button>
+    </div>
+
+    <div class="admin-tab-panel" id="tab-panel-members">
     <h2>👥 メンバー追加・編集</h2>
-    
+
     <div class="admin-main-layout">
         <div class="admin-left-col">
             <div id="memberFormContainer">
@@ -335,9 +383,9 @@
         <tbody id="memberTableBody"></tbody>
     </table>
     </div>
+    </div><!-- /#tab-panel-members -->
 
-    <hr style="margin: 40px 0; border: none; border-top: 2px solid var(--border-color);">
-
+    <div class="admin-tab-panel" id="tab-panel-locations">
     <h2>📍 拠点マップ 編集（MAP_member.js）</h2>
 
     <div class="admin-main-layout">
@@ -443,9 +491,9 @@
         <tbody id="locTableBody"></tbody>
     </table>
     </div>
+    </div><!-- /#tab-panel-locations -->
 
-    <hr style="margin: 40px 0; border: none; border-top: 2px solid var(--border-color);">
-
+    <div class="admin-tab-panel" id="tab-panel-places">
     <h2>🗺️ 場所（目印）編集（MAP_locations.js）</h2>
 
     <div class="admin-main-layout">
@@ -519,6 +567,7 @@
         <tbody id="placeTableBody"></tbody>
     </table>
     </div>
+    </div><!-- /#tab-panel-places -->
 
 <script src="js/config.js"></script>
 <script src="js/MAP_member.js"></script>
@@ -1395,9 +1444,34 @@ function initPlaceAdmin() {
     updateLocationOutput();
 }
 
+// ==========================================================
+// 📑 セクション切り替えタブ（メンバー / 拠点マップ / 場所）
+// ==========================================================
+const ADMIN_TABS = ['members', 'locations', 'places'];
+
+function switchAdminTab(tabName) {
+    if (!ADMIN_TABS.includes(tabName)) tabName = ADMIN_TABS[0];
+
+    document.querySelectorAll('.admin-tab-btn').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.tab === tabName);
+    });
+    document.querySelectorAll('.admin-tab-panel').forEach((panel) => {
+        panel.classList.toggle('active', panel.id === `tab-panel-${tabName}`);
+    });
+
+    localStorage.setItem('admin_active_tab', tabName);
+    window.scrollTo(0, 0);
+}
+
+function initAdminTabs() {
+    const saved = localStorage.getItem('admin_active_tab');
+    switchAdminTab(ADMIN_TABS.includes(saved) ? saved : ADMIN_TABS[0]);
+}
+
 initAdmin();
 initLocAdmin();
 initPlaceAdmin();
+initAdminTabs();
 </script>
 </body>
 </html>
