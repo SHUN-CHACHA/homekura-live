@@ -271,6 +271,7 @@
 
         @media (min-width: 950px) {
             .list-container { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+            .grid { grid-template-columns: repeat(5, 1fr); }
         }
 
         /* SNSポップアップモーダル */
@@ -525,9 +526,14 @@
         <div id="upcomingGrid" class="grid"></div>
     </div>
 
-    <div id="newSection" class="section-box" style="display: none;">
-        <div class="section-title" style="color:var(--accent-blue)">🎬 【24時間以内の新着】</div>
-        <div id="newGrid" class="grid"></div>
+    <div id="newArchiveSection" class="section-box" style="display: none;">
+        <div class="section-title" style="color:var(--accent-blue)">🎬 【24時間以内の新着（配信アーカイブ）】</div>
+        <div id="newArchiveGrid" class="grid"></div>
+    </div>
+
+    <div id="newVideoSection" class="section-box" style="display: none;">
+        <div class="section-title" style="color:var(--accent-blue)">🆕 【24時間以内の新着（動画）】</div>
+        <div id="newVideoGrid" class="grid"></div>
     </div>
 
     <div class="section-box" id="member">
@@ -677,8 +683,8 @@ async function loadPortal(forceRefresh = false) {
 }
 
 function renderGrids(chInfoMap, vItems) {
-    let htmls = { live: "", new: "", upcoming: "", all: "" };
-    let counts = { live: 0, new: 0, upcoming: 0 };
+    let htmls = { live: "", newArchive: "", newVideo: "", upcoming: "", all: "" };
+    let counts = { live: 0, newArchive: 0, newVideo: 0, upcoming: 0 };
     const now = new Date();
 
     // 「全メンバー一覧」用に order 番号順で並び替える（order未設定は最後尾）
@@ -723,6 +729,8 @@ function renderGrids(chInfoMap, vItems) {
             const isUpcoming = status === 'upcoming';
             const pubDate = lastV ? new Date(lastV.snippet.publishedAt) : null;
             const isNew = lastV && !isLive && !isUpcoming && (now - pubDate < 24 * 60 * 60 * 1000);
+            // liveStreamingDetails.actualStartTime があれば「配信済み（アーカイブ）」、無ければ通常の動画投稿
+            const isArchivedLive = isNew && !!(lastV.liveStreamingDetails && lastV.liveStreamingDetails.actualStartTime);
             let timeStr = "オフライン";
             let startTime = null;
 
@@ -761,7 +769,8 @@ function renderGrids(chInfoMap, vItems) {
 
             if (isLive) { htmls.live += card; counts.live++; }
             else if (isUpcoming) { htmls.upcoming += card; counts.upcoming++; }
-            else if (isNew) { htmls.new += card; counts.new++; }
+            else if (isArchivedLive) { htmls.newArchive += card; counts.newArchive++; }
+            else if (isNew) { htmls.newVideo += card; counts.newVideo++; }
         });
 
         let listBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn-square-mini btn-yt" title="YouTube">${SVG_ICONS.youtube}</a>`;
@@ -819,8 +828,10 @@ function renderGrids(chInfoMap, vItems) {
     document.getElementById("liveGrid").innerHTML = htmls.live;
     document.getElementById("upcomingSection").style.display = counts.upcoming ? "block" : "none";
     document.getElementById("upcomingGrid").innerHTML = htmls.upcoming;
-    document.getElementById("newSection").style.display = counts.new ? "block" : "none";
-    document.getElementById("newGrid").innerHTML = htmls.new;
+    document.getElementById("newArchiveSection").style.display = counts.newArchive ? "block" : "none";
+    document.getElementById("newArchiveGrid").innerHTML = htmls.newArchive;
+    document.getElementById("newVideoSection").style.display = counts.newVideo ? "block" : "none";
+    document.getElementById("newVideoGrid").innerHTML = htmls.newVideo;
     document.getElementById("allList").innerHTML = htmls.all;
 }
 
