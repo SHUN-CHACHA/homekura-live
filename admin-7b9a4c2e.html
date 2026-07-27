@@ -215,6 +215,7 @@
         <button type="button" class="admin-tab-btn" data-tab="members" onclick="switchAdminTab('members')">👥 メンバー</button>
         <button type="button" class="admin-tab-btn" data-tab="locations" onclick="switchAdminTab('locations')">📍 拠点マップ</button>
         <button type="button" class="admin-tab-btn" data-tab="places" onclick="switchAdminTab('places')">🗺️ 場所</button>
+        <button type="button" class="admin-tab-btn" data-tab="mapimages" onclick="switchAdminTab('mapimages')">🖼️ 背景地図</button>
     </div>
 
     <div class="admin-tab-panel" id="tab-panel-members">
@@ -569,9 +570,88 @@
     </div>
     </div><!-- /#tab-panel-places -->
 
+    <div class="admin-tab-panel" id="tab-panel-mapimages">
+    <h2>🖼️ 背景地図 編集（map-config.js）</h2>
+
+    <div class="admin-main-layout">
+        <div class="admin-left-col">
+            <div id="mapImageFormContainer">
+                <div id="mapImageEditNotice" style="display:none;"><span class="edit-badge">✏️ 背景地図編集モード中</span></div>
+
+                <div class="form-group"><label>画像ファイル名</label><input type="text" id="mc_filename" placeholder="例: 8月4日.png（mapフォルダ内のファイル名）"></div>
+                <div class="form-group">
+                    <label>左上 X座標</label><input type="number" class="loc-coord" id="mc_x1" placeholder="例: -1600">
+                </div>
+                <div class="form-group">
+                    <label>左上 Z座標</label><input type="number" class="loc-coord" id="mc_z1" placeholder="例: -1600">
+                </div>
+                <div class="form-group">
+                    <label>右下 X座標</label><input type="number" class="loc-coord" id="mc_x2" placeholder="例: 1984">
+                </div>
+                <div class="form-group">
+                    <label>右下 Z座標</label><input type="number" class="loc-coord" id="mc_z2" placeholder="例: 1472">
+                </div>
+                <div class="form-group">
+                    <label>不透明度（opacity）</label><input type="number" class="loc-coord" id="mc_opacity" placeholder="1" min="0" max="1" step="0.05">
+                </div>
+
+                <button id="mapImageSaveBtn" class="btn-save" onclick="saveMapImage()">背景地図を保存</button>
+                <button id="mapImageCancelBtn" style="display:none; margin-left:10px;" onclick="cancelMapImageEdit()">編集をキャンセル</button>
+            </div>
+
+            <div class="helper-card" style="margin-top: 20px;">
+                <h3>⚙️ map-config.js の書き換え</h3>
+                <p style="font-size: 13px; color: #5c6b5a; margin-bottom: 10px; margin-top: 0;">
+                    <b>この出力は配列部分だけです。</b>ファイルまるごとの置き換えではありません。<code>js/map-config.js</code> を開き、<code>const mapImageList = [ ... ];</code> の部分だけを、下のコードで置き換えて保存してください（前後の関数コードはそのままにしてください）。
+                </p>
+                <button type="button" class="btn-export" style="width: 100%; padding: 10px; margin-bottom: 10px; font-size: 13px;" onclick="exportMapConfig()">
+                    📋 mapImageList のコードをコピー
+                </button>
+                <textarea id="mapConfigOutput" readonly placeholder="背景地図情報を保存すると最新のコードがここに自動同期されます"></textarea>
+
+                <p style="font-size: 12px; color: #5c6b5a; margin: 14px 0 6px;">
+                    <b>js/map-config.js を直接手入力で編集した場合</b>は、下のボタンでこのページのデータを最新の内容に合わせ直してください（このブラウザに保存されている編集中のデータは破棄されます）。
+                </p>
+                <button type="button" style="width: 100%; padding: 8px; font-size: 12px; background: #b45309; color: white; font-weight: bold; border: none;" onclick="reloadFromMapConfigJs()">
+                    🔄 map-config.jsを再読み込み（ローカルの編集を破棄）
+                </button>
+            </div>
+        </div>
+
+        <div class="admin-right-col">
+            <div class="helper-card">
+                <h3>📝 使い方メモ</h3>
+                <ul class="steps-list-lg" style="padding-left: 18px;">
+                    <li>新しい月の地図画像は、まず画像ファイル本体を <code>map</code> フォルダにアップロードしてください（この管理画面からは画像ファイル自体はアップロードできません）。</li>
+                    <li>「画像ファイル名」は <code>map/</code> を付けずに入力してください（自動で付きます）。</li>
+                    <li>座標は Chunkbase などで切り抜いた画像の範囲（左上と右下の2点、X・Z座標）を入力してください。</li>
+                    <li>新規に保存した地図は一覧の<b>先頭</b>に追加されます（先頭＝サイトを開いた時に最初に表示される地図になります）。順番を変えたい時は一覧の▲▼ボタンで並べ替えてください。</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 30px;">📋 現在の背景地図一覧 <span style="font-size:13px; color:#5c6b5a; font-weight:normal;">（一番上が初期表示される地図／ファイル名をクリックすると再編集できます）</span></h2>
+    <div style="overflow-x: auto;">
+    <table class="member-table">
+        <thead>
+            <tr>
+                <th style="width: 50px;">順番</th>
+                <th style="min-width: 140px;">ファイル名</th>
+                <th style="min-width: 160px;">bounds（左上→右下）</th>
+                <th style="width: 70px;">不透明度</th>
+                <th style="width: 90px;">操作</th>
+            </tr>
+        </thead>
+        <tbody id="mapImageTableBody"></tbody>
+    </table>
+    </div>
+    </div><!-- /#tab-panel-mapimages -->
+
 <script src="js/config.js"></script>
 <script src="js/MAP_member.js"></script>
 <script src="js/MAP_locations.js"></script>
+<script src="js/map-config.js"></script>
 <script>
 let channels  = [];
 let editIndex = -1;
@@ -585,6 +665,10 @@ let locEditIndex = -1;
 // ─── 場所（MAP_locations.js）編集用の状態 ───────────────
 let places = [];
 let placeEditIndex = -1;
+
+// ─── 背景地図（map-config.js の mapImageList）編集用の状態 ───
+let mapImages = [];
+let mapImageEditIndex = -1;
 
 // ─── 初期化 ───────────────────────────────────────────
 function initAdmin() {
@@ -1445,9 +1529,192 @@ function initPlaceAdmin() {
 }
 
 // ==========================================================
+// 🖼️ 背景地図（js/map-config.js の mapImageList）編集機能
+// ==========================================================
+
+function stripMapPrefix(fileName) {
+    return (fileName || "").replace(/^map\//, '');
+}
+
+function collectFormMapImage() {
+    const rawName = document.getElementById('mc_filename').value.trim();
+    const fileName = rawName ? (rawName.startsWith('map/') ? rawName : `map/${rawName}`) : '';
+    const opacityRaw = document.getElementById('mc_opacity').value.trim();
+
+    return {
+        fileName,
+        bounds: [
+            [Number(document.getElementById('mc_x1').value) || 0, Number(document.getElementById('mc_z1').value) || 0],
+            [Number(document.getElementById('mc_x2').value) || 0, Number(document.getElementById('mc_z2').value) || 0]
+        ],
+        opacity: opacityRaw !== "" ? Number(opacityRaw) : 1
+    };
+}
+
+function saveMapImage() {
+    const data = collectFormMapImage();
+    if (!data.fileName) { alert("画像ファイル名を入力してください！"); return; }
+
+    if (mapImageEditIndex > -1) {
+        mapImages[mapImageEditIndex] = data;
+        alert(`「${stripMapPrefix(data.fileName)}」を更新しました！`);
+        cancelMapImageEdit();
+    } else {
+        // 新規追加は先頭（＝初期表示される最新の地図）に入れる
+        mapImages.unshift(data);
+        alert(`「${stripMapPrefix(data.fileName)}」を一覧の先頭に新規保存しました！`);
+        clearMapImageForm();
+    }
+
+    localStorage.setItem('custom_map_images', JSON.stringify(mapImages));
+    renderMapImageList();
+    updateMapConfigOutput();
+}
+
+function deleteMapImage(idx) {
+    if (confirm(`「${stripMapPrefix(mapImages[idx].fileName)}」を削除しますか？`)) {
+        if (mapImageEditIndex === idx) cancelMapImageEdit();
+        mapImages.splice(idx, 1);
+        localStorage.setItem('custom_map_images', JSON.stringify(mapImages));
+        renderMapImageList();
+        updateMapConfigOutput();
+    }
+}
+
+function moveMapImage(idx, delta) {
+    const target = idx + delta;
+    if (target < 0 || target >= mapImages.length) return;
+    [mapImages[idx], mapImages[target]] = [mapImages[target], mapImages[idx]];
+    if (mapImageEditIndex === idx) mapImageEditIndex = target;
+    else if (mapImageEditIndex === target) mapImageEditIndex = idx;
+    localStorage.setItem('custom_map_images', JSON.stringify(mapImages));
+    renderMapImageList();
+    updateMapConfigOutput();
+}
+
+function renderMapImageList() {
+    const tbody = document.getElementById('mapImageTableBody');
+    tbody.innerHTML = "";
+
+    if (!mapImages.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#8ca08a; padding:20px; font-size:13px;">背景地図データがありません。</td></tr>`;
+        return;
+    }
+
+    mapImages.forEach((m, idx) => {
+        const b = m.bounds || [[0, 0], [0, 0]];
+        tbody.innerHTML += `
+            <tr>
+                <td style="text-align:center; font-family:monospace;">${idx + 1}</td>
+                <td><strong class="clickable-name" onclick="editMapImage(${idx})" title="クリックして編集">${stripMapPrefix(m.fileName) || '(未設定)'}</strong></td>
+                <td style="font-family:monospace; font-size:11px;">[${b[0][0]}, ${b[0][1]}] → [${b[1][0]}, ${b[1][1]}]</td>
+                <td style="font-family:monospace; font-size:12px; text-align:center;">${m.opacity}</td>
+                <td>
+                    <button class="btn-uuid-manual" style="font-size:11px;" onclick="moveMapImage(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>▲</button>
+                    <button class="btn-uuid-manual" style="font-size:11px;" onclick="moveMapImage(${idx}, 1)" ${idx === mapImages.length - 1 ? 'disabled' : ''}>▼</button>
+                    <button class="btn-del" onclick="deleteMapImage(${idx})">削除</button>
+                </td>
+            </tr>`;
+    });
+}
+
+function editMapImage(idx) {
+    mapImageEditIndex = idx;
+    const m = mapImages[idx];
+    const b = m.bounds || [[0, 0], [0, 0]];
+
+    document.getElementById('mc_filename').value = stripMapPrefix(m.fileName);
+    document.getElementById('mc_x1').value = b[0][0];
+    document.getElementById('mc_z1').value = b[0][1];
+    document.getElementById('mc_x2').value = b[1][0];
+    document.getElementById('mc_z2').value = b[1][1];
+    document.getElementById('mc_opacity').value = (typeof m.opacity === 'number') ? m.opacity : 1;
+
+    document.getElementById('mapImageFormContainer').className = "editing";
+    document.getElementById('mapImageEditNotice').style.display = "block";
+    document.getElementById('mapImageSaveBtn').innerText = "変更を上書き保存";
+    document.getElementById('mapImageCancelBtn').style.display = "inline-block";
+
+    window.scrollTo({ top: document.getElementById('mapImageFormContainer').offsetTop - 20, behavior: 'smooth' });
+}
+
+function cancelMapImageEdit() {
+    mapImageEditIndex = -1;
+    clearMapImageForm();
+    document.getElementById('mapImageFormContainer').className = "";
+    document.getElementById('mapImageEditNotice').style.display = "none";
+    document.getElementById('mapImageSaveBtn').innerText = "背景地図を保存";
+    document.getElementById('mapImageCancelBtn').style.display = "none";
+}
+
+function clearMapImageForm() {
+    ['mc_filename', 'mc_x1', 'mc_z1', 'mc_x2', 'mc_z2'].forEach((id) => document.getElementById(id).value = "");
+    document.getElementById('mc_opacity').value = "1";
+}
+
+// ─── mapImageList 配列コードの出力（ファイル全体ではなく、配列部分のみ）───
+function formatMapImageEntry(m) {
+    const b = m.bounds || [[0, 0], [0, 0]];
+    const x1 = Number.isFinite(b[0][0]) ? b[0][0] : 0;
+    const z1 = Number.isFinite(b[0][1]) ? b[0][1] : 0;
+    const x2 = Number.isFinite(b[1][0]) ? b[1][0] : 0;
+    const z2 = Number.isFinite(b[1][1]) ? b[1][1] : 0;
+    const opacity = Number.isFinite(m.opacity) ? m.opacity : 1;
+    const fileName = (m.fileName || '').replace(/'/g, "\\'");
+    return `        {
+            fileName: '${fileName}',
+            bounds: [[${x1}, ${z1}], [${x2}, ${z2}]],
+            opacity: ${opacity}
+        },`;
+}
+
+function updateMapConfigOutput() {
+    const entries = mapImages.map((m) => formatMapImageEntry(m));
+    const body = `    const mapImageList = [\n${entries.join('\n')}\n    ];`;
+    document.getElementById('mapConfigOutput').value = body;
+}
+
+function exportMapConfig() {
+    updateMapConfigOutput();
+    navigator.clipboard.writeText(document.getElementById('mapConfigOutput').value)
+        .then(() => alert("mapImageList のコードをコピーしました！js/map-config.js の const mapImageList = [ ... ]; の部分だけを置き換えて保存してください。"))
+        .catch(() => { document.getElementById('mapConfigOutput').select(); alert('自動コピーに失敗しました。テキストエリアを全選択して手動でコピーしてください。'); });
+}
+
+// js/map-config.js を直接手入力で編集した場合に、このページ側のキャッシュ(localStorage)を破棄して
+// 実際に読み込まれている mapImageList の内容に同期し直す
+function reloadFromMapConfigJs() {
+    if (!window.MapApp || !window.MapApp.mapConfig || !window.MapApp.mapConfig.mapImageList) {
+        alert("js/map-config.js が読み込めていません。ページを開き直すか、map-config.js の内容をご確認ください。");
+        return;
+    }
+    if (!confirm("このブラウザに保存されている編集中のデータは破棄され、js/map-config.js の内容に置き換わります。よろしいですか？")) {
+        return;
+    }
+    localStorage.removeItem('custom_map_images');
+    mapImages = JSON.parse(JSON.stringify(window.MapApp.mapConfig.mapImageList));
+    cancelMapImageEdit();
+    renderMapImageList();
+    updateMapConfigOutput();
+    alert("js/map-config.js の内容を読み込み直しました！");
+}
+
+function initMapConfigAdmin() {
+    const saved = localStorage.getItem('custom_map_images');
+    if (saved) {
+        mapImages = JSON.parse(saved);
+    } else if (window.MapApp && window.MapApp.mapConfig && window.MapApp.mapConfig.mapImageList) {
+        mapImages = JSON.parse(JSON.stringify(window.MapApp.mapConfig.mapImageList));
+    }
+    document.getElementById('mc_opacity').value = "1";
+    renderMapImageList();
+    updateMapConfigOutput();
+}
+
+// ==========================================================
 // 📑 セクション切り替えタブ（メンバー / 拠点マップ / 場所）
 // ==========================================================
-const ADMIN_TABS = ['members', 'locations', 'places'];
+const ADMIN_TABS = ['members', 'locations', 'places', 'mapimages'];
 
 function switchAdminTab(tabName) {
     if (!ADMIN_TABS.includes(tabName)) tabName = ADMIN_TABS[0];
@@ -1471,6 +1738,7 @@ function initAdminTabs() {
 initAdmin();
 initLocAdmin();
 initPlaceAdmin();
+initMapConfigAdmin();
 initAdminTabs();
 </script>
 </body>
