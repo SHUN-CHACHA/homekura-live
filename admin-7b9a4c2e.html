@@ -602,10 +602,10 @@
             <div class="helper-card" style="margin-top: 20px;">
                 <h3>⚙️ map-config.js の書き換え</h3>
                 <p style="font-size: 13px; color: #5c6b5a; margin-bottom: 10px; margin-top: 0;">
-                    <b>この出力は配列部分だけです。</b>ファイルまるごとの置き換えではありません。<code>js/map-config.js</code> を開き、<code>const mapImageList = [ ... ];</code> の部分だけを、下のコードで置き換えて保存してください（前後の関数コードはそのままにしてください）。
+                    背景地図の追加・編集が終わったら、下のボタンで最新のコードをコピーし、ローカルの <code>js/map-config.js</code> を丸ごと上書き保存してください。
                 </p>
                 <button type="button" class="btn-export" style="width: 100%; padding: 10px; margin-bottom: 10px; font-size: 13px;" onclick="exportMapConfig()">
-                    📋 mapImageList のコードをコピー
+                    📋 map-config.jsの内容をコピー
                 </button>
                 <textarea id="mapConfigOutput" readonly placeholder="背景地図情報を保存すると最新のコードがここに自動同期されます"></textarea>
 
@@ -1652,7 +1652,110 @@ function clearMapImageForm() {
     document.getElementById('mc_opacity').value = "1";
 }
 
-// ─── mapImageList 配列コードの出力（ファイル全体ではなく、配列部分のみ）───
+// ─── js/map-config.js 全文の出力 ─────────────────────────
+// mapImageList 以外の部分（関数・エクスポート部分）は変更されないので、
+// 実際のファイルからそのまま抜き出した固定テキストとして持っておく。
+const MAP_CONFIG_HEAD = [
+    "// ==========================================================",
+    "// 🗺️ 背景地図画像コンポーネント",
+    "// window.MapApp.mapConfig として公開します。",
+    "//",
+    "// ★ 新しい月の地図ができたら、この mapImageList に追記してください！",
+    "// 毎月の地図画像は \"map\" フォルダの中に入れてください（ファイル名の.pngを除いた名前がそのまま地図のドロップダウンメニューに表示されます）",
+    "// 例：ファイル名：7月4日.png　→　「7月4日」",
+    "// 一番上（配列の先頭）が「初期表示される最新の地図」になります。新しい月の画像は",
+    "// 配列の先頭に追加してください。",
+    "// ==========================================================",
+    "(function () {",
+    "    window.MapApp = window.MapApp || {};",
+].join('\n');
+
+const MAP_CONFIG_TAIL = [
+    "    // ファイル名から拡張子(.png)を除いた部分をそのままラベルとして使う",
+    "    function getMapLabel(fileName) {",
+    "        const base = fileName.split('/').pop();",
+    "        return base.replace(/\\.[^/.]+$/, '');",
+    "    }",
+    "",
+    "    // bounds([X, Z]の順)をLeafletが要求する[Z由来の緯度, X由来の経度]の順に変換する",
+    "    function toLeafletBounds(bounds) {",
+    "        return bounds.map(([x, z]) => [-z, x]);",
+    "    }",
+    "",
+    "    let map = null;",
+    "    let bgImageOverlay = null;",
+    "    const mapImageSelects = () => Array.from(document.querySelectorAll('.map-image-select'));",
+    "",
+    "    // ドロップダウンに mapImageList の一覧を反映する（先頭＝最新が選択された状態で開始）",
+    "    // デスクトップ用・スマホ用など、複数箇所にある .map-image-select すべてに反映する",
+    "    function populateMapImageSelect() {",
+    "        mapImageSelects().forEach((sel) => {",
+    "            sel.innerHTML = '';",
+    "            mapImageList.forEach((entry, index) => {",
+    "                const option = document.createElement('option');",
+    "                option.value = index;",
+    "                option.textContent = getMapLabel(entry.fileName);",
+    "                sel.appendChild(option);",
+    "            });",
+    "        });",
+    "    }",
+    "",
+    "    // どれか1つのドロップダウンが変更されたら、他のドロップダウンにも同じ選択を反映する",
+    "    function syncMapImageSelects(value) {",
+    "        mapImageSelects().forEach((sel) => { sel.value = value; });",
+    "    }",
+    "",
+    "    function loadBackgroundImage() {",
+    "        // 既存の画像レイヤーがあれば一旦地図から削除する",
+    "        if (bgImageOverlay) {",
+    "            map.removeLayer(bgImageOverlay);",
+    "            bgImageOverlay = null;",
+    "        }",
+    "",
+    "        // チェックボックスがON、かつ選択中の地図画像がある場合にのみ重ねる",
+    "        const isChecked = document.getElementById('toggle-bg-image').checked;",
+    "        const currentSelect = mapImageSelects()[0];",
+    "        const selectedEntry = mapImageList[Number(currentSelect ? currentSelect.value : 0)] || mapImageList[0];",
+    "",
+    "        if (isChecked && selectedEntry && selectedEntry.fileName) {",
+    "            bgImageOverlay = L.imageOverlay(selectedEntry.fileName, toLeafletBounds(selectedEntry.bounds), {",
+    "                opacity: selectedEntry.opacity,",
+    "                interactive: false // 画像がクリック操作を遮らないようにする",
+    "            });",
+    "",
+    "            // 画像が見つからなくても地図全体がクラッシュしないためのエラー対策",
+    "            bgImageOverlay.on('error', function () {",
+    "                console.log(`背景画像 ${selectedEntry.fileName} が見つからないか、ローカル制限でロードできません。`);",
+    "            });",
+    "",
+    "            bgImageOverlay.addTo(map);",
+    "        }",
+    "    }",
+    "",
+    "    function init(mapInstance) {",
+    "        map = mapInstance;",
+    "        populateMapImageSelect();",
+    "",
+    "        document.getElementById('toggle-bg-image').addEventListener('change', loadBackgroundImage);",
+    "        document.querySelectorAll('.map-image-select').forEach((sel) => {",
+    "            sel.addEventListener('change', (e) => {",
+    "                syncMapImageSelects(e.target.value);",
+    "                loadBackgroundImage();",
+    "            });",
+    "        });",
+    "    }",
+    "",
+    "    window.MapApp.mapConfig = {",
+    "        mapImageList,",
+    "        getMapLabel,",
+    "        toLeafletBounds,",
+    "        init,",
+    "        loadBackgroundImage: () => loadBackgroundImage()",
+    "    };",
+    "})();",
+    "",
+].join('\n');
+
 function formatMapImageEntry(m) {
     const b = m.bounds || [[0, 0], [0, 0]];
     const x1 = Number.isFinite(b[0][0]) ? b[0][0] : 0;
@@ -1670,14 +1773,15 @@ function formatMapImageEntry(m) {
 
 function updateMapConfigOutput() {
     const entries = mapImages.map((m) => formatMapImageEntry(m));
-    const body = `    const mapImageList = [\n${entries.join('\n')}\n    ];`;
-    document.getElementById('mapConfigOutput').value = body;
+    const arrayBlock = `    const mapImageList = [\n${entries.join('\n')}\n    ];`;
+    const fullFile = `${MAP_CONFIG_HEAD}\n\n${arrayBlock}\n\n${MAP_CONFIG_TAIL}`;
+    document.getElementById('mapConfigOutput').value = fullFile;
 }
 
 function exportMapConfig() {
     updateMapConfigOutput();
     navigator.clipboard.writeText(document.getElementById('mapConfigOutput').value)
-        .then(() => alert("mapImageList のコードをコピーしました！js/map-config.js の const mapImageList = [ ... ]; の部分だけを置き換えて保存してください。"))
+        .then(() => alert("js/map-config.js 用のコードをコピーしました！js/map-config.jsファイルに貼り付けて保存してください。"))
         .catch(() => { document.getElementById('mapConfigOutput').select(); alert('自動コピーに失敗しました。テキストエリアを全選択して手動でコピーしてください。'); });
 }
 
