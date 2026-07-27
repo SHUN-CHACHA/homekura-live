@@ -444,8 +444,85 @@
     </table>
     </div>
 
+    <hr style="margin: 40px 0; border: none; border-top: 2px solid var(--border-color);">
+
+    <h2>🗺️ 場所（目印）編集（MAP_locations.js）</h2>
+
+    <div class="admin-main-layout">
+        <div class="admin-left-col">
+            <div id="placeFormContainer">
+                <div id="placeEditNotice" style="display:none;"><span class="edit-badge">✏️ 場所編集モード中</span></div>
+
+                <div class="form-group"><label>名前</label><input type="text" id="pl_name" placeholder="例: 祭会場"></div>
+                <div class="form-group">
+                    <label>アイコン画像</label>
+                    <select id="placeIconPicker" class="loc-person-select" onchange="fillIconFromPicker(this.value)">
+                        <option value="">— 既存のアイコンから選ぶ —</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>アイコンファイル名</label><input type="text" id="pl_icon" placeholder="例: matsuri_chouchin.png"></div>
+                <div class="form-group">
+                    <label>X座標</label><input type="number" class="loc-coord" id="pl_x" placeholder="例: -9">
+                </div>
+                <div class="form-group">
+                    <label>Z座標</label><input type="number" class="loc-coord" id="pl_z" placeholder="例: -388">
+                </div>
+
+                <button id="placeSaveBtn" class="btn-save" onclick="savePlace()">場所を保存</button>
+                <button id="placeCancelBtn" style="display:none; margin-left:10px;" onclick="cancelPlaceEdit()">編集をキャンセル</button>
+            </div>
+
+            <div class="helper-card" style="margin-top: 20px;">
+                <h3>⚙️ MAP_locations.js の書き換え</h3>
+                <p style="font-size: 13px; color: #5c6b5a; margin-bottom: 10px; margin-top: 0;">
+                    場所の追加・編集が終わったら、下のボタンで最新のコードをコピーし、ローカルの <code>js/MAP_locations.js</code> を丸ごと上書き保存してください。
+                </p>
+                <button type="button" class="btn-export" style="width: 100%; padding: 10px; margin-bottom: 10px; font-size: 13px;" onclick="exportLocationData()">
+                    📋 MAP_locations.jsの内容をコピー
+                </button>
+                <textarea id="placeDataOutput" readonly placeholder="場所情報を保存すると最新のコードがここに自動同期されます"></textarea>
+
+                <p style="font-size: 12px; color: #5c6b5a; margin: 14px 0 6px;">
+                    <b>js/MAP_locations.js を直接手入力で編集した場合</b>は、下のボタンでこのページのデータを最新の内容に合わせ直してください（このブラウザに保存されている編集中のデータは破棄されます）。
+                </p>
+                <button type="button" style="width: 100%; padding: 8px; font-size: 12px; background: #b45309; color: white; font-weight: bold; border: none;" onclick="reloadFromLocationJs()">
+                    🔄 MAP_locations.jsを再読み込み（ローカルの編集を破棄）
+                </button>
+            </div>
+        </div>
+
+        <div class="admin-right-col">
+            <div class="helper-card">
+                <h3>📝 使い方メモ</h3>
+                <ul class="steps-list-lg" style="padding-left: 18px;">
+                    <li>「場所」はメンバーではない目印（祭会場・共有地・初期地など）です。ここで追加・編集しても登録メンバー人数には影響しません。</li>
+                    <li>「アイコン画像」のプルダウンは、上の2セクションで既に使われているアイコンファイル名から選べる一覧です。選ぶと下の欄に自動入力されます。新しい画像を使う場合は下の欄に直接ファイル名を入力してください。</li>
+                    <li>アイコン画像ファイルは <code>avatars</code> フォルダに置く前提です。</li>
+                    <li>座標（X・Z）はマイクラの F3 画面で確認した数値をそのまま入力してください。</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 30px;">📋 現在の場所一覧 <span style="font-size:13px; color:#5c6b5a; font-weight:normal;">（名前をクリックすると再編集できます）</span></h2>
+    <div style="overflow-x: auto;">
+    <table class="member-table">
+        <thead>
+            <tr>
+                <th style="min-width: 100px;">名前</th>
+                <th style="min-width: 160px;">アイコン</th>
+                <th style="width: 70px;">X</th>
+                <th style="width: 70px;">Z</th>
+                <th style="width: 60px;">操作</th>
+            </tr>
+        </thead>
+        <tbody id="placeTableBody"></tbody>
+    </table>
+    </div>
+
 <script src="js/config.js"></script>
 <script src="js/MAP_member.js"></script>
+<script src="js/MAP_locations.js"></script>
 <script>
 let channels  = [];
 let editIndex = -1;
@@ -455,6 +532,10 @@ let uuidTimer   = null;
 // ─── 拠点マップ（MAP_member.js）編集用の状態 ───────────────
 let mapMembers   = [];
 let locEditIndex = -1;
+
+// ─── 場所（MAP_locations.js）編集用の状態 ───────────────
+let places = [];
+let placeEditIndex = -1;
 
 // ─── 初期化 ───────────────────────────────────────────
 function initAdmin() {
@@ -1115,8 +1196,208 @@ function initLocAdmin() {
     updateMapMemberOutput();
 }
 
+// ==========================================================
+// 🗺️ 場所（js/MAP_locations.js）編集機能
+// メンバーではない目印（祭会場・共有地・初期地など）専用のセクションです。
+// ==========================================================
+
+// 上の2セクション（メンバー名簿・拠点マップ）で既に使われているアイコンファイル名を集めて、
+// プルダウンから選べるようにする（表記ゆれ・タイプミス防止）
+function collectAllKnownIcons() {
+    const set = new Set();
+    channels.forEach((ch) => { const f = deriveIconFromChannel(ch); if (f) set.add(f); });
+    mapMembers.forEach((m) => { [m.icon, m.icon2, m.icon3].forEach((f) => { if (f && f.trim()) set.add(f.trim()); }); });
+    places.forEach((p) => { if (p.icon && p.icon.trim()) set.add(p.icon.trim()); });
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+}
+
+function populateIconPicker() {
+    const sel = document.getElementById('placeIconPicker');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">— 既存のアイコンから選ぶ —</option>';
+    collectAllKnownIcons().forEach((f) => {
+        const opt = document.createElement('option');
+        opt.value = f;
+        opt.textContent = f;
+        sel.appendChild(opt);
+    });
+    sel.value = "";
+}
+
+function fillIconFromPicker(val) {
+    if (!val) return;
+    document.getElementById('pl_icon').value = val;
+}
+
+// ─── フォーム⇔データ ────────────────────────────────────
+function collectFormPlace() {
+    return {
+        name: document.getElementById('pl_name').value.trim(),
+        icon: document.getElementById('pl_icon').value.trim(),
+        x: Number(document.getElementById('pl_x').value) || 0,
+        z: Number(document.getElementById('pl_z').value) || 0
+    };
+}
+
+function savePlace() {
+    const data = collectFormPlace();
+    if (!data.name) { alert("名前を入力してください！"); return; }
+
+    if (placeEditIndex > -1) {
+        places[placeEditIndex] = data;
+        alert(`「${data.name}」を更新しました！`);
+        cancelPlaceEdit();
+    } else {
+        places.push(data);
+        alert(`「${data.name}」を新規保存しました！`);
+        clearPlaceForm();
+    }
+
+    localStorage.setItem('custom_locations', JSON.stringify(places));
+    renderPlaceList();
+    updateLocationOutput();
+}
+
+function deletePlace(idx) {
+    if (confirm(`「${places[idx].name}」を削除しますか？`)) {
+        if (placeEditIndex === idx) cancelPlaceEdit();
+        places.splice(idx, 1);
+        localStorage.setItem('custom_locations', JSON.stringify(places));
+        renderPlaceList();
+        updateLocationOutput();
+    }
+}
+
+// ─── 場所一覧レンダリング ──────────────────────────────
+function renderPlaceList() {
+    const tbody = document.getElementById('placeTableBody');
+    tbody.innerHTML = "";
+
+    if (!places.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#8ca08a; padding:20px; font-size:13px;">場所データがありません。</td></tr>`;
+        populateIconPicker();
+        return;
+    }
+
+    places.forEach((p, idx) => {
+        const avatarPath = p.icon ? `avatars/${p.icon}` : "avatars/fallback.svg";
+        tbody.innerHTML += `
+            <tr>
+                <td><strong class="clickable-name" onclick="editPlace(${idx})" title="クリックして編集">${p.name || '(名称未設定)'}</strong></td>
+                <td>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <div class="mc-head-box" style="width:24px; height:24px;">
+                            <img class="mc-head-img" src="${avatarPath}" alt="${p.name || ''}" onerror="this.onerror=null; this.src='avatars/fallback.svg';">
+                        </div>
+                        <span style="font-size:12px; color:#5c6b5a;">${p.icon || '—'}</span>
+                    </div>
+                </td>
+                <td style="font-family:monospace; font-size:12px;">${p.x}</td>
+                <td style="font-family:monospace; font-size:12px;">${p.z}</td>
+                <td><button class="btn-del" onclick="deletePlace(${idx})">削除</button></td>
+            </tr>`;
+    });
+
+    populateIconPicker();
+}
+
+// ─── 編集モード ────────────────────────────────────────
+function editPlace(idx) {
+    placeEditIndex = idx;
+    const p = places[idx];
+
+    document.getElementById('pl_name').value = p.name || "";
+    document.getElementById('pl_icon').value = p.icon || "";
+    document.getElementById('pl_x').value = (typeof p.x === 'number') ? p.x : 0;
+    document.getElementById('pl_z').value = (typeof p.z === 'number') ? p.z : 0;
+    document.getElementById('placeIconPicker').value = "";
+
+    document.getElementById('placeFormContainer').className = "editing";
+    document.getElementById('placeEditNotice').style.display = "block";
+    document.getElementById('placeSaveBtn').innerText = "変更を上書き保存";
+    document.getElementById('placeCancelBtn').style.display = "inline-block";
+
+    window.scrollTo({ top: document.getElementById('placeFormContainer').offsetTop - 20, behavior: 'smooth' });
+}
+
+function cancelPlaceEdit() {
+    placeEditIndex = -1;
+    clearPlaceForm();
+    document.getElementById('placeFormContainer').className = "";
+    document.getElementById('placeEditNotice').style.display = "none";
+    document.getElementById('placeSaveBtn').innerText = "場所を保存";
+    document.getElementById('placeCancelBtn').style.display = "none";
+}
+
+function clearPlaceForm() {
+    ['pl_name', 'pl_icon', 'pl_x', 'pl_z'].forEach((id) => document.getElementById(id).value = "");
+    document.getElementById('placeIconPicker').value = "";
+}
+
+// ─── js/MAP_locations.js 出力 ───────────────────────────
+function formatLocationRow(p) {
+    const x = Number.isFinite(p.x) ? p.x : 0;
+    const z = Number.isFinite(p.z) ? p.z : 0;
+    return `    { name: "${escJsString(p.name)}", icon: "${escJsString(p.icon)}", x: ${x}, z: ${z} },`;
+}
+
+function updateLocationOutput() {
+    const header = `// ==========================================================
+// 📍 homeクラ メンバー拠点マップ - 「場所」データ（メンバーではない目印）
+// ここを編集すればマップに反映されます。
+//
+// 参加者（メンバー）とは別の扱いです。ここに追加・削除しても
+// 「登録メンバー」の人数には一切影響しません。
+//
+// icon : avatars フォルダに入れた画像のファイル名（例: "xxxxxx.png"）
+// 増減自由です。行ごとコピペして増やしたり、丸ごと削除して減らせます。
+// ==========================================================
+`;
+    const rows = places.map((p) => formatLocationRow(p));
+    const body = `const locationData = [\n${rows.join('\n')}\n    // 新しい目印を追加する例：\n    // { name: "◯◯タワー", icon: "xxx.png", x: 100, z: 200 },\n];\n`;
+
+    document.getElementById('placeDataOutput').value = header + body;
+}
+
+function exportLocationData() {
+    updateLocationOutput();
+    navigator.clipboard.writeText(document.getElementById('placeDataOutput').value)
+        .then(() => alert("js/MAP_locations.js 用のコードをコピーしました！js/MAP_locations.jsファイルに貼り付けて保存してください。"))
+        .catch(() => { document.getElementById('placeDataOutput').select(); alert('自動コピーに失敗しました。テキストエリアを全選択して手動でコピーしてください。'); });
+}
+
+// js/MAP_locations.js を直接手入力で編集した場合に、このページ側のキャッシュ(localStorage)を破棄して
+// 実際に読み込まれている locationData の内容に同期し直す
+function reloadFromLocationJs() {
+    if (typeof locationData === 'undefined') {
+        alert("js/MAP_locations.js が読み込めていません。ページを開き直すか、MAP_locations.js の内容をご確認ください。");
+        return;
+    }
+    if (!confirm("このブラウザに保存されている編集中のデータは破棄され、js/MAP_locations.js の内容に置き換わります。よろしいですか？")) {
+        return;
+    }
+    localStorage.removeItem('custom_locations');
+    places = JSON.parse(JSON.stringify(locationData));
+    cancelPlaceEdit();
+    renderPlaceList();
+    updateLocationOutput();
+    alert("js/MAP_locations.js の内容を読み込み直しました！");
+}
+
+function initPlaceAdmin() {
+    const saved = localStorage.getItem('custom_locations');
+    if (saved) {
+        places = JSON.parse(saved);
+    } else if (typeof locationData !== 'undefined') {
+        places = JSON.parse(JSON.stringify(locationData));
+    }
+    renderPlaceList();
+    updateLocationOutput();
+}
+
 initAdmin();
 initLocAdmin();
+initPlaceAdmin();
 </script>
 </body>
 </html>
