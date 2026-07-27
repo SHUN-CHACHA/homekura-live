@@ -532,7 +532,7 @@
     </div>
 
     <div id="newVideoSection" class="section-box" style="display: none;">
-        <div class="section-title" style="color:var(--accent-blue)">🆕 【24時間以内の新着（動画）】</div>
+        <div class="section-title" style="color:var(--accent-blue)">🆕 【2週間以内の新着（動画）】</div>
         <div id="newVideoGrid" class="grid"></div>
     </div>
 
@@ -657,9 +657,10 @@ async function loadPortal(forceRefresh = false) {
             if (liveOrUpcoming.length > 0) {
                 return liveOrUpcoming.map(i => i.snippet?.resourceId?.videoId).filter(Boolean);
             }
-            // live/upcomingが無ければ、NEW表示判定用に直近の1本だけ拾う
-            const target = items[0];
-            return target?.snippet?.resourceId?.videoId ? [target.snippet.resourceId.videoId] : [];
+            // live/upcomingが無ければ、新着表示判定用に直近2本まで候補として拾う
+            // （新着動画は「各チャンネル2件まで」表示する仕様のため）
+            const recentTargets = items.slice(0, 2);
+            return recentTargets.map(i => i.snippet?.resourceId?.videoId).filter(Boolean);
         });
 
         let vItems = [];
@@ -733,9 +734,13 @@ function renderGrids(chInfoMap, vItems) {
             const isLive = status === 'live';
             const isUpcoming = status === 'upcoming';
             const pubDate = lastV ? new Date(lastV.snippet.publishedAt) : null;
-            const isNew = lastV && !isLive && !isUpcoming && (now - pubDate < 24 * 60 * 60 * 1000);
+            const isCandidate = lastV && !isLive && !isUpcoming;
             // liveStreamingDetails.actualStartTime があれば「配信済み（アーカイブ）」、無ければ通常の動画投稿
-            const isArchivedLive = isNew && !!(lastV.liveStreamingDetails && lastV.liveStreamingDetails.actualStartTime);
+            const isArchivedLive = isCandidate && !!(lastV.liveStreamingDetails && lastV.liveStreamingDetails.actualStartTime);
+            // 配信アーカイブの新着は24時間以内、動画の新着は2週間以内（各チャンネル最大2件はplaylistItems取得側で制御済み）
+            const isNewArchive = isArchivedLive && (now - pubDate < 24 * 60 * 60 * 1000);
+            const isNewVideo = isCandidate && !isArchivedLive && (now - pubDate < 14 * 24 * 60 * 60 * 1000);
+            const isNew = isNewArchive || isNewVideo;
             let timeStr = "オフライン";
             let startTime = null;
 
@@ -774,8 +779,8 @@ function renderGrids(chInfoMap, vItems) {
 
             if (isLive) { htmls.live += card; counts.live++; }
             else if (isUpcoming) { htmls.upcoming += card; counts.upcoming++; }
-            else if (isArchivedLive) { htmls.newArchive += card; counts.newArchive++; }
-            else if (isNew) { htmls.newVideo += card; counts.newVideo++; }
+            else if (isNewArchive) { htmls.newArchive += card; counts.newArchive++; }
+            else if (isNewVideo) { htmls.newVideo += card; counts.newVideo++; }
         });
 
         let listBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn-square-mini btn-yt" title="YouTube">${SVG_ICONS.youtube}</a>`;
