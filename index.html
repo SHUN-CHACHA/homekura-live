@@ -665,9 +665,20 @@ async function loadPortal(forceRefresh = false) {
 
         let vItems = [];
         if (videoIds.length > 0) {
-            const vRes = await fetch(`${PROXY_URL}/videos?id=${videoIds.join(',')}&part=snippet,liveStreamingDetails`);
-            const vData = await vRes.json();
-            vItems = vData.items || [];
+            // videos.list の id パラメータは最大50件までしか指定できないため、50件ずつに分割して取得する
+            // （サブチャンネル対応・新着動画を各チャンネル2件まで取得するようにしたことでID数が増えたため必須）
+            const VIDEOS_ID_CHUNK_SIZE = 50;
+            const idChunks = [];
+            for (let i = 0; i < videoIds.length; i += VIDEOS_ID_CHUNK_SIZE) {
+                idChunks.push(videoIds.slice(i, i + VIDEOS_ID_CHUNK_SIZE));
+            }
+            const vResults = await Promise.all(
+                idChunks.map(chunk =>
+                    fetch(`${PROXY_URL}/videos?id=${chunk.join(',')}&part=snippet,liveStreamingDetails`)
+                        .then(r => r.json()).catch(() => null)
+                )
+            );
+            vItems = vResults.flatMap(r => r?.items || []);
         }
 
         // ── ポータルキャッシュ保存 ──────────────────────────────────────
