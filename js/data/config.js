@@ -256,18 +256,19 @@ window.CONFIG = {
         },
         {
                 "name": "よいよい",
-                "order": 22,
-                "group": "うえまさ家",
                 "id": "UCzk-vAIbo3iVBGTNaJQS2qQ",
                 "minecraftId": "yoiy0i",
                 "uuid": "273c51d0-3e15-4445-8db9-1f4606e68dfe",
                 "twitterId": "yoiy0i",
                 "twitchId": "",
                 "tiktokId": "",
-                "instaId": "",
+                "instaId": "yoiy0i",
                 "discordUrl": "",
+                "homepageUrl": "",
                 "color": "#ff0000",
-                "avatarImg": "avatars/yoiy0i.svg"
+                "avatarImg": "avatars/yoiy0i.svg",
+                "order": 22,
+                "group": "うえまさ家"
         },
         {
                 "name": "うえまさ",
