@@ -636,9 +636,12 @@ async function loadPortal(forceRefresh = false) {
         // ※ maxResults を増やしてもAPIクォータ消費は変わらない（呼び出し回数課金のため）。
         //    1つのチャンネルが同日に複数枠（2本以上）配信予定を入れているケースを
         //    取りこぼさないよう、直近2件だけでなく広めに取得する。
+        // サブチャンネル（ch.id2）を持つメンバーは、そのチャンネル分のプレイリストも合わせて取得し、
+        // 配信中・配信予定・新着の判定にサブチャンネルの動画も反映させる。
+        const fetchIds = channels.flatMap(ch => ch.id2 ? [ch.id, ch.id2] : [ch.id]);
         const playlistResults = await Promise.all(
-            channels.map(ch => {
-                const pId = ch.id.replace(/^UC/, 'UU');
+            fetchIds.map(id => {
+                const pId = id.replace(/^UC/, 'UU');
                 return fetch(`${PROXY_URL}/playlistItems?playlistId=${pId}&part=snippet&maxResults=10`)
                     .then(r => r.json()).catch(() => null);
             })
@@ -700,7 +703,8 @@ function renderGrids(chInfoMap, vItems) {
         const chInfo = chInfoMap[ch.id] || { icon: '' };
         // 同日に複数枠（live/upcoming）を持つチャンネルにも対応するため、
         // 該当チャンネルの動画は「1本だけ」ではなく全部拾ってそれぞれカード化する。
-        const chVideos = vItems.filter(v => v.snippet.channelId === ch.id);
+        // ch.id2（サブチャンネル）がある場合は、そのチャンネルの動画もこの人のカードに含める
+        const chVideos = vItems.filter(v => v.snippet.channelId === ch.id || (ch.id2 && v.snippet.channelId === ch.id2));
         const videoTargets = chVideos.length > 0 ? chVideos : [null];
 
         const safeTextColor = adjustColorForText(ch.color);
@@ -709,6 +713,7 @@ function renderGrids(chInfoMap, vItems) {
         const chJson = JSON.stringify({
             name: ch.name,
             id: ch.id,
+            id2: ch.id2 || '',
             twitterId: ch.twitterId || '',
             twitchId: ch.twitchId || '',
             tiktokId: ch.tiktokId || '',
@@ -774,6 +779,7 @@ function renderGrids(chInfoMap, vItems) {
         });
 
         let listBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn-square-mini btn-yt" title="YouTube">${SVG_ICONS.youtube}</a>`;
+        if (ch.id2) listBtnsHtml += `<a href="https://youtube.com/channel/${ch.id2}" target="_blank" class="btn-square-mini btn-yt" title="YouTube（サブ）">${SVG_ICONS.youtube}</a>`;
         if (ch.twitterId)  listBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn-square-mini btn-x" title="X">${SVG_ICONS.x}</a>`;
         if (ch.twitchId)   listBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn-square-mini btn-tw" title="Twitch">${SVG_ICONS.twitch}</a>`;
         if (ch.tiktokId)  listBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" class="btn-square-mini btn-tt" title="TikTok">${SVG_ICONS.tiktok}</a>`;
@@ -941,6 +947,7 @@ function openSnsModal(ch) {
 
     const SNS_DEFS = [
         { key: 'id',         cls: 'yt', label: 'YouTube',     icon: SVG_ICONS.youtube,   url: `https://youtube.com/channel/${ch.id}` },
+        { key: 'id2',        cls: 'yt', label: 'YouTube（サブ）', icon: SVG_ICONS.youtube, url: ch.id2 ? `https://youtube.com/channel/${ch.id2}` : '' },
         { key: 'twitterId',  cls: 'x',  label: 'X (Twitter)', icon: SVG_ICONS.x,         url: ch.twitterId  ? `https://x.com/${ch.twitterId}` : '' },
         { key: 'twitchId',   cls: 'tw', label: 'Twitch',      icon: SVG_ICONS.twitch,    url: ch.twitchId   ? `https://twitch.tv/${ch.twitchId}` : '' },
         { key: 'tiktokId',   cls: 'tt', label: 'TikTok',      icon: SVG_ICONS.tiktok,    url: ch.tiktokId   ? `https://www.tiktok.com/@${ch.tiktokId}` : '' },
