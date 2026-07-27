@@ -220,12 +220,36 @@ function renderMemberList() {
     tbody.innerHTML = "";
 
     if (!channels.length) {
-        tbody.innerHTML = `<tr><td colspan="12" style="text-align:center; color:#8ca08a; padding:20px; font-size:13px;">まだメンバーが登録されていません。左のフォームから追加してください。</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; color:#8ca08a; padding:20px; font-size:13px;">まだメンバーが登録されていません。左のフォームから追加してください。</td></tr>`;
         populateChannelSelects();
         return;
     }
 
-    channels.forEach((ch, idx) => {
+    // 本番ページ(index.html)の「全メンバー一覧」と同じ並び順で表示する：
+    // order番号の昇順（未設定は最後尾）に並べ、グループが変わったら見出し行を挟む。
+    // ※ config.js内の実際の配列順序（保存・出力される順序）はここでは変わらない。
+    // 編集・削除ボタンは元の配列インデックス(origIdx)を使う。
+    const sorted = channels
+        .map((ch, origIdx) => ({ ch, origIdx }))
+        .sort((a, b) => {
+            const orderA = (typeof a.ch.order === 'number') ? a.ch.order : Infinity;
+            const orderB = (typeof b.ch.order === 'number') ? b.ch.order : Infinity;
+            return orderA - orderB;
+        });
+
+    let lastGroupLabel = null;
+
+    sorted.forEach(({ ch, origIdx }) => {
+        if (ch.group && ch.group.trim() !== "") {
+            if (ch.group !== lastGroupLabel) {
+                tbody.innerHTML += `<tr><td colspan="13" class="member-group-heading">${ch.group}</td></tr>`;
+                lastGroupLabel = ch.group;
+            }
+        } else {
+            lastGroupLabel = null; // グループ未設定のメンバーを挟んだら、次に同じグループ名が来ても見出しを出し直す
+        }
+
+        const idx = origIdx;
         const pureMcId = cleanMcId(ch.minecraftId);
         const uuid     = ch.uuid || "";
 
@@ -250,9 +274,11 @@ function renderMemberList() {
         const instaCell   = ch.instaId   ? `<a href="https://instagram.com/${ch.instaId}" target="_blank" style="font-size:12px;color:#e1306c;">@${ch.instaId}</a>` : "";
         const discordCell  = ch.discordUrl  ? `<a href="${ch.discordUrl}" target="_blank" style="font-size:12px;color:#5865f2;">リンク</a>` : "";
         const homepageCell = ch.homepageUrl ? `<a href="${ch.homepageUrl}" target="_blank" style="font-size:12px;color:var(--accent-blue);">🏠 リンク</a>` : "";
+        const orderCell = (typeof ch.order === 'number') ? ch.order : `<span style="color:#94a3b8;">—</span>`;
 
         tbody.innerHTML += `
             <tr>
+                <td style="text-align:center; font-size:12px; color:var(--secondary-text);">${orderCell}</td>
                 <td style="text-align:center;"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:${ch.color||'#ff9900'};border:1px solid var(--border-color);"></span></td>
                 <td style="text-align:center;">${mcHeadHtml}</td>
                 <td><strong class="clickable-name" onclick="editMember(${idx})" title="クリックして編集">${ch.name||''}</strong></td>
