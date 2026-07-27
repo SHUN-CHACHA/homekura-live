@@ -700,6 +700,9 @@ async function loadPortal(forceRefresh = false) {
 function renderGrids(chInfoMap, vItems) {
     let htmls = { live: "", newArchive: "", newVideo: "", upcoming: "", all: "" };
     let counts = { live: 0, newArchive: 0, newVideo: 0, upcoming: 0 };
+    // newVideo（新着動画）は最後に配信日（公開日時）の新しい順へ並べ替えるため、
+    // カードを文字列へ都度連結せず、いったん { pubDate, card } の配列に貯めておく。
+    const newVideoBuffer = [];
     const now = new Date();
 
     // 「全メンバー一覧」用に order 番号順で並び替える（order未設定は最後尾）
@@ -791,7 +794,7 @@ function renderGrids(chInfoMap, vItems) {
             if (isLive) { htmls.live += card; counts.live++; }
             else if (isUpcoming) { htmls.upcoming += card; counts.upcoming++; }
             else if (isNewArchive) { htmls.newArchive += card; counts.newArchive++; }
-            else if (isNewVideo) { htmls.newVideo += card; counts.newVideo++; }
+            else if (isNewVideo) { newVideoBuffer.push({ pubDate, card }); counts.newVideo++; }
         });
 
         let listBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn-square-mini btn-yt" title="YouTube">${SVG_ICONS.youtube}</a>`;
@@ -845,6 +848,10 @@ function renderGrids(chInfoMap, vItems) {
         }
         htmls.all += rowHtmlByChannel.get(ch) || "";
     });
+
+    // 新着動画は配信日（公開日時）が新しい順に並べる
+    newVideoBuffer.sort((a, b) => b.pubDate - a.pubDate);
+    htmls.newVideo = newVideoBuffer.map(v => v.card).join('');
 
     document.getElementById("liveSection").style.display = counts.live ? "block" : "none";
     document.getElementById("liveGrid").innerHTML = htmls.live;
