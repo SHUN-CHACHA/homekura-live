@@ -712,9 +712,10 @@ async function loadPortal(forceRefresh = false) {
 function renderGrids(chInfoMap, vItems) {
     let htmls = { live: "", newArchive: "", newVideo: "", upcoming: "", all: "" };
     let counts = { live: 0, newArchive: 0, newVideo: 0, upcoming: 0 };
-    // newVideo（新着動画）は最後に配信日（公開日時）の新しい順へ並べ替えるため、
-    // カードを文字列へ都度連結せず、いったん { pubDate, card } の配列に貯めておく。
+    // newVideo（新着動画）・newArchive（配信アーカイブ）は最後に時刻の新しい順へ並べ替えるため、
+    // カードを文字列へ都度連結せず、いったん { sortTime, card } の配列に貯めておく。
     const newVideoBuffer = [];
+    const newArchiveBuffer = [];
     const now = new Date();
 
     // 「全メンバー一覧」用に order 番号順で並び替える（order未設定は最後尾）
@@ -763,8 +764,11 @@ function renderGrids(chInfoMap, vItems) {
             const isCandidate = lastV && !isLive && !isUpcoming;
             // liveStreamingDetails.actualStartTime があれば「配信済み（アーカイブ）」、無ければ通常の動画投稿
             const isArchivedLive = isCandidate && !!(lastV.liveStreamingDetails && lastV.liveStreamingDetails.actualStartTime);
-            // 配信アーカイブの新着は24時間以内、動画の新着は2週間以内（各チャンネル最大2件はplaylistItems取得側で制御済み）
-            const isNewArchive = isArchivedLive && (now - pubDate < 24 * 60 * 60 * 1000);
+            // アーカイブは実際に配信を開始した時刻（actualStartTime）を並べ替えの基準にする（無ければ公開日時で代用）
+            const archiveSortTime = isArchivedLive ? new Date(lastV.liveStreamingDetails.actualStartTime) : pubDate;
+            // 配信アーカイブの新着は「配信開始時刻」基準で24時間以内、動画の新着は公開日時基準で2週間以内
+            // （各チャンネル最大2件はplaylistItems取得側で制御済み）
+            const isNewArchive = isArchivedLive && (now - archiveSortTime < 24 * 60 * 60 * 1000);
             const isNewVideo = isCandidate && !isArchivedLive && (now - pubDate < 14 * 24 * 60 * 60 * 1000);
             const isNew = isNewArchive || isNewVideo;
             let timeStr = "オフライン";
@@ -805,7 +809,7 @@ function renderGrids(chInfoMap, vItems) {
 
             if (isLive) { htmls.live += card; counts.live++; }
             else if (isUpcoming) { htmls.upcoming += card; counts.upcoming++; }
-            else if (isNewArchive) { htmls.newArchive += card; counts.newArchive++; }
+            else if (isNewArchive) { newArchiveBuffer.push({ sortTime: archiveSortTime, card }); counts.newArchive++; }
             else if (isNewVideo) { newVideoBuffer.push({ pubDate, card }); counts.newVideo++; }
         });
 
@@ -864,6 +868,10 @@ function renderGrids(chInfoMap, vItems) {
     // 新着動画は配信日（公開日時）が新しい順に並べる
     newVideoBuffer.sort((a, b) => b.pubDate - a.pubDate);
     htmls.newVideo = newVideoBuffer.map(v => v.card).join('');
+
+    // 配信アーカイブは配信時刻（actualStartTime）が新しい順に並べる
+    newArchiveBuffer.sort((a, b) => b.sortTime - a.sortTime);
+    htmls.newArchive = newArchiveBuffer.map(v => v.card).join('');
 
     document.getElementById("liveSection").style.display = counts.live ? "block" : "none";
     document.getElementById("liveGrid").innerHTML = htmls.live;
