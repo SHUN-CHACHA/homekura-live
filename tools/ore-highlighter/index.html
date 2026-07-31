@@ -234,6 +234,38 @@
   }
   .dl-meta b { color: var(--text); }
 
+  .changelog { max-width: 720px; margin: 0 auto; }
+  .changelog-entry {
+    background: var(--stone-panel);
+    border: 1px solid var(--stone-line);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .changelog-entry.latest { border-color: var(--diamond); box-shadow: 0 0 0 1px var(--diamond) inset; }
+  .changelog-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .changelog-version {
+    font-family: "Press Start 2P", monospace;
+    font-size: 13px;
+    color: var(--diamond);
+  }
+  .changelog-badge {
+    font-size: 10px;
+    background: var(--diamond);
+    color: #0c2726;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .changelog-entry ul { margin: 0; padding-left: 20px; }
+  .changelog-entry li { font-size: 13px; color: var(--text-dim); margin: 4px 0; }
+  .changelog-entry li b { color: var(--text); }
+
   footer {
     padding: 40px 0 60px;
     text-align: center;
@@ -352,8 +384,8 @@
       素人が作ったので使いにくいところやご要望が有りましたら”優しく”教えて下さい。
     </p>
     <div class="btn-row">
-      <a class="btn btn-primary" href="https://github.com/SHUN-CHACHA/homekura-live/releases/download/v1.1.2/OreHighlighter_v1.1.2.zip" target="_blank" rel="noopener noreferrer">
-        ⛏ ダウンロード <span class="version-tag">v1.1.2 / Windows</span>
+      <a class="btn btn-primary" href="https://github.com/SHUN-CHACHA/homekura-live/releases/download/v1.2.0/OreHighlighter_v1.2.0.zip" target="_blank" rel="noopener noreferrer">
+        ⛏ ダウンロード <span class="version-tag">v1.2.0 / Windows</span>
       </a>
       <a class="btn btn-ghost" href="./使用マニュアル.html" target="_blank" rel="noopener noreferrer">使用マニュアルを見る</a>
     </div>
@@ -429,6 +461,61 @@
   </div>
 </section>
 
+<section class="alt" id="changelog">
+  <div class="wrap">
+    <h2>更新履歴</h2>
+    <p class="section-lead">バージョンごとの主な変更点です。</p>
+    <div class="changelog">
+
+      <div class="changelog-entry latest">
+        <div class="changelog-head">
+          <span class="changelog-version pixel">v1.2.0</span>
+          <span class="changelog-badge">最新</span>
+        </div>
+        <ul>
+          <li><b>アイテムテクスチャ編集タブを追加</b>：ツルハシ・トーテム・剣などのアイテムアイコンを、外部PNG画像への差し替えやレインボー・点滅アニメーションで加工できます</li>
+          <li>ドット絵エディタを追加：ゼロから描くことも、取り込んだ外部PNG画像をそのまま手直しすることもできます</li>
+          <li>外部PNG画像は「正方形・64×64px以下」のみ受け付け、輪郭のにじみは自動で補正（手持ち表示の崩れ対策）</li>
+          <li>「レインボー（斜めグラデーション）」エフェクトを追加（バニラのエンチャント光沢に近い見た目）</li>
+          <li>加工したアイテムは自分の画面でしか見えない旨を、全タブ共通のヘッダーで常時案内</li>
+        </ul>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-head">
+          <span class="changelog-version pixel">v1.1.2</span>
+        </div>
+        <ul>
+          <li>「レインボーのみ」エフェクトが正常に動作しない不具合を修正</li>
+        </ul>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-head">
+          <span class="changelog-version pixel">v1.1.0</span>
+        </div>
+        <ul>
+          <li>既存のOreHighlighterパックを開いて設定を引き継げる「プロジェクトを開く」機能を追加（ブロック・GUIアイコン両方）</li>
+          <li>「公式ランチャーから探す」「Prism Launcherから探す」のワンクリック自動検索ボタンを追加</li>
+          <li>パックアイコン（pack.png）を設定可能に</li>
+          <li>GUIアイコン編集に「保存する／元に戻す」、十字キーでの1ドット移動、編集中プレビューを追加</li>
+          <li>独自のアプリアイコンを追加</li>
+        </ul>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-head">
+          <span class="changelog-version pixel">v1.0.0</span>
+        </div>
+        <ul>
+          <li>初回リリース：ブロックへのレインボー／枠線／点滅エフェクト、体力・満腹度アイコンのドット絵編集</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <section id="download">
   <div class="wrap">
     <div class="dl-panel">
@@ -436,12 +523,12 @@
       <h2>今すぐ試す</h2>
       <p class="section-lead" style="margin-bottom:0;">exe版なのでPython環境は不要。ダウンロードしてダブルクリックで起動できます。</p>
       <div class="dl-meta">
-        <span>バージョン: <b>v1.1.2</b></span>
+        <span>バージョン: <b>v1.2.0</b></span>
         <span>対応OS: <b>Windows</b></span>
         <span>ライセンス: <b>MIT License</b></span>
       </div>
       <div class="btn-row">
-        <a class="btn btn-primary" href="https://github.com/SHUN-CHACHA/homekura-live/releases/download/v1.1.2/OreHighlighter_v1.1.2.zip" target="_blank" rel="noopener noreferrer">⛏ OreHighlighter_v1.1.2.zip をダウンロード</a>
+        <a class="btn btn-primary" href="https://github.com/SHUN-CHACHA/homekura-live/releases/download/v1.2.0/OreHighlighter_v1.2.0.zip" target="_blank" rel="noopener noreferrer">⛏ OreHighlighter_v1.2.0.zip をダウンロード</a>
         <a class="btn btn-ghost" href="./使用マニュアル.html" target="_blank" rel="noopener noreferrer">使用マニュアルを見る</a>
       </div>
     </div>
