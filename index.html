@@ -37,10 +37,25 @@
             filter: drop-shadow(0px 2px 6px rgba(0,0,0,0.15));
         }
 
-        .header-controls {
+        .top-buttons-wrapper {
             max-width: 1200px;
-            margin: 20px auto 0;
+            margin: 14px auto 0;
             padding: 0 16px;
+            display: flex;
+            align-items: stretch;
+            gap: 14px;
+            box-sizing: border-box;
+        }
+        .top-buttons-stack {
+            flex: 1 1 0;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -70,8 +85,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
+            width: 92px;
+            height: 92px;
+            align-self: center;
             border-radius: 50%;
             overflow: hidden;
             flex-shrink: 0;
@@ -100,9 +116,6 @@
         .orehighlighter-btn .oh-line2 { font-size: 10.5px; font-weight: normal; opacity: 0.75; }
 
         .external-links-container {
-            max-width: 1200px;
-            margin: 14px auto 0;
-            padding: 0 16px;
             display: flex;
             justify-content: center;
             gap: 10px;
@@ -163,6 +176,7 @@
             .site-link-btn { padding: 8px 6px; gap: 5px; height: 40px; }
             .site-link-btn .sl-icon { font-size: 15px; }
             .site-link-btn .sl-line1 { font-size: 11px; }
+            .yurugp-btn { width: 64px; height: 64px; }
         }
 
         .btn-tool {
@@ -493,47 +507,51 @@
     <img src="img/logo.png" alt="homeクラ" class="header-logo">
 </div>
 
-<div class="external-links-container">
-    <a href="https://sirokuru.net/homecra/" target="_blank" class="site-link-btn community-btn">
-        <span class="sl-icon">🏠</span>
-        <span class="sl-line1">しろくるさんのページ</span>
+<div class="top-buttons-wrapper">
+    <a href="https://www.yurugp.jp/characters/4345" class="yurugp-btn" target="_blank" title="ゆるキャラグランプリ2026">
+        <img src="img/sakaisander-yurugp-icon.png" alt="ゆるキャラグランプリ2026">
     </a>
-    <a href="https://anykura.live/t/homekura" target="_blank" class="site-link-btn stats-btn">
-        <span class="sl-icon">📊</span>
-        <span class="sl-line1">homeクラ LIVE!</span>
-    </a>
-    <a href="https://homecra.netlify.app/" target="_blank" class="site-link-btn maguro-btn">
-        <span class="sl-icon">🌐</span>
-        <span class="sl-line1">まぐにぃさんのページ</span>
-    </a>
-</div>
+    <div class="top-buttons-stack">
+        <div class="external-links-container">
+            <a href="https://sirokuru.net/homecra/" target="_blank" class="site-link-btn community-btn">
+                <span class="sl-icon">🏠</span>
+                <span class="sl-line1">しろくるさんのページ</span>
+            </a>
+            <a href="https://anykura.live/t/homekura" target="_blank" class="site-link-btn stats-btn">
+                <span class="sl-icon">📊</span>
+                <span class="sl-line1">homeクラ LIVE!</span>
+            </a>
+            <a href="https://homecra.netlify.app/" target="_blank" class="site-link-btn maguro-btn">
+                <span class="sl-icon">🌐</span>
+                <span class="sl-line1">まぐにぃさんのページ</span>
+            </a>
+        </div>
 
-<div class="header-controls">
-    <div class="controls-left">
-        <a href="https://www.yurugp.jp/characters/4345" class="yurugp-btn" target="_blank" title="ゆるキャラグランプリ2026">
-            <img src="img/sakaisander-yurugp-icon.png" alt="ゆるキャラグランプリ2026">
-        </a>
-        <a href="https://shun-chacha.github.io/homekura-live/roulette.html" class="roulette-btn" target="_blank">
-            <img src="img/roulette-icon.png" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
-            旬茶作 ルーレット
-        </a>
-        <a href="https://shun-chacha.github.io/homekura-live/tools/ore-highlighter/" class="orehighlighter-btn" target="_blank">
-            <span class="oh-line1">⛏ OreHighlighter</span>
-            <span class="oh-line2">・・・ゲーミングブロック作成アプリ</span>
-        </a>
-    </div>
-    <div class="controls-right">
-        <button class="btn-qr" onclick="openQrModal()" title="QRコードを表示">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/>
-                <rect x="19" y="14" width="2" height="2"/><rect x="14" y="19" width="2" height="2"/>
-                <rect x="18" y="19" width="3" height="2"/>
-            </svg>
-            QR
-        </button>
-        <button id="refresh-btn" class="btn-tool" onclick="manualRefresh()">更新</button>
-        <div id="timer">Next Update: --:--</div>
+        <div class="header-controls">
+            <div class="controls-left">
+                <a href="https://shun-chacha.github.io/homekura-live/roulette.html" class="roulette-btn" target="_blank">
+                    <img src="img/roulette-icon.png" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
+                    旬茶作 ルーレット
+                </a>
+                <a href="https://shun-chacha.github.io/homekura-live/tools/ore-highlighter/" class="orehighlighter-btn" target="_blank">
+                    <span class="oh-line1">⛏ OreHighlighter</span>
+                    <span class="oh-line2">・・・ゲーミングブロック作成アプリ</span>
+                </a>
+            </div>
+            <div class="controls-right">
+                <button class="btn-qr" onclick="openQrModal()" title="QRコードを表示">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/>
+                        <rect x="19" y="14" width="2" height="2"/><rect x="14" y="19" width="2" height="2"/>
+                        <rect x="18" y="19" width="3" height="2"/>
+                    </svg>
+                    QR
+                </button>
+                <button id="refresh-btn" class="btn-tool" onclick="manualRefresh()">更新</button>
+                <div id="timer">Next Update: --:--</div>
+            </div>
+        </div>
     </div>
 </div>
 
