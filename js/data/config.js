@@ -295,7 +295,7 @@ window.CONFIG = {
                 "twitchId": "",
                 "tiktokId": "",
                 "instaId": "",
-                "discordUrl": "discord.gg/ZwZ8nrecY",
+                "discordUrl": "https://discord.gg/ytX3Pf8me2",
                 "homepageUrl": "https://frontier.creatia.cc/fanclubs/4124",
                 "color": "#afebf3",
                 "avatarImg": "avatars/Kunashiki_Lin.svg",
