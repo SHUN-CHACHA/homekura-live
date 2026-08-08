@@ -407,8 +407,8 @@
       素人が作ったので使いにくいところやご要望が有りましたら”優しく”教えて下さい。
     </p>
     <div class="btn-row">
-      <a class="btn btn-primary" href="https://github.com/SHUN-CHACHA/homekura-live/releases/download/v2.0.2/OreHighlighter_v2.0.2.zip" target="_blank" rel="noopener noreferrer">
-        ⛏ ダウンロード <span class="version-tag">v2.0.2 / Windows</span>
+      <a class="btn btn-primary" href="https://github.com/SHUN-CHACHA/homekura-live/releases/download/v2.1.0/OreHighlighter_v2.1.0.zip" target="_blank" rel="noopener noreferrer">
+        ⛏ ダウンロード <span class="version-tag">v2.1.0 / Windows</span>
       </a>
       <a class="btn btn-ghost" href="./使用マニュアル.html" target="_blank" rel="noopener noreferrer">使用マニュアルを見る</a>
     </div>
@@ -429,8 +429,8 @@
       </div>
       <div class="feature-card">
         <span class="chip c-gold"></span>
-        <h3>4種類のエフェクト</h3>
-        <p>レインボー＋枠線／レインボーのみ／枠線のみ／点滅。太さ・彩度・明るさ・速さまで細かく調整できます。</p>
+        <h3>6種類のエフェクト</h3>
+        <p>レインボー＋枠線／レインボー／レインボー（斜めグラデ）／枠線／枠線（レインボー）／点滅。v2.1.0からはアイテムテクスチャでも全種類使えます。太さ・彩度・明るさ・速さまで細かく調整できます。</p>
       </div>
       <div class="feature-card">
         <span class="chip c-emerald"></span>
@@ -452,9 +452,20 @@
     <p class="section-lead">対象ブロックの登録からリソースパック生成まで、すべて1つの画面で完結します。</p>
     <div class="shots">
       <div class="shot-row">
-        <img src="img/screenshot_block.png" alt="ブロックエフェクトタブの画面">
+        <img src="img/screenshot_source.png" alt="読み込みタブの画面">
         <div class="shot-text">
           <span class="tag pixel">TAB 01</span>
+          <h3>読み込み</h3>
+          <p>
+            jarファイル・フォルダ・既存プロジェクト・既存パックのGUIアイコンなど、これまで各タブに散らばっていた
+            読み込み操作をここに集約。作業はまずこのタブから始めます。
+          </p>
+        </div>
+      </div>
+      <div class="shot-row reverse">
+        <img src="img/screenshot_block.png" alt="ブロックエフェクトタブの画面">
+        <div class="shot-text">
+          <span class="tag pixel">TAB 02</span>
           <h3>ブロックエフェクト</h3>
           <p>
             テクスチャ一覧から対象ブロックを選んで登録し、ブロックごとにエフェクトとパラメータを設定。
@@ -462,10 +473,10 @@
           </p>
         </div>
       </div>
-      <div class="shot-row reverse">
+      <div class="shot-row">
         <img src="img/screenshot_icon.png" alt="GUIアイコン編集タブの画面">
         <div class="shot-text">
-          <span class="tag pixel">TAB 02</span>
+          <span class="tag pixel">TAB 03</span>
           <h3>GUIアイコン編集</h3>
           <p>
             体力・満腹度アイコンをドット絵エディタで編集。「保存する」を押すまでは下書き扱いになるので、
@@ -476,7 +487,7 @@
     </div>
 
     <div class="demo-inline">
-      <img src="img/demo_rainbow.gif" alt="レインボー+枠線エフェクトの実際の動作例">
+      <img src="img/demo_rainbow.gif" alt="レインボー＋枠線エフェクトの実際の動作例">
       <p>
         実際に生成される「レインボー＋枠線」エフェクトの動作例。この見た目のまま、Minecraft内のブロックに反映されます。
       </p>
@@ -492,8 +503,25 @@
 
       <div class="changelog-entry latest">
         <div class="changelog-head">
-          <span class="changelog-version pixel">v2.0.2</span>
+          <span class="changelog-version pixel">v2.1.0</span>
           <span class="changelog-badge">最新</span>
+        </div>
+        <ul>
+          <li><b>「読み込み」タブを新設</b>：jar・フォルダ・ランチャーの自動検出、既存プロジェクト、既存パックのGUIアイコンなど、各タブに散らばっていた読み込み操作を1つのタブに集約しました</li>
+          <li><b>エフェクトの名前を整理</b>：「レインボー + 枠線」→「レインボー＋枠線」など、短く分かりやすい表記に統一。過去に保存した設定・配布済みのパックはそのまま読み込めます</li>
+          <li><b>アイテムテクスチャでも、ブロックと同じ6種類のエフェクトが使えるように</b>：「レインボー＋枠線」「枠線」「枠線（レインボー）」を追加しました</li>
+          <li>アイテムの「レインボー（斜めグラデ）」で帯の本数・透過度の設定が効かなかった不具合を修正</li>
+          <li>ブロックエフェクトタブのテクスチャ一覧をウィンドウの高さいっぱいまで表示するように変更</li>
+          <li>アイテムテクスチャ編集タブのアニメーションプレビューを中央の列に移動し、設定を変えながら結果を確認しやすくしました</li>
+          <li>アイテムの外部PNG画像に関する注意事項を、プレビュー横の「⚠ 注意事項」ボタンにまとめ、マウスオーバー時のみ表示するように変更</li>
+          <li>GUIアイコン編集タブの「外部PNGをインポート...」をキャンバスと同じ列の最下部に移動</li>
+          <li>GUIアイコンのバックアップ書き出しが、保存に失敗しても前回のzipを壊さない安全な方式になりました</li>
+        </ul>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-head">
+          <span class="changelog-version pixel">v2.0.2</span>
         </div>
         <ul>
           <li>「既存のプロジェクトを開く」で読み込んだ場所を、次回「リソースパックを生成」時の出力先・パック名として自動的に引き継ぐように変更</li>
@@ -628,12 +656,12 @@
       <h2>今すぐ試す</h2>
       <p class="section-lead" style="margin-bottom:0;">exe版なのでPython環境は不要。ダウンロードしてダブルクリックで起動できます。</p>
       <div class="dl-meta">
-        <span>バージョン: <b>v2.0.2</b></span>
+        <span>バージョン: <b>v2.1.0</b></span>
         <span>対応OS: <b>Windows</b></span>
         <span>ライセンス: <b>MIT License</b></span>
       </div>
       <div class="btn-row">
-        <a class="btn btn-primary" href="https://github.com/SHUN-CHACHA/homekura-live/releases/download/v2.0.2/OreHighlighter_v2.0.2.zip" target="_blank" rel="noopener noreferrer">⛏ OreHighlighter_v2.0.2.zip をダウンロード</a>
+        <a class="btn btn-primary" href="https://github.com/SHUN-CHACHA/homekura-live/releases/download/v2.1.0/OreHighlighter_v2.1.0.zip" target="_blank" rel="noopener noreferrer">⛏ OreHighlighter_v2.1.0.zip をダウンロード</a>
         <a class="btn btn-ghost" href="./使用マニュアル.html" target="_blank" rel="noopener noreferrer">使用マニュアルを見る</a>
       </div>
     </div>
