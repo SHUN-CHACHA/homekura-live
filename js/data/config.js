@@ -57,8 +57,6 @@ window.CONFIG = {
         },
         {
                 "name": "Ｍさん",
-                "order": 103,
-                "group": "　",
                 "id": "UCGK0iFuXhfA5VnL64xiKEmQ",
                 "minecraftId": "MrMsan",
                 "uuid": "fe91adf4-7131-4da5-bcbf-b4a675d4ceef",
@@ -67,8 +65,11 @@ window.CONFIG = {
                 "tiktokId": "msan_official",
                 "instaId": "",
                 "discordUrl": "",
+                "homepageUrl": "",
                 "color": "#00ffff",
-                "avatarImg": "avatars/MrMsan.svg"
+                "avatarImg": "avatars/MrMsan.svg",
+                "id2": "UCGmr1TOXPviYKW84X_r11OQ",
+                "order": 103
         },
         {
                 "name": "タツナミ先生",
