@@ -80,12 +80,15 @@
         .clickable-name:hover { color: #143311; background: var(--accent-green-tint); }
 
         .mc-head-box {
-            width: 28px; height: 28px; border-radius: 4px; overflow: hidden;
+            width: 32px; height: 32px; border-radius: 4px; overflow: hidden;
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1); background: #ffffff;
             border: 1px solid var(--border-color); margin: 0 auto;
         }
         .mc-head-img { width: 100%; height: 100%; object-fit: contain; transform: scale(1.1); }
+
+        /* 👥 メンバー一覧テーブル内の顔アイコンだけ大きく表示する（フォームのプレビューは28pxのまま） */
+        #memberTableBody .mc-head-box { width: 64px; height: 64px; border-radius: 6px; }
         .coming-soon-lbl {
             width: 100%; height: 100%; background: #94a3b8; color: #ffffff;
             font-size: 7px; font-weight: bold; text-align: center; line-height: 1.1;
