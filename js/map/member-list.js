@@ -54,8 +54,8 @@
                         <img src="${avatarSrc}" alt="${altName}" onerror="avatarFallback(this)" />
                     </div>
                 `,
-                iconSize: [36, 36],
-                iconAnchor: [18, 18]
+                iconSize: [32, 32],
+                iconAnchor: [16, 16]
             });
         }
 
@@ -69,12 +69,12 @@
             `;
         }).join('');
 
-        const groupWidth = people.length * 30 + (people.length - 1) * 3; // アイコン幅30px + 間隔3px
+        const groupWidth = people.length * 32 + (people.length - 1) * 3; // アイコン幅32px + 間隔3px
         return L.divIcon({
             className: 'custom-div-icon',
             html: `<div class="avatar-marker-group">${iconsHtml}</div>`,
-            iconSize: [groupWidth, 30],
-            iconAnchor: [groupWidth / 2, 15]
+            iconSize: [groupWidth, 32],
+            iconAnchor: [groupWidth / 2, 16]
         });
     }
 
