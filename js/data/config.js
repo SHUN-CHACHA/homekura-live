@@ -390,7 +390,7 @@ window.CONFIG = {
                 "tiktokId": "uga_youtube",
                 "instaId": "",
                 "discordUrl": "https://discord.com/invite/huseFHRdSt",
-                "homepageUrl": "lit.link/uga_totemuman",
+                "homepageUrl": "https://lit.link/uga_totemuman",
                 "color": "#e8c99c",
                 "avatarImg": "avatars/uga_youtube.svg",
                 "order": 121
