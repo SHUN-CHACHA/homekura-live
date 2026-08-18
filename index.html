@@ -291,9 +291,23 @@
             .btn { font-size: 11px; padding: 6px 0; }
 
             .list-container { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-            .row-item { padding: 10px 14px; gap: 6px; }
-            .mc-head-box { width: 64px; height: 64px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-            .row-name { font-size: 14px; min-height: 2em; line-height: 1em; }
+            /* タブレット以上：顔アイコンを左に大きく配置し、右側を「名前(1行目)／SNSアイコン(2行目)」の2段組みにする。
+               HTML構造(.row-top=アイコン+名前、.row-bottom=SNSボタン)は変えず、
+               display:contents で箱だけ消してgridに直接配置する。 */
+            .row-item {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                grid-template-rows: auto auto;
+                align-items: center;
+                column-gap: 12px;
+                row-gap: 4px;
+                padding: 10px 14px;
+            }
+            .row-top { display: contents; }
+            .row-bottom { display: contents; }
+            .mc-head-box { grid-column: 1; grid-row: 1 / 3; width: 64px; height: 64px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+            .row-name { grid-column: 2; grid-row: 1; font-size: 14px; min-height: 2em; line-height: 1em; }
+            .row-btns { grid-column: 2; grid-row: 2; }
             .btn-square-mini { width: 30px; height: 30px; border-radius: 50%; }
             .btn-square-mini svg { width: 14px; height: 14px; }
         }
