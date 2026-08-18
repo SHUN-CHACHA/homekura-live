@@ -28,7 +28,7 @@ function deriveIconFromChannel(ch) {
     if (!ch) return "";
     if (ch.avatarImg) return ch.avatarImg.replace(/^avatars\//, '');
     const pureMcId = cleanMcId(ch.minecraftId);
-    return pureMcId ? `${pureMcId}.svg` : "";
+    return pureMcId ? `${pureMcId}.png` : "";
 }
 
 function fillPersonFromChannel(slot, idxStr) {

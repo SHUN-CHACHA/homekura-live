@@ -851,9 +851,9 @@ function renderGrids(chInfoMap, vItems) {
         let imgPath = "";
         if (rawAvatar !== "") {
             const withoutExt = rawAvatar.replace(/\.(png|jpg|jpeg|gif|svg)$/i, "");
-            imgPath = withoutExt.includes("/") ? `${withoutExt}.svg` : `avatars/${withoutExt}.svg`;
+            imgPath = withoutExt.includes("/") ? `${withoutExt}.png` : `avatars/${withoutExt}.png`;
         } else if (rawMcId !== "") {
-            imgPath = `avatars/${rawMcId}.svg`;
+            imgPath = `avatars/${rawMcId}.png`;
         }
 
         const resolvedImg = imgPath !== "" ? imgPath : "avatars/fallback.svg";

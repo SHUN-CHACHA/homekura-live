@@ -1,7 +1,10 @@
 window.CONFIG = {
-    // ⚠️ APIキーはここに書きません（Cloudflare Worker側のSecretで管理）
+    // ⚠️ APIキーはもうここに書きません。ブラウザから見えてしまうためです。
+    // 本物のAPIキーは Cloudflare Worker（プロキシ）側の環境変数(Secret)に設定してください。
+    // このプロパティは古い管理画面との互換性のためだけに残っています。空のままでOKです。
     YOUTUBE_API_KEY: "",
-    // YouTube APIプロキシ（Cloudflare Worker）のURL
+    // YouTube APIプロキシ（Cloudflare Worker）のURL。末尾に / は付けない。
+    // 例: "https://homekura-yt-proxy.your-subdomain.workers.dev"
     YOUTUBE_PROXY_URL: "https://homekura-yt-proxy.eisyun.workers.dev",
     // キャッシュ有効期間（ミリ秒）。デフォルト5分。
     CACHE_DURATION_MS: 300000,
@@ -22,7 +25,7 @@ window.CONFIG = {
                 "discordUrl": "https://discord.gg/bRuT74X7sS",
                 "homepageUrl": "https://maguro29info.netlify.app/",
                 "color": "#2bff00",
-                "avatarImg": "avatars/maguro29.svg"
+                "avatarImg": "avatars/maguro29.png"
         },
         {
                 "name": "じゃじゃーん菊池",
@@ -38,7 +41,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "https://lit.link/jajakiku",
                 "color": "#ffa200",
-                "avatarImg": "avatars/jajaankikuchi.svg"
+                "avatarImg": "avatars/jajaankikuchi.png"
         },
         {
                 "name": "さかいさんだー",
@@ -52,11 +55,13 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "https://lit.link/sakaithunder",
                 "color": "#11e4d6",
-                "avatarImg": "avatars/Sakai_Thunder.svg",
+                "avatarImg": "avatars/Sakai_Thunder.png",
                 "order": 116
         },
         {
                 "name": "Ｍさん",
+                "order": 103,
+                "group": "　",
                 "id": "UCGK0iFuXhfA5VnL64xiKEmQ",
                 "minecraftId": "MrMsan",
                 "uuid": "fe91adf4-7131-4da5-bcbf-b4a675d4ceef",
@@ -65,11 +70,8 @@ window.CONFIG = {
                 "tiktokId": "msan_official",
                 "instaId": "",
                 "discordUrl": "",
-                "homepageUrl": "",
                 "color": "#00ffff",
-                "avatarImg": "avatars/MrMsan.svg",
-                "id2": "UCGmr1TOXPviYKW84X_r11OQ",
-                "order": 103
+                "avatarImg": "avatars/MrMsan.png"
         },
         {
                 "name": "タツナミ先生",
@@ -85,7 +87,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "",
                 "color": "#080808",
-                "avatarImg": "avatars/shyutan.svg"
+                "avatarImg": "avatars/shyutan.png"
         },
         {
                 "name": "神近",
@@ -100,7 +102,7 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#f59324",
-                "avatarImg": "avatars/kamichika.svg"
+                "avatarImg": "avatars/kamichika.png"
         },
         {
                 "name": "しろくる",
@@ -115,7 +117,7 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#ffffff",
-                "avatarImg": "avatars/sirokuru.svg"
+                "avatarImg": "avatars/sirokuru.png"
         },
         {
                 "name": "たにしらいす",
@@ -129,7 +131,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "",
                 "color": "#00ff7b",
-                "avatarImg": "avatars/Tanish1.svg",
+                "avatarImg": "avatars/Tanish1.png",
                 "order": 113
         },
         {
@@ -145,7 +147,7 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#888888",
-                "avatarImg": "avatars/totsumori.svg"
+                "avatarImg": "avatars/totsumori.png"
         },
         {
                 "name": "神宮寺ちゃんねる",
@@ -160,7 +162,7 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#00bfff",
-                "avatarImg": "avatars/jingujich.svg"
+                "avatarImg": "avatars/jingujich.png"
         },
         {
                 "name": "カズクラ",
@@ -175,7 +177,7 @@ window.CONFIG = {
                 "instaId": "kazuch0924",
                 "discordUrl": "",
                 "color": "#ff0000",
-                "avatarImg": "avatars/kazuchannel.svg"
+                "avatarImg": "avatars/kazuchannel.png"
         },
         {
                 "name": "たいたい",
@@ -190,7 +192,7 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#ffdd00",
-                "avatarImg": "avatars/taitai0904.svg"
+                "avatarImg": "avatars/taitai0904.png"
         },
         {
                 "name": "岐阜のこみちん",
@@ -206,7 +208,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "https://www.komichin.com/",
                 "color": "#ff1100",
-                "avatarImg": "avatars/komichin.svg"
+                "avatarImg": "avatars/komichin.png"
         },
         {
                 "name": "ナナホシナナ",
@@ -222,7 +224,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "https://lit.link/nanahoshinana77",
                 "color": "#ff333d",
-                "avatarImg": "avatars/nanahoshiNanaVT.svg"
+                "avatarImg": "avatars/nanahoshiNanaVT.png"
         },
         {
                 "name": "月成るくす",
@@ -238,7 +240,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "https://tsukinarilux.wixsite.com/tsukinarilux",
                 "color": "#bcec55",
-                "avatarImg": "avatars/tsukinarilux.svg"
+                "avatarImg": "avatars/tsukinarilux.png"
         },
         {
                 "name": "メッス",
@@ -253,23 +255,22 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#ffffff",
-                "avatarImg": "avatars/messu009.svg"
+                "avatarImg": "avatars/messu009.png"
         },
         {
                 "name": "よいよい",
+                "order": 22,
+                "group": "うえまさ家",
                 "id": "UCzk-vAIbo3iVBGTNaJQS2qQ",
                 "minecraftId": "yoiy0i",
                 "uuid": "273c51d0-3e15-4445-8db9-1f4606e68dfe",
                 "twitterId": "yoiy0i",
                 "twitchId": "",
                 "tiktokId": "",
-                "instaId": "yoiy0i",
+                "instaId": "",
                 "discordUrl": "",
-                "homepageUrl": "",
                 "color": "#ff0000",
-                "avatarImg": "avatars/yoiy0i.svg",
-                "order": 22,
-                "group": "うえまさ家"
+                "avatarImg": "avatars/yoiy0i.png"
         },
         {
                 "name": "うえまさ",
@@ -285,10 +286,12 @@ window.CONFIG = {
                 "discordUrl": "https://discord.com/invite/kprgJGmSJ9",
                 "homepageUrl": "",
                 "color": "#0008ff",
-                "avatarImg": "avatars/uema5a.svg"
+                "avatarImg": "avatars/uema5a.png"
         },
         {
                 "name": "久那式リン",
+                "order": 107,
+                "group": "　",
                 "id": "UCPs7s2VlkwVWWpjcyjviINA",
                 "minecraftId": "Kunashiki_Lin",
                 "uuid": "445a1617-cc6f-49b0-be6d-a102c5dcdf33",
@@ -296,12 +299,10 @@ window.CONFIG = {
                 "twitchId": "",
                 "tiktokId": "",
                 "instaId": "",
-                "discordUrl": "https://discord.gg/ytX3Pf8me2",
+                "discordUrl": "discord.gg/ZwZ8nrecY",
                 "homepageUrl": "https://frontier.creatia.cc/fanclubs/4124",
                 "color": "#afebf3",
-                "avatarImg": "avatars/Kunashiki_Lin.svg",
-                "id2": "UCmwn2_26ldUw0AHg1JGau3w",
-                "order": 107
+                "avatarImg": "avatars/Kunashiki_Lin.png"
         },
         {
                 "name": "珍珠花こまり",
@@ -317,7 +318,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "https://lethalplan.booth.pm/",
                 "color": "#ffe5e5",
-                "avatarImg": "avatars/yukiyanagiKOMARI.svg"
+                "avatarImg": "avatars/yukiyanagiKOMARI.png"
         },
         {
                 "name": "ぽこにゃん",
@@ -332,7 +333,7 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "color": "#00ff00",
-                "avatarImg": "avatars/pokonyan_0603.svg"
+                "avatarImg": "avatars/pokonyan_0603.png"
         },
         {
                 "name": "KtR（こーたろー）",
@@ -346,7 +347,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "https://lit.link/haochktr",
                 "color": "#ff3333",
-                "avatarImg": "avatars/HAOgame_KtR.svg"
+                "avatarImg": "avatars/HAOgame_KtR.png"
         },
         {
                 "name": "ゆりも",
@@ -362,7 +363,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "",
                 "color": "#cbeccd",
-                "avatarImg": "avatars/yurimosaaan.svg"
+                "avatarImg": "avatars/yurimosaaan.png"
         },
         {
                 "name": "むっこさん",
@@ -378,7 +379,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "",
                 "color": "#eec8d6",
-                "avatarImg": "avatars/mukkoman.svg"
+                "avatarImg": "avatars/mukkoman.png"
         },
         {
                 "name": "うが",
@@ -390,9 +391,9 @@ window.CONFIG = {
                 "tiktokId": "uga_youtube",
                 "instaId": "",
                 "discordUrl": "https://discord.com/invite/huseFHRdSt",
-                "homepageUrl": "https://lit.link/uga_totemuman",
+                "homepageUrl": "lit.link/uga_totemuman",
                 "color": "#e8c99c",
-                "avatarImg": "avatars/uga_youtube.svg",
+                "avatarImg": "avatars/uga_youtube.png",
                 "order": 121
         },
         {
@@ -409,7 +410,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "",
                 "color": "#ffffff",
-                "avatarImg": "avatars/turu0004.svg"
+                "avatarImg": "avatars/turu0004.png"
         },
         {
                 "name": "LeftLily / レフトリリー",
@@ -425,7 +426,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "",
                 "color": "#2bff00",
-                "avatarImg": "avatars/LeftLily0427.svg"
+                "avatarImg": "avatars/LeftLily0427.png"
         },
         {
                 "name": "久遠星那 / Kuon Seina",
@@ -441,7 +442,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "https://marshmallow-qa.com/aqthmqecmscaggr?t=fbfYpm&utm_medium=url_text&utm_source=promotion",
                 "color": "#a600ff",
-                "avatarImg": "avatars/kuon_irix.svg"
+                "avatarImg": "avatars/kuon_irix.png"
         },
         {
                 "name": "早乙女燈真 / Saotome Touma",
@@ -457,7 +458,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "",
                 "color": "#f8b9f6",
-                "avatarImg": "avatars/saotomeirix.svg"
+                "avatarImg": "avatars/saotomeirix.png"
         },
         {
                 "name": "黎乃鈴 -Kurono Suzu-",
@@ -471,7 +472,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "",
                 "color": "#df96e8",
-                "avatarImg": "avatars/kuronosuzu.svg",
+                "avatarImg": "avatars/kuronosuzu.png",
                 "order": 123
         },
         {
@@ -488,7 +489,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "",
                 "color": "#ff9900",
-                "avatarImg": "avatars/ftb28.svg"
+                "avatarImg": "avatars/ftb28.png"
         },
         {
                 "name": "UDON",
@@ -504,7 +505,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "",
                 "color": "#ffea00",
-                "avatarImg": "avatars/UDON130.svg"
+                "avatarImg": "avatars/UDON130.png"
         },
         {
                 "name": "よし",
@@ -520,7 +521,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "",
                 "color": "#ff9900",
-                "avatarImg": "avatars/yoshi_38_.svg"
+                "avatarImg": "avatars/yoshi_38_.png"
         },
         {
                 "name": "瑞木ゆき / Mizuki Yuki",
@@ -536,7 +537,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "",
                 "color": "#ffffff",
-                "avatarImg": "avatars/MizukiYuki22.svg"
+                "avatarImg": "avatars/MizukiYuki22.png"
         }
 ]
 };

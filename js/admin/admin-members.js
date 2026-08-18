@@ -153,17 +153,22 @@ function updateAvatarPreview(mcId, uuid) {
         box.innerHTML = `<img class="mc-head-img" src="${imgUrl}"
             onerror="this.onerror=null; this.src='avatars/fallback.svg';">`;
         btn.disabled  = false;
-        btn.innerText = `画像を ${mcId}.svg でPCに保存`;
+        btn.innerText = `画像を ${mcId}.png でPCに保存`;
         note.style.display = "block";
     } else {
         box.innerHTML = `<div class="coming-soon-lbl">CS</div>`;
         btn.disabled  = true;
-        btn.innerText = "画像を [マイクラID].svg でPCに保存";
+        btn.innerText = "画像を [マイクラID].png でPCに保存";
         note.style.display = "none";
     }
 }
 
-// ─── SVGダウンロード ────────────────────────────────────
+// ─── PNGダウンロード ────────────────────────────────────
+// ※ 以前はBase64エンコードしてSVGラッパーに格納して保存していたが、
+//   表示先（マップ・一覧）は元々CSS側で背景色/角丸を付けており、SVGの背景矩形は使われていなかった。
+//   また、SVG内で36pxに一度縮小 → 表示先でさらに縮小、という二重縮小になっており、
+//   小さいマーカー表示（拠点マップの複数人アイコンなど）で表示崩れが起きたため、
+//   PNGをそのまま保存する方式に変更した（2026-08-18）。
 async function downloadMinecraftAvatar() {
     const mcId = cleanMcId(document.getElementById('m_mc').value);
     if (!mcId || !currentUUID) { alert("UUID取得が完了してからダウンロードしてください。"); return; }
@@ -179,17 +184,9 @@ async function downloadMinecraftAvatar() {
         if (!response.ok) throw new Error("Mineatar画像の取得に失敗しました");
 
         const blob = await response.blob();
-        const base64data = await blobToBase64(blob);
-
-        const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
-  <rect width="40" height="40" fill="var(--accent-green-tint)" rx="4"/>
-  <image href="${base64data}" x="2" y="2" width="36" height="36" style="image-rendering: pixelated;"/>
-</svg>`;
-
-        const blobSvg = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
-        const blobUrl = URL.createObjectURL(blobSvg);
+        const blobUrl = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = blobUrl; a.download = `${mcId}.svg`;
+        a.href = blobUrl; a.download = `${mcId}.png`;
         document.body.appendChild(a); a.click();
         document.body.removeChild(a); URL.revokeObjectURL(blobUrl);
 
@@ -200,15 +197,6 @@ async function downloadMinecraftAvatar() {
         btn.disabled = false;
         btn.innerText = orig;
     }
-}
-
-function blobToBase64(blob) {
-    return new Promise((resolve, reject) => {
-        const r = new FileReader();
-        r.onloadend = () => resolve(r.result);
-        r.onerror   = reject;
-        r.readAsDataURL(blob);
-    });
 }
 
 // ─── ユーティリティ ────────────────────────────────────
@@ -255,7 +243,7 @@ function renderMemberList() {
 
         const avatarPath = ch.avatarImg && ch.avatarImg.trim()
             ? ch.avatarImg.trim()
-            : (pureMcId ? `avatars/${pureMcId}.svg` : "avatars/fallback.svg");
+            : (pureMcId ? `avatars/${pureMcId}.png` : "avatars/fallback.svg");
 
         const mcHeadHtml = `<div class="mc-head-box" style="border-color:${ch.color||'var(--border-color)'}">
             <img class="mc-head-img" src="${avatarPath}" alt="${ch.name||''}"
@@ -395,7 +383,7 @@ function addMember() {
     if (!color.match(/^#[0-9a-fA-F]{6}$/)) { alert("カラーコードは #ffffff のような形式で入力してください！"); return; }
 
     const pureMcId = cleanMcId(minecraftId);
-    const memberData = { name, id, minecraftId, uuid: currentUUID, twitterId, twitchId, tiktokId, instaId, discordUrl, homepageUrl, color, avatarImg: pureMcId ? `avatars/${pureMcId}.svg` : "" };
+    const memberData = { name, id, minecraftId, uuid: currentUUID, twitterId, twitchId, tiktokId, instaId, discordUrl, homepageUrl, color, avatarImg: pureMcId ? `avatars/${pureMcId}.png` : "" };
 
     // サブチャンネルは入力した時だけ保存する（配信中・予約・新着の判定にも反映される）
     if (id2 !== "") {
@@ -439,7 +427,7 @@ function deleteMember(idx) {
 function updateConfigOutput() {
     const formatted = channels.map(ch => {
         const pureMcId = cleanMcId(ch.minecraftId);
-        return { ...ch, avatarImg: pureMcId ? `avatars/${pureMcId}.svg` : "" };
+        return { ...ch, avatarImg: pureMcId ? `avatars/${pureMcId}.png` : "" };
     });
     const cfg      = (typeof CONFIG !== 'undefined') ? CONFIG : (window.CONFIG || {});
     // APIキーはもうconfig.jsに書かない運用。既存値があっても引き継がない（Worker側のSecretで管理）。

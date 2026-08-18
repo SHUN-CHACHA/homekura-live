@@ -350,7 +350,7 @@
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">動画情報（chInfoMap・vItems）を <code>portal_cache</code> キーで localStorage に保存。5分以内の再ロードは API を叩かずキャッシュを使用。API エラー時も古いキャッシュでフォールバック表示する。有効期間は js/config.js の <code>CACHE_DURATION_MS</code> で変更可能（デフォルト 5 分）。</div>
+            <div class="feat-desc">動画情報（chInfoMap・vItems）を <code>portal_cache</code> キーで localStorage に保存。5分以内の再ロードは API を叩かずキャッシュを使用。API エラー時も古いキャッシュでフォールバック表示する。有効期間は js/data/config.js の <code>CACHE_DURATION_MS</code> で変更可能（デフォルト 5 分）。</div>
             <div class="feat-tags"><span class="tag cache">キャッシュ</span><span class="tag local">localStorage</span><span class="tag api">YouTube API</span></div>
         </div>
 
@@ -362,7 +362,7 @@
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">channels API で取得したアイコン URL を <code>channel_icon_cache</code> に保存。24時間以内は channels API を呼ばない。有効期間は js/config.js の <code>CHANNEL_ICON_CACHE_DURATION_MS</code> で変更可能。</div>
+            <div class="feat-desc">channels API で取得したアイコン URL を <code>channel_icon_cache</code> に保存。24時間以内は channels API を呼ばない。有効期間は js/data/config.js の <code>CHANNEL_ICON_CACHE_DURATION_MS</code> で変更可能。</div>
             <div class="feat-tags"><span class="tag cache">キャッシュ</span><span class="tag local">localStorage</span><span class="tag api">YouTube API</span></div>
         </div>
 
@@ -515,23 +515,23 @@
             <div class="feat-card-top">
                 <div class="feat-icon orange">⬇️</div>
                 <div>
-                    <div class="feat-name">アバター SVG ダウンロード</div>
+                    <div class="feat-name">アバター PNG ダウンロード</div>
                     <span class="feat-file admin">admin</span>
                 </div>
             </div>
-            <div class="feat-desc">「画像を [マイクラID].svg で保存」ボタンでMineatar画像をBase64エンコードしてSVGラッパーに格納し、ローカルに保存。ファイル名は自動で「{minecraftId}.svg」になる。</div>
-            <div class="feat-tags"><span class="tag mc">SVG</span><span class="tag ui">ダウンロード</span></div>
+            <div class="feat-desc">「画像を [マイクラID].png で保存」ボタンでMineatar画像をそのままローカルに保存。ファイル名は自動で「{minecraftId}.png」になる。（旧仕様ではBase64エンコードしてSVGラッパーに格納していたが、二重の縮小処理でマップ上の表示が崩れる場合があったため2026-08-18にPNG直接保存に変更）</div>
+            <div class="feat-tags"><span class="tag mc">PNG</span><span class="tag ui">ダウンロード</span></div>
         </div>
 
         <div class="feat-card">
             <div class="feat-card-top">
                 <div class="feat-icon blue">📋</div>
                 <div>
-                    <div class="feat-name">js/config.js 出力・コピー（window.CONFIG 形式）</div>
+                    <div class="feat-name">js/data/config.js 出力・コピー（window.CONFIG 形式）</div>
                     <span class="feat-file admin">admin</span>
                 </div>
             </div>
-            <div class="feat-desc">メンバー追加・編集するたびに <code>window.CONFIG = {...}</code> 形式のコードを自動生成。APIキー・キャッシュ設定値（CACHE_DURATION_MS・CHANNEL_ICON_CACHE_DURATION_MS）・homepageUrl も含めて出力。「コピー」でクリップボードにコピーしてローカルの js/config.js に貼り付けて使う。</div>
+            <div class="feat-desc">メンバー追加・編集するたびに <code>window.CONFIG = {...}</code> 形式のコードを自動生成。APIキー・キャッシュ設定値（CACHE_DURATION_MS・CHANNEL_ICON_CACHE_DURATION_MS）・homepageUrl も含めて出力。「コピー」でクリップボードにコピーしてローカルの js/data/config.js に貼り付けて使う。</div>
             <div class="feat-tags"><span class="tag ui">コピー</span></div>
         </div>
 
@@ -571,11 +571,11 @@
             <div class="feat-card-top">
                 <div class="feat-icon green">🔗</div>
                 <div>
-                    <div class="feat-name">js/config.js 共有データ</div>
+                    <div class="feat-name">js/data/config.js 共有データ</div>
                     <span class="feat-file both">index / admin</span>
                 </div>
             </div>
-            <div class="feat-desc">APIキー・キャッシュ設定・デフォルトメンバー定義を <code>window.CONFIG</code> として js/config.js に集約。index・admin どちらもこのファイルを読み込み、localStorage の上書きデータがあればそちらを優先使用する。</div>
+            <div class="feat-desc">APIキー・キャッシュ設定・デフォルトメンバー定義を <code>window.CONFIG</code> として js/data/config.js に集約。index・admin どちらもこのファイルを読み込み、localStorage の上書きデータがあればそちらを優先使用する。</div>
             <div class="feat-tags"><span class="tag local">localStorage</span></div>
         </div>
 
