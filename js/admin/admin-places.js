@@ -92,7 +92,7 @@ function renderPlaceList() {
                 <td><strong class="clickable-name" onclick="editPlace(${idx})" title="クリックして編集">${p.name || '(名称未設定)'}</strong></td>
                 <td>
                     <div style="display:flex; align-items:center; gap:6px;">
-                        <div class="mc-head-box" style="width:24px; height:24px;">
+                        <div class="mc-head-box">
                             <img class="mc-head-img" src="${avatarPath}" alt="${p.name || ''}" onerror="this.onerror=null; this.src='avatars/fallback.svg';">
                         </div>
                         <span style="font-size:12px; color:#5c6b5a;">${p.icon || '—'}</span>

@@ -96,7 +96,7 @@ function renderLocList() {
         if (!name && !icon) return `<span style="color:#94a3b8; font-size:11px;">—</span>`;
         const avatarPath = icon ? `avatars/${icon}` : "avatars/fallback.svg";
         return `<div style="display:flex; align-items:center; gap:6px;">
-            <div class="mc-head-box" style="width:24px; height:24px;">
+            <div class="mc-head-box">
                 <img class="mc-head-img" src="${avatarPath}" alt="${name || ''}" onerror="this.onerror=null; this.src='avatars/fallback.svg';">
             </div>
             <span style="font-size:12px;">${name || '(名前未入力)'}</span>
