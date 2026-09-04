@@ -486,7 +486,7 @@ window.CONFIG = {
         {
                 "name": "UDON",
                 "id": "UC8WvsghW1a2JUIuHBu8qz7w",
-                "minecraftId": "UDON130",
+                "minecraftId": "UDON_130",
                 "uuid": "1065ce22-9f3a-4ce6-ac18-063be1411086",
                 "twitterId": "UDON130",
                 "twitchId": "",
@@ -495,7 +495,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "",
                 "color": "#ffea00",
-                "avatarImg": "avatars/UDON130.png",
+                "avatarImg": "avatars/UDON_130.png",
                 "order": 110
         },
         {
