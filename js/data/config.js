@@ -407,7 +407,7 @@ window.CONFIG = {
                 "order": 120
         },
         {
-                "name": "LeftLily/レフトリリー",
+                "name": "LeftLily / レフトリリー",
                 "id": "UC2Oi_Pfzk-G3HyhnbP5vJLA",
                 "minecraftId": "LeftLily0427",
                 "uuid": "554d4e40-a120-4889-a8f3-933938e6cc1c",
@@ -487,7 +487,7 @@ window.CONFIG = {
                 "name": "UDON",
                 "id": "UC8WvsghW1a2JUIuHBu8qz7w",
                 "minecraftId": "UDON_130",
-                "uuid": "1065ce22-9f3a-4ce6-ac18-063be1411086",
+                "uuid": "ecc351d9-dfc2-4ed8-aa2f-82e701c59866",
                 "twitterId": "UDON130",
                 "twitchId": "",
                 "tiktokId": "",
