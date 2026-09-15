@@ -11,19 +11,19 @@
     <link rel="stylesheet" href="shared/theme.css">
 
     <style>
-        body { 
-            margin: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color); 
-            padding-bottom: 60px; 
+            color: var(--text-color);
+            padding-bottom: 60px;
             line-height: 1.5;
         }
 
         .banner-container {
             width: 100%;
             background: var(--accent-green);
-            aspect-ratio: 16 / 1.75; 
+            aspect-ratio: 16 / 1.75;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -31,7 +31,7 @@
             box-shadow: inset 0 -5px 10px rgba(0,0,0,0.05);
         }
         .header-logo {
-            height: 75%; 
+            height: 75%;
             width: auto;
             object-fit: contain;
             filter: drop-shadow(0px 2px 6px rgba(0,0,0,0.15));
@@ -97,23 +97,11 @@
         .yurugp-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .yurugp-btn:hover { transform: translateY(-1px) scale(1.05); box-shadow: 0 4px 8px rgba(214,51,108,0.25); }
 
-        .orehighlighter-btn {
-            text-decoration: none;
-            color: var(--secondary-text);
-            padding: 4px 14px;
-            border-radius: 14px;
-            background: var(--container-bg);
-            border: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            justify-content: center;
-            line-height: 1.3;
-            transition: all 0.2s;
+        .github-btn {
+            background: #ffffff;
         }
-        .orehighlighter-btn:hover { background: #eef6ff; color: #1d4ed8; border-color: #bfdbfe; }
-        .orehighlighter-btn .oh-line1 { font-size: 13px; font-weight: bold; }
-        .orehighlighter-btn .oh-line2 { font-size: 10.5px; font-weight: normal; opacity: 0.75; }
+        .github-btn img { object-fit: contain; padding: 6px; box-sizing: border-box; }
+        .github-btn:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.25); }
 
         .external-links-container {
             display: flex;
@@ -187,17 +175,17 @@
             border-radius: 16px;
             padding: 24px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 12px -2px rgba(45, 90, 39, 0.05); 
+            box-shadow: 0 4px 12px -2px rgba(45, 90, 39, 0.05);
             border: 1px solid var(--border-color);
         }
 
         .section-title { font-size: 16px; font-weight: bold; margin-top: 0; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-        
+
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        
-        .card { 
-            background: var(--container-bg); border-radius: 12px; overflow: hidden; 
-            border: 1px solid var(--border-color); display: flex; flex-direction: column; 
+
+        .card {
+            background: var(--container-bg); border-radius: 12px; overflow: hidden;
+            border: 1px solid var(--border-color); display: flex; flex-direction: column;
             position: relative; transition: transform 0.2s, box-shadow 0.2s;
         }
         .card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(45, 90, 39, 0.06); }
@@ -208,7 +196,7 @@
         .thumb { width: 100%; height: 100%; object-fit: cover; }
         .thumb-bg { position: absolute; width: 100%; height: 100%; opacity: 0.12; filter: blur(20px); }
         .thumb-profile { width: 40%; height: auto; border-radius: 50%; position: relative; z-index: 2; border: 3px solid var(--container-bg); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        
+
         .badge-new { position: absolute; top: 6px; left: 6px; background: var(--accent-blue); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10; }
         .badge-live { position: absolute; top: 6px; left: 6px; background: var(--accent-green); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10; }
 
@@ -217,7 +205,7 @@
         .title { font-size: 11px; font-weight: 600; line-height: 1.3; height: 2.6em; overflow: hidden; color: var(--secondary-text); }
 
         .btn-area { padding: 0 8px 8px; display: flex; flex-wrap: wrap; gap: 4px; }
-        .btn { 
+        .btn {
             flex: 1; min-width: 45px; text-align: center; text-decoration: none; font-size: 10px; font-weight: bold;
             padding: 5px 0; border-radius: 6px; color: var(--secondary-text) !important; background: #e2eae2; transition: background 0.2s;
         }
@@ -259,16 +247,16 @@
         }
         .mc-head-img { width: 100%; height: 100%; object-fit: contain; transform: scale(1.1); }
 
-        .row-name { 
-            font-weight: bold; font-size: 12px; 
+        .row-name {
+            font-weight: bold; font-size: 12px;
             white-space: normal; overflow: visible; text-overflow: unset;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
             overflow: hidden; min-height: 2em; line-height: 1em;
-            color: var(--text-color); min-width: 0; flex: 1; 
+            color: var(--text-color); min-width: 0; flex: 1;
         }
 
         .row-btns { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; width: 100%; }
-        .btn-square-mini { 
+        .btn-square-mini {
             width: 26px; height: 26px; border-radius: 5px;
             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
             text-decoration: none; transition: all 0.2s ease; background: #ffffff; border: 1px solid var(--border-color);
@@ -517,6 +505,9 @@
     <a href="https://www.yurugp.jp/characters/4345" class="yurugp-btn" target="_blank" title="ゆるキャラグランプリ2026">
         <img src="img/sakaisander-yurugp-icon.png" alt="ゆるキャラグランプリ2026">
     </a>
+    <a href="https://github.com/SHUN-CHACHA/minecraft-tools/tree/main" class="yurugp-btn github-btn" target="_blank" title="GitHub">
+        <img src="img/github-icon.png" alt="GitHub">
+    </a>
     <div class="top-buttons-stack">
         <div class="external-links-container">
             <a href="https://anykura.live/t/homekura" target="_blank" class="site-link-btn stats-btn">
@@ -534,10 +525,6 @@
                 <a href="https://shun-chacha.github.io/homekura-live/roulette.html" class="roulette-btn" target="_blank">
                     <img src="img/roulette-icon.png" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
                     旬茶作 ルーレット
-                </a>
-                <a href="https://shun-chacha.github.io/homekura-live/tools/ore-highlighter/" class="orehighlighter-btn" target="_blank">
-                    <span class="oh-line1">⛏ OreHighlighter</span>
-                    <span class="oh-line2">・・・ゲーミングブロック作成アプリ</span>
                 </a>
             </div>
             <div class="controls-right">
