@@ -170,7 +170,10 @@
         </div>
     </div>
 
-    <h2 style="margin-top: 30px;">📋 現在の登録メンバー一覧 <span style="font-size:13px; color:#5c6b5a; font-weight:normal;">（名前をクリックすると再編集できます）</span></h2>
+    <h2 style="margin-top: 30px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+        <span>📋 現在の登録メンバー一覧 <span style="font-size:13px; color:#5c6b5a; font-weight:normal;">（名前をクリックすると再編集できます）</span></span>
+        <button type="button" class="btn-export" style="padding: 8px 16px; font-size: 13px; white-space:nowrap;" onclick="exportMembersCSV()">📄 CSVエクスポート</button>
+    </h2>
     <div style="overflow-x: auto;">
     <table class="member-table">
         <thead>
