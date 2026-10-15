@@ -13,6 +13,11 @@
 
     const mapImageList = [
         {
+            fileName: 'map/10月14日.png',
+            bounds: [[-1600, -1600], [1984, 1472]],
+            opacity: 1
+        },
+        {
             fileName: 'map/9月23日.png',
             bounds: [[-1600, -1600], [1984, 1472]],
             opacity: 1
