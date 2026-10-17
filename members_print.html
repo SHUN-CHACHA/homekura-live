@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>homeクラ Season３ メンバー一覧</title>
+    <!--
+        members.pdf の元になる名簿ページです。js/data/config.js のメンバーをアイコン付きで並べます。
+        メンバーを変更したら scripts/make-members-pdf.ps1 を実行して members.pdf を作り直してください。
+    -->
+    <style>
+        @page { size: A4 portrait; margin: 12mm; }
+        * { -webkit-print-color-adjust: exact; print-color-adjust: exact; box-sizing: border-box; }
+        body {
+            margin: 0; background: #fff; color: #222; font-size: 11px;
+            font-family: "Yu Gothic", "YuGothic", "Meiryo", "Hiragino Sans", sans-serif;
+        }
+        @media screen { #sheet { max-width: 794px; margin: 0 auto; padding: 30px; } }
+        .pms-header { display: flex; align-items: center; gap: 12px; border-bottom: 2px solid #2d5a27; padding-bottom: 6px; margin-bottom: 10px; }
+        .pms-header img { height: 40px; }
+        .pms-header h1 { font-size: 18px; margin: 0; color: #2d5a27; }
+        .pms-date { margin-left: auto; font-size: 10px; color: #666; }
+        .pms-group { font-size: 13px; font-weight: bold; color: #2d5a27; margin: 10px 0 4px; break-after: avoid; }
+        .pms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .pms-card { display: flex; gap: 8px; align-items: flex-start; border: 1px solid #ccc; border-left-width: 5px; border-radius: 6px; padding: 6px; break-inside: avoid; }
+        .pms-card img { width: 36px; height: 36px; image-rendering: pixelated; flex-shrink: 0; }
+        .pms-name { font-size: 12px; font-weight: bold; margin-bottom: 2px; }
+        .pms-links { line-height: 1.5; word-break: break-all; }
+        .pms-links a { color: #1a4d8f; text-decoration: none; }
+        .pms-links b { display: inline-block; min-width: 58px; color: #555; font-weight: normal; }
+    </style>
+</head>
+<body>
+<div id="sheet"></div>
+
+<script src="js/data/config.js"></script>
+<script>
+(function () {
+    const channels = (window.CONFIG && CONFIG.DEFAULT_CHANNELS) ? CONFIG.DEFAULT_CHANNELS : [];
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const sorted = [...channels].sort((a, b) => {
+        const orderA = (typeof a.order === 'number') ? a.order : Infinity;
+        const orderB = (typeof b.order === 'number') ? b.order : Infinity;
+        return orderA - orderB;
+    });
+
+    const cardHtml = ch => {
+        const rawAvatar = ch.avatarImg ? ch.avatarImg.trim() : "";
+        const rawMcId = ch.minecraftId ? ch.minecraftId.trim() : "";
+        let img = "avatars/fallback.svg";
+        if (rawAvatar !== "") {
+            const withoutExt = rawAvatar.replace(/\.(png|jpg|jpeg|gif|svg)$/i, "");
+            img = withoutExt.includes("/") ? `${withoutExt}.png` : `avatars/${withoutExt}.png`;
+        } else if (rawMcId !== "") {
+            img = `avatars/${rawMcId}.png`;
+        }
+        const link = (label, url, text) => `<div><b>${label}</b><a href="${esc(url)}">${esc(text)}</a></div>`;
+        let links = link('YouTube', `https://youtube.com/channel/${ch.id}`, `youtube.com/channel/${ch.id}`);
+        if (ch.id2)         links += link('サブCh', `https://youtube.com/channel/${ch.id2}`, `youtube.com/channel/${ch.id2}`);
+        if (ch.twitterId)   links += link('X', `https://x.com/${ch.twitterId}`, `@${ch.twitterId}`);
+        if (ch.twitchId)    links += link('Twitch', `https://twitch.tv/${ch.twitchId}`, ch.twitchId);
+        if (ch.tiktokId)    links += link('TikTok', `https://www.tiktok.com/@${ch.tiktokId}`, `@${ch.tiktokId}`);
+        if (ch.instaId)     links += link('Instagram', `https://instagram.com/${ch.instaId}`, `@${ch.instaId}`);
+        if (ch.homepageUrl) links += link('HP', ch.homepageUrl, ch.homepageUrl.replace(/^https?:\/\//, ''));
+        return `<div class="pms-card" style="border-left-color:${esc(ch.color || '#ccc')}">
+            <img src="${esc(img)}" alt="" onerror="this.onerror=null; this.src='avatars/fallback.svg';">
+            <div><div class="pms-name">${esc(ch.name)}</div><div class="pms-links">${links}</div></div>
+        </div>`;
+    };
+
+    // トップページの一覧と同じく、order順に並べてグループが変わるたびに見出しを挟む
+    // （グループ未設定のメンバーは直前の見出しの下にそのまま続ける）
+    let body = "", grid = "", lastGroup = null;
+    const flush = () => { if (grid) body += `<div class="pms-grid">${grid}</div>`; grid = ""; };
+    sorted.forEach(ch => {
+        const group = (ch.group && ch.group.trim() !== "") ? ch.group : null;
+        if (group && group !== lastGroup) {
+            flush();
+            body += `<div class="pms-group">${esc(group)}</div>`;
+        }
+        lastGroup = group;
+        grid += cardHtml(ch);
+    });
+    flush();
+
+    const today = new Date();
+    document.getElementById("sheet").innerHTML = `
+        <div class="pms-header">
+            <img src="img/logo.png" alt="homeクラ">
+            <h1>Season３ メンバー一覧（${sorted.length}名）</h1>
+            <div class="pms-date">${today.getFullYear()}/${today.getMonth()+1}/${today.getDate()} 時点</div>
+        </div>${body}`;
+})();
+</script>
+</body>
+</html>
