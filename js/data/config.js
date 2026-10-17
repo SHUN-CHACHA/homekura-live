@@ -117,36 +117,6 @@ window.CONFIG = {
                 "order": 112
         },
         {
-                "name": "たにしらいす",
-                "id": "UCiC8VCiSLD3mxoO-QFKQnBQ",
-                "minecraftId": "Tanish1",
-                "uuid": "939aa8b1-7e6c-458b-9c25-af2a5e7becc0",
-                "twitterId": "tanishi_manbo",
-                "twitchId": "tanishi1200",
-                "tiktokId": "",
-                "instaId": "",
-                "discordUrl": "",
-                "homepageUrl": "",
-                "color": "#00ff7b",
-                "avatarImg": "avatars/Tanish1.png",
-                "order": 113
-        },
-        {
-                "name": "凸もり",
-                "id": "UCdN9GjPrqhcrzE27eWNNjxg",
-                "minecraftId": "totsumori",
-                "uuid": "e7312231-f09f-4b02-b71b-cefb5a4d87b1",
-                "twitterId": "mk_2_totsu",
-                "twitchId": "totsumori",
-                "tiktokId": "",
-                "instaId": "",
-                "discordUrl": "",
-                "homepageUrl": "",
-                "color": "#888888",
-                "avatarImg": "avatars/totsumori.png",
-                "order": 114
-        },
-        {
                 "name": "神宮寺ちゃんねる",
                 "id": "UCou8IVB8jJPk56H0farYQdA",
                 "minecraftId": "jingujich",
@@ -160,36 +130,6 @@ window.CONFIG = {
                 "color": "#00bfff",
                 "avatarImg": "avatars/jingujich.png",
                 "order": 104
-        },
-        {
-                "name": "カズクラ",
-                "id": "UCu3Mp1ZimtNvyA-bcfo9VrQ",
-                "minecraftId": "kazuchannel",
-                "uuid": "c85613bd-c3b6-43ea-8a12-a9649fa769b0",
-                "twitterId": "kazuch0924",
-                "twitchId": "",
-                "tiktokId": "super_kazukura",
-                "instaId": "kazuch0924",
-                "discordUrl": "",
-                "homepageUrl": "",
-                "color": "#ff0000",
-                "avatarImg": "avatars/kazuchannel.png",
-                "order": 115
-        },
-        {
-                "name": "たいたい",
-                "id": "UCds-nvoKCcvixVXJ_54QcbQ",
-                "minecraftId": "taitai0904",
-                "uuid": "65620d1a-889e-407f-9b0a-cfbb579f8963",
-                "twitterId": "taitaiMEN1997",
-                "twitchId": "taitai19970904",
-                "tiktokId": "",
-                "instaId": "",
-                "discordUrl": "",
-                "homepageUrl": "",
-                "color": "#ffdd00",
-                "avatarImg": "avatars/taitai0904.png",
-                "order": 117
         },
         {
                 "name": "岐阜のこみちん",
@@ -254,22 +194,6 @@ window.CONFIG = {
                 "group": "うえまさ家"
         },
         {
-                "name": "うえまさ",
-                "id": "UCIBDdDXnViOgN5tCpfX7NOA",
-                "minecraftId": "uema5a",
-                "uuid": "8b519650-3606-4e81-8c7a-5db5d00a9f95",
-                "twitterId": "uema5aCh",
-                "twitchId": "",
-                "tiktokId": "",
-                "instaId": "uema5a",
-                "discordUrl": "https://discord.com/invite/kprgJGmSJ9",
-                "homepageUrl": "",
-                "color": "#0008ff",
-                "avatarImg": "avatars/uema5a.png",
-                "order": 21,
-                "group": "うえまさ家"
-        },
-        {
                 "name": "久那式リン",
                 "id": "UCPs7s2VlkwVWWpjcyjviINA",
                 "minecraftId": "Kunashiki_Lin",
@@ -301,22 +225,6 @@ window.CONFIG = {
                 "order": 108
         },
         {
-                "name": "ぽこにゃん",
-                "id": "UCO06KZjWOe6b1tXrgzzakZA",
-                "minecraftId": "pokonyan_0603",
-                "uuid": "b1531516-40ac-46b1-baf9-5d2db7a44dca",
-                "twitterId": "pokonyan1185",
-                "twitchId": "",
-                "tiktokId": "",
-                "instaId": "",
-                "discordUrl": "",
-                "homepageUrl": "",
-                "color": "#00ff00",
-                "avatarImg": "avatars/pokonyan_0603.png",
-                "order": 32,
-                "group": "ぽこにゃん"
-        },
-        {
                 "name": "KtR（こーたろー）",
                 "id": "UCuJVrV6spfu9QUP6Wr4fugA",
                 "minecraftId": "HAOgame_KtR",
@@ -329,21 +237,6 @@ window.CONFIG = {
                 "homepageUrl": "https://lit.link/haochktr",
                 "color": "#ff3333",
                 "avatarImg": "avatars/HAOgame_KtR.png"
-        },
-        {
-                "name": "ゆりも",
-                "id": "UCrfGCEk3MPYap72t0TX_sdQ",
-                "minecraftId": "yurimosaaan",
-                "uuid": "0e6b9c2a-560a-4593-b0c0-983ecb209c4f",
-                "twitterId": "yurimotosuzu",
-                "twitchId": "yurimotosuzu",
-                "tiktokId": "yurimotosuzu",
-                "instaId": "yurimotosuzu",
-                "discordUrl": "",
-                "homepageUrl": "",
-                "color": "#cbeccd",
-                "avatarImg": "avatars/yurimosaaan.png",
-                "order": 119
         },
         {
                 "name": "むっこさん",
@@ -482,22 +375,6 @@ window.CONFIG = {
                 "color": "#ffea00",
                 "avatarImg": "avatars/UDON_130.png",
                 "order": 110
-        },
-        {
-                "name": "よし",
-                "id": "UCFkfHzxpDGEDAjsg34tKu_g",
-                "minecraftId": "yoshi_38_",
-                "uuid": "17376ad0-a16a-4b66-85de-1a133bafb2bf",
-                "twitterId": "yoshi38_dog",
-                "twitchId": "",
-                "tiktokId": "",
-                "instaId": "",
-                "discordUrl": "",
-                "homepageUrl": "",
-                "color": "#ff9900",
-                "avatarImg": "avatars/yoshi_38_.png",
-                "order": 33,
-                "group": "ぽこにゃん"
         },
         {
                 "name": "瑞木ゆき / Mizuki Yuki",
