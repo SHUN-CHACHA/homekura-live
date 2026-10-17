@@ -201,6 +201,35 @@
 
         .section-title { font-size: 16px; font-weight: bold; margin-top: 0; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
 
+        /* メンバー一覧タイトル横の「PDF保存」ボタン */
+        .btn-member-pdf {
+            margin-left: auto; background: var(--accent-green); color: #fff; border: none;
+            padding: 5px 12px; border-radius: 16px; font-size: 12px; font-weight: bold; cursor: pointer;
+        }
+        .btn-member-pdf:hover { opacity: 0.85; }
+
+        /* 印刷（PDF保存）専用のメンバー名簿。画面上では表示しない */
+        #printMemberSheet { display: none; }
+        @media print {
+            body.printing-members > *:not(#printMemberSheet) { display: none !important; }
+            body.printing-members { background: #fff !important; padding: 0 !important; }
+            body.printing-members #printMemberSheet { display: block; color: #222; font-size: 11px; }
+            @page { size: A4 portrait; margin: 12mm; }
+            .pms-header { display: flex; align-items: center; gap: 12px; border-bottom: 2px solid #2d5a27; padding-bottom: 6px; margin-bottom: 10px; }
+            .pms-header img { height: 40px; }
+            .pms-header h1 { font-size: 18px; margin: 0; color: #2d5a27; }
+            .pms-header .pms-date { margin-left: auto; font-size: 10px; color: #666; }
+            .pms-group { font-size: 13px; font-weight: bold; color: #2d5a27; margin: 10px 0 4px; break-after: avoid; }
+            .pms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+            .pms-card { display: flex; gap: 8px; align-items: flex-start; border: 1px solid #ccc; border-left-width: 5px; border-radius: 6px; padding: 6px; break-inside: avoid; }
+            .pms-card img { width: 36px; height: 36px; image-rendering: pixelated; flex-shrink: 0; }
+            .pms-name { font-size: 12px; font-weight: bold; margin-bottom: 2px; }
+            .pms-links { line-height: 1.5; word-break: break-all; }
+            .pms-links a { color: #1a4d8f; text-decoration: none; }
+            .pms-links b { display: inline-block; min-width: 58px; color: #555; font-weight: normal; }
+            * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 
         .card {
@@ -601,10 +630,14 @@
     </div>
 
     <div class="section-box" id="member">
-        <div class="section-title">👥 メンバー一覧</div>
+        <div class="section-title">👥 メンバー一覧
+            <button type="button" class="btn-member-pdf" onclick="printMemberList()" title="メンバー一覧を印刷・PDFで保存">📄 PDF保存</button>
+        </div>
         <div id="allList" class="list-container"></div>
     </div>
 </div>
+
+<div id="printMemberSheet"></div>
 
 <script src="js/data/config.js"></script>
 
@@ -934,6 +967,73 @@ function renderGrids(chInfoMap, vItems) {
     document.getElementById("newVideoSection").style.display = counts.newVideo ? "block" : "none";
     document.getElementById("newVideoGrid").innerHTML = htmls.newVideo;
     document.getElementById("allList").innerHTML = htmls.all;
+}
+
+// メンバー一覧をアイコン付きの名簿レイアウトにして印刷ダイアログを開く（「PDFとして保存」でPDF化できる）
+async function printMemberList() {
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const sorted = [...channels].sort((a, b) => {
+        const orderA = (typeof a.order === 'number') ? a.order : Infinity;
+        const orderB = (typeof b.order === 'number') ? b.order : Infinity;
+        return orderA - orderB;
+    });
+
+    const cardHtml = ch => {
+        const rawAvatar = ch.avatarImg ? ch.avatarImg.trim() : "";
+        const rawMcId = ch.minecraftId ? ch.minecraftId.trim() : "";
+        let img = "avatars/fallback.svg";
+        if (rawAvatar !== "") {
+            const withoutExt = rawAvatar.replace(/\.(png|jpg|jpeg|gif|svg)$/i, "");
+            img = withoutExt.includes("/") ? `${withoutExt}.png` : `avatars/${withoutExt}.png`;
+        } else if (rawMcId !== "") {
+            img = `avatars/${rawMcId}.png`;
+        }
+        const link = (label, url, text) => `<div><b>${label}</b><a href="${esc(url)}">${esc(text)}</a></div>`;
+        let links = link('YouTube', `https://youtube.com/channel/${ch.id}`, `youtube.com/channel/${ch.id}`);
+        if (ch.id2)         links += link('サブCh',`https://youtube.com/channel/${ch.id2}`, `youtube.com/channel/${ch.id2}`);
+        if (ch.twitterId)   links += link('X', `https://x.com/${ch.twitterId}`, `@${ch.twitterId}`);
+        if (ch.twitchId)    links += link('Twitch', `https://twitch.tv/${ch.twitchId}`, ch.twitchId);
+        if (ch.tiktokId)    links += link('TikTok', `https://www.tiktok.com/@${ch.tiktokId}`, `@${ch.tiktokId}`);
+        if (ch.instaId)     links += link('Instagram', `https://instagram.com/${ch.instaId}`, `@${ch.instaId}`);
+        if (ch.homepageUrl) links += link('HP', ch.homepageUrl, ch.homepageUrl.replace(/^https?:\/\//, ''));
+        return `<div class="pms-card" style="border-left-color:${esc(ch.color || '#ccc')}">
+            <img src="${esc(img)}" alt="" onerror="this.onerror=null; this.src='avatars/fallback.svg';">
+            <div><div class="pms-name">${esc(ch.name)}</div><div class="pms-links">${links}</div></div>
+        </div>`;
+    };
+
+    // 画面の一覧と同じく、order順に並べてグループが変わるたびに見出しを挟む
+    // （グループ未設定のメンバーは直前の見出しの下にそのまま続ける）
+    let body = "", grid = "", lastGroup = null;
+    const flush = () => { if (grid) body += `<div class="pms-grid">${grid}</div>`; grid = ""; };
+    sorted.forEach(ch => {
+        const group = (ch.group && ch.group.trim() !== "") ? ch.group : null;
+        if (group && group !== lastGroup) {
+            flush();
+            body += `<div class="pms-group">${esc(group)}</div>`;
+        }
+        lastGroup = group;
+        grid += cardHtml(ch);
+    });
+    flush();
+
+    const today = new Date();
+    const sheet = document.getElementById("printMemberSheet");
+    sheet.innerHTML = `
+        <div class="pms-header">
+            <img src="img/logo.png" alt="homeクラ">
+            <h1>Season３ メンバー一覧（${sorted.length}名）</h1>
+            <div class="pms-date">${today.getFullYear()}/${today.getMonth()+1}/${today.getDate()} 時点</div>
+        </div>${body}`;
+
+    // アイコン画像を読み込み終えてから印刷する（未読込のまま印刷すると空白になるため）
+    await Promise.all([...sheet.querySelectorAll('img')].map(img =>
+        img.complete ? null : new Promise(r => { img.addEventListener('load', r, { once: true }); img.addEventListener('error', r, { once: true }); })
+    ));
+
+    document.body.classList.add('printing-members');
+    window.addEventListener('afterprint', () => document.body.classList.remove('printing-members'), { once: true });
+    window.print();
 }
 
 function toggleReserve(id, name, startTime) {
