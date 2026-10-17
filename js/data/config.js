@@ -144,8 +144,7 @@ window.CONFIG = {
                 "homepageUrl": "https://www.komichin.com/",
                 "color": "#ff1100",
                 "avatarImg": "avatars/komichin.png",
-                "order": 31,
-                "group": "ぽこにゃん"
+                "order": 125
         },
         {
                 "name": "ナナホシナナ",
@@ -190,8 +189,7 @@ window.CONFIG = {
                 "homepageUrl": "",
                 "color": "#ff0000",
                 "avatarImg": "avatars/yoiy0i.png",
-                "order": 22,
-                "group": "うえまさ家"
+                "order": 124
         },
         {
                 "name": "久那式リン",
