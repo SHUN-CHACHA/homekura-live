@@ -1,0 +1,26 @@
+﻿# ==========================================================
+# index.html が読み込むCSS・JS・画像・PDF・ページへのリンクに「?v=バージョン番号」を付け直すスクリプト
+# （ブラウザのキャッシュで古いファイルが表示され続けるのを防ぐ）
+#
+# 普段は git commit 時に scripts/git-hooks/pre-commit から自動で実行されます。
+# 手動で実行する場合：
+#   powershell -ExecutionPolicy Bypass -File scripts\bump-asset-version.ps1
+# ==========================================================
+$ErrorActionPreference = 'Stop'
+
+$root = Split-Path -Parent $PSScriptRoot
+$file = Join-Path $root 'index.html'
+$version = Get-Date -Format 'yyyyMMddHHmm'
+
+$utf8NoBom = New-Object System.Text.UTF8Encoding $false
+$text = [System.IO.File]::ReadAllText($file, $utf8NoBom)
+
+# src="..." / href="..." のうち、サイト内のファイル（http・#・${...} などで始まらないもの）が対象
+$attrPattern = '(?<attr>(?:src|href)=")(?<path>(?!https?:|//|#|data:|mailto:|javascript:|\$\{)[^"?#]+\.(?:css|js|png|jpe?g|gif|svg|ico|webp|pdf|html))(?:\?v=\d+)?"'
+$text = [regex]::Replace($text, $attrPattern, { param($m) "$($m.Groups['attr'].Value)$($m.Groups['path'].Value)?v=$version`"" })
+
+# JavaScriptで組み立てるアバター画像のパス用
+$text = [regex]::Replace($text, "const ASSET_VERSION = '\d*';", "const ASSET_VERSION = '$version';")
+
+[System.IO.File]::WriteAllText($file, $text, $utf8NoBom)
+Write-Host "index.html asset version -> $version"
