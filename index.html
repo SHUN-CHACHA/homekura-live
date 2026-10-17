@@ -172,6 +172,12 @@
         }
         .site-link-btn.maguro-btn:hover { background: #eab446; border-color: #4a2f0a; transform: translateY(-1px); }
 
+        /* スマホ幅：丸アイコンを1段目に並べ、リンクボタン群は2段目で横幅いっぱいに使う */
+        @media (max-width: 599px) {
+            .top-buttons-wrapper { flex-wrap: wrap; justify-content: center; row-gap: 12px; }
+            .top-buttons-stack { flex: 1 1 100%; }
+        }
+
         @media (max-width: 420px) {
             .site-link-btn { padding: 8px 6px; gap: 5px; height: 40px; }
             .site-link-btn .sl-icon { font-size: 15px; }
