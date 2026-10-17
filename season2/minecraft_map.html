@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【Season2アーカイブ】homeクラ Season２ メンバー拠点マップ</title>
+    
+    <!-- Leaflet.js (地図ライブラリ) のCSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Tailwind CSS (スタイリング用) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 🏠 ライトテーマ共通CSS（戻るボタン・スマホ用ドロワーの配色に使用） -->
+    <link rel="stylesheet" href="shared/theme.css">
+    
+    <style>
+        :root {
+            --custom-void-bg: #141417;
+            --custom-grid-color: #ffffff;
+            --custom-x-axis-color: #ef4444;
+            --custom-z-axis-color: #3b82f6;
+            --custom-panel-bg: #1a1a1f;
+            --custom-icon-border: #4caf50;
+            --custom-icon-bg: #26262b;
+            --custom-text-color: #ffffff;
+            --custom-text-bg: rgba(26, 26, 31, 0.85);
+        }
+        body {
+            background-color: #121214;
+        }
+        /* Leafletの地図の背景をマイクラの奈落（Void）のような黒基調にする */
+        #map-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height:100%;
+        }
+        #map {
+            background-color: var(--custom-void-bg);
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0; bottom: 0; left: 0; right: 0;
+        }
+        /* 📏 512刻みのX軸・Z軸ラベル（ルーラー風表示） */
+        #axis-labels {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 450;
+        }
+        /* 🔍 ズームスライダー（無段階ズーム、1/3倍〜3倍） */
+        #zoom-slider-wrap {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 1000;
+            background: rgba(26, 26, 31, 0.9);
+            border: 1px solid #333339;
+            border-radius: 10px;
+            padding: 8px 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+        #zoom-slider-label {
+            font-size: 11px;
+            font-family: monospace;
+            color: #cbd5c9;
+            width: 34px;
+            flex-shrink: 0;
+            text-align: right;
+        }
+        #zoom-slider {
+            width: 110px;
+            accent-color: #4caf50;
+            cursor: pointer;
+        }
+        /* 👁️ 顔アイコン・座標表示のON/OFFボタン（map_compare.htmlの戻るボタンと同じ丸ピル型デザイン） */
+        #icon-toggle-btn {
+            flex-shrink: 0;
+            background: #eef3ee;
+            border: 1px solid #d8e2d7;
+            color: #414d3f;
+            border-radius: 20px;
+            padding: 5px 10px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+        }
+        #icon-toggle-btn:hover { background: #e8f5e8; color: #2d5a27; border-color: #2d5a27; }
+        #icon-toggle-btn.is-off {
+            background: #fdf2f2;
+            border-color: #f0b8b8;
+            color: #b91c1c;
+        }
+        #icon-toggle-btn.is-off:hover { background: #fde2e2; border-color: #b91c1c; }
+        /* アイコン・座標を非表示にした時のルール（顔アイコン・ネームタグ・座標ルーラー・方位磁針・共有地アイコンなどすべて対象） */
+        #map-container.icons-hidden .leaflet-marker-pane,
+        #map-container.icons-hidden .leaflet-tooltip-pane,
+        #map-container.icons-hidden #axis-labels {
+            display: none !important;
+        }
+        .axis-label-x {
+            position: absolute;
+            top: 4px;
+            transform: translateX(-50%);
+            font-size: 10px;
+            font-family: monospace;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.65);
+            background: rgba(20, 20, 23, 0.55);
+            padding: 1px 5px;
+            border-radius: 3px;
+            white-space: nowrap;
+        }
+        .axis-label-z {
+            position: absolute;
+            right: 4px;
+            transform: translateY(-50%);
+            font-size: 10px;
+            font-family: monospace;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.65);
+            background: rgba(20, 20, 23, 0.55);
+            padding: 1px 5px;
+            border-radius: 3px;
+            white-space: nowrap;
+        }
+        /* スクロールバーのカスタマイズ */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e1e24;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4caf50;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #45a049;
+        }
+        
+        /* 💡 マップ上に「常に表示されるメンバー名ネームタグ」のカスタムスタイル */
+        .permanent-name-label {
+            background: var(--custom-text-bg) !important;
+            border: 1px solid #4caf50 !important;
+            color: var(--custom-text-color) !important;
+            font-weight: bold !important;
+            font-size: 11px !important;
+            padding: 3px 6px !important;
+            border-radius: 4px !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.6) !important;
+            white-space: nowrap;
+            text-align: center;
+            line-height: 1.3;
+        }
+        .permanent-name-label .coord-line {
+            font-weight: normal;
+            font-size: 11px;
+            color: var(--custom-text-color);
+            margin-top: 1px;
+        }
+        /* 🔍 スマホ幅ではズームアウト時にアイコン同士が密集して見にくくなるため、座標を非表示にする */
+        /* PC幅では常に座標を表示する（このメディアクエリの外なので対象外） */
+        @media (max-width: 768px) {
+            #map.low-zoom .permanent-name-label .coord-line {
+                display: none;
+            }
+        }
+        /* 💡 未登録状態のネームタグを少し目立たなくするスタイル */
+        .permanent-name-label.unregistered {
+            border: 1px solid #55555d !important;
+            color: #88888f !important;
+            opacity: 0.6;
+        }
+        .permanent-name-label.unregistered .coord-line {
+            color: #88888f;
+        }
+        /* 吹き出しの小さな矢印を非表示にする */
+        .permanent-name-label::before {
+            display: none !important;
+        }
+        
+        /* 外部画像を使わない「光るアニメーションピン」のCSS */
+        .pulse-marker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pulse-core {
+            width: 10px;
+            height: 10px;
+            background-color: #4caf50;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #4caf50;
+            z-index: 2;
+        }
+        /* 未登録（名前が空白）のピンはグレーにする */
+        .pulse-marker.unregistered .pulse-core {
+            background-color: #55555d;
+            border: 2px solid #aaaaaa;
+            box-shadow: none;
+        }
+        .pulse-wave {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: rgba(76, 175, 80, 0.4);
+            border-radius: 50%;
+            animation: pulse 1.8s infinite ease-out;
+            z-index: 1;
+        }
+        .pulse-marker.unregistered .pulse-wave {
+            display: none; /* 未登録のピンは波打つアニメーションをオフにする */
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(0.2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* 👤 顔アイコン（メンバーの顔画像）マーカーのスタイル */
+        .avatar-marker {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .avatar-marker img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: 2px solid var(--custom-icon-border);
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+            background-color: var(--custom-icon-bg);
+        }
+        /* 📍 メンバーではない「場所」の目印は、区別しやすいよう青系の枠線にする */
+        .avatar-marker.location-marker img {
+            border-color: #3b82f6;
+        }
+        /* 未登録（名前が空白）の場合は少し目立たなく */
+        .avatar-marker.unregistered img {
+            border: 2px solid #55555d;
+            box-shadow: none;
+            opacity: 0.55;
+            filter: grayscale(1);
+        }
+
+        /* 👥 1拠点に2人いる場合、顔アイコンを2つ並べて表示 */
+        .avatar-marker-group {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .avatar-marker-group .avatar-marker {
+            width: 32px;
+            height: 32px;
+        }
+
+        /* 🎨 左パネル（一覧・UI）の背景色をカスタム変数に対応させる（PC表示のみ有効） */
+        .drawer-header,
+        .drawer-panel {
+            background-color: var(--custom-panel-bg) !important;
+        }
+
+        /* 🎨 PC専用：カラーカスタマイズパネル（検索窓の隣に配置） */
+        #color-customizer-toggle {
+            position: relative;
+            flex-shrink: 0;
+            background: #26262b;
+            border: 1px solid #4caf50;
+            color: #4caf50;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        #color-customizer-toggle:hover {
+            background: #333339;
+        }
+        #color-customizer-panel {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            z-index: 900;
+            width: 260px;
+            max-height: 70vh;
+            overflow-y: auto;
+            background: #1a1a1f;
+            border: 1px solid #333339;
+            border-radius: 12px;
+            padding: 14px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+            display: none;
+        }
+        #color-customizer-panel.open {
+            display: block;
+        }
+        #color-customizer-panel h3 {
+            color: #4caf50;
+            font-size: 13px;
+            font-weight: bold;
+            margin: 0 0 10px;
+        }
+        .color-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .color-row label {
+            font-size: 11px;
+            color: #cbd5c9;
+            flex: 1;
+        }
+        .color-row input[type="color"] {
+            width: 32px;
+            height: 24px;
+            border: 1px solid #333339;
+            border-radius: 4px;
+            background: none;
+            padding: 0;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .color-row input[type="text"].hex-input {
+            width: 68px;
+            flex-shrink: 0;
+            font-size: 10px;
+            font-family: monospace;
+            background: #141417;
+            border: 1px solid #333339;
+            border-radius: 4px;
+            color: #cbd5c9;
+            padding: 3px 5px;
+        }
+        .color-row input[type="text"].hex-input:focus {
+            outline: none;
+            border-color: #4caf50;
+        }
+        .color-row input[type="checkbox"].transparent-check {
+            flex-shrink: 0;
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+        }
+        .color-row.is-transparent input[type="color"],
+        .color-row.is-transparent input[type="text"].hex-input {
+            opacity: 0.35;
+            pointer-events: none;
+        }
+        #color-customizer-reset {
+            width: 100%;
+            margin-top: 8px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #cbd5c9;
+            background: #26262b;
+            border: 1px solid #4a4a52;
+            border-radius: 6px;
+            padding: 6px 0;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        #color-customizer-reset:hover {
+            background: #333339;
+            color: #fff;
+        }
+
+        /* 📱 スマホ幅（lg未満）：マップを全画面表示にし、メンバー一覧はドロワー化する */
+        @media (max-width: 1023px) {
+            /* カラーカスタマイズパネルはPC専用なのでスマホでは非表示 */
+            #color-customizer-toggle, #color-customizer-panel {
+                display: none !important;
+            }
+            #map-wrap {
+                position: fixed !important;
+                inset: 0 !important;
+                height: 100vh !important;
+                width: 100vw !important;
+                z-index: 10;
+            }
+            #map-wrap > section {
+                border-radius: 0 !important;
+                border: none !important;
+                padding-top: var(--mobile-topbar-height, 116px) !important; /* 上部の固定バーの高さ分だけ余白を確保（JSで実測して更新） */
+            }
+
+            /* ドロワー全体：index.htmlと同じライトテーマに */
+            #member-drawer {
+                position: fixed !important;
+                top: 0;
+                left: 0;
+                width: 85% !important;
+                max-width: 360px;
+                height: 100vh !important;
+                z-index: 1280;
+                transform: translateX(-100%);
+                transition: transform 0.25s ease-out;
+                overflow-y: auto;
+                padding: 16px 12px;
+                background: var(--bg-color, #eef3ee) !important;
+                display: block !important; /* テーブル用の固定高さレイアウトをやめ、自然な縦積みにする */
+            }
+            #member-drawer.drawer-open {
+                transform: translateX(0);
+            }
+            #member-drawer .drawer-header {
+                background: transparent !important;
+                border: none !important;
+                padding: 0 0 16px !important;
+                text-align: left !important;
+            }
+            #member-drawer .drawer-header h1 {
+                color: var(--accent-green, #2d5a27) !important;
+                font-size: 18px !important;
+            }
+            #member-drawer .drawer-header p {
+                color: var(--secondary-text, #414d3f) !important;
+                font-size: 12px !important;
+            }
+            #member-drawer .drawer-panel {
+                background: transparent !important;
+                border: none !important;
+                padding: 0 !important;
+                height: auto !important;
+                display: block !important;
+            }
+            #member-drawer #member-count {
+                color: var(--accent-green, #2d5a27) !important;
+            }
+            #member-drawer #member-count-label {
+                color: var(--secondary-text, #414d3f) !important;
+            }
+            #member-drawer #download-files-btn,
+            #member-drawer a[href="../background_image_guide.html"] {
+                background: var(--bg-color, #eef3ee) !important;
+                border-color: var(--border-color, #d8e2d7) !important;
+                color: var(--secondary-text, #414d3f) !important;
+            }
+            #member-drawer #download-files-btn:hover,
+            #member-drawer a[href="../background_image_guide.html"]:hover {
+                background: var(--accent-green-light, #e8f5e8) !important;
+                color: var(--accent-green, #2d5a27) !important;
+            }
+            #member-drawer #search-input {
+                background: #ffffff !important;
+                border: 1px solid var(--border-color, #d8e2d7) !important;
+                color: var(--text-color, #1a2418) !important;
+            }
+            #member-drawer #search-input::placeholder {
+                color: #7c8a79 !important;
+            }
+            #member-drawer .drawer-hint {
+                color: #7c8a79 !important;
+            }
+            /* デスクトップ用のテーブルはスマホでは非表示、代わりにカード一覧を表示 */
+            #member-drawer .desktop-table-wrap {
+                display: none !important;
+            }
+            #mobile-member-list {
+                display: flex !important;
+            }
+        }
+
+        /* 📱 スマホ用メンバーカード一覧（PCでは非表示） */
+        #mobile-member-list {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+        }
+        #mobile-member-list .mobile-member-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #ffffff;
+            border: 1px solid var(--border-color, #d8e2d7);
+            border-radius: 10px;
+            padding: 8px 10px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        #mobile-member-list .mobile-member-row:active,
+        #mobile-member-list .mobile-member-row:hover {
+            background: var(--accent-green-light, #e8f5e8);
+        }
+        #mobile-member-list .mm-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: var(--bg-color, #eef3ee);
+            border: 1px solid var(--border-color, #d8e2d7);
+            flex-shrink: 0;
+        }
+        #mobile-member-list .mm-text { min-width: 0; }
+        #mobile-member-list .mm-name {
+            font-weight: bold;
+            font-size: 13px;
+            color: var(--text-color, #1a2418);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        #mobile-member-list .mm-area {
+            font-size: 11px;
+            color: #7c8a79;
+        }
+    </style>
+    <!-- Cloudflare Web Analytics (要: 実トークンに差し替え。Cloudflareダッシュボード > Web Analytics > Add a site で取得) -->
+    <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "ef48e3b395a94deb8375d839e1887bb2"}'></script>
+    <!-- End Cloudflare Web Analytics -->
+</head>
+<body class="text-gray-100 bg-[#121214]">
+
+    <!-- 📱 スマホ専用：常に表示される上部バー（タイトル・戻る/メニュー・地図切り替え） -->
+    <div id="mobile-topbar" class="lg:hidden fixed top-0 left-0 right-0 z-[1300] bg-[#1a1a1f]/95 backdrop-blur border-b border-gray-800 px-3 py-2 flex flex-col gap-2">
+        <!-- 1行目：タイトル -->
+        <div class="text-green-500 font-extrabold text-sm text-center truncate">homeクラ Season２ メンバー拠点マップ</div>
+        <!-- 2行目：戻る・MENU -->
+        <div class="flex items-center justify-between gap-2">
+            <a href="index.html" class="pill-btn-light">🏠 ポータルに戻る</a>
+            <button id="member-drawer-toggle" class="pill-btn-light">☰ MENU</button>
+        </div>
+        <!-- 3行目：地図画像の切り替え -->
+        <select class="map-image-select w-full bg-[#26262b] border border-gray-700 rounded px-2 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-green-500">
+            <!-- JavaScriptで mapImageList から動的に生成 -->
+        </select>
+    </div>
+
+    <!-- 📱 スマホ専用：ドロワーを開いた時の背景オーバーレイ（タップで閉じる） -->
+    <div id="drawer-backdrop" class="lg:hidden fixed inset-0 bg-black/60 z-[1250] hidden"></div>
+
+    
+<div class="max-w-[1800px] mx-auto p-2 sm:p-4">
+<div class="flex flex-col lg:flex-row gap-4 lg:h-screen">
+<aside id="member-drawer" class="w-full lg:w-[430px] flex flex-col gap-4 flex-shrink-0">
+<div class="drawer-header bg-[#1a1a1f] border-b border-gray-800 py-4 sm:py-6 px-4 text-center relative">
+        <div class="hidden lg:flex text-left mb-3 gap-2">
+            <a href="index.html" class="pill-btn-light">🏠 ポータルに戻る</a>
+            <a href="../map_compare.html" target="_blank" class="pill-btn-light">🔍 2枚の地図を比較</a>
+        </div>
+        <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-green-500 tracking-wider">homeクラ Season２ メンバー拠点マップ</h1>
+        <p class="text-gray-400 mt-2 text-xs sm:text-sm">X=0, Z=0 を中心としたマルチサーバーの勢力図・拠点位置リスト</p>
+    </div>
+<section class="drawer-panel w-full lg:w-[450px] bg-[#1a1a1f] rounded-xl border border-gray-800 p-4 flex flex-col h-[320px] lg:h-[650px]">
+            
+            <!-- 検索窓と情報統計 -->
+            <div class="mb-4">
+                <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+                    <span id="member-count-label" class="text-sm font-semibold text-gray-400">登録メンバー: <span id="member-count" class="text-green-500 font-bold">0</span>名</span>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button id="download-files-btn"
+   class="text-xs bg-[#26262b] hover:bg-[#333339]
+          border border-gray-700 hover:border-green-500
+          text-gray-300 hover:text-green-400
+          font-bold px-3 py-1.5 rounded-full
+          transition-colors inline-flex items-center gap-1.5">
+    <span>📦</span>
+    <span id="download-files-label">ファイル一式をDL</span>
+</button>
+                        <a href="../background_image_guide.html"
+   class="text-xs bg-[#26262b] hover:bg-[#333339]
+          border border-gray-700 hover:border-green-500
+          text-gray-300 hover:text-green-400
+          font-bold px-3 py-1.5 rounded-full
+          transition-colors inline-flex items-center gap-1.5">
+    <span>🛠️</span>
+    <span>背景画像の設定ガイド</span>
+</a>
+                    </div>
+                </div>
+                <div class="relative flex items-center gap-2">
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        placeholder="メンバー名やエリアで検索..." 
+                        class="flex-1 min-w-0 bg-[#26262b] border border-gray-700 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-green-500 transition-colors"
+                    />
+                    <button id="color-customizer-toggle" title="カラー設定">🎨</button>
+                    <div id="color-customizer-panel">
+                        <h3>🎨 カラー設定（この端末のみ保存）</h3>
+
+                        <div class="color-row" data-key="voidBg">
+                            <label>地図全体の背景色（Void）</label>
+                            <input type="text" class="hex-input" id="cc-void-bg-text" value="#141417" maxlength="7">
+                            <input type="color" id="cc-void-bg" value="#141417">
+                        </div>
+                        <div class="color-row" data-key="gridColor">
+                            <label>256刻みグリッド線の色</label>
+                            <input type="text" class="hex-input" id="cc-grid-color-text" value="#ffffff" maxlength="7">
+                            <input type="color" id="cc-grid-color" value="#ffffff">
+                        </div>
+                        <div class="color-row" data-key="xAxisColor">
+                            <label>X軸（左右）中心線の色</label>
+                            <input type="checkbox" class="transparent-check" id="cc-x-axis-color-transparent" title="透明にする">
+                            <input type="text" class="hex-input" id="cc-x-axis-color-text" value="#ef4444" maxlength="7">
+                            <input type="color" id="cc-x-axis-color" value="#ef4444">
+                        </div>
+                        <div class="color-row" data-key="zAxisColor">
+                            <label>Z軸（上下）中心線の色</label>
+                            <input type="checkbox" class="transparent-check" id="cc-z-axis-color-transparent" title="透明にする">
+                            <input type="text" class="hex-input" id="cc-z-axis-color-text" value="#3b82f6" maxlength="7">
+                            <input type="color" id="cc-z-axis-color" value="#3b82f6">
+                        </div>
+                        <div class="color-row" data-key="panelBg">
+                            <label>左パネル（一覧）の背景色</label>
+                            <input type="text" class="hex-input" id="cc-panel-bg-text" value="#1a1a1f" maxlength="7">
+                            <input type="color" id="cc-panel-bg" value="#1a1a1f">
+                        </div>
+
+                        <div class="color-row" data-key="iconBorder">
+                            <label>顔アイコンの枠線の色</label>
+                            <input type="checkbox" class="transparent-check" id="cc-icon-border-transparent" title="透明にする">
+                            <input type="text" class="hex-input" id="cc-icon-border-text" value="#4caf50" maxlength="7">
+                            <input type="color" id="cc-icon-border" value="#4caf50">
+                        </div>
+                        <div class="color-row" data-key="iconBg">
+                            <label>顔アイコンの背景色</label>
+                            <input type="checkbox" class="transparent-check" id="cc-icon-bg-transparent" title="透明にする">
+                            <input type="text" class="hex-input" id="cc-icon-bg-text" value="#26262b" maxlength="7">
+                            <input type="color" id="cc-icon-bg" value="#26262b">
+                        </div>
+                        <div class="color-row" data-key="textColor">
+                            <label>ネームタグの文字色</label>
+                            <input type="text" class="hex-input" id="cc-text-color-text" value="#ffffff" maxlength="7">
+                            <input type="color" id="cc-text-color" value="#ffffff">
+                        </div>
+                        <div class="color-row" data-key="textBg">
+                            <label>ネームタグの背景色</label>
+                            <input type="checkbox" class="transparent-check" id="cc-text-bg-transparent" title="透明にする">
+                            <input type="text" class="hex-input" id="cc-text-bg-text" value="#1a1a1f" maxlength="7">
+                            <input type="color" id="cc-text-bg" value="#1a1a1f">
+                        </div>
+
+                        <div style="font-size:10px; color:#7a8a78; margin: 4px 0 8px;">☑ のチェックで、その項目を透明にできます</div>
+
+                        <button id="color-customizer-reset">初期設定にリセット</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- テーブルヘッダー固定の一覧表（PC表示） -->
+            <div class="desktop-table-wrap flex-1 overflow-y-auto overflow-x-auto border border-gray-800 rounded-lg bg-[#141417]">
+                <table class="w-full text-left border-collapse">
+                    <thead class="sticky top-0 bg-[#26262b] text-gray-300 text-xs uppercase tracking-wider border-b border-gray-800 z-10">
+                        <tr>
+                            <th class="py-3 px-4 font-bold text-green-500">エリア</th>
+                            <th class="py-3 px-4">メンバー名</th>
+                            <th class="py-3 px-4 text-right">X座標</th>
+                            <th class="py-3 px-4 text-right">Z座標</th>
+                        </tr>
+                    </thead>
+                    <tbody id="member-table-body" class="text-sm divide-y divide-gray-800">
+                        <!-- JavaScriptで動的に生成 -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 顔アイコン付きカード一覧（スマホ表示） -->
+            <div id="mobile-member-list">
+                <!-- JavaScriptで動的に生成 -->
+            </div>
+            
+            <div class="drawer-hint mt-3 text-xs text-gray-500 text-center">
+                ※タップすると地図上の拠点にジャンプします
+            </div>
+        </section>
+</aside>
+<section id="map-wrap" class="h-[65vh] lg:h-auto lg:flex-1">
+<section class="flex-1 bg-[#1a1a1f] rounded-xl border border-gray-800 p-4 flex flex-col h-full relative">
+            
+            <!-- 地図上のコントローラー・凡例（クリックで折りたたみ可能。地図画像名は畳んでも表示） -->
+            <div class="absolute top-6 right-6 z-[1000] text-xs hidden md:block">
+                <details class="bg-[#222227] border border-gray-700 rounded-t-lg p-3 shadow-lg" open>
+                    <summary class="font-bold text-gray-300 mb-2 cursor-pointer select-none">座標軸の見方</summary>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="w-3 h-0.5 bg-red-500 block"></span>
+                        <span>X軸（左右：東がプラス / 西がマイナス）</span>
+                    </div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="w-3 h-0.5 bg-blue-500 block"></span>
+                        <span>Z軸（上下：南がプラス / 北がマイナス）</span>
+                    </div>
+
+                    <!-- 📍 カーソル位置のリアルタイム表示・中心に戻るボタン -->
+                    <div class="border-t border-gray-700 pt-2 mt-2">
+                        <div class="flex items-center gap-2 mb-2 text-gray-300">
+                            <span class="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0"></span>
+                            <span>現在地: <strong class="text-white font-mono" id="cursor-coords">X: 0, Z: 0</strong></span>
+                        </div>
+                        <button 
+                            onclick="resetMapView()" 
+                            class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-1 px-3 rounded text-xs transition-colors"
+                        >
+                            中心 (0, 0) に戻る
+                        </button>
+                    </div>
+                    
+                    <!-- 💡 地形マップ切り替えチェックボックス -->
+                    <div class="border-t border-gray-700 pt-2 mt-2">
+                        <label class="flex items-center gap-2 cursor-pointer text-gray-300 hover:text-white transition-colors">
+                            <input type="checkbox" id="toggle-bg-image" class="rounded bg-gray-850 border-gray-600 text-green-500 focus:ring-green-500 focus:ring-offset-gray-900" checked>
+                            <span>地図背景を表示</span>
+                        </label>
+                    </div>
+                </details>
+
+                <!-- 🗺️ 月別マップ選択：折りたたんでもここは常に表示されたままにする -->
+                <div class="bg-[#222227] border border-gray-700 border-t-0 rounded-b-lg p-2 shadow-lg">
+                    <select id="map-image-select" class="map-image-select w-full bg-[#26262b] border border-gray-700 rounded px-2 py-1 text-xs text-gray-200 focus:outline-none focus:border-green-500">
+                        <!-- JavaScriptで mapImageList から動的に生成 -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- マップ本体コンテナ -->
+            <div id="map-container" class="flex-1 w-full rounded-lg border border-gray-800 overflow-hidden">
+                <div id="map"></div>
+                <div id="axis-labels"></div>
+                <div id="zoom-slider-wrap">
+                    <span id="zoom-slider-label">1.0×</span>
+                    <input type="range" id="zoom-slider" min="-3.58496" max="-0.41504" step="0.001" value="-2">
+                    <button id="icon-toggle-btn" title="名前・アイコン表示のON/OFF">📍 名前 ON</button>
+                </div>
+            </div>
+        </section>
+</section>
+</div>
+</div>
+
+
+    <!-- Leaflet.js のJavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <!-- 📊 メンバーデータは js/data/MAP_member.js に分離（編集はそちらのファイルで） -->
+    <script src="js/data/MAP_member.js"></script>
+
+    <!-- 📍 メンバー以外の目印（方位磁針・共有地など）は js/data/MAP_locations.js に分離 -->
+    <script src="js/data/MAP_locations.js"></script>
+
+    <!-- 🧩 機能ごとに分割したJSコンポーネント（js/フォルダ） -->
+    <script src="js/map/color-customizer.js"></script>
+    <script src="js/map/map-config.js"></script>
+    <script src="js/map/map-grid.js"></script>
+    <script src="js/map/member-list.js"></script>
+    <script src="js/map/location-list.js"></script>
+    <script src="js/map/mobile-ui.js"></script>
+    <script src="js/map/download-zip.js"></script>
+    <script src="js/map/name-toggle.js"></script>
+    <script src="js/map/zoom-slider.js"></script>
+
+    <script>
+        // ==========================================================
+        // ⚙️ マップ初期設定 (マイクラ平面座標)
+        // ==========================================================
+        const map = L.map('map', {
+            crs: L.CRS.Simple,
+            minZoom: -3.58496,  // 1/3倍（現在のデフォルト表示を1倍とした場合）
+            maxZoom: -0.41504,  // 3倍（現在のデフォルト表示を1倍とした場合）
+            zoomSnap: 0,        // 無段階ズームを可能にする
+            zoomDelta: 0,
+            zoomControl: false, // 標準の +/- ボタンは使わず、スライダーに置き換える
+            attributionControl: false
+        });
+
+        map.setView([0, 0], -2);
+
+        // ==========================================================
+        // 🚀 各コンポーネントの初期化（map-config → map-grid → member-list → mobile-ui → download-zip）
+        // ==========================================================
+        MapApp.mapConfig.init(map);
+        MapApp.mapGrid.init(map);
+        MapApp.memberList.init(map);
+        MapApp.mapLocations.init(map);
+        MapApp.mobileUI.init();
+        MapApp.downloadZip.init();
+        MapApp.nameToggle.init({ buttonId: 'icon-toggle-btn', targetSelector: '#map-container' });
+        MapApp.zoomSlider.init({ map: map });
+        MapApp.colorCustomizer.initUI();
+
+        // ==========================================================
+        // 🖼️ 画面読み込み・リサイズ時の再計算まわり（各コンポーネントへ委譲するオーケストレーション）
+        // ==========================================================
+        window.addEventListener('load', () => {
+            MapApp.mapConfig.loadBackgroundImage(); // 初期表示の段階から画像をロード
+            map.invalidateSize();
+            MapApp.mapGrid.updateGrid();
+            MapApp.mapGrid.updateAxisLabels();
+            MapApp.mapGrid.updateZoomDensityClass();
+            MapApp.mobileUI.updateMobileTopbarHeight();
+            MapApp.colorCustomizer.applyCustomColors();
+            setTimeout(() => {
+                map.invalidateSize();
+                MapApp.mapGrid.updateGrid();
+                MapApp.mapGrid.updateAxisLabels();
+                MapApp.mobileUI.updateMobileTopbarHeight();
+            }, 200);
+        });
+
+        // 📱 スマホの画面回転・リサイズ時に地図サイズを再計算
+        window.addEventListener('resize', () => {
+            map.invalidateSize();
+            MapApp.mapGrid.updateGrid();
+            MapApp.mapGrid.updateAxisLabels();
+            MapApp.mobileUI.updateMobileTopbarHeight();
+        });
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                map.invalidateSize();
+                MapApp.mapGrid.updateGrid();
+                MapApp.mapGrid.updateAxisLabels();
+                MapApp.mobileUI.updateMobileTopbarHeight();
+            }, 300);
+        });
+    </script>
+</body>
+</html>

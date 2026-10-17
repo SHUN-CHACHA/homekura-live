@@ -446,6 +446,71 @@ function exportConfig() {
         .catch(() => { document.getElementById('configOutput').select(); alert('自動コピーに失敗しました。テキストエリアを全選択して手動でコピーしてください。'); });
 }
 
+// ─── メンバー一覧CSV出力 ────────────────────────────────
+// CSVの1フィールド分の値を、必要な場合だけダブルクォートで囲んでエスケープする（RFC4180準拠）
+function csvEscape(value) {
+    const s = (value === undefined || value === null) ? "" : String(value);
+    if (/[",\n\r]/.test(s)) {
+        return `"${s.replace(/"/g, '""')}"`;
+    }
+    return s;
+}
+
+function exportMembersCSV() {
+    if (!channels.length) { alert("登録されているメンバーがいません。"); return; }
+
+    // 表示順（順番→登録順）に合わせて出力する
+    const sorted = channels
+        .map((ch, origIdx) => ({ ch, origIdx }))
+        .sort((a, b) => {
+            const orderA = (typeof a.ch.order === 'number') ? a.ch.order : Infinity;
+            const orderB = (typeof b.ch.order === 'number') ? b.ch.order : Infinity;
+            if (orderA !== orderB) return orderA - orderB;
+            return a.origIdx - b.origIdx;
+        })
+        .map(x => x.ch);
+
+    const headers = [
+        "順番", "グループ", "名前", "Minecraft ID", "UUID",
+        "YouTubeチャンネルID", "サブYouTubeチャンネルID",
+        "X(Twitter)ID", "TwitchID", "TikTokID", "InstagramID",
+        "Discord招待URL", "ホームページURL", "カラーコード", "アバター画像パス"
+    ];
+
+    const rows = sorted.map(ch => [
+        (typeof ch.order === 'number') ? ch.order : "",
+        ch.group || "",
+        ch.name || "",
+        ch.minecraftId || "",
+        ch.uuid || "",
+        ch.id || "",
+        ch.id2 || "",
+        ch.twitterId || "",
+        ch.twitchId || "",
+        ch.tiktokId || "",
+        ch.instaId || "",
+        ch.discordUrl || "",
+        ch.homepageUrl || "",
+        ch.color || "",
+        ch.avatarImg || ""
+    ]);
+
+    // Excelで開いた時に文字化けしないよう、先頭にUTF-8のBOMを付ける
+    const csvBody = [headers, ...rows].map(row => row.map(csvEscape).join(",")).join("\r\n");
+    const csvContent = "﻿" + csvBody;
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const blobUrl = URL.createObjectURL(blob);
+    const today = new Date();
+    const dateStr = `${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}`;
+
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = `homekura_members_${dateStr}.csv`;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(blobUrl);
+}
+
 // js/data/config.js を直接手入力で編集した場合に、このページ側のキャッシュ(localStorage)を破棄して
 // 実際に読み込まれている window.CONFIG.DEFAULT_CHANNELS の内容に同期し直す
 function reloadFromConfigJs() {

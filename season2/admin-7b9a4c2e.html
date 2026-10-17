@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>homeクラ 配信ポータル 管理画面</title>
+    <link rel="stylesheet" href="shared/theme.css">
+    <link rel="stylesheet" href="shared/admin.css">
+</head>
+<body>
+
+    <!-- ナビゲーション -->
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
+        <a href="index.html" class="pill-btn-light">🏠 ポータルに戻る</a>
+        <a href="../features.html" class="pill-btn-light">📋 機能一覧を見る</a>
+    </div>
+
+    <!-- 📑 セクション切り替えタブ -->
+    <div id="admin-tab-bar">
+        <button type="button" class="admin-tab-btn" data-tab="members" onclick="switchAdminTab('members')">👥 メンバー</button>
+        <button type="button" class="admin-tab-btn" data-tab="locations" onclick="switchAdminTab('locations')">📍 拠点マップ</button>
+        <button type="button" class="admin-tab-btn" data-tab="places" onclick="switchAdminTab('places')">🗺️ 場所</button>
+        <button type="button" class="admin-tab-btn" data-tab="mapimages" onclick="switchAdminTab('mapimages')">🖼️ 背景地図</button>
+    </div>
+
+    <div class="admin-tab-panel" id="tab-panel-members">
+    <h2>👥 メンバー追加・編集</h2>
+
+    <div class="admin-main-layout">
+        <div class="admin-left-col">
+            <div id="memberFormContainer">
+                <div id="editNotice" style="display:none;"><span class="edit-badge">✏️ メンバー編集モード中</span></div>
+
+                <div class="form-group"><label>名前</label><input type="text" id="m_name" placeholder="例: まぐにぃ"></div>
+                <div class="form-group"><label>YouTube チャンネルID</label><input type="text" id="m_id" placeholder="例: UCMP7QuS4suoONg47Nbi-wrg"></div>
+                <div class="form-group">
+                    <label>サブチャンネルID（任意）</label>
+                    <input type="text" id="m_id2" placeholder="例: UCxxxxxxxxxxxxxxxxxxxxxx（2つ目のYouTubeチャンネルがある場合）">
+                    <p class="helper-note" style="margin-top:4px;">※ 配信中・配信予定・新着の判定にサブチャンネルの動画も反映されます。</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Minecraft ID (Java版) <span class="label-badge-ma">MA</span></label>
+                    <input type="text" id="m_mc" placeholder="例: magunee" oninput="onMcIdInput(this.value)">
+
+                    <!-- UUID表示 -->
+                    <div class="uuid-row">
+                        <span class="uuid-label">UUID:</span>
+                        <span class="uuid-display" id="uuidDisplay">—</span>
+                        <span class="uuid-badge wait" id="uuidBadge" style="display:none;"></span>
+                        <button type="button" id="uuidManualToggleBtn" class="btn-uuid-manual" onclick="toggleUuidManual()" style="display:none;">✏️ 手動入力</button>
+                    </div>
+
+                    <!-- UUID手動入力エリア（自動取得失敗時に展開） -->
+                    <div id="uuidManualArea" style="display:none; margin-top:8px; background:#fff8e1; border:1px solid #fde68a; border-radius:6px; padding:10px;">
+                        <div style="font-size:12px; color:#92400e; margin-bottom:6px; font-weight:bold;">
+                            ⚠️ UUID手動入力（自動取得に失敗した場合）
+                        </div>
+                        <div style="font-size:11px; color:#5c4a00; margin-bottom:8px; line-height:1.6;">
+                            <a href="https://minecraftuuid.com" target="_blank" style="color:var(--accent-blue);">minecraftuuid.com</a> や
+                            <a href="https://namemc.com" target="_blank" style="color:var(--accent-blue);">namemc.com</a> でMinecraft IDを検索し、UUIDをコピーして貼り付けてください。
+                        </div>
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                            <input type="text" id="uuidManualInput"
+                                style="width:280px; font-family:monospace; font-size:12px;"
+                                placeholder="例: 069a79f4-44e9-4726-a5be-fca90e38aaf5"
+                                oninput="validateManualUuid(this.value)">
+                            <button type="button" id="uuidManualConfirmBtn" class="btn-uuid-confirm" onclick="confirmManualUuid()" disabled>確定</button>
+                            <button type="button" class="btn-uuid-cancel" onclick="closeUuidManual()">キャンセル</button>
+                        </div>
+                        <div id="uuidManualValidation" style="font-size:11px; margin-top:5px;"></div>
+                    </div>
+
+                    <!-- プレビュー -->
+                    <div id="avatarPreviewArea" style="margin-top: 10px; display: flex; align-items: center; gap: 15px; background: var(--accent-green-tint); padding: 10px; border-radius: 6px; width: fit-content;">
+                        <span style="font-size: 13px; font-weight: bold; color: var(--accent-green);">頭部プレビュー:</span>
+                        <div class="mc-head-box" id="previewHeadBox">
+                            <div class="coming-soon-lbl">CS</div>
+                        </div>
+                        <button type="button" id="downloadAvatarBtn" class="btn-download-avatar" onclick="downloadMinecraftAvatar()" disabled>画像を [マイクラID].png でPCに保存</button>
+                    </div>
+                    <div id="mineafarNote" style="font-size:11px; color:var(--accent-blue); margin-top:4px; display:none;">
+                        ✅ Mineatar（api.mineatar.io）でアウターレイヤー込みの頭部3D画像を取得しています
+                    </div>
+                </div>
+
+                <div class="form-group"><label>X (旧Twitter) ID</label><input type="text" id="m_x" placeholder="例: maguro29"></div>
+                <div class="form-group"><label>Twitch ID</label><input type="text" id="m_tw" placeholder="例: maguro29game"></div>
+                <div class="form-group">
+                    <label>TikTok ID <span class="label-badge-tt">TT</span></label>
+                    <input type="text" id="m_tt" placeholder="例: maguro29 （@は不要）">
+                </div>
+                <div class="form-group"><label>Instagram ID</label><input type="text" id="m_inst" placeholder="例: "></div>
+                <div class="form-group"><label>Discord 招待URL</label><input type="text" id="m_discord" placeholder="https://discord.gg/..."></div>
+                <div class="form-group"><label>ホームページURL</label><input type="text" id="m_homepage" placeholder="https://..."></div>
+
+                <div class="form-group">
+                    <label>メンバーカラー</label>
+                    <input type="color" id="m_color" value="#ff9900" oninput="syncColorPickerToText(this.value)">
+                    <input type="text" id="m_color_text" class="color-code-input" value="#ff9900" maxlength="7" placeholder="#ffffff" oninput="syncTextColorToPicker(this.value)">
+                </div>
+
+                <div class="form-group">
+                    <label>表示順（order）</label>
+                    <input type="number" id="m_order" placeholder="例: 10（空欄でもOK。数字が小さい順に表示されます）">
+                </div>
+                <div class="form-group">
+                    <label>グループ見出し（group）</label>
+                    <input type="text" id="m_group" placeholder="例: ○○夫婦（同じ名前の人同士が隣接表示され、見出しが付きます）">
+                </div>
+
+                <button id="saveBtn" class="btn-save" onclick="addMember()">メンバーを保存</button>
+                <button id="cancelBtn" style="display:none; margin-left:10px;" onclick="cancelEdit()">編集をキャンセル</button>
+            </div>
+
+            <div class="helper-card" style="margin-top: 20px;">
+                <h3>⚙️ config.js の書き換え</h3>
+                <p style="font-size: 13px; color: #5c6b5a; margin-bottom: 10px; margin-top: 0;">
+                    メンバーの追加・編集が終わったら、下のボタンで最新の設定をコピーし、ローカルの <code>js/data/config.js</code> を丸ごと上書き保存してください。
+                </p>
+                <button type="button" class="btn-export" style="width: 100%; padding: 10px; margin-bottom: 10px; font-size: 13px;" onclick="exportConfig()">
+                    📋 config.jsの内容をコピー
+                </button>
+                <textarea id="configOutput" readonly placeholder="メンバー情報を保存すると最新の設定データがここに自動同期されます"></textarea>
+
+                <p style="font-size: 12px; color: #5c6b5a; margin: 14px 0 6px;">
+                    <b>js/data/config.js を直接手入力で編集した場合</b>は、下のボタンでこのページのデータを最新のconfig.jsに合わせ直してください（このブラウザに保存されている編集中のデータは破棄されます）。
+                </p>
+                <button type="button" style="width: 100%; padding: 8px; font-size: 12px; background: #b45309; color: white; border: none; font-weight: bold;" onclick="reloadFromConfigJs()">
+                    🔄 config.jsを再読み込み（ローカルの編集を破棄）
+                </button>
+            </div>
+        </div>
+
+        <div class="admin-right-col">
+            <div class="helper-card">
+                <h3>🎨 顔アイコン（アバター）の追加手順</h3>
+                <ol class="steps-list-lg">
+                    <li>
+                        <strong>画像を準備する</strong>
+                        <ul>
+                            <li>下部のメンバー一覧から名前をクリックしてデータを参照するか、新規に必要項目を記入します。</li>
+                            <li><b>Minecraft ID</b> を入力すると、<b>Ashcon API</b> 経由でUUIDを自動取得します（Mojang APIはブラウザから直接呼べないためCORS対応プロキシを使用）。</li>
+                            <li>UUIDが取得できると <b>Mineatar</b>（api.mineatar.io）で頭部3D画像がプレビュー表示されます。アウターレイヤーも正確に反映されます。<b style="color: #dc2626;">ナナちゃんのハゲを隠すのにここまでしないと駄目でした</b></li>
+                            <li>「<b>画像を【Minecraft ID】.png でPCに保存</b>」ボタンをクリックするとダウンロードフォルダに画像が保存されます。</li>
+                            <li>編集が完了したら「<b>メンバーを保存</b>」ボタンをクリックしてください。UUIDも一緒に保存されます。</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>画像ファイルのアップロード</strong>
+                        <ul>
+                            <li>ルートディレクトリに <code>avatars</code> フォルダを作成します。</li>
+                            <li>ダウンロードした画像ファイルをその <code>avatars</code> フォルダ内に保存します。</li>
+                            <li>画像がない・まだ用意していないメンバーは、自動的に <code>avatars/fallback.svg</code> が表示されます。</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>画像ファイルの紐づけ</strong>
+                        <ul>
+                            <li>「<b>⚙️ config.jsの書き換え</b>」から「<b>config.jsの内容をコピー</b>」ボタンをクリックするとクリップボードにコピーされます。</li>
+                            <li>コピーした内容をWEBの <code>js/data/config.js</code> に全文貼り替えて保存してください。</li>
+                            <li>アップロードが完了したら反映されているか確認して終了です。</li>
+                        </ul>
+                    </li>
+                </ol>
+                <p class="helper-note">
+                    ※ <b>UUID取得について：</b>Mojang APIはブラウザからの直接アクセスがCORSでブロックされるため、CORS対応の <code>api.ashcon.app</code> を経由してUUIDを取得しています。取得したUUIDはjs/data/config.jsに保存されます。<br>
+                    ※ 画像はMineatar（api.mineatar.io）から取得しローカルに保存することで、スマホ表示時の外部APIブロック問題を回避しています。
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 30px;">📋 現在の登録メンバー一覧 <span style="font-size:13px; color:#5c6b5a; font-weight:normal;">（名前をクリックすると再編集できます）</span></h2>
+    <div style="overflow-x: auto;">
+    <table class="member-table">
+        <thead>
+            <tr>
+                <th style="width: 44px; text-align:center;">順番</th>
+                <th style="width: 40px; text-align:center;">カラー</th>
+                <th style="width: 44px; text-align:center;">顔</th>
+                <th style="min-width: 80px;">名前</th>
+                <th style="min-width: 90px;">Minecraft ID</th>
+                <th style="min-width: 130px;">UUID</th>
+                <th style="min-width: 120px;">YouTube ID</th>
+                <th style="min-width: 120px;">サブYouTube ID</th>
+                <th style="min-width: 80px;">X (Twitter)</th>
+                <th style="min-width: 80px;">Twitch</th>
+                <th style="min-width: 80px;">TikTok</th>
+                <th style="min-width: 80px;">Instagram</th>
+                <th style="min-width: 100px;">Discord</th>
+                <th style="min-width: 100px;">ホームページ</th>
+                <th style="width: 60px;">操作</th>
+            </tr>
+        </thead>
+        <tbody id="memberTableBody"></tbody>
+    </table>
+    </div>
+    </div><!-- /#tab-panel-members -->
+
+    <div class="admin-tab-panel" id="tab-panel-locations">
+    <h2>📍 拠点マップ 編集（MAP_member.js）</h2>
+
+    <div class="admin-main-layout">
+        <div class="admin-left-col">
+            <div id="locFormContainer">
+                <div id="locEditNotice" style="display:none;"><span class="edit-badge">✏️ 拠点編集モード中</span></div>
+
+                <div class="form-group"><label>エリア名（area）</label><input type="text" id="l_area" placeholder="例: エリア37（空欄でも可）"></div>
+                <div class="form-group">
+                    <label>X座標</label><input type="number" class="loc-coord" id="l_x" placeholder="例: 720">
+                </div>
+                <div class="form-group">
+                    <label>Z座標</label><input type="number" class="loc-coord" id="l_z" placeholder="例: 0">
+                </div>
+
+                <div class="loc-person-block" data-slot="1">
+                    <h4>1人目</h4>
+                    <div class="form-group">
+                        <label>登録メンバーから選択</label>
+                        <select class="loc-person-select" onchange="fillPersonFromChannel(1, this.value)">
+                            <option value="">— 自由入力 —</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>名前</label><input type="text" id="l_name1" placeholder="例: まぐにぃ"></div>
+                    <div class="form-group"><label>アイコンファイル名</label><input type="text" id="l_icon1" placeholder="例: maguro29.png"></div>
+                </div>
+
+                <div class="loc-person-block" data-slot="2">
+                    <h4>2人目（同じ拠点にいる場合のみ）</h4>
+                    <div class="form-group">
+                        <label>登録メンバーから選択</label>
+                        <select class="loc-person-select" onchange="fillPersonFromChannel(2, this.value)">
+                            <option value="">— 自由入力 —</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>名前</label><input type="text" id="l_name2" placeholder=""></div>
+                    <div class="form-group"><label>アイコンファイル名</label><input type="text" id="l_icon2" placeholder=""></div>
+                </div>
+
+                <div class="loc-person-block" data-slot="3">
+                    <h4>3人目（同じ拠点にいる場合のみ）</h4>
+                    <div class="form-group">
+                        <label>登録メンバーから選択</label>
+                        <select class="loc-person-select" onchange="fillPersonFromChannel(3, this.value)">
+                            <option value="">— 自由入力 —</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>名前</label><input type="text" id="l_name3" placeholder=""></div>
+                    <div class="form-group"><label>アイコンファイル名</label><input type="text" id="l_icon3" placeholder=""></div>
+                </div>
+
+                <button id="locSaveBtn" class="btn-save" onclick="saveLocation()">拠点を保存</button>
+                <button id="locCancelBtn" style="display:none; margin-left:10px;" onclick="cancelLocEdit()">編集をキャンセル</button>
+            </div>
+
+            <div class="helper-card" style="margin-top: 20px;">
+                <h3>⚙️ MAP_member.js の書き換え</h3>
+                <p style="font-size: 13px; color: #5c6b5a; margin-bottom: 10px; margin-top: 0;">
+                    拠点の追加・編集が終わったら、下のボタンで最新のコードをコピーし、ローカルの <code>js/data/MAP_member.js</code> を丸ごと上書き保存してください。
+                </p>
+                <button type="button" class="btn-export" style="width: 100%; padding: 10px; margin-bottom: 10px; font-size: 13px;" onclick="exportMapMembers()">
+                    📋 MAP_member.jsの内容をコピー
+                </button>
+                <textarea id="mapMemberOutput" readonly placeholder="拠点情報を保存すると最新のコードがここに自動同期されます"></textarea>
+
+                <p style="font-size: 12px; color: #5c6b5a; margin: 14px 0 6px;">
+                    <b>js/data/MAP_member.js を直接手入力で編集した場合</b>は、下のボタンでこのページのデータを最新の内容に合わせ直してください（このブラウザに保存されている編集中のデータは破棄されます）。
+                </p>
+                <button type="button" style="width: 100%; padding: 8px; font-size: 12px; background: #b45309; color: white; font-weight: bold; border: none;" onclick="reloadFromMapMemberJs()">
+                    🔄 MAP_member.jsを再読み込み（ローカルの編集を破棄）
+                </button>
+            </div>
+        </div>
+
+        <div class="admin-right-col">
+            <div class="helper-card">
+                <h3>📝 使い方メモ</h3>
+                <ul class="steps-list-lg" style="padding-left: 18px;">
+                    <li>「登録メンバーから選択」で上の<b>👥 メンバー追加・編集</b>に登録済みの人を選ぶと、名前・アイコンが自動入力されます（表記ゆれ防止のため、名簿にいる人はできるだけこちらから選んでください）。</li>
+                    <li>名簿にいない人（配信者ではない参加者など）は自由入力欄に直接入力してください。</li>
+                    <li>アイコン画像ファイルは <code>avatars</code> フォルダに置く前提です。上の「👥 メンバー追加・編集」でアバターをダウンロードしてから使うと簡単です。</li>
+                    <li>座標（X・Z）はマイクラの F3 画面で確認した数値をそのまま入力してください。</li>
+                    <li>1つの拠点に最大3人まで登録できます。空欄のままでもOKです。</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 30px;">📋 現在の拠点一覧 <span style="font-size:13px; color:#5c6b5a; font-weight:normal;">（エリア名をクリックすると再編集できます）</span></h2>
+    <div style="overflow-x: auto;">
+    <table class="member-table">
+        <thead>
+            <tr>
+                <th style="min-width: 90px;">エリア</th>
+                <th style="min-width: 140px;">1人目</th>
+                <th style="min-width: 140px;">2人目</th>
+                <th style="min-width: 140px;">3人目</th>
+                <th style="width: 70px;">X</th>
+                <th style="width: 70px;">Z</th>
+                <th style="width: 60px;">操作</th>
+            </tr>
+        </thead>
+        <tbody id="locTableBody"></tbody>
+    </table>
+    </div>
+    </div><!-- /#tab-panel-locations -->
+
+    <div class="admin-tab-panel" id="tab-panel-places">
+    <h2>🗺️ 場所（目印）編集（MAP_locations.js）</h2>
+
+    <div class="admin-main-layout">
+        <div class="admin-left-col">
+            <div id="placeFormContainer">
+                <div id="placeEditNotice" style="display:none;"><span class="edit-badge">✏️ 場所編集モード中</span></div>
+
+                <div class="form-group"><label>名前</label><input type="text" id="pl_name" placeholder="例: 祭会場"></div>
+                <div class="form-group">
+                    <label>アイコン画像</label>
+                    <select id="placeIconPicker" class="loc-person-select" onchange="fillIconFromPicker(this.value)">
+                        <option value="">— 既存のアイコンから選ぶ —</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>アイコンファイル名</label><input type="text" id="pl_icon" placeholder="例: matsuri_chouchin.png"></div>
+                <div class="form-group">
+                    <label>X座標</label><input type="number" class="loc-coord" id="pl_x" placeholder="例: -9">
+                </div>
+                <div class="form-group">
+                    <label>Z座標</label><input type="number" class="loc-coord" id="pl_z" placeholder="例: -388">
+                </div>
+
+                <button id="placeSaveBtn" class="btn-save" onclick="savePlace()">場所を保存</button>
+                <button id="placeCancelBtn" style="display:none; margin-left:10px;" onclick="cancelPlaceEdit()">編集をキャンセル</button>
+            </div>
+
+            <div class="helper-card" style="margin-top: 20px;">
+                <h3>⚙️ MAP_locations.js の書き換え</h3>
+                <p style="font-size: 13px; color: #5c6b5a; margin-bottom: 10px; margin-top: 0;">
+                    場所の追加・編集が終わったら、下のボタンで最新のコードをコピーし、ローカルの <code>js/data/MAP_locations.js</code> を丸ごと上書き保存してください。
+                </p>
+                <button type="button" class="btn-export" style="width: 100%; padding: 10px; margin-bottom: 10px; font-size: 13px;" onclick="exportLocationData()">
+                    📋 MAP_locations.jsの内容をコピー
+                </button>
+                <textarea id="placeDataOutput" readonly placeholder="場所情報を保存すると最新のコードがここに自動同期されます"></textarea>
+
+                <p style="font-size: 12px; color: #5c6b5a; margin: 14px 0 6px;">
+                    <b>js/data/MAP_locations.js を直接手入力で編集した場合</b>は、下のボタンでこのページのデータを最新の内容に合わせ直してください（このブラウザに保存されている編集中のデータは破棄されます）。
+                </p>
+                <button type="button" style="width: 100%; padding: 8px; font-size: 12px; background: #b45309; color: white; font-weight: bold; border: none;" onclick="reloadFromLocationJs()">
+                    🔄 MAP_locations.jsを再読み込み（ローカルの編集を破棄）
+                </button>
+            </div>
+        </div>
+
+        <div class="admin-right-col">
+            <div class="helper-card">
+                <h3>📝 使い方メモ</h3>
+                <ul class="steps-list-lg" style="padding-left: 18px;">
+                    <li>「場所」はメンバーではない目印（祭会場・共有地・初期地など）です。ここで追加・編集しても登録メンバー人数には影響しません。</li>
+                    <li>「アイコン画像」のプルダウンは、上の2セクションで既に使われているアイコンファイル名から選べる一覧です。選ぶと下の欄に自動入力されます。新しい画像を使う場合は下の欄に直接ファイル名を入力してください。</li>
+                    <li>アイコン画像ファイルは <code>avatars</code> フォルダに置く前提です。</li>
+                    <li>座標（X・Z）はマイクラの F3 画面で確認した数値をそのまま入力してください。</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 30px;">📋 現在の場所一覧 <span style="font-size:13px; color:#5c6b5a; font-weight:normal;">（名前をクリックすると再編集できます）</span></h2>
+    <div style="overflow-x: auto;">
+    <table class="member-table">
+        <thead>
+            <tr>
+                <th style="min-width: 100px;">名前</th>
+                <th style="min-width: 160px;">アイコン</th>
+                <th style="width: 70px;">X</th>
+                <th style="width: 70px;">Z</th>
+                <th style="width: 60px;">操作</th>
+            </tr>
+        </thead>
+        <tbody id="placeTableBody"></tbody>
+    </table>
+    </div>
+    </div><!-- /#tab-panel-places -->
+
+    <div class="admin-tab-panel" id="tab-panel-mapimages">
+    <h2>🖼️ 背景地図 編集（map-config.js）</h2>
+
+    <div class="admin-main-layout">
+        <div class="admin-left-col">
+            <div id="mapImageFormContainer">
+                <div id="mapImageEditNotice" style="display:none;"><span class="edit-badge">✏️ 背景地図編集モード中</span></div>
+
+                <div class="form-group"><label>画像ファイル名</label><input type="text" id="mc_filename" placeholder="例: 8月4日.png（mapフォルダ内のファイル名）"></div>
+                <div class="form-group">
+                    <label>左上 X座標</label><input type="number" class="loc-coord" id="mc_x1" placeholder="例: -1600">
+                </div>
+                <div class="form-group">
+                    <label>左上 Z座標</label><input type="number" class="loc-coord" id="mc_z1" placeholder="例: -1600">
+                </div>
+                <div class="form-group">
+                    <label>右下 X座標</label><input type="number" class="loc-coord" id="mc_x2" placeholder="例: 1984">
+                </div>
+                <div class="form-group">
+                    <label>右下 Z座標</label><input type="number" class="loc-coord" id="mc_z2" placeholder="例: 1472">
+                </div>
+                <div class="form-group">
+                    <label>不透明度（opacity）</label><input type="number" class="loc-coord" id="mc_opacity" placeholder="1" min="0" max="1" step="0.05">
+                </div>
+
+                <button id="mapImageSaveBtn" class="btn-save" onclick="saveMapImage()">背景地図を保存</button>
+                <button id="mapImageCancelBtn" style="display:none; margin-left:10px;" onclick="cancelMapImageEdit()">編集をキャンセル</button>
+            </div>
+
+            <div class="helper-card" style="margin-top: 20px;">
+                <h3>⚙️ map-config.js の書き換え</h3>
+                <p style="font-size: 13px; color: #5c6b5a; margin-bottom: 10px; margin-top: 0;">
+                    背景地図の追加・編集が終わったら、下のボタンで最新のコードをコピーし、ローカルの <code>js/map/map-config.js</code> を丸ごと上書き保存してください。
+                </p>
+                <button type="button" class="btn-export" style="width: 100%; padding: 10px; margin-bottom: 10px; font-size: 13px;" onclick="exportMapConfig()">
+                    📋 map-config.jsの内容をコピー
+                </button>
+                <textarea id="mapConfigOutput" readonly placeholder="背景地図情報を保存すると最新のコードがここに自動同期されます"></textarea>
+
+                <p style="font-size: 12px; color: #5c6b5a; margin: 14px 0 6px;">
+                    <b>js/map/map-config.js を直接手入力で編集した場合</b>は、下のボタンでこのページのデータを最新の内容に合わせ直してください（このブラウザに保存されている編集中のデータは破棄されます）。
+                </p>
+                <button type="button" style="width: 100%; padding: 8px; font-size: 12px; background: #b45309; color: white; font-weight: bold; border: none;" onclick="reloadFromMapConfigJs()">
+                    🔄 map-config.jsを再読み込み（ローカルの編集を破棄）
+                </button>
+            </div>
+        </div>
+
+        <div class="admin-right-col">
+            <div class="helper-card">
+                <h3>📝 使い方メモ</h3>
+                <ul class="steps-list-lg" style="padding-left: 18px;">
+                    <li>新しい月の地図画像は、まず画像ファイル本体を <code>map</code> フォルダにアップロードしてください（この管理画面からは画像ファイル自体はアップロードできません）。</li>
+                    <li>「画像ファイル名」は <code>map/</code> を付けずに入力してください（自動で付きます）。</li>
+                    <li>座標は Chunkbase などで切り抜いた画像の範囲（左上と右下の2点、X・Z座標）を入力してください。</li>
+                    <li>新規に保存した地図は一覧の<b>先頭</b>に追加されます（先頭＝サイトを開いた時に最初に表示される地図になります）。順番を変えたい時は一覧の▲▼ボタンで並べ替えてください。</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 30px;">📋 現在の背景地図一覧 <span style="font-size:13px; color:#5c6b5a; font-weight:normal;">（一番上が初期表示される地図／ファイル名をクリックすると再編集できます）</span></h2>
+    <div style="overflow-x: auto;">
+    <table class="member-table">
+        <thead>
+            <tr>
+                <th style="width: 50px;">順番</th>
+                <th style="min-width: 140px;">ファイル名</th>
+                <th style="min-width: 160px;">bounds（左上→右下）</th>
+                <th style="width: 70px;">不透明度</th>
+                <th style="width: 90px;">操作</th>
+            </tr>
+        </thead>
+        <tbody id="mapImageTableBody"></tbody>
+    </table>
+    </div>
+    </div><!-- /#tab-panel-mapimages -->
+
+<script src="js/data/config.js"></script>
+<script src="js/data/MAP_member.js"></script>
+<script src="js/data/MAP_locations.js"></script>
+<script src="js/map/map-config.js"></script>
+<script src="js/admin/admin-members.js"></script>
+<script src="js/admin/admin-locations.js"></script>
+<script src="js/admin/admin-places.js"></script>
+<script src="js/admin/admin-mapimages.js"></script>
+<script src="js/admin/admin-tabs.js"></script>
+<script>
+initAdmin();
+initLocAdmin();
+initPlaceAdmin();
+initMapConfigAdmin();
+initAdminTabs();
+</script>
+</body>
+</html>

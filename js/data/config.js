@@ -223,21 +223,6 @@ window.CONFIG = {
                 "order": 105
         },
         {
-                "name": "月成るくす",
-                "id": "UCP9rcDSyTRtnu8EsG2CmLMg",
-                "minecraftId": "tsukinarilux",
-                "uuid": "00fdc6a9-b63d-4456-86e5-271c91645cd9",
-                "twitterId": "Tsukinari_Lux_",
-                "twitchId": "",
-                "tiktokId": "",
-                "instaId": "tsukinarilux",
-                "discordUrl": "",
-                "homepageUrl": "https://tsukinarilux.wixsite.com/tsukinarilux",
-                "color": "#bcec55",
-                "avatarImg": "avatars/tsukinarilux.png",
-                "order": 106
-        },
-        {
                 "name": "メッス",
                 "id": "UCkJeBcOPRBs5bri5B3sFgVg",
                 "minecraftId": "messu009",

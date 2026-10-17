@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【Season2アーカイブ】homeクラ 配信ポータル ＠旬茶</title>
+
+    <link rel="icon" href="https://shun-chacha.github.io/homekura-live/img/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="https://shun-chacha.github.io/homekura-live/img/icon.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/img/apple-touch-icon.png">
+    <link rel="stylesheet" href="shared/theme.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 60px;
+            line-height: 1.5;
+        }
+
+        .banner-container {
+            width: 100%;
+            background: var(--accent-green);
+            aspect-ratio: 16 / 1.75;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.05);
+        }
+        .header-logo {
+            height: 75%;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0px 2px 6px rgba(0,0,0,0.15));
+        }
+
+        .top-buttons-wrapper {
+            max-width: 1200px;
+            margin: 14px auto 0;
+            padding: 0 16px;
+            display: flex;
+            align-items: stretch;
+            gap: 14px;
+            box-sizing: border-box;
+        }
+        .top-buttons-stack {
+            flex: 1 1 0;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            row-gap: 10px;
+        }
+        .controls-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; row-gap: 8px; }
+        .controls-right { display: flex; align-items: center; gap: 12px; }
+
+        .roulette-btn {
+            text-decoration: none;
+            color: var(--secondary-text);
+            font-size: 13px;
+            font-weight: bold;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .roulette-btn:hover { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+
+        .yurugp-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 92px;
+            height: 92px;
+            align-self: center;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .yurugp-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .yurugp-btn:hover { transform: translateY(-1px) scale(1.05); box-shadow: 0 4px 8px rgba(214,51,108,0.25); }
+
+        .github-btn {
+            background: #ffffff;
+        }
+        .github-btn img { object-fit: contain; padding: 6px; box-sizing: border-box; }
+        .github-btn:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.25); }
+
+        .modrinth-btn {
+            background: #ffffff;
+        }
+        .modrinth-btn img { object-fit: contain; padding: 6px; box-sizing: border-box; }
+        .modrinth-btn:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.25); }
+
+        .external-links-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: nowrap;
+        }
+        .site-link-btn {
+            text-decoration: none;
+            padding: 10px 10px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            flex: 1 1 0;
+            min-width: 0;
+            height: 44px;
+            box-sizing: border-box;
+        }
+        .site-link-btn .sl-icon { font-size: 18px; line-height: 1; flex-shrink: 0; }
+        .site-link-btn .sl-line1 {
+            font-size: 13px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
+        }
+
+        /* 📊 homeクラLIVE!：漆黒の背景×オレンジレッドのアクセントに準拠 */
+        .site-link-btn.stats-btn {
+            background: #111111;
+            color: #ffffff;
+            border-color: #2a2a2a;
+        }
+        .site-link-btn.stats-btn:hover { background: #1a1a1a; border-color: #e8622c; transform: translateY(-1px); }
+        .site-link-btn.stats-btn .sl-line1 { color: #e8622c; }
+
+        /* 🌐 まぐにぃさんのページ：ハチミツ色（ゴールド）の明るい配色。しろくるさんのページ（濃茶背景）とは背景の明暗で区別 */
+        .site-link-btn.maguro-btn {
+            background: #e0a52c;
+            color: #4a2f0a;
+            border-color: #b5811a;
+        }
+        .site-link-btn.maguro-btn:hover { background: #eab446; border-color: #4a2f0a; transform: translateY(-1px); }
+
+        @media (max-width: 420px) {
+            .site-link-btn { padding: 8px 6px; gap: 5px; height: 40px; }
+            .site-link-btn .sl-icon { font-size: 15px; }
+            .site-link-btn .sl-line1 { font-size: 11px; }
+            .yurugp-btn { width: 64px; height: 64px; }
+        }
+
+        .btn-tool {
+            background: var(--accent-green); color: #fff; border: none; padding: 6px 16px; border-radius: 20px;
+            font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .btn-tool:hover { opacity: 0.9; }
+        #timer { font-size: 13px; color: var(--secondary-text); font-family: monospace; }
+
+        .progress-container { max-width: 1200px; height: 4px; background: var(--border-color); margin: 8px auto; border-radius: 2px; overflow: hidden; }
+        #progress-bar { width: 100%; height: 100%; background: var(--accent-green); transition: width 1s linear; }
+
+        .main-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 16px; box-sizing: border-box; }
+        .section-box {
+            background: var(--container-bg);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px -2px rgba(45, 90, 39, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-title { font-size: 16px; font-weight: bold; margin-top: 0; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+
+        .card {
+            background: var(--container-bg); border-radius: 12px; overflow: hidden;
+            border: 1px solid var(--border-color); display: flex; flex-direction: column;
+            position: relative; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(45, 90, 39, 0.06); }
+        .card.is-live { border-color: var(--accent-green) !important; box-shadow: 0 0 8px rgba(45, 90, 39, 0.15); }
+        .card.is-new { border-color: var(--accent-blue) !important; }
+
+        .thumb-wrap { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #e6ede6; }
+        .thumb { width: 100%; height: 100%; object-fit: cover; }
+        .thumb-bg { position: absolute; width: 100%; height: 100%; opacity: 0.12; filter: blur(20px); }
+        .thumb-profile { width: 40%; height: auto; border-radius: 50%; position: relative; z-index: 2; border: 3px solid var(--container-bg); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+
+        .badge-new { position: absolute; top: 6px; left: 6px; background: var(--accent-blue); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10; }
+        .badge-live { position: absolute; top: 6px; left: 6px; background: var(--accent-green); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10; }
+
+        .info { padding: 8px; flex-grow: 1; background: rgba(255,255,255,0.4); }
+        .name { font-weight: 800; font-size: 12px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .title { font-size: 11px; font-weight: 600; line-height: 1.3; height: 2.6em; overflow: hidden; color: var(--secondary-text); }
+
+        .btn-area { padding: 0 8px 8px; display: flex; flex-wrap: wrap; gap: 4px; }
+        .btn {
+            flex: 1; min-width: 45px; text-align: center; text-decoration: none; font-size: 10px; font-weight: bold;
+            padding: 5px 0; border-radius: 6px; color: var(--secondary-text) !important; background: #e2eae2; transition: background 0.2s;
+        }
+        .btn:hover { background: #d3ded3; color: var(--text-color) !important; }
+        .btn-yt { background: #fde2e2; color: #dc2626 !important; }
+        .btn-yt:hover { background: #fca5a5; }
+        .btn-tw { background: #ede9fe; color: #7c3aed !important; }
+        .btn-tw:hover { background: #ddd6fe; }
+
+        .btn-reserve { flex-basis: 100%; background: #e0f2fe; color: #0284c7 !important; padding: 6px 0; font-size: 11px; }
+        .btn-reserve.active { background: var(--accent-blue); color: #ffffff !important; }
+
+        .list-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; align-items: stretch; }
+        .group-heading {
+            grid-column: 1 / -1;
+            font-weight: bold;
+            font-size: 13px;
+            color: var(--accent-green);
+            padding: 10px 4px 4px;
+            margin-top: 4px;
+            border-top: 1px solid var(--border-color);
+        }
+        .group-heading:first-child { border-top: none; margin-top: 0; padding-top: 0; }
+        .row-item {
+            background: #f0f5f0; border-radius: 10px; padding: 8px 10px;
+            display: flex; flex-direction: column; align-items: stretch; justify-content: center; gap: 5px;
+            border: 1px solid var(--border-color); box-sizing: border-box;
+            min-width: 0; overflow: hidden;
+        }
+        .row-top { display: flex; align-items: center; gap: 8px; width: 100%; min-width: 0; overflow: hidden; }
+        .row-bottom { display: flex; align-items: center; width: 100%; min-width: 0; }
+
+        .mc-head-box {
+            display: flex;
+            width: 32px; height: 32px; border-radius: 5px; overflow: hidden;
+            align-items: center; justify-content: center; flex-shrink: 0;
+            background: #ffffff; border: 1.5px solid var(--border-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .mc-head-img { width: 100%; height: 100%; object-fit: contain; transform: scale(1.1); }
+
+        .row-name {
+            font-weight: bold; font-size: 12px;
+            white-space: normal; overflow: visible; text-overflow: unset;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+            overflow: hidden; min-height: 2em; line-height: 1em;
+            color: var(--text-color); min-width: 0; flex: 1;
+        }
+
+        .row-btns { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; width: 100%; }
+        .btn-square-mini {
+            width: 26px; height: 26px; border-radius: 5px;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            text-decoration: none; transition: all 0.2s ease; background: #ffffff; border: 1px solid var(--border-color);
+        }
+        .btn-square-mini:hover { transform: scale(1.05); background: #e2eae2; filter: grayscale(100%) contrast(120%); }
+        .btn-square-mini svg { width: 13px; height: 13px; }
+        .btn-square-mini.btn-yt svg { fill: #ff0000; }
+        .btn-square-mini.btn-x svg { fill: #14171a; }
+        .btn-square-mini.btn-hp svg { fill: #2563eb; }
+        .btn-square-mini.btn-tw svg { fill: #9146ff; }
+        .btn-square-mini.btn-inst svg { fill: #e1306c; }
+        .btn-square-mini.btn-disc svg { fill: #5865f2; }
+        .btn-square-mini.btn-tt svg { fill: #010101; }
+
+        @media (min-width: 600px) {
+            .grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+            .card .name { font-size: 14px; }
+            .card .title { font-size: 12px; }
+            .btn-area { padding: 0 12px 12px; gap: 6px; }
+            .btn { font-size: 11px; padding: 6px 0; }
+
+            .list-container { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            /* タブレット以上：顔アイコンを左に大きく配置し、右側を「名前(1行目)／SNSアイコン(2行目)」の2段組みにする。
+               HTML構造(.row-top=アイコン+名前、.row-bottom=SNSボタン)は変えず、
+               display:contents で箱だけ消してgridに直接配置する。 */
+            .row-item {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                grid-template-rows: auto auto;
+                align-items: center;
+                column-gap: 12px;
+                row-gap: 4px;
+                padding: 10px 14px;
+            }
+            .row-top { display: contents; }
+            .row-bottom { display: contents; }
+            .mc-head-box { grid-column: 1; grid-row: 1 / 3; width: 64px; height: 64px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+            .row-name { grid-column: 2; grid-row: 1; font-size: 14px; min-height: 2em; line-height: 1em; }
+            .row-btns { grid-column: 2; grid-row: 2; }
+            .btn-square-mini { width: 30px; height: 30px; border-radius: 50%; }
+            .btn-square-mini svg { width: 14px; height: 14px; }
+        }
+
+        @media (min-width: 950px) {
+            .list-container { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+            .grid { grid-template-columns: repeat(5, 1fr); }
+        }
+
+        /* SNSポップアップモーダル */
+        #sns-modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 9998;
+            align-items: center; justify-content: center;
+        }
+        #sns-modal.open { display: flex; }
+        #sns-modal-inner {
+            background: #fff; border-radius: 20px; padding: 24px 28px 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25); min-width: 240px; max-width: 88vw;
+            animation: modalIn 0.2s ease;
+        }
+        #sns-modal-inner h3 { margin: 0 0 4px; font-size: 16px; color: var(--accent-green); }
+        #sns-modal-inner .sns-subtitle { font-size: 11px; color: var(--secondary-text); margin: 0 0 16px; }
+        .sns-link-list { display: flex; flex-direction: column; gap: 8px; }
+        .sns-link-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 14px; border-radius: 10px; text-decoration: none;
+            font-size: 13px; font-weight: bold; color: #333;
+            background: #f0f5f0; border: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+        .sns-link-item:hover { background: #e2eae2; }
+        .sns-link-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+        .sns-link-item.yt  { background: #fde2e2; } .sns-link-item.yt svg  { fill: #dc2626; }
+        .sns-link-item.tw  { background: #ede9fe; } .sns-link-item.tw svg  { fill: #9146ff; }
+        .sns-link-item.x   { background: #f3f4f6; } .sns-link-item.x svg   { fill: #14171a; }
+        .sns-link-item.tt  { background: #f0f0f0; } .sns-link-item.tt svg  { fill: #010101; }
+        .sns-link-item.ig  { background: #fce7f3; } .sns-link-item.ig svg  { fill: #e1306c; }
+        .sns-link-item.dc  { background: #eef2ff; } .sns-link-item.dc svg  { fill: #5865f2; }
+        .sns-link-item.hp  { background: #dbeafe; } .sns-link-item.hp svg  { fill: #2563eb; }
+        #sns-modal-member-btn {
+            display: block; margin-top: 14px; text-align: center; text-decoration: none;
+            font-size: 12px; font-weight: bold; color: var(--secondary-text);
+            padding: 8px; border-radius: 10px; background: #f0f5f0;
+            border: 1px solid var(--border-color); transition: background 0.2s;
+        }
+        #sns-modal-member-btn:hover { background: #e2eae2; }
+        #sns-close-btn {
+            display: block; width: 100%; margin-top: 10px; padding: 9px 0;
+            background: var(--accent-green); color: #fff; border: none;
+            border-radius: 20px; font-size: 14px; font-weight: bold; cursor: pointer;
+        }
+
+        /* 3Dスキンビューアーモーダル */
+        #skin3d-modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6); z-index: 9998;
+            align-items: center; justify-content: center;
+        }
+        #skin3d-modal.open { display: flex; }
+        #skin3d-modal-inner {
+            background: #fff; border-radius: 20px; padding: 20px 24px 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25); max-width: 92vw;
+            animation: modalIn 0.2s ease; text-align: center;
+        }
+        #skin3d-modal-inner h3 { margin: 0 0 10px; font-size: 16px; color: var(--accent-green); }
+        #skin3d-canvas-wrap {
+            position: relative; width: 260px; height: 340px;
+            background: #2b2b2b; border-radius: 12px; overflow: hidden; margin: 0 auto;
+        }
+        #skin3d-canvas { display: block; width: 100%; height: 100%; }
+        #skin3d-loading {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            color: #bbb; font-size: 12px; pointer-events: none;
+        }
+        #skin3d-controls { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+        .skin3d-anim-btn {
+            font-size: 12px; font-weight: bold; padding: 6px 12px;
+            border-radius: 16px; border: 1px solid var(--border-color);
+            background: #f0f5f0; color: var(--secondary-text); cursor: pointer;
+            transition: 0.2s;
+        }
+        .skin3d-anim-btn:hover { background: #e2eae2; }
+        .skin3d-anim-btn.active { background: var(--accent-green); color: #fff; border-color: var(--accent-green); }
+        #skin3d-close-btn {
+            display: block; width: 100%; margin-top: 14px; padding: 9px 0;
+            background: var(--accent-green); color: #fff; border: none;
+            border-radius: 20px; font-size: 14px; font-weight: bold; cursor: pointer;
+        }
+        .mc-head-box.mc-head-clickable { cursor: pointer; }
+        .mc-head-box.mc-head-clickable:hover { filter: brightness(1.08); }
+
+        /* 詳細ボタン */
+        .btn-detail { background: #e8f5e8; color: var(--accent-green) !important; font-weight: bold; }
+        .btn-detail:hover { background: #d1ead1; }
+        .btn-member { background: #f0f0f0; color: var(--secondary-text) !important; }
+        .btn-member:hover { background: #e0e0e0; }
+        .btn-qr {
+            background: var(--container-bg);
+            color: var(--secondary-text);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-qr:hover { background: #e8f5e8; border-color: var(--accent-green); color: var(--accent-green); }
+
+        /* QRモーダル */
+        #qr-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        #qr-modal.open { display: flex; }
+        #qr-modal-inner {
+            background: #fff;
+            border-radius: 20px;
+            padding: 28px 32px 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            text-align: center;
+            max-width: 90vw;
+            animation: modalIn 0.2s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.88); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        #qr-modal-inner h3 {
+            margin: 0 0 4px;
+            font-size: 16px;
+            color: var(--accent-green);
+        }
+        #qr-modal-inner p {
+            margin: 0 0 16px;
+            font-size: 12px;
+            color: var(--secondary-text);
+        }
+        #qr-canvas-wrap {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 16px;
+            border: 4px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+        }
+        #qr-url-label {
+            font-size: 10px;
+            word-break: break-all;
+            color: #888;
+            margin-bottom: 16px;
+        }
+        #qr-close-btn {
+            background: var(--accent-green);
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 28px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        #qr-close-btn:hover { opacity: 0.85; }
+
+        /* 🗺️ 拠点マップへのリンクボタン */
+        .map-link-container { text-align: center; margin: 14px 0; }
+        .map-link-btn {
+            display: inline-block;
+            background: var(--accent-green);
+            color: #ffffff;
+            font-weight: bold;
+            padding: 10px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 15px;
+            letter-spacing: 0.02em;
+            box-shadow: 0 2px 6px rgba(45, 90, 39, 0.35);
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .map-link-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    </style>
+    <!-- Cloudflare Web Analytics (要: 実トークンに差し替え。Cloudflareダッシュボード > Web Analytics > Add a site で取得) -->
+    <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "ef48e3b395a94deb8375d839e1887bb2"}'></script>
+    <!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+<div style="background:#4b5563; color:#fff; text-align:center; padding:8px 12px; font-size:13px; font-weight:bold;">
+    📁 これは過去シーズン（Season2）のアーカイブです　<a href="../index.html" style="color:#fde68a;">→ 最新の Season3 はこちら</a>
+</div>
+
+<div class="banner-container">
+    <img src="img/logo.png" alt="homeクラ" class="header-logo">
+</div>
+
+<div class="top-buttons-wrapper">
+    <a href="https://www.yurugp.jp/characters/4345" class="yurugp-btn" target="_blank" title="ゆるキャラグランプリ2026">
+        <img src="img/sakaisander-yurugp-icon.png" alt="ゆるキャラグランプリ2026">
+    </a>
+    <a href="https://github.com/SHUN-CHACHA/minecraft-tools/tree/main" class="yurugp-btn github-btn" target="_blank" title="旬茶オリジナルMInecraft Tools">
+        <img src="img/github-icon.png" alt="旬茶オリジナルMInecraft Tools">
+    </a>
+    <a href="https://modrinth.com/user/SHUNCHA" class="yurugp-btn modrinth-btn" target="_blank" title="Modrinth">
+        <img src="img/modrinth-icon.png" alt="Modrinth">
+    </a>
+    <div class="top-buttons-stack">
+        <div class="external-links-container">
+            <a href="https://anykura.live/t/homekura" target="_blank" class="site-link-btn stats-btn">
+                <span class="sl-icon">📊</span>
+                <span class="sl-line1">homeクラ LIVE!</span>
+            </a>
+            <a href="https://homecra.netlify.app/" target="_blank" class="site-link-btn maguro-btn">
+                <span class="sl-icon">🌐</span>
+                <span class="sl-line1">まぐにぃさんのページ</span>
+            </a>
+        </div>
+
+        <div class="header-controls">
+            <div class="controls-left">
+                <a href="https://shun-chacha.github.io/homekura-live/roulette.html" class="roulette-btn" target="_blank">
+                    <img src="img/roulette-icon.png" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
+                    旬茶作 ルーレット
+                </a>
+            </div>
+            <div class="controls-right">
+                <button class="btn-qr" onclick="openQrModal()" title="QRコードを表示">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/>
+                        <rect x="19" y="14" width="2" height="2"/><rect x="14" y="19" width="2" height="2"/>
+                        <rect x="18" y="19" width="3" height="2"/>
+                    </svg>
+                    QR
+                </button>
+                <button id="refresh-btn" class="btn-tool" onclick="manualRefresh()">更新</button>
+                <div id="timer">Next Update: --:--</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="progress-container">
+    <div id="progress-bar"></div>
+</div>
+
+<div class="map-link-container">
+    <a href="minecraft_map.html" target="_blank" class="map-link-btn">homeクラ Season２ メンバー拠点マップ</a>
+</div>
+
+<div class="main-wrapper">
+    <div id="liveSection" class="section-box" style="display: none;">
+        <div class="section-title" style="color:var(--accent-green)">🟢 【🔴 LIVE中！】</div>
+        <div id="liveGrid" class="grid"></div>
+    </div>
+
+    <div id="upcomingSection" class="section-box" style="display: none;">
+        <div class="section-title" style="color:var(--accent-yellow)">💡 配信予定のメンバー</div>
+        <div id="upcomingGrid" class="grid"></div>
+    </div>
+
+    <div id="newArchiveSection" class="section-box" style="display: none;">
+        <div class="section-title" style="color:var(--accent-blue)">🎬 【24時間以内の新着（配信アーカイブ）】</div>
+        <div id="newArchiveGrid" class="grid"></div>
+    </div>
+
+    <div id="newVideoSection" class="section-box" style="display: none;">
+        <div class="section-title" style="color:var(--accent-blue)">🆕 【2週間以内の新着（動画）】</div>
+        <div id="newVideoGrid" class="grid"></div>
+    </div>
+
+    <div class="section-box" id="member">
+        <div class="section-title">👥 メンバー一覧</div>
+        <div id="allList" class="list-container"></div>
+    </div>
+</div>
+
+<script src="js/data/config.js"></script>
+
+<!-- 🧊 3Dスキンビューアー用ライブラリ（ESM配信のみのためmoduleで読み込みwindowに公開） -->
+<script type="module">
+    import * as skinview3dLib from 'https://cdn.jsdelivr.net/npm/skinview3d@3.4.2/+esm';
+    window.skinview3d = skinview3dLib;
+</script>
+
+<script>
+// config.jsが先に読み込まれているので、正常にPROXY_URLが代入されます
+// ※ YouTube APIキーはブラウザ側には一切渡さない設計です。
+//    実際のAPI呼び出しはCloudflare Worker等のプロキシがサーバー側で行います。
+const PROXY_URL = (window.CONFIG?.YOUTUBE_PROXY_URL || '').replace(/\/$/, '');
+const CACHE_DURATION_MS         = window.CONFIG?.CACHE_DURATION_MS          ?? (5  * 60 * 1000);
+const CHANNEL_ICON_CACHE_DURATION_MS = window.CONFIG?.CHANNEL_ICON_CACHE_DURATION_MS ?? (24 * 60 * 60 * 1000);
+let channels = [];
+let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
+let timeLeft = 600;
+
+const SVG_ICONS = {
+    youtube:   `<svg viewBox="0 0 24 24"><path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.516 0-9.387.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.387.508 9.387.508s7.517 0 9.387-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`,
+    x:         `<svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+    twitch:    `<svg viewBox="0 0 24 24"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>`,
+    instagram: `<svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204 0.13-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>`,
+    discord:   `<svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.094 13.094 0 0 1-1.873-.894.077.077 0 0 1-.008-.128c.126-.093.252-.19.372-.287a.075.075 0 0 1 .077-.011c3.92 1.793 8.18 1.793 12.061 0a.073.073 0 0 1 .078.009c.12.099.246.195.373.289a.075.075 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.156-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.156 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.156-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.156 2.418z"/></svg>`,
+    tiktok:    `<svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>`,
+    homepage:  `<svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>`
+};
+
+function adjustColorForText(hex) {
+    if (!hex || hex === '#ffffff') return 'var(--text-color)';
+    let c = hex.substring(1);
+    let rgb = parseInt(c, 16);
+    let r = (rgb >> 16) & 0xff, g = (rgb >> 8) & 0xff, b = (rgb >> 0) & 0xff;
+    let luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    if (luma > 140) {
+        return `rgb(${Math.floor(r*0.5)}, ${Math.floor(g*0.5)}, ${Math.floor(b*0.5)})`;
+    }
+    return hex;
+}
+
+function init() {
+    if ("Notification" in window && Notification.permission !== "granted") { Notification.requestPermission(); }
+    const saved = localStorage.getItem('custom_channels');
+    if (saved) { channels = JSON.parse(saved); }
+    else if (typeof CONFIG !== 'undefined' && CONFIG.DEFAULT_CHANNELS) { channels = [...CONFIG.DEFAULT_CHANNELS]; }
+    else { channels = []; }
+
+    loadPortal();
+    setInterval(checkNotifications, 30000);
+}
+
+async function loadPortal(forceRefresh = false) {
+    if (!channels.length) return;
+    if (!PROXY_URL) { console.error('[homeクラ] YOUTUBE_PROXY_URL が config.js に設定されていません。'); return; }
+
+    const now = Date.now();
+
+    // ── ポータルキャッシュ（動画情報・5分） ──────────────────────────
+    if (!forceRefresh) {
+        try {
+            const cached = JSON.parse(localStorage.getItem('portal_cache') || 'null');
+            if (cached && (now - cached.timestamp) < CACHE_DURATION_MS) {
+                console.log(`[homeクラ] キャッシュ使用（残り ${Math.ceil((CACHE_DURATION_MS - (now - cached.timestamp)) / 1000)} 秒）`);
+                renderGrids(cached.chInfoMap, cached.vItems);
+                return;
+            }
+        } catch (_) { /* キャッシュ破損時は無視してAPI取得へ */ }
+    }
+
+    const channelIds = channels.map(c => c.id).join(',');
+    try {
+        // ── チャンネルアイコンキャッシュ（24時間） ──────────────────────
+        let chInfoMap = {};
+        try {
+            const iconCache = JSON.parse(localStorage.getItem('channel_icon_cache') || 'null');
+            if (iconCache && (now - iconCache.timestamp) < CHANNEL_ICON_CACHE_DURATION_MS) {
+                chInfoMap = iconCache.data;
+                console.log('[homeクラ] チャンネルアイコン: キャッシュ使用');
+            } else {
+                throw new Error('icon cache miss');
+            }
+        } catch (_) {
+            const chRes = await fetch(`${PROXY_URL}/channels?id=${channelIds}&part=snippet`);
+            const chData = await chRes.json();
+            chData.items?.forEach(i => { chInfoMap[i.id] = { icon: i.snippet?.thumbnails?.medium?.url || '' }; });
+            localStorage.setItem('channel_icon_cache', JSON.stringify({ timestamp: now, data: chInfoMap }));
+            console.log('[homeクラ] チャンネルアイコン: API取得・キャッシュ保存');
+        }
+
+        // ── playlistItems（maxResults=10）──────────────────────────────
+        // ※ maxResults を増やしてもAPIクォータ消費は変わらない（呼び出し回数課金のため）。
+        //    1つのチャンネルが同日に複数枠（2本以上）配信予定を入れているケースを
+        //    取りこぼさないよう、直近2件だけでなく広めに取得する。
+        // サブチャンネル（ch.id2）を持つメンバーは、そのチャンネル分のプレイリストも合わせて取得し、
+        // 配信中・配信予定・新着の判定にサブチャンネルの動画も反映させる。
+        const fetchIds = channels.flatMap(ch => ch.id2 ? [ch.id, ch.id2] : [ch.id]);
+        const playlistResults = await Promise.all(
+            fetchIds.map(id => {
+                const pId = id.replace(/^UC/, 'UU');
+                return fetch(`${PROXY_URL}/playlistItems?playlistId=${pId}&part=snippet&maxResults=10`)
+                    .then(r => r.json()).catch(() => null);
+            })
+        );
+
+        const videoIds = playlistResults.flatMap(r => {
+            const items = r?.items || [];
+            // live/upcoming のものは「同日複数枠」に対応するため全部拾う
+            const liveOrUpcoming = items.filter(i => {
+                const bc = i.snippet?.liveBroadcastContent;
+                return bc === 'live' || bc === 'upcoming';
+            });
+            if (liveOrUpcoming.length > 0) {
+                return liveOrUpcoming.map(i => i.snippet?.resourceId?.videoId).filter(Boolean);
+            }
+            // live/upcomingが無ければ、新着表示判定用に直近2本まで候補として拾う
+            // （新着動画は「各チャンネル2件まで」表示する仕様のため）
+            const recentTargets = items.slice(0, 2);
+            return recentTargets.map(i => i.snippet?.resourceId?.videoId).filter(Boolean);
+        });
+
+        let vItems = [];
+        if (videoIds.length > 0) {
+            // videos.list の id パラメータは最大50件までしか指定できないため、50件ずつに分割して取得する
+            // （サブチャンネル対応・新着動画を各チャンネル2件まで取得するようにしたことでID数が増えたため必須）
+            const VIDEOS_ID_CHUNK_SIZE = 50;
+            const idChunks = [];
+            for (let i = 0; i < videoIds.length; i += VIDEOS_ID_CHUNK_SIZE) {
+                idChunks.push(videoIds.slice(i, i + VIDEOS_ID_CHUNK_SIZE));
+            }
+            const vResults = await Promise.all(
+                idChunks.map(chunk =>
+                    fetch(`${PROXY_URL}/videos?id=${chunk.join(',')}&part=snippet,liveStreamingDetails`)
+                        .then(r => r.json()).catch(() => null)
+                )
+            );
+            vItems = vResults.flatMap(r => r?.items || []);
+        }
+
+        // ── ポータルキャッシュ保存 ──────────────────────────────────────
+        localStorage.setItem('portal_cache', JSON.stringify({ timestamp: now, chInfoMap, vItems }));
+        console.log('[homeクラ] ポータル: API取得・キャッシュ保存');
+
+        renderGrids(chInfoMap, vItems);
+    } catch (e) {
+        console.error("ポータル読み込みエラー:", e);
+        // エラー時は古いキャッシュがあれば使う
+        try {
+            const cached = JSON.parse(localStorage.getItem('portal_cache') || 'null');
+            if (cached) { renderGrids(cached.chInfoMap, cached.vItems); return; }
+        } catch (_) {}
+        renderGrids({}, []);
+    }
+}
+
+function renderGrids(chInfoMap, vItems) {
+    let htmls = { live: "", newArchive: "", newVideo: "", upcoming: "", all: "" };
+    let counts = { live: 0, newArchive: 0, newVideo: 0, upcoming: 0 };
+    // newVideo（新着動画）・newArchive（配信アーカイブ）は最後に時刻の新しい順へ並べ替えるため、
+    // カードを文字列へ都度連結せず、いったん { sortTime, card } の配列に貯めておく。
+    const newVideoBuffer = [];
+    const newArchiveBuffer = [];
+    const now = new Date();
+
+    // 「全メンバー一覧」用に order 番号順で並び替える（order未設定は最後尾）
+    const sortedForAllList = [...channels].sort((a, b) => {
+        const orderA = (typeof a.order === 'number') ? a.order : Infinity;
+        const orderB = (typeof b.order === 'number') ? b.order : Infinity;
+        return orderA - orderB;
+    });
+    let lastGroupLabel = null;
+    const rowHtmlByChannel = new Map();
+
+    channels.forEach(ch => {
+        const chInfo = chInfoMap[ch.id] || { icon: '' };
+        // 同日に複数枠（live/upcoming）を持つチャンネルにも対応するため、
+        // 該当チャンネルの動画は「1本だけ」ではなく全部拾ってそれぞれカード化する。
+        // ch.id2（サブチャンネル）がある場合は、そのチャンネルの動画もこの人のカードに含める
+        const chVideos = vItems.filter(v => v.snippet.channelId === ch.id || (ch.id2 && v.snippet.channelId === ch.id2));
+        const videoTargets = chVideos.length > 0 ? chVideos : [null];
+
+        const safeTextColor = adjustColorForText(ch.color);
+
+        // SNSポップアップ用データをJSON化（シングルクォート等をエスケープ）
+        const chJson = JSON.stringify({
+            name: ch.name,
+            id: ch.id,
+            id2: ch.id2 || '',
+            twitterId: ch.twitterId || '',
+            twitchId: ch.twitchId || '',
+            tiktokId: ch.tiktokId || '',
+            instaId: ch.instaId || '',
+            discordUrl: ch.discordUrl || '',
+            homepageUrl: ch.homepageUrl || ''
+        }).replace(/'/g, '&#39;');
+
+        const rawMcId = ch.minecraftId ? ch.minecraftId.trim() : "";
+        const rawUuid = ch.uuid ? ch.uuid.trim() : "";
+        const canShow3D = rawUuid !== "";
+        const safeUuidAttr = rawUuid.replace(/'/g, "&#39;");
+        const safeNameAttr = ch.name.replace(/'/g, "&#39;");
+
+        videoTargets.forEach(lastV => {
+            const status = lastV?.snippet.liveBroadcastContent || 'none';
+            const isLive = status === 'live';
+            const isUpcoming = status === 'upcoming';
+            const pubDate = lastV ? new Date(lastV.snippet.publishedAt) : null;
+            const isCandidate = lastV && !isLive && !isUpcoming;
+            // liveStreamingDetails.actualStartTime があれば「配信済み（アーカイブ）」、無ければ通常の動画投稿
+            const isArchivedLive = isCandidate && !!(lastV.liveStreamingDetails && lastV.liveStreamingDetails.actualStartTime);
+            // アーカイブは実際に配信を開始した時刻（actualStartTime）を並べ替えの基準にする（無ければ公開日時で代用）
+            const archiveSortTime = isArchivedLive ? new Date(lastV.liveStreamingDetails.actualStartTime) : pubDate;
+            // 配信アーカイブの新着は「配信開始時刻」基準で24時間以内、動画の新着は公開日時基準で2週間以内
+            // （各チャンネル最大2件はplaylistItems取得側で制御済み）
+            const isNewArchive = isArchivedLive && (now - archiveSortTime < 24 * 60 * 60 * 1000);
+            const isNewVideo = isCandidate && !isArchivedLive && (now - pubDate < 14 * 24 * 60 * 60 * 1000);
+            const isNew = isNewArchive || isNewVideo;
+            let timeStr = "オフライン";
+            let startTime = null;
+
+            if (isLive) { timeStr = lastV.snippet.title; }
+            else if (isUpcoming) {
+                if (lastV.liveStreamingDetails && lastV.liveStreamingDetails.scheduledStartTime) {
+                    startTime = lastV.liveStreamingDetails.scheduledStartTime;
+                    const d = new Date(startTime);
+                    timeStr = `🕒 ${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}～`;
+                } else { timeStr = "🕒 配信予定（未定）"; }
+            } else if (isNew) { timeStr = `${lastV.snippet.title}`; }
+
+            const isReserved = reservedVideos.some(rv => rv.id === lastV?.id);
+
+            const card = `
+            <div class="card ${isLive?'is-live':''} ${isNew?'is-new':''}">
+                <a href="https://youtube.com/watch?v=${lastV?.id || ''}" target="_blank" style="text-decoration:none; color:inherit;">
+                    <div class="thumb-wrap">
+                        ${isLive ? '<div class="badge-live">LIVE</div>' : isNew ? '<div class="badge-new">NEW</div>' : ''}
+                        ${(isLive || isUpcoming || isNew)
+                            ? `<img class="thumb" src="${lastV.snippet.thumbnails.maxres?.url || lastV.snippet.thumbnails.medium.url}">`
+                            : `<div class="thumb-bg" style="background:${ch.color}"></div>${chInfo.icon ? `<img class="thumb-profile" src="${chInfo.icon}">` : ''}`}
+                    </div>
+                    <div class="info">
+                        <div class="name" style="color:${safeTextColor}">${ch.name}</div>
+                        <div class="title">${timeStr}</div>
+                    </div>
+                </a>
+                <div class="btn-area">
+                    <button class="btn btn-detail" onclick='openSnsModal(${chJson})'>🔗 詳細</button>
+                    <a href="#member" class="btn btn-member">👥 一覧</a>
+                    ${canShow3D ? `<button class="btn btn-detail" onclick="openSkin3DModal('${safeUuidAttr}', '${safeNameAttr}')">🧊 3Dスキン</button>` : ''}
+                    ${(isUpcoming && startTime) ? `<button class="btn btn-reserve ${isReserved?'active':''}" onclick="toggleReserve('${lastV.id}', '${ch.name}', '${startTime}')">🔔 ${isReserved?'予約中':'通知予約'}</button>` : ''}
+                </div>
+            </div>`;
+
+            if (isLive) { htmls.live += card; counts.live++; }
+            else if (isUpcoming) { htmls.upcoming += card; counts.upcoming++; }
+            else if (isNewArchive) { newArchiveBuffer.push({ sortTime: archiveSortTime, card }); counts.newArchive++; }
+            else if (isNewVideo) { newVideoBuffer.push({ pubDate, card }); counts.newVideo++; }
+        });
+
+        let listBtnsHtml = `<a href="https://youtube.com/channel/${ch.id}" target="_blank" class="btn-square-mini btn-yt" title="YouTube">${SVG_ICONS.youtube}</a>`;
+        if (ch.id2) listBtnsHtml += `<a href="https://youtube.com/channel/${ch.id2}" target="_blank" class="btn-square-mini btn-yt" title="YouTube（サブ）">${SVG_ICONS.youtube}</a>`;
+        if (ch.twitterId)  listBtnsHtml += `<a href="https://x.com/${ch.twitterId}" target="_blank" class="btn-square-mini btn-x" title="X">${SVG_ICONS.x}</a>`;
+        if (ch.twitchId)   listBtnsHtml += `<a href="https://twitch.tv/${ch.twitchId}" target="_blank" class="btn-square-mini btn-tw" title="Twitch">${SVG_ICONS.twitch}</a>`;
+        if (ch.tiktokId)  listBtnsHtml += `<a href="https://www.tiktok.com/@${ch.tiktokId}" target="_blank" class="btn-square-mini btn-tt" title="TikTok">${SVG_ICONS.tiktok}</a>`;
+        if (ch.instaId)    listBtnsHtml += `<a href="https://instagram.com/${ch.instaId}" target="_blank" class="btn-square-mini btn-inst" title="Instagram">${SVG_ICONS.instagram}</a>`;
+        if (ch.discordUrl)  listBtnsHtml += `<a href="${ch.discordUrl}" target="_blank" class="btn-square-mini btn-disc" title="Discord">${SVG_ICONS.discord}</a>`;
+        if (ch.homepageUrl) listBtnsHtml += `<a href="${ch.homepageUrl}" target="_blank" class="btn-square-mini btn-hp" title="ホームページ">${SVG_ICONS.homepage}</a>`;
+
+        const rawAvatar = ch.avatarImg   ? ch.avatarImg.trim()   : "";
+
+        let imgPath = "";
+        if (rawAvatar !== "") {
+            const withoutExt = rawAvatar.replace(/\.(png|jpg|jpeg|gif|svg)$/i, "");
+            imgPath = withoutExt.includes("/") ? `${withoutExt}.png` : `avatars/${withoutExt}.png`;
+        } else if (rawMcId !== "") {
+            imgPath = `avatars/${rawMcId}.png`;
+        }
+
+        const resolvedImg = imgPath !== "" ? imgPath : "avatars/fallback.svg";
+        const mcHeadHtml = `<div class="mc-head-box ${canShow3D ? 'mc-head-clickable' : ''}" style="border-color:${ch.color || 'var(--border-color)'}" ${canShow3D ? `onclick="openSkin3DModal('${safeUuidAttr}', '${safeNameAttr}')" title="3Dスキンを見る"` : ''}>
+            <img class="mc-head-img" src="${resolvedImg}" alt="${ch.name}"
+                 onerror="this.onerror=null; this.src='avatars/fallback.svg';">
+        </div>`;
+
+        const row = `
+        <div class="row-item">
+            <div class="row-top">
+                ${mcHeadHtml}
+                <div class="row-name">${ch.name}</div>
+            </div>
+            <div class="row-bottom">
+                <div class="row-btns">${listBtnsHtml}</div>
+            </div>
+        </div>`;
+
+        rowHtmlByChannel.set(ch, row);
+    });
+
+    // 「全メンバー一覧」は order 番号順に並べ、グループが変わったら見出しを挿入する
+    sortedForAllList.forEach(ch => {
+        if (ch.group && ch.group.trim() !== "") {
+            if (ch.group !== lastGroupLabel) {
+                htmls.all += `<div class="group-heading">${ch.group}</div>`;
+                lastGroupLabel = ch.group;
+            }
+        } else {
+            lastGroupLabel = null; // グループ未設定のメンバーを挟んだら、次に同じグループ名が来ても見出しを出し直す
+        }
+        htmls.all += rowHtmlByChannel.get(ch) || "";
+    });
+
+    // 新着動画は配信日（公開日時）が新しい順に並べる
+    newVideoBuffer.sort((a, b) => b.pubDate - a.pubDate);
+    htmls.newVideo = newVideoBuffer.map(v => v.card).join('');
+
+    // 配信アーカイブは配信時刻（actualStartTime）が新しい順に並べる
+    newArchiveBuffer.sort((a, b) => b.sortTime - a.sortTime);
+    htmls.newArchive = newArchiveBuffer.map(v => v.card).join('');
+
+    document.getElementById("liveSection").style.display = counts.live ? "block" : "none";
+    document.getElementById("liveGrid").innerHTML = htmls.live;
+    document.getElementById("upcomingSection").style.display = counts.upcoming ? "block" : "none";
+    document.getElementById("upcomingGrid").innerHTML = htmls.upcoming;
+    document.getElementById("newArchiveSection").style.display = counts.newArchive ? "block" : "none";
+    document.getElementById("newArchiveGrid").innerHTML = htmls.newArchive;
+    document.getElementById("newVideoSection").style.display = counts.newVideo ? "block" : "none";
+    document.getElementById("newVideoGrid").innerHTML = htmls.newVideo;
+    document.getElementById("allList").innerHTML = htmls.all;
+}
+
+function toggleReserve(id, name, startTime) {
+    const idx = reservedVideos.findIndex(rv => rv.id === id);
+    if (idx > -1) reservedVideos.splice(idx, 1);
+    else {
+        reservedVideos.push({ id, name, startTime, notified: false });
+        if (Notification.permission !== "granted") Notification.requestPermission();
+    }
+    localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
+    loadPortal();
+}
+
+function checkNotifications() {
+    const now = new Date();
+    let changed = false;
+    reservedVideos.forEach(rv => {
+        if (!rv.notified && new Date(rv.startTime) <= now) {
+            new Notification("配信開始！", { body: `${rv.name}さんの配信が始まるよ！`, icon: "img/icon.png" });
+            rv.notified = true; changed = true;
+        }
+    });
+    if (changed) localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
+}
+
+function manualRefresh() {
+    timeLeft = 600;
+    loadPortal(true); // キャッシュを無視して強制更新
+}
+
+setInterval(() => {
+    timeLeft--;
+    if (timeLeft < 0) {
+        timeLeft = 600;
+        loadPortal();
+    }
+    document.getElementById('timer').innerText =
+        `Next Update: ${String(Math.floor(timeLeft/60)).padStart(2,'0')}:${String(timeLeft%60).padStart(2,'0')}`;
+    document.getElementById('progress-bar').style.width = (timeLeft/600)*100 + "%";
+}, 1000);
+
+
+function openQrModal() {
+    const modal = document.getElementById('qr-modal');
+    const wrap  = document.getElementById('qr-canvas-wrap');
+    const label = document.getElementById('qr-url-label');
+    const url   = location.origin + location.pathname;
+
+    label.textContent = url;
+
+    // Canvas をリセット
+    wrap.innerHTML = '<canvas id="qr-canvas" width="200" height="200"></canvas>';
+    const canvas = document.getElementById('qr-canvas');
+    const ctx    = canvas.getContext('2d');
+
+    if (typeof QRious !== 'undefined') {
+        // QRコードを一時Canvasに描画
+        const tmpCanvas = document.createElement('canvas');
+        const qr = new QRious({
+            element: tmpCanvas,
+            value: url,
+            size: 200,
+            foreground: '#2d5a27',
+            background: '#ffffff',
+            level: 'M'   // 誤り訂正レベルM（ロゴで一部隠れてもOK）
+        });
+
+        // QRをメインCanvasに描画
+        ctx.drawImage(tmpCanvas, 0, 0, 200, 200);
+
+        // ロゴ画像をQRの中央に重ねる
+        const logo = new Image();
+        logo.src = 'img/face100.png';
+        logo.onload = () => {
+            const logoSize = 44;          // ロゴの描画サイズ
+            const padding  = 6;           // 白背景の余白
+            const x = (200 - logoSize) / 2;
+            const y = (200 - logoSize) / 2;
+
+            // 白い丸背景（ロゴを見やすくする）
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.roundRect(x - padding, y - padding, logoSize + padding*2, logoSize + padding*2, 8);
+            ctx.fill();
+
+            // ロゴ描画
+            ctx.drawImage(logo, x, y, logoSize, logoSize);
+        };
+        logo.onerror = () => {
+            // ロゴ読み込み失敗時はQRのみ表示（エラーにしない）
+        };
+    } else {
+        wrap.innerHTML = '<p style="font-size:12px;color:#888;">QRコードの読み込み中...</p>';
+    }
+
+    modal.classList.add('open');
+}
+
+function closeQrModal() {
+    document.getElementById('qr-modal').classList.remove('open');
+}
+
+function openSnsModal(ch) {
+    const modal = document.getElementById('sns-modal');
+    document.getElementById('sns-modal-name').textContent = ch.name;
+
+    const SNS_DEFS = [
+        { key: 'id',         cls: 'yt', label: 'YouTube',     icon: SVG_ICONS.youtube,   url: `https://youtube.com/channel/${ch.id}` },
+        { key: 'id2',        cls: 'yt', label: 'YouTube（サブ）', icon: SVG_ICONS.youtube, url: ch.id2 ? `https://youtube.com/channel/${ch.id2}` : '' },
+        { key: 'twitterId',  cls: 'x',  label: 'X (Twitter)', icon: SVG_ICONS.x,         url: ch.twitterId  ? `https://x.com/${ch.twitterId}` : '' },
+        { key: 'twitchId',   cls: 'tw', label: 'Twitch',      icon: SVG_ICONS.twitch,    url: ch.twitchId   ? `https://twitch.tv/${ch.twitchId}` : '' },
+        { key: 'tiktokId',   cls: 'tt', label: 'TikTok',      icon: SVG_ICONS.tiktok,    url: ch.tiktokId   ? `https://www.tiktok.com/@${ch.tiktokId}` : '' },
+        { key: 'instaId',    cls: 'ig', label: 'Instagram',   icon: SVG_ICONS.instagram, url: ch.instaId    ? `https://instagram.com/${ch.instaId}` : '' },
+        { key: 'discordUrl', cls: 'dc', label: 'Discord',     icon: SVG_ICONS.discord,   url: ch.discordUrl || '' },
+        { key: 'homepageUrl',cls: 'hp', label: 'ホームページ', icon: SVG_ICONS.homepage,  url: ch.homepageUrl || '' },
+    ];
+
+    const list = document.getElementById('sns-link-list');
+    list.innerHTML = SNS_DEFS
+        .filter(s => s.url)
+        .map(s => `<a href="${s.url}" target="_blank" class="sns-link-item ${s.cls}">${s.icon}${s.label}</a>`)
+        .join('');
+
+    modal.classList.add('open');
+}
+
+function closeSnsModal() {
+    document.getElementById('sns-modal').classList.remove('open');
+}
+
+// ==========================================================
+// 🧊 3Dスキンビューアー（skinview3d）
+// ==========================================================
+let skin3DViewer = null;
+
+function openSkin3DModal(uuid, memberName) {
+    if (!uuid) return;
+    const modal = document.getElementById('skin3d-modal');
+    const loading = document.getElementById('skin3d-loading');
+    document.getElementById('skin3d-modal-name').textContent = memberName;
+    loading.textContent = '読み込み中...';
+    loading.style.display = 'flex';
+    modal.classList.add('open');
+
+    const skinUrl = `https://api.mineatar.io/skin/${encodeURIComponent(uuid)}`;
+
+    if (typeof skinview3d === 'undefined') {
+        loading.textContent = '3D表示ライブラリの読み込みに失敗しました';
+        return;
+    }
+
+    try {
+        if (!skin3DViewer) {
+            skin3DViewer = new skinview3d.SkinViewer({
+                canvas: document.getElementById('skin3d-canvas'),
+                width: 260,
+                height: 340
+            });
+            skin3DViewer.autoRotate = true;
+            skin3DViewer.autoRotateSpeed = 0.8;
+            skin3DViewer.background = 0x2b2b2b;
+        }
+
+        // loadSkinはPromiseを返すので、失敗した場合はキャッチしてデフォルトスキンにフォールバックする
+        skin3DViewer.loadSkin(skinUrl)
+            .then(() => {
+                setSkin3DAnimation('walk');
+                loading.style.display = 'none';
+            })
+            .catch((err) => {
+                console.warn(`スキンの取得に失敗しました（UUID: ${uuid}）。デフォルトスキンを表示します。`, err);
+                loading.textContent = 'スキンが見つかりませんでした';
+                skin3DViewer.loadSkin(null); // 標準のプレースホルダースキンを表示
+                setSkin3DAnimation('walk');
+                setTimeout(() => { loading.style.display = 'none'; }, 2000);
+            });
+    } catch (e) {
+        console.error('skinview3d error:', e);
+        loading.textContent = 'スキンの読み込みに失敗しました';
+    }
+}
+
+function setSkin3DAnimation(type) {
+    if (!skin3DViewer) return;
+    document.querySelectorAll('.skin3d-anim-btn').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.anim === type);
+    });
+    if (type === 'idle') {
+        skin3DViewer.animation = null;
+    } else if (type === 'walk') {
+        skin3DViewer.animation = new skinview3d.WalkingAnimation();
+    } else if (type === 'run') {
+        skin3DViewer.animation = new skinview3d.RunningAnimation();
+    }
+}
+
+function closeSkin3DModal() {
+    document.getElementById('skin3d-modal').classList.remove('open');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const qrModal = document.getElementById('qr-modal');
+    if (qrModal) {
+        qrModal.addEventListener('click', function(e) { if (e.target === this) closeQrModal(); });
+    }
+    const snsModal = document.getElementById('sns-modal');
+    if (snsModal) {
+        snsModal.addEventListener('click', function(e) { if (e.target === this) closeSnsModal(); });
+    }
+    const skin3dModal = document.getElementById('skin3d-modal');
+    if (skin3dModal) {
+        skin3dModal.addEventListener('click', function(e) { if (e.target === this) closeSkin3DModal(); });
+    }
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { closeQrModal(); closeSnsModal(); closeSkin3DModal(); }
+    });
+    init();
+});
+</script>
+
+<div id="sns-modal" role="dialog" aria-modal="true" aria-label="SNSリンク">
+    <div id="sns-modal-inner">
+        <h3 id="sns-modal-name"></h3>
+        <p class="sns-subtitle">リンクを選んでください</p>
+        <div id="sns-link-list" class="sns-link-list"></div>
+        <a href="#member" class="sns-link-item" id="sns-modal-member-btn" onclick="closeSnsModal()">👥 メンバー一覧へ</a>
+        <button id="sns-close-btn" onclick="closeSnsModal()">閉じる</button>
+    </div>
+</div>
+
+<div id="qr-modal" role="dialog" aria-modal="true" aria-label="QRコード">
+    <div id="qr-modal-inner">
+        <h3>📱 スマホでブックマーク</h3>
+        <p>カメラでスキャンしてアクセス</p>
+        <div id="qr-canvas-wrap">
+            <canvas id="qr-canvas"></canvas>
+        </div>
+        <div id="qr-url-label"></div>
+        <button id="qr-close-btn" onclick="closeQrModal()">閉じる</button>
+    </div>
+</div>
+
+<div id="skin3d-modal" role="dialog" aria-modal="true" aria-label="3Dスキンビューアー">
+    <div id="skin3d-modal-inner">
+        <h3 id="skin3d-modal-name"></h3>
+        <div id="skin3d-canvas-wrap">
+            <canvas id="skin3d-canvas"></canvas>
+            <div id="skin3d-loading">読み込み中...</div>
+        </div>
+        <div id="skin3d-controls">
+            <button class="skin3d-anim-btn" data-anim="idle" onclick="setSkin3DAnimation('idle')">🧍 静止</button>
+            <button class="skin3d-anim-btn" data-anim="walk" onclick="setSkin3DAnimation('walk')">🚶 歩く</button>
+            <button class="skin3d-anim-btn" data-anim="run" onclick="setSkin3DAnimation('run')">🏃 走る</button>
+        </div>
+        <button id="skin3d-close-btn" onclick="closeSkin3DModal()">閉じる</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+</body>
+</html>
