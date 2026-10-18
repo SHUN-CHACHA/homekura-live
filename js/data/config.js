@@ -316,7 +316,7 @@ window.CONFIG = {
         {
                 "name": "早乙女燈真 / Saotome Touma",
                 "id": "UCGSNOUcXKZ5IFYJLycyHR2A",
-                "minecraftId": "saotomeirix",
+                "minecraftId": "Saotome_UUUM",
                 "uuid": "b039c461-602b-42f0-9283-ac9e35083ad0",
                 "twitterId": "SaotomeTouma",
                 "twitchId": "saotome_touma",
@@ -325,7 +325,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "",
                 "color": "#f8b9f6",
-                "avatarImg": "avatars/saotomeirix.png",
+                "avatarImg": "avatars/Saotome_UUUM.png",
                 "order": 42,
                 "group": "イリクス学園"
         },
