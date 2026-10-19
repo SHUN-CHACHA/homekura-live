@@ -8,6 +8,12 @@
 
     const markers = {};
     let map = null;
+
+    // 顔アイコンは区画（48×48ブロック）の枠いっぱいに表示する。背景地図の枠線のぶん少し内側に寄せ、
+    // ズームに合わせて大きさ（CSS変数 --face-px）とネームタグの位置を更新する
+    const PLOT_BLOCKS = 48;
+    const PLOT_INSET_BLOCKS = 3;
+    const MIN_FACE_PX = 16;
     let memberSelect, countSpan, cursorCoords;
 
     // 顔アイコンが見つからない場合のプレースホルダー画像（灰色のシルエット）
@@ -50,12 +56,12 @@
             return L.divIcon({
                 className: 'custom-div-icon',
                 html: `
-                    <div class="avatar-marker ${isRegistered ? '' : 'unregistered'}">
+                    <div class="avatar-marker plot-fill ${isRegistered ? '' : 'unregistered'}">
                         <img src="${avatarSrc}" alt="${altName}" onerror="avatarFallback(this)" />
                     </div>
                 `,
-                iconSize: [32, 32],
-                iconAnchor: [16, 16]
+                iconSize: [0, 0], // 大きさは CSS（--face-px）で決め、拠点の座標を中心に配置する
+                iconAnchor: [0, 0]
             });
         }
 
@@ -69,12 +75,29 @@
             `;
         }).join('');
 
-        const groupWidth = people.length * 32 + (people.length - 1) * 3; // アイコン幅32px + 間隔3px
         return L.divIcon({
             className: 'custom-div-icon',
-            html: `<div class="avatar-marker-group">${iconsHtml}</div>`,
-            iconSize: [groupWidth, 32],
-            iconAnchor: [groupWidth / 2, 16]
+            html: `<div class="avatar-marker-group plot-fill">${iconsHtml}</div>`,
+            iconSize: [0, 0],
+            iconAnchor: [0, 0]
+        });
+    }
+
+    // 今のズームでの顔アイコンの大きさ（px）
+    function getFacePx() {
+        const px = (PLOT_BLOCKS - PLOT_INSET_BLOCKS * 2) * Math.pow(2, map.getZoom());
+        return Math.max(MIN_FACE_PX, px);
+    }
+
+    // 顔アイコンの大きさを更新し、ネームタグを顔アイコンの上端（枠の内側）にそろえる
+    function updateFaceSize() {
+        const px = getFacePx();
+        map.getContainer().style.setProperty('--face-px', `${px}px`);
+        Object.values(markers).forEach((marker) => {
+            const tooltip = marker.getTooltip();
+            if (!tooltip) return;
+            tooltip.options.offset = [0, -px / 2];
+            tooltip.update();
         });
     }
 
@@ -104,7 +127,7 @@
             marker.bindTooltip(tooltipText, {
                 permanent: true,
                 direction: 'bottom',
-                offset: [0, 10],
+                offset: [0, 0], // 位置は updateFaceSize() で顔アイコンの上端にそろえる
                 className: 'permanent-name-label'
             });
 
@@ -175,6 +198,8 @@
         });
 
         renderMembers();
+        updateFaceSize();
+        map.on('zoom zoomend', updateFaceSize);
         initMemberSelect();
         initCursorTracking();
     }

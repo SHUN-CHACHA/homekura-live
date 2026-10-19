@@ -267,6 +267,25 @@
             filter: grayscale(1);
         }
 
+        /* 🟩 メンバーの顔アイコンは区画の枠いっぱいに表示（大きさ --face-px はズームに合わせて member-list.js が更新） */
+        .plot-fill {
+            position: absolute;
+            transform: translate(-50%, -50%);
+        }
+        .avatar-marker.plot-fill {
+            width: var(--face-px, 32px);
+            height: var(--face-px, 32px);
+        }
+        .avatar-marker-group.plot-fill {
+            width: var(--face-px, 32px);
+        }
+        .avatar-marker-group.plot-fill .avatar-marker {
+            flex: 1;
+            width: auto;
+            height: auto;
+            aspect-ratio: 1;
+        }
+
         /* 👥 1拠点に2人いる場合、顔アイコンを2つ並べて表示 */
         .avatar-marker-group {
             display: flex;
