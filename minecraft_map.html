@@ -162,7 +162,7 @@
             background-color: var(--custom-panel-bg) !important;
         }
 
-        /* 🗺️ PC専用：地図の表示項目（メンバー選択の下に常に表示。項目が多い時はこの中だけスクロール） */
+        /* 🗺️ 地図の表示項目（メンバー選択の下に常に表示。PCでは項目が多い時はこの中だけスクロール。スマホではメニューの中に表示） */
         #color-customizer-panel {
             flex: 1;
             min-height: 0;
@@ -191,6 +191,11 @@
             width: 14px;
             height: 14px;
             cursor: pointer;
+        }
+        .panel-hint {
+            font-size: 11px;
+            color: #facc15;
+            margin: 4px 0 8px;
         }
         .panel-divider {
             border-top: 1px solid #333339;
@@ -264,9 +269,34 @@
 
         /* 📱 スマホ幅（lg未満）：マップを全画面表示にし、メンバー一覧はドロワー化する */
         @media (max-width: 1023px) {
-            /* 地図の表示項目（色の設定）はPC専用なのでスマホでは非表示 */
-            #color-customizer-panel {
-                display: none !important;
+            /* 地図の表示項目：メニュー（ドロワー）の中に、ドロワーと同じ明るい配色で表示する */
+            #member-drawer #color-customizer-panel {
+                margin-top: 16px;
+                background: #ffffff;
+                border: 1px solid var(--border-color, #d8e2d7);
+            }
+            #member-drawer #color-customizer-panel h3 {
+                color: var(--accent-green, #2d5a27);
+            }
+            #member-drawer .toggle-row,
+            #member-drawer .color-row label {
+                color: var(--text-color, #1a2418);
+            }
+            #member-drawer .color-row input[type="text"].hex-input {
+                background: #ffffff;
+                border-color: var(--border-color, #d8e2d7);
+                color: var(--text-color, #1a2418);
+            }
+            #member-drawer .panel-divider {
+                border-top-color: var(--border-color, #d8e2d7);
+            }
+            #member-drawer .panel-hint {
+                color: #b45309; /* 白い背景では黄色が読みにくいので濃い黄土色にする */
+            }
+            #member-drawer #color-customizer-reset {
+                background: var(--bg-color, #eef3ee);
+                border-color: var(--border-color, #d8e2d7);
+                color: var(--secondary-text, #414d3f);
             }
             #map-wrap {
                 position: fixed !important;
@@ -471,7 +501,7 @@
                     <input type="color" id="cc-text-bg" value="#1a1a1f">
                 </div>
 
-                <div style="font-size:11px; color:#facc15; margin: 4px 0 8px;">☑ チェックを入れると表示、外すと透明になります</div>
+                <div class="panel-hint">☑ チェックを入れると表示、外すと透明になります</div>
 
                 <button id="color-customizer-reset">初期設定にリセット</button>
             </div>
@@ -530,7 +560,7 @@
                 <div id="axis-labels"></div>
                 <div id="zoom-slider-wrap">
                     <span id="zoom-slider-label">1.0×</span>
-                    <input type="range" id="zoom-slider" min="-3" max="2.08496" step="0.001" value="0">
+                    <input type="range" id="zoom-slider" min="-4.5" max="2.08496" step="0.001" value="0">
                 </div>
             </div>
         </section>
@@ -569,7 +599,7 @@
         // ==========================================================
         const map = L.map('map', {
             crs: L.CRS.Simple,
-            minZoom: -3,        // 1ブロック＝0.125px。PCなら一辺3,000ブロック（中心から±1,500）の地図も全体を表示できる
+            minZoom: -4.5,      // 1ブロック≒0.044px。スマホ（比較画面の半分の幅でも）一辺3,000ブロック（中心から±1,500）の地図を全体表示できる
             maxZoom: 2.08496,   // 1ブロック≒4.2px（区画の顔アイコンが見やすい大きさ）
             zoomSnap: 0,        // 無段階ズームを可能にする
             zoomDelta: 0,
