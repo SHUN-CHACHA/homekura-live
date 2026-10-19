@@ -1,5 +1,5 @@
 #!/bin/sh
-# コミットのたびに index.html のキャッシュ対策用バージョン番号（?v=...）を更新する。
+# コミットのたびに index.html・拠点マップ・地図の比較画面のキャッシュ対策用バージョン番号（?v=...）を更新する。
 # 有効化（このPCで1回だけ）：git config core.hooksPath scripts/git-hooks
 
 # scripts/ だけの変更ならサイトの見た目は変わらないので何もしない
@@ -9,4 +9,4 @@ fi
 
 root="$(git rev-parse --show-toplevel)"
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$root/scripts/bump-asset-version.ps1" || exit 1
-git add "$root/index.html"
+git add "$root/index.html" "$root/minecraft_map.html" "$root/map_compare.html"

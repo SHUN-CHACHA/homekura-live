@@ -1,5 +1,5 @@
 ﻿# ==========================================================
-# index.html が読み込むCSS・JS・画像・PDF・ページへのリンクに「?v=バージョン番号」を付け直すスクリプト
+# index.html・拠点マップ・地図の比較画面が読み込むCSS・JS・画像・PDF・ページへのリンクに「?v=バージョン番号」を付け直すスクリプト
 # （ブラウザのキャッシュで古いファイルが表示され続けるのを防ぐ）
 #
 # 普段は git commit 時に scripts/git-hooks/pre-commit から自動で実行されます。
@@ -9,10 +9,11 @@
 $ErrorActionPreference = 'Stop'
 
 $root = Split-Path -Parent $PSScriptRoot
-$file = Join-Path $root 'index.html'
 $version = Get-Date -Format 'yyyyMMddHHmm'
-
 $utf8NoBom = New-Object System.Text.UTF8Encoding $false
+
+foreach ($name in @('index.html', 'minecraft_map.html', 'map_compare.html')) {
+$file = Join-Path $root $name
 $text = [System.IO.File]::ReadAllText($file, $utf8NoBom)
 
 # src="..." / href="..." のうち、サイト内のファイル（http・#・${...} などで始まらないもの）が対象
@@ -23,4 +24,5 @@ $text = [regex]::Replace($text, $attrPattern, { param($m) "$($m.Groups['attr'].V
 $text = [regex]::Replace($text, "const ASSET_VERSION = '\d*';", "const ASSET_VERSION = '$version';")
 
 [System.IO.File]::WriteAllText($file, $text, $utf8NoBom)
-Write-Host "index.html asset version -> $version"
+Write-Host "$name asset version -> $version"
+}
