@@ -45,6 +45,7 @@
             label.textContent = formatZoomLabel(z);
         });
 
+        slider.value = map.getZoom();
         label.textContent = formatZoomLabel(map.getZoom());
     }
 
