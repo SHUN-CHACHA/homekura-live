@@ -117,7 +117,7 @@ window.CONFIG = {
                 "order": 112
         },
         {
-                "name": "神宮寺ちゃんねる",
+                "name": "神宮寺",
                 "id": "UCou8IVB8jJPk56H0farYQdA",
                 "minecraftId": "jingujich",
                 "uuid": "9944cd57-19b4-4516-a232-48a6b6ec9f25",
@@ -132,7 +132,7 @@ window.CONFIG = {
                 "order": 104
         },
         {
-                "name": "岐阜のこみちん",
+                "name": "こみちん",
                 "id": "UCw4frqkotySLjJ_CFZR5-7w",
                 "minecraftId": "komichin",
                 "uuid": "81cb4bb1-5ba8-4a63-bdbe-570dccdf8ec2",
@@ -283,7 +283,7 @@ window.CONFIG = {
                 "order": 120
         },
         {
-                "name": "LeftLily / レフトリリー",
+                "name": "LeftLily",
                 "id": "UC2Oi_Pfzk-G3HyhnbP5vJLA",
                 "minecraftId": "LeftLily0427",
                 "uuid": "554d4e40-a120-4889-a8f3-933938e6cc1c",
@@ -298,7 +298,7 @@ window.CONFIG = {
                 "order": 122
         },
         {
-                "name": "久遠星那 / Kuon Seina",
+                "name": "久遠星那",
                 "id": "UC-jJgNH2jX-I6eyXoOuLfAg",
                 "minecraftId": "kuon_irix",
                 "uuid": "1d1a367d-27ef-4ca0-b5b0-c202fe0f6761",
@@ -314,7 +314,7 @@ window.CONFIG = {
                 "group": "イリクス学園"
         },
         {
-                "name": "早乙女燈真 / Saotome Touma",
+                "name": "早乙女燈真",
                 "id": "UCGSNOUcXKZ5IFYJLycyHR2A",
                 "minecraftId": "Saotome_UUUM",
                 "uuid": "b039c461-602b-42f0-9283-ac9e35083ad0",
@@ -330,7 +330,7 @@ window.CONFIG = {
                 "group": "イリクス学園"
         },
         {
-                "name": "黎乃鈴 -Kurono Suzu-",
+                "name": "黎乃鈴",
                 "id": "UCvq_7I63tALUzJJvFOrjHPg",
                 "minecraftId": "kuronosuzu",
                 "uuid": "200306b6-40e3-4b30-9b44-d5aa0d1c2b8f",
@@ -345,7 +345,7 @@ window.CONFIG = {
                 "order": 123
         },
         {
-                "name": "28（ふたば）Games",
+                "name": "２８",
                 "id": "UCpONKlVEdkBeKsE1hlPvrfg",
                 "minecraftId": "ftb28",
                 "uuid": "a2bdc570-3b2c-464a-9c38-e9a681c0d506",
@@ -375,7 +375,7 @@ window.CONFIG = {
                 "order": 110
         },
         {
-                "name": "瑞木ゆき / Mizuki Yuki",
+                "name": "瑞木ゆき",
                 "id": "UCdQ7Ik70o_c0Gsg0ZQ9C-eA",
                 "minecraftId": "MizukiYuki22",
                 "uuid": "bb3fd173-f4df-4f4c-9e4b-8c8951bd8e60",
