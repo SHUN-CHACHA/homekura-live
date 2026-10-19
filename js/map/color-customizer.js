@@ -135,7 +135,7 @@
             const checkbox = document.getElementById(checkboxId);
             const key = transparentInputMap[checkboxId];
             if (!checkbox) return;
-            checkbox.checked = !!customColors[key];
+            checkbox.checked = !customColors[key]; // チェックあり＝表示、なし＝透明
             const row = checkbox.closest('.color-row');
             if (row) row.classList.toggle('is-transparent', !!customColors[key]);
         });
@@ -180,17 +180,17 @@
             }
         });
 
-        // 透明チェックボックスの配線
+        // 透明チェックボックスの配線（チェックを外すと透明になる）
         Object.keys(transparentInputMap).forEach((checkboxId) => {
             const checkbox = document.getElementById(checkboxId);
             const key = transparentInputMap[checkboxId];
             if (!checkbox) return;
 
             checkbox.addEventListener('change', (e) => {
-                setFlag(key, e.target.checked);
+                setFlag(key, !e.target.checked);
                 saveCustomColors();
                 const row = checkbox.closest('.color-row');
-                if (row) row.classList.toggle('is-transparent', e.target.checked);
+                if (row) row.classList.toggle('is-transparent', !e.target.checked);
             });
         });
 
