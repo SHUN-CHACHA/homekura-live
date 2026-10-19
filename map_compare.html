@@ -16,11 +16,13 @@
     <!-- 📍 メンバー・「場所」（メンバーではない目印）のデータ -->
     <script src="js/data/MAP_member.js"></script>
     <script src="js/data/MAP_locations.js"></script>
+    <script src="js/data/MAP_plots.js"></script>
     <!-- 🧩 拠点マップと共通のコンポーネント（表示項目の設定・格子線・顔アイコン・ズームスライダー） -->
     <script src="js/map/color-customizer.js"></script>
     <script src="js/map/map-grid.js"></script>
     <script src="js/map/member-list.js"></script>
     <script src="js/map/location-list.js"></script>
+    <script src="js/map/plot-frames.js"></script>
     <script src="js/map/zoom-slider.js"></script>
 
     <style>
@@ -214,11 +216,12 @@
     mapRight.on('move zoom', () => syncMaps(mapRight, mapLeft));
 
     // ==========================================================
-    // 📍 拠点マップと同じ顔アイコン・ネームタグ・格子線・軸線を両方の地図に表示する
+    // 📍 拠点マップと同じ区画の枠線・顔アイコン・ネームタグ・格子線・軸線を両方の地図に表示する
     //     （顔アイコン・名前・座標の表示と色は、拠点マップの「地図の表示項目」の設定を引き継ぐ）
     // ==========================================================
     [mapLeft, mapRight].forEach((map) => {
         MapApp.mapGrid.create(map);
+        MapApp.plotFrames.create(map);
         MapApp.memberList.addMemberMarkers(map);
         MapApp.mapLocations.init(map);
     });

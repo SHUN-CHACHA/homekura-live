@@ -419,6 +419,7 @@
             <div id="color-customizer-panel">
                 <h3>🗺️ 地図の表示項目（この端末のみ保存）</h3>
 
+                <label class="toggle-row"><input type="checkbox" id="cc-show-plots" checked> 区画の枠線を表示</label>
                 <label class="toggle-row"><input type="checkbox" id="cc-show-faces" checked> 顔アイコンを表示</label>
                 <label class="toggle-row"><input type="checkbox" id="cc-show-names" checked> 名前を表示</label>
                 <label class="toggle-row"><input type="checkbox" id="cc-show-coords" checked> 座標を表示</label>
@@ -548,12 +549,16 @@
     <!-- 📍 メンバー以外の目印（方位磁針・共有地など）は js/data/MAP_locations.js に分離 -->
     <script src="js/data/MAP_locations.js"></script>
 
+    <!-- 🟥 区画の枠線（背景画像とは別に線で描く）は js/data/MAP_plots.js に分離 -->
+    <script src="js/data/MAP_plots.js"></script>
+
     <!-- 🧩 機能ごとに分割したJSコンポーネント（js/フォルダ） -->
     <script src="js/map/color-customizer.js"></script>
     <script src="js/map/map-config.js"></script>
     <script src="js/map/map-grid.js"></script>
     <script src="js/map/member-list.js"></script>
     <script src="js/map/location-list.js"></script>
+    <script src="js/map/plot-frames.js"></script>
     <script src="js/map/mobile-ui.js"></script>
     <script src="js/map/download-zip.js"></script>
     <script src="js/map/zoom-slider.js"></script>
@@ -579,6 +584,7 @@
         // ==========================================================
         MapApp.mapConfig.init(map);
         MapApp.mapGrid.init(map);
+        MapApp.plotFrames.create(map);
         MapApp.memberList.init(map);
         MapApp.mapLocations.init(map);
         MapApp.mobileUI.init();

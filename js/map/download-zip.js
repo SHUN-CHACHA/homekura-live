@@ -17,11 +17,13 @@
         'shared/theme.css',
         'js/data/MAP_member.js',
         'js/data/MAP_locations.js',
+        'js/data/MAP_plots.js',
         'js/map/color-customizer.js',
         'js/map/map-config.js',
         'js/map/map-grid.js',
         'js/map/member-list.js',
         'js/map/location-list.js',
+        'js/map/plot-frames.js',
         'js/map/zoom-slider.js',
         'js/map/mobile-ui.js',
         'js/map/download-zip.js'
