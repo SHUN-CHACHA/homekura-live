@@ -6,10 +6,11 @@
 (function () {
     window.MapApp = window.MapApp || {};
 
-    // 格子線は3チャンク（48ブロック）ごと。Season3 の区画（X -136〜295 / Z -344〜87）の境目にそろえる
-    const GRID_INTERVAL = 48;
-    const GRID_ORIGIN_X = -136;
-    const GRID_ORIGIN_Z = -344;
+    // 格子線は1チャンク（16ブロック）ごと。Season3 の区画（X -144〜383 / Z -400〜127）はチャンク単位なので、
+    // 区画の境目・区画の間の道（1チャンク）の境目はすべてこの線と重なる
+    const GRID_INTERVAL = 16;
+    const GRID_ORIGIN_X = 0;
+    const GRID_ORIGIN_Z = 0;
     const AXIS_LABEL_INTERVAL = 512;
     const LOW_ZOOM_THRESHOLD = -2; // これより低いズームレベル（1倍未満）では座標を非表示にする
 
@@ -29,7 +30,7 @@
         let zAxisLine = null;
 
         // ==========================================================
-        // 📏 動的格子線（区画の境目 X:-136, Z:-344 を起点に48ブロックごと）
+        // 📏 動的格子線（チャンクの境目 X:0, Z:0 を起点に16ブロックごと）
         // 表示範囲（パン・ズーム）に合わせて、見えている範囲全体をカバーするように再描画する
         // ==========================================================
         function updateGrid() {
