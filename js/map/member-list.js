@@ -8,7 +8,7 @@
 
     const markers = {};
     let map = null;
-    let tableBody, mobileMemberList, countSpan, searchInput, cursorCoords;
+    let memberSelect, countSpan, cursorCoords;
 
     // 顔アイコンが見つからない場合のプレースホルダー画像（灰色のシルエット）
     const AVATAR_FALLBACK = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
@@ -79,9 +79,6 @@
     }
 
     function renderMembers() {
-        tableBody.innerHTML = '';
-        mobileMemberList.innerHTML = '';
-
         memberData.forEach((member, index) => {
             const isRegistered = member.name.trim() !== ""; // 名前が入っているかどうか
 
@@ -115,55 +112,12 @@
             const lookupName = member.name;
             markers[lookupName] = marker;
 
+            // ドロップダウンの選択肢（例：区画07　久那式リン（X: 72, Z: -296））
             const displayName = people.map((p) => p.name).join('・');
-            const searchName = people.map((p) => p.name).join(' ').trim().toLowerCase();
-            const searchArea = member.area ? member.area.toLowerCase() : "";
-
-            // テーブル行作成（PC表示）
-            const tr = document.createElement('tr');
-            tr.className = 'hover:bg-[#222227] cursor-pointer transition-colors border-b border-gray-800 text-gray-300';
-            tr.setAttribute('data-name', searchName);
-            tr.setAttribute('data-area', searchArea);
-
-            tr.innerHTML = `
-                <td class="py-3 px-4 font-mono font-bold text-green-500">
-                    ${member.area || "-"}
-                </td>
-                <td class="py-3 px-4 font-medium text-gray-100">
-                    ${displayName}
-                </td>
-                <td class="py-3 px-4 text-right font-mono text-gray-300">
-                    ${member.x}
-                </td>
-                <td class="py-3 px-4 text-right font-mono text-gray-300">
-                    ${member.z}
-                </td>
-            `;
-
-            tr.addEventListener('click', () => {
-                focusOnBase(lookupName, leafletY, leafletX);
-            });
-
-            tableBody.appendChild(tr);
-
-            // 顔アイコン付きカード作成（スマホ表示）
-            const avatarSrc = member.icon ? `avatars/${member.icon}` : AVATAR_FALLBACK;
-            const row = document.createElement('div');
-            row.className = 'mobile-member-row';
-            row.setAttribute('data-name', searchName);
-            row.setAttribute('data-area', searchArea);
-            row.innerHTML = `
-                <img class="mm-avatar" src="${avatarSrc}" alt="${member.name}" onerror="avatarFallback(this)" />
-                <div class="mm-text">
-                    <div class="mm-name">${displayName}</div>
-                    <div class="mm-area">${member.area || ''}</div>
-                </div>
-            `;
-            row.addEventListener('click', () => {
-                focusOnBase(lookupName, leafletY, leafletX);
-                if (window.MapApp.mobileUI) window.MapApp.mobileUI.closeMemberDrawer();
-            });
-            mobileMemberList.appendChild(row);
+            const option = document.createElement('option');
+            option.value = String(index);
+            option.textContent = `${member.area ? member.area + '　' : ''}${displayName}（X: ${member.x}, Z: ${member.z}）`;
+            memberSelect.appendChild(option);
         });
     }
 
@@ -179,27 +133,13 @@
         map.setView([0, 0], -2, { animate: true });
     };
 
-    function initSearch() {
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase().trim();
-            const rows = tableBody.getElementsByTagName('tr');
-            const mobileRows = mobileMemberList.getElementsByClassName('mobile-member-row');
-
-            const applyFilter = (el) => {
-                const name = el.getAttribute('data-name');
-                const area = el.getAttribute('data-area');
-
-                if (query === "") {
-                    el.style.display = '';
-                } else if (name.includes(query) || area.includes(query)) {
-                    el.style.display = '';
-                } else {
-                    el.style.display = 'none';
-                }
-            };
-
-            for (let row of rows) applyFilter(row);
-            for (let row of mobileRows) applyFilter(row);
+    // ドロップダウンでメンバーを選んだら、その拠点にジャンプする（スマホではドロワーも閉じる）
+    function initMemberSelect() {
+        memberSelect.addEventListener('change', (e) => {
+            const member = memberData[Number(e.target.value)];
+            if (e.target.value === '' || !member) return;
+            focusOnBase(member.name, -member.z, member.x);
+            if (window.MapApp.mobileUI) window.MapApp.mobileUI.closeMemberDrawer();
         });
     }
 
@@ -213,10 +153,8 @@
 
     function init(mapInstance) {
         map = mapInstance;
-        tableBody = document.getElementById('member-table-body');
-        mobileMemberList = document.getElementById('mobile-member-list');
+        memberSelect = document.getElementById('member-select');
         countSpan = document.getElementById('member-count');
-        searchInput = document.getElementById('search-input');
         cursorCoords = document.getElementById('cursor-coords');
 
         // 登録人数：同じ名前の人が複数拠点にいても1人として数える（重複除外、共有地は除外）
@@ -237,7 +175,7 @@
         });
 
         renderMembers();
-        initSearch();
+        initMemberSelect();
         initCursorTracking();
     }
 

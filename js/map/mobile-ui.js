@@ -40,12 +40,7 @@
 
         drawerToggleBtn.addEventListener('click', toggleMemberDrawer);
         drawerBackdrop.addEventListener('click', closeMemberDrawer);
-
-        // 一覧（PC用テーブル）の行をタップして地図にジャンプしたら、ドロワーは自動で閉じる
-        const tableBody = document.getElementById('member-table-body');
-        tableBody.addEventListener('click', (e) => {
-            if (e.target.closest('tr')) closeMemberDrawer();
-        });
+        // メンバーを選んで地図にジャンプした時のドロワーの自動クローズは member-list.js 側で行う
     }
 
     window.MapApp.mobileUI = {

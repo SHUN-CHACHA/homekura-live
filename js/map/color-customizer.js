@@ -176,12 +176,6 @@
             });
         });
 
-        const toggleBtn = document.getElementById('color-customizer-toggle');
-        const panel = document.getElementById('color-customizer-panel');
-        if (toggleBtn && panel) {
-            toggleBtn.addEventListener('click', () => panel.classList.toggle('open'));
-        }
-
         const resetBtn = document.getElementById('color-customizer-reset');
         if (resetBtn) {
             resetBtn.addEventListener('click', () => {
