@@ -12,6 +12,9 @@
     const REQUIRED_DOWNLOAD_FILES = [
         'minecraft_map.html',
         'background_image_guide.html',
+        'map_compare.html',
+        'shared/map-markers.css',
+        'shared/theme.css',
         'js/data/MAP_member.js',
         'js/data/MAP_locations.js',
         'js/map/color-customizer.js',
@@ -19,7 +22,7 @@
         'js/map/map-grid.js',
         'js/map/member-list.js',
         'js/map/location-list.js',
-        'js/map/name-toggle.js',
+        'js/map/zoom-slider.js',
         'js/map/mobile-ui.js',
         'js/map/download-zip.js'
     ];

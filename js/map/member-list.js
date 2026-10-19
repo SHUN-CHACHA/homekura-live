@@ -83,17 +83,11 @@
         });
     }
 
-    // 今のズームでの顔アイコンの大きさ（px）
-    function getFacePx() {
-        const px = (PLOT_BLOCKS - PLOT_INSET_BLOCKS * 2) * Math.pow(2, map.getZoom());
-        return Math.max(MIN_FACE_PX, px);
-    }
-
-    // 顔アイコンの大きさを更新し、ネームタグを顔アイコンの上端（枠の内側）にそろえる
-    function updateFaceSize() {
-        const px = getFacePx();
-        map.getContainer().style.setProperty('--face-px', `${px}px`);
-        Object.values(markers).forEach((marker) => {
+    // 顔アイコンの大きさ（ズームに合わせる）を更新し、ネームタグを顔アイコンの上端（枠の内側）にそろえる
+    function updateFaceSize(targetMap, targetMarkers) {
+        const px = Math.max(MIN_FACE_PX, (PLOT_BLOCKS - PLOT_INSET_BLOCKS * 2) * Math.pow(2, targetMap.getZoom()));
+        targetMap.getContainer().style.setProperty('--face-px', `${px}px`);
+        targetMarkers.forEach((marker) => {
             const tooltip = marker.getTooltip();
             if (!tooltip) return;
             tooltip.options.offset = [0, -px / 2];
@@ -101,42 +95,44 @@
         });
     }
 
-    function renderMembers() {
-        memberData.forEach((member, index) => {
-            const isRegistered = member.name.trim() !== ""; // 名前が入っているかどうか
-
+    // 登録済みメンバーの顔アイコン＋ネームタグを地図に置く（拠点マップ・地図の比較画面で共通）
+    // 戻り値：メンバー名 -> マーカー
+    function addMemberMarkers(targetMap) {
+        const placed = {};
+        memberData.forEach((member) => {
             // 未登録（名前が空欄）のメンバーは地図にも一覧にも表示しない
-            if (!isRegistered) {
-                return;
-            }
+            if (!member.name || member.name.trim() === "") return;
 
-            const leafletY = -member.z;
-            const leafletX = member.x;
-
-            // マーカーの設置（顔アイコン）
-            const marker = L.marker([leafletY, leafletX], { icon: getIcon(member, isRegistered) }).addTo(map);
+            const marker = L.marker([-member.z, member.x], { icon: getIcon(member, true) }).addTo(targetMap);
 
             // メンバー名を「常に表示」するネームタグを設定（1人ずつ改行、最大3人まで対応）
-            const people = getPeople(member);
-            const nameLinesHtml = people.map((p) => `<div class="name-line">${p.name}</div>`).join('');
-            const tooltipText = `
+            const nameLinesHtml = getPeople(member).map((p) => `<div class="name-line">${p.name}</div>`).join('');
+            marker.bindTooltip(`
                 ${nameLinesHtml}
                 <div class="coord-line">X: ${member.x}, Z: ${member.z}</div>
-            `;
-
-            marker.bindTooltip(tooltipText, {
+            `, {
                 permanent: true,
                 direction: 'bottom',
                 offset: [0, 0], // 位置は updateFaceSize() で顔アイコンの上端にそろえる
                 className: 'permanent-name-label'
             });
+            placed[member.name] = marker;
+        });
 
-            // 一覧でキーとして使うための名前
-            const lookupName = member.name;
-            markers[lookupName] = marker;
+        const list = Object.values(placed);
+        updateFaceSize(targetMap, list);
+        targetMap.on('zoom zoomend', () => updateFaceSize(targetMap, list));
+        return placed;
+    }
+
+    function renderMembers() {
+        Object.assign(markers, addMemberMarkers(map));
+
+        memberData.forEach((member, index) => {
+            if (!member.name || member.name.trim() === "") return;
 
             // ドロップダウンの選択肢（例：区画07　久那式リン（X: 72, Z: -296））
-            const displayName = people.map((p) => p.name).join('・');
+            const displayName = getPeople(member).map((p) => p.name).join('・');
             const option = document.createElement('option');
             option.value = String(index);
             option.textContent = `${member.area ? member.area + '　' : ''}${displayName}（X: ${member.x}, Z: ${member.z}）`;
@@ -198,8 +194,6 @@
         });
 
         renderMembers();
-        updateFaceSize();
-        map.on('zoom zoomend', updateFaceSize);
         initMemberSelect();
         initCursorTracking();
     }
@@ -208,6 +202,7 @@
         init,
         markers,
         memberData: () => memberData,
+        addMemberMarkers,
         focusOnBase
     };
 })();

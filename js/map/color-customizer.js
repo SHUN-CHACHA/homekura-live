@@ -1,5 +1,5 @@
 // ==========================================================
-// 🎨 カラーカスタマイズ機能コンポーネント（PC専用・この端末にのみ保存）
+// 🎨 カラーカスタマイズ機能コンポーネント（設定はPCの拠点マップで変更・この端末にのみ保存。地図の比較画面も同じ設定で表示）
 // window.MapApp.colorCustomizer として公開します。
 // 色が変わったら 'mapapp:colorschange' イベントを発行するので、
 // 地図側（map-grid.js）はそれを購読して自分の色を更新します。
@@ -62,12 +62,12 @@
         root.setProperty('--custom-text-color', customColors.textColor);
         root.setProperty('--custom-text-bg', customColors.textBgTransparent ? 'transparent' : hexToRgba(customColors.textBg, 0.85));
 
-        const mapContainer = document.getElementById('map-container');
-        if (mapContainer) {
-            mapContainer.classList.toggle('hide-faces', !customColors.showFaces);
-            mapContainer.classList.toggle('hide-names', !customColors.showNames);
-            mapContainer.classList.toggle('hide-coords', !customColors.showCoords);
-        }
+        // 表示切り替えは .map-display-target の付いた要素（拠点マップ・地図の比較画面の地図）に反映する
+        document.querySelectorAll('.map-display-target').forEach((el) => {
+            el.classList.toggle('hide-faces', !customColors.showFaces);
+            el.classList.toggle('hide-names', !customColors.showNames);
+            el.classList.toggle('hide-coords', !customColors.showCoords);
+        });
 
         // グリッド線・軸線の色更新は地図側(map-grid.js)に任せる。
         // このイベントを購読して色を反映してもらう。

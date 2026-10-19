@@ -1,7 +1,7 @@
 // ==========================================================
 // 📏 地図の格子線・座標ラベル・軸線コンポーネント
 // window.MapApp.mapGrid として公開します。
-// init(map) を呼んでから使います。
+// init(map) を呼んでから使います。地図の比較画面のように複数の地図に付ける時は create(map, options) を使います。
 // ==========================================================
 (function () {
     window.MapApp = window.MapApp || {};
@@ -13,115 +13,113 @@
     const AXIS_LABEL_INTERVAL = 512;
     const LOW_ZOOM_THRESHOLD = -2; // これより低いズームレベル（1倍未満）では座標を非表示にする
 
-    let map = null;
-    let gridLayerGroup = null;
-    let mapEl = null;
-    let axisLabelContainer = null;
-    let xAxisLine = null;
-    let zAxisLine = null;
-
     function getColors() {
         const cc = window.MapApp.colorCustomizer;
         return cc ? cc.getColors() : { gridColor: '#ffffff', xAxisColor: '#ef4444', zAxisColor: '#3b82f6' };
     }
 
-    // ==========================================================
-    // 📏 動的格子線（区画の境目 X:0, Z:-416 を起点に48ブロックごと）
-    // 表示範囲（パン・ズーム）に合わせて、見えている範囲全体をカバーするように再描画する
-    // ==========================================================
-    function updateGrid() {
-        gridLayerGroup.clearLayers();
+    // 1つの地図に格子線・軸線・座標ラベルを付ける
+    // options.axisLabelContainer：座標ラベルを表示する要素（なければラベルは出さない）
+    function create(map, options) {
+        const opts = options || {};
+        const mapEl = map.getContainer();
+        const axisLabelContainer = opts.axisLabelContainer || null;
+        const gridLayerGroup = L.layerGroup().addTo(map);
+        let xAxisLine = null;
+        let zAxisLine = null;
 
-        const bounds = map.getBounds();
-        const west = bounds.getWest();
-        const east = bounds.getEast();
-        const south = bounds.getSouth();
-        const north = bounds.getNorth();
+        // ==========================================================
+        // 📏 動的格子線（区画の境目 X:0, Z:-416 を起点に48ブロックごと）
+        // 表示範囲（パン・ズーム）に合わせて、見えている範囲全体をカバーするように再描画する
+        // ==========================================================
+        function updateGrid() {
+            gridLayerGroup.clearLayers();
 
-        // 現在の表示範囲より少し広めに、格子の位置へスナップして描画開始/終了位置を決める（leafletY = -z）
-        const snapDown = (v, origin) => Math.floor((v - origin) / GRID_INTERVAL) * GRID_INTERVAL + origin;
-        const snapUp = (v, origin) => Math.ceil((v - origin) / GRID_INTERVAL) * GRID_INTERVAL + origin;
-        const xStart = snapDown(west, GRID_ORIGIN_X) - GRID_INTERVAL;
-        const xEnd = snapUp(east, GRID_ORIGIN_X) + GRID_INTERVAL;
-        const yStart = snapDown(south, -GRID_ORIGIN_Z) - GRID_INTERVAL;
-        const yEnd = snapUp(north, -GRID_ORIGIN_Z) + GRID_INTERVAL;
+            const bounds = map.getBounds();
+            const west = bounds.getWest();
+            const east = bounds.getEast();
+            const south = bounds.getSouth();
+            const north = bounds.getNorth();
 
-        const gridStyle = { color: getColors().gridColor, weight: 1, opacity: 0.12, interactive: false };
+            // 現在の表示範囲より少し広めに、格子の位置へスナップして描画開始/終了位置を決める（leafletY = -z）
+            const snapDown = (v, origin) => Math.floor((v - origin) / GRID_INTERVAL) * GRID_INTERVAL + origin;
+            const snapUp = (v, origin) => Math.ceil((v - origin) / GRID_INTERVAL) * GRID_INTERVAL + origin;
+            const xStart = snapDown(west, GRID_ORIGIN_X) - GRID_INTERVAL;
+            const xEnd = snapUp(east, GRID_ORIGIN_X) + GRID_INTERVAL;
+            const yStart = snapDown(south, -GRID_ORIGIN_Z) - GRID_INTERVAL;
+            const yEnd = snapUp(north, -GRID_ORIGIN_Z) + GRID_INTERVAL;
 
-        // 縦線（X座標が一定の線）
-        for (let x = xStart; x <= xEnd; x += GRID_INTERVAL) {
-            L.polyline([[yStart, x], [yEnd, x]], gridStyle).addTo(gridLayerGroup);
-        }
-        // 横線（Z座標が一定の線。leafletY = -z）
-        for (let y = yStart; y <= yEnd; y += GRID_INTERVAL) {
-            L.polyline([[y, xStart], [y, xEnd]], gridStyle).addTo(gridLayerGroup);
-        }
-    }
+            const gridStyle = { color: getColors().gridColor, weight: 1, opacity: 0.12, interactive: false };
 
-    // ==========================================================
-    // 🔍 ズームアウト時は座標表示を隠して密集を緩和する
-    // ==========================================================
-    function updateZoomDensityClass() {
-        if (map.getZoom() < LOW_ZOOM_THRESHOLD) {
-            mapEl.classList.add('low-zoom');
-        } else {
-            mapEl.classList.remove('low-zoom');
-        }
-    }
-
-    // ==========================================================
-    // 📏 512刻みのX軸・Z軸ラベル（画面上端・右端に表示するルーラー）
-    // ==========================================================
-    function updateAxisLabels() {
-        axisLabelContainer.innerHTML = '';
-
-        const bounds = map.getBounds();
-        const west = bounds.getWest();
-        const east = bounds.getEast();
-        const south = bounds.getSouth();
-        const north = bounds.getNorth();
-
-        // 画面上端：X座標のラベル（512刻み）
-        const xStart = Math.ceil(west / AXIS_LABEL_INTERVAL) * AXIS_LABEL_INTERVAL;
-        const xEnd = Math.floor(east / AXIS_LABEL_INTERVAL) * AXIS_LABEL_INTERVAL;
-        for (let x = xStart; x <= xEnd; x += AXIS_LABEL_INTERVAL) {
-            const point = map.latLngToContainerPoint([north, x]);
-            const label = document.createElement('div');
-            label.className = 'axis-label-x';
-            label.textContent = x;
-            label.style.left = `${point.x}px`;
-            axisLabelContainer.appendChild(label);
+            // 縦線（X座標が一定の線）
+            for (let x = xStart; x <= xEnd; x += GRID_INTERVAL) {
+                L.polyline([[yStart, x], [yEnd, x]], gridStyle).addTo(gridLayerGroup);
+            }
+            // 横線（Z座標が一定の線。leafletY = -z）
+            for (let y = yStart; y <= yEnd; y += GRID_INTERVAL) {
+                L.polyline([[y, xStart], [y, xEnd]], gridStyle).addTo(gridLayerGroup);
+            }
         }
 
-        // 画面右端：Z座標のラベル（512刻み。leafletY = -z）
-        const yStart = Math.ceil(south / AXIS_LABEL_INTERVAL) * AXIS_LABEL_INTERVAL;
-        const yEnd = Math.floor(north / AXIS_LABEL_INTERVAL) * AXIS_LABEL_INTERVAL;
-        for (let y = yStart; y <= yEnd; y += AXIS_LABEL_INTERVAL) {
-            const z = -y;
-            const point = map.latLngToContainerPoint([y, east]);
-            const label = document.createElement('div');
-            label.className = 'axis-label-z';
-            label.textContent = z;
-            label.style.top = `${point.y}px`;
-            axisLabelContainer.appendChild(label);
+        // ==========================================================
+        // 🔍 ズームアウト時は座標表示を隠して密集を緩和する
+        // ==========================================================
+        function updateZoomDensityClass() {
+            if (map.getZoom() < LOW_ZOOM_THRESHOLD) {
+                mapEl.classList.add('low-zoom');
+            } else {
+                mapEl.classList.remove('low-zoom');
+            }
         }
-    }
 
-    function updateAxisLineColors() {
-        const colors = getColors();
-        if (xAxisLine) xAxisLine.setStyle({ color: colors.xAxisColor, opacity: colors.xAxisTransparent ? 0 : 0.6 });
-        if (zAxisLine) zAxisLine.setStyle({ color: colors.zAxisColor, opacity: colors.zAxisTransparent ? 0 : 0.6 });
-    }
+        // ==========================================================
+        // 📏 512刻みのX軸・Z軸ラベル（画面上端・右端に表示するルーラー）
+        // ==========================================================
+        function updateAxisLabels() {
+            if (!axisLabelContainer) return;
+            axisLabelContainer.innerHTML = '';
 
-    // ==========================================================
-    // 🚀 初期化：地図オブジェクトを受け取り、格子・軸線・イベントを設定する
-    // ==========================================================
-    function init(mapInstance) {
-        map = mapInstance;
-        gridLayerGroup = L.layerGroup().addTo(map);
-        mapEl = document.getElementById('map');
-        axisLabelContainer = document.getElementById('axis-labels');
+            const bounds = map.getBounds();
+            const west = bounds.getWest();
+            const east = bounds.getEast();
+            const south = bounds.getSouth();
+            const north = bounds.getNorth();
 
+            // 画面上端：X座標のラベル（512刻み）
+            const xStart = Math.ceil(west / AXIS_LABEL_INTERVAL) * AXIS_LABEL_INTERVAL;
+            const xEnd = Math.floor(east / AXIS_LABEL_INTERVAL) * AXIS_LABEL_INTERVAL;
+            for (let x = xStart; x <= xEnd; x += AXIS_LABEL_INTERVAL) {
+                const point = map.latLngToContainerPoint([north, x]);
+                const label = document.createElement('div');
+                label.className = 'axis-label-x';
+                label.textContent = x;
+                label.style.left = `${point.x}px`;
+                axisLabelContainer.appendChild(label);
+            }
+
+            // 画面右端：Z座標のラベル（512刻み。leafletY = -z）
+            const yStart = Math.ceil(south / AXIS_LABEL_INTERVAL) * AXIS_LABEL_INTERVAL;
+            const yEnd = Math.floor(north / AXIS_LABEL_INTERVAL) * AXIS_LABEL_INTERVAL;
+            for (let y = yStart; y <= yEnd; y += AXIS_LABEL_INTERVAL) {
+                const z = -y;
+                const point = map.latLngToContainerPoint([y, east]);
+                const label = document.createElement('div');
+                label.className = 'axis-label-z';
+                label.textContent = z;
+                label.style.top = `${point.y}px`;
+                axisLabelContainer.appendChild(label);
+            }
+        }
+
+        function updateAxisLineColors() {
+            const colors = getColors();
+            if (xAxisLine) xAxisLine.setStyle({ color: colors.xAxisColor, opacity: colors.xAxisTransparent ? 0 : 0.6 });
+            if (zAxisLine) zAxisLine.setStyle({ color: colors.zAxisColor, opacity: colors.zAxisTransparent ? 0 : 0.6 });
+        }
+
+        // ==========================================================
+        // 🚀 初期化：格子・軸線・イベントを設定する
+        // ==========================================================
         const colors = getColors();
         zAxisLine = L.polyline([[4000, 0], [-4000, 0]], { color: colors.zAxisColor, weight: 2, opacity: colors.zAxisTransparent ? 0 : 0.6, dashArray: '6, 6' }).addTo(map);
         xAxisLine = L.polyline([[0, -4000], [0, 4000]], { color: colors.xAxisColor, weight: 2, opacity: colors.xAxisTransparent ? 0 : 0.6, dashArray: '6, 6' }).addTo(map);
@@ -135,12 +133,20 @@
             updateGrid();
             updateAxisLineColors();
         });
+
+        return { updateGrid, updateAxisLabels, updateZoomDensityClass };
+    }
+
+    let main = null;
+    function init(mapInstance) {
+        main = create(mapInstance, { axisLabelContainer: document.getElementById('axis-labels') });
     }
 
     window.MapApp.mapGrid = {
         init,
-        updateGrid: () => updateGrid(),
-        updateAxisLabels: () => updateAxisLabels(),
-        updateZoomDensityClass: () => updateZoomDensityClass()
+        create,
+        updateGrid: () => main.updateGrid(),
+        updateAxisLabels: () => main.updateAxisLabels(),
+        updateZoomDensityClass: () => main.updateZoomDensityClass()
     };
 })();

@@ -13,19 +13,10 @@
 
     <!-- 🏠 ライトテーマ共通CSS（戻るボタン・スマホ用ドロワーの配色に使用） -->
     <link rel="stylesheet" href="shared/theme.css">
+    <!-- 🗺️ 顔アイコン・ネームタグの共通スタイル（地図の比較画面と共通） -->
+    <link rel="stylesheet" href="shared/map-markers.css">
     
     <style>
-        :root {
-            --custom-void-bg: #141417;
-            --custom-grid-color: #ffffff;
-            --custom-x-axis-color: #ef4444;
-            --custom-z-axis-color: #3b82f6;
-            --custom-panel-bg: #1a1a1f;
-            --custom-icon-border: #4caf50;
-            --custom-icon-bg: #26262b;
-            --custom-text-color: #ffffff;
-            --custom-text-bg: rgba(26, 26, 31, 0.85);
-        }
         body {
             background-color: #121214;
         }
@@ -119,54 +110,7 @@
             background: #45a049;
         }
         
-        /* 💡 マップ上に「常に表示されるメンバー名ネームタグ」のカスタムスタイル */
-        .permanent-name-label {
-            background: var(--custom-text-bg) !important;
-            border: 1px solid #4caf50 !important;
-            color: var(--custom-text-color) !important;
-            font-weight: bold !important;
-            font-size: 11px !important;
-            padding: 3px 6px !important;
-            border-radius: 4px !important;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.6) !important;
-            white-space: nowrap;
-            text-align: center;
-            line-height: 1.3;
-        }
-        .permanent-name-label .coord-line {
-            font-weight: normal;
-            font-size: 11px;
-            color: var(--custom-text-color);
-            margin-top: 1px;
-        }
-        /* 🔍 スマホ幅ではズームアウト時にアイコン同士が密集して見にくくなるため、座標を非表示にする */
-        /* PC幅では常に座標を表示する（このメディアクエリの外なので対象外） */
-        @media (max-width: 768px) {
-            #map.low-zoom .permanent-name-label .coord-line {
-                display: none;
-            }
-        }
-        /* 💡 未登録状態のネームタグを少し目立たなくするスタイル */
-        .permanent-name-label.unregistered {
-            border: 1px solid #55555d !important;
-            color: #88888f !important;
-            opacity: 0.6;
-        }
-        .permanent-name-label.unregistered .coord-line {
-            color: #88888f;
-        }
-        /* 🗺️ 地図の表示項目：顔アイコン・名前・座標の表示切り替え（名前・座標が両方OFFならネームタグごと隠す） */
-        #map-container.hide-faces .leaflet-marker-pane,
-        #map-container.hide-names .permanent-name-label .name-line,
-        #map-container.hide-coords .permanent-name-label .coord-line,
-        #map-container.hide-names.hide-coords .leaflet-tooltip-pane {
-            display: none !important;
-        }
-        /* 吹き出しの小さな矢印を非表示にする */
-        .permanent-name-label::before {
-            display: none !important;
-        }
-        
+
         /* 外部画像を使わない「光るアニメーションピン」のCSS */
         .pulse-marker {
             display: flex;
@@ -211,65 +155,6 @@
             }
         }
 
-        /* 👤 顔アイコン（メンバーの顔画像）マーカーのスタイル */
-        .avatar-marker {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .avatar-marker img {
-            width: 100%;
-            image-rendering: pixelated; /* 顔アイコンのドット絵をくっきり表示 */
-            height: 100%;
-            object-fit: cover;
-            border: 2px solid var(--custom-icon-border);
-            border-radius: 6px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.6);
-            background-color: var(--custom-icon-bg);
-        }
-        /* 📍 メンバーではない「場所」の目印は、区別しやすいよう青系の枠線にする */
-        .avatar-marker.location-marker img {
-            border-color: #3b82f6;
-        }
-        /* 未登録（名前が空白）の場合は少し目立たなく */
-        .avatar-marker.unregistered img {
-            border: 2px solid #55555d;
-            box-shadow: none;
-            opacity: 0.55;
-            filter: grayscale(1);
-        }
-
-        /* 🟩 メンバーの顔アイコンは区画の枠いっぱいに表示（大きさ --face-px はズームに合わせて member-list.js が更新） */
-        .plot-fill {
-            position: absolute;
-            transform: translate(-50%, -50%);
-        }
-        .avatar-marker.plot-fill {
-            width: var(--face-px, 32px);
-            height: var(--face-px, 32px);
-        }
-        .avatar-marker-group.plot-fill {
-            width: var(--face-px, 32px);
-        }
-        .avatar-marker-group.plot-fill .avatar-marker {
-            flex: 1;
-            width: auto;
-            height: auto;
-            aspect-ratio: 1;
-        }
-
-        /* 👥 1拠点に2人いる場合、顔アイコンを2つ並べて表示 */
-        .avatar-marker-group {
-            display: flex;
-            align-items: center;
-            gap: 3px;
-        }
-        .avatar-marker-group .avatar-marker {
-            width: 32px;
-            height: 32px;
-        }
 
         /* 🎨 左パネル（一覧・UI）の背景色をカスタム変数に対応させる（PC表示のみ有効） */
         .drawer-header,
@@ -639,7 +524,7 @@
             </div>
 
             <!-- マップ本体コンテナ -->
-            <div id="map-container" class="flex-1 w-full rounded-lg border border-gray-800 overflow-hidden">
+            <div id="map-container" class="map-display-target flex-1 w-full rounded-lg border border-gray-800 overflow-hidden">
                 <div id="map"></div>
                 <div id="axis-labels"></div>
                 <div id="zoom-slider-wrap">

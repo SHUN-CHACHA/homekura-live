@@ -8,15 +8,19 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="shared/theme.css">
+    <!-- 🗺️ 顔アイコン・ネームタグは拠点マップと共通のスタイルを使う -->
+    <link rel="stylesheet" href="shared/map-markers.css">
 
     <!-- 📊 地図画像の一覧（mapImageList）は minecraft_map.html と共通のものを使う -->
     <script src="js/map/map-config.js"></script>
-    <!-- 📍 メンバーの拠点名を表示するためのデータ -->
+    <!-- 📍 メンバー・「場所」（メンバーではない目印）のデータ -->
     <script src="js/data/MAP_member.js"></script>
-    <!-- 📍 「場所」（メンバーではない目印）の名前を表示するためのデータ -->
     <script src="js/data/MAP_locations.js"></script>
-    <!-- 🧩 名前ON/OFFトグル・ズームスライダーは minecraft_map.html と共通のコンポーネントを使う -->
-    <script src="js/map/name-toggle.js"></script>
+    <!-- 🧩 拠点マップと共通のコンポーネント（表示項目の設定・格子線・顔アイコン・ズームスライダー） -->
+    <script src="js/map/color-customizer.js"></script>
+    <script src="js/map/map-grid.js"></script>
+    <script src="js/map/member-list.js"></script>
+    <script src="js/map/location-list.js"></script>
     <script src="js/map/zoom-slider.js"></script>
 
     <style>
@@ -81,7 +85,7 @@
         .compare-map {
             width: 100%;
             height: 100%;
-            background: #141417;
+            background: var(--custom-void-bg);
         }
         .compare-select {
             position: absolute;
@@ -97,35 +101,6 @@
             max-width: 60%;
         }
         .compare-select:focus { outline: none; border-color: #7ee787; }
-
-        #toggle-names-btn.is-off {
-            background: #26262b;
-            color: #888;
-            border-color: #4a4a52;
-        }
-        #toggle-names-btn.is-off:hover {
-            background: #333339;
-            color: #aaa;
-        }
-
-        /* 名前ON/OFF切り替え：OFF時は両方の地図のマーカー（名前・場所テキスト）をまとめて非表示にする */
-        #compare-wrap.icons-hidden .leaflet-marker-pane {
-            display: none !important;
-        }
-
-        /* 📍 メンバーの拠点名（文字だけ）のラベル */
-        .compare-name-tag {
-            position: absolute;
-            transform: translate(-50%, -50%);
-            white-space: nowrap;
-            font-size: 11px;
-            font-weight: bold;
-            color: #ffffff;
-            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 4px #000;
-            pointer-events: none;
-            line-height: 1.3;
-            text-align: center;
-        }
     </style>
     <!-- Cloudflare Web Analytics (要: 実トークンに差し替え。Cloudflareダッシュボード > Web Analytics > Add a site で取得) -->
     <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "ef48e3b395a94deb8375d839e1887bb2"}'></script>
@@ -137,12 +112,12 @@
     <a href="minecraft_map.html" class="pill-btn-light">🏠 拠点マップに戻る</a>
     <div id="zoom-slider-wrap">
         <span id="zoom-slider-label">1.0×</span>
-        <input type="range" id="zoom-slider" min="-3.58496" max="-0.41504" step="0.001" value="-2">
+        <input type="range" id="zoom-slider" min="-2" max="2.08496" step="0.001" value="0">
     </div>
-    <button id="toggle-names-btn" class="pill-btn-light">📍 名前 ON</button>
 </div>
 
-<div id="compare-wrap">
+<!-- 顔アイコン・名前・座標・色は拠点マップの「地図の表示項目」の設定を引き継ぐ -->
+<div id="compare-wrap" class="map-display-target">
     <div class="compare-pane">
         <select id="select-left" class="compare-select"></select>
         <div id="map-left" class="compare-map"></div>
@@ -162,13 +137,13 @@
     function createCompareMap(elId) {
         const map = L.map(elId, {
             crs: L.CRS.Simple,
-            minZoom: -3.58496, // 1/3倍（初期表示を1倍とした場合）
-            maxZoom: -0.41504, // 3倍（初期表示を1倍とした場合）
+            minZoom: -2,        // 拠点マップと同じ倍率の範囲
+            maxZoom: 2.08496,
             zoomSnap: 0,        // 無段階ズーム
             zoomControl: false, // +/-ボタンは使わず、共通のスライダーに一本化する
             attributionControl: false
         });
-        map.setView([0, 0], -2);
+        map.setView([0, 0], 0);
         return map;
     }
 
@@ -239,70 +214,28 @@
     mapRight.on('move zoom', () => syncMaps(mapRight, mapLeft));
 
     // ==========================================================
-    // 📍 メンバーの拠点名（文字だけ）を両方の地図に表示する
+    // 📍 拠点マップと同じ顔アイコン・ネームタグ・格子線・軸線を両方の地図に表示する
+    //     （顔アイコン・名前・座標の表示と色は、拠点マップの「地図の表示項目」の設定を引き継ぐ）
     // ==========================================================
-    function addNameLabels(map) {
-        if (typeof memberData === 'undefined') return;
-        memberData.forEach((member) => {
-            if (!member.name || member.name.trim() === "") return; // 未登録は表示しない
+    [mapLeft, mapRight].forEach((map) => {
+        MapApp.mapGrid.create(map);
+        MapApp.memberList.addMemberMarkers(map);
+        MapApp.mapLocations.init(map);
+    });
 
-            const names = [member.name, member.name2, member.name3]
-                .filter((n) => n && n.trim() !== "");
-            const labelHtml = names.join('<br>');
-
-            const leafletY = -member.z;
-            const leafletX = member.x;
-
-            L.marker([leafletY, leafletX], {
-                icon: L.divIcon({
-                    className: '',
-                    html: `<div class="compare-name-tag">${labelHtml}</div>`,
-                    iconSize: null
-                }),
-                interactive: false
-            }).addTo(map);
-        });
+    // ==========================================================
+    // 🔍 初期表示：最新の地図画像全体が左右それぞれの画面に収まる最大の倍率。この倍率をスライダーの「1.00×」とする
+    //     （右側の地図はパン・ズーム連動ロジックで自動的に追従するので、基準は左側の地図でOK）
+    // ==========================================================
+    if (mapImageList[0]) {
+        mapLeft.fitBounds(toLeafletBounds(mapImageList[0].bounds), { animate: false });
     }
-
-    addNameLabels(mapLeft);
-    addNameLabels(mapRight);
-
-    // ==========================================================
-    // 📍 「場所」（メンバーではない目印。祭会場・共有地など）の名前を
-    //     両方の地図にテキストのみで表示する
-    // ==========================================================
-    function addLocationLabels(map) {
-        if (typeof locationData === 'undefined') return;
-        locationData.forEach((loc) => {
-            if (!loc.name || loc.name.trim() === "") return;
-
-            const leafletY = -loc.z;
-            const leafletX = loc.x;
-
-            L.marker([leafletY, leafletX], {
-                icon: L.divIcon({
-                    className: '',
-                    html: `<div class="compare-name-tag">${loc.name}</div>`,
-                    iconSize: null
-                }),
-                interactive: false
-            }).addTo(map);
-        });
-    }
-
-    addLocationLabels(mapLeft);
-    addLocationLabels(mapRight);
-
-    // ==========================================================
-    // 🧩 名前ON/OFFトグル・ズームスライダーは minecraft_map.html と共通のコンポーネントを使う
-    // （右側の地図はパン・ズーム連動ロジックで自動的に追従するので、基準は左側の地図でOK）
-    // ==========================================================
-    MapApp.nameToggle.init({ buttonId: 'toggle-names-btn', targetSelector: '#compare-wrap' });
-    MapApp.zoomSlider.init({ map: mapLeft });
+    MapApp.zoomSlider.init({ map: mapLeft, baseline: mapLeft.getZoom() });
 
     window.addEventListener('load', () => {
         mapLeft.invalidateSize();
         mapRight.invalidateSize();
+        MapApp.colorCustomizer.applyCustomColors();
     });
     window.addEventListener('resize', () => {
         mapLeft.invalidateSize();
