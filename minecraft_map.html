@@ -712,7 +712,7 @@
                             onclick="resetMapView()" 
                             class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-1 px-3 rounded text-xs transition-colors"
                         >
-                            中心 (0, 0) に戻る
+                            区画の中心 (216, -200) に戻る
                         </button>
                     </div>
                     
@@ -739,7 +739,7 @@
                 <div id="axis-labels"></div>
                 <div id="zoom-slider-wrap">
                     <span id="zoom-slider-label">1.0×</span>
-                    <input type="range" id="zoom-slider" min="-3.58496" max="-0.41504" step="0.001" value="-2">
+                    <input type="range" id="zoom-slider" min="-1.08496" max="2.08496" step="0.001" value="0.5">
                     <button id="icon-toggle-btn" title="名前・アイコン表示のON/OFF">📍 名前 ON</button>
                 </div>
             </div>
@@ -774,17 +774,21 @@
         // ==========================================================
         // ⚙️ マップ初期設定 (マイクラ平面座標)
         // ==========================================================
+        // 初期表示の位置と倍率（Season3 の区画全体 X 0〜431 / Z -416〜15 の中心）
+        // 「中心に戻る」ボタンもここに戻る。leaflet の座標は [-Z, X] の順
+        window.MAP_HOME_VIEW = { center: [200, 216], zoom: 0.5 };
+
         const map = L.map('map', {
             crs: L.CRS.Simple,
-            minZoom: -3.58496,  // 1/3倍（現在のデフォルト表示を1倍とした場合）
-            maxZoom: -0.41504,  // 3倍（現在のデフォルト表示を1倍とした場合）
+            minZoom: -1.08496,  // 1/3倍（初期表示を1倍とした場合）
+            maxZoom: 2.08496,   // 3倍（初期表示を1倍とした場合）
             zoomSnap: 0,        // 無段階ズームを可能にする
             zoomDelta: 0,
             zoomControl: false, // 標準の +/- ボタンは使わず、スライダーに置き換える
             attributionControl: false
         });
 
-        map.setView([0, 0], -2);
+        map.setView(MAP_HOME_VIEW.center, MAP_HOME_VIEW.zoom);
 
         // ==========================================================
         // 🚀 各コンポーネントの初期化（map-config → map-grid → member-list → mobile-ui → download-zip）
@@ -796,7 +800,7 @@
         MapApp.mobileUI.init();
         MapApp.downloadZip.init();
         MapApp.nameToggle.init({ buttonId: 'icon-toggle-btn', targetSelector: '#map-container' });
-        MapApp.zoomSlider.init({ map: map });
+        MapApp.zoomSlider.init({ map: map, baseline: MAP_HOME_VIEW.zoom });
         MapApp.colorCustomizer.initUI();
 
         // ==========================================================

@@ -14,6 +14,12 @@
     window.MapApp = window.MapApp || {};
 
     const mapImageList = [
+        {
+            // 区画は48ブロック（3チャンク）単位。区画全体は X 0〜431 / Z -416〜15
+            fileName: 'map/10月18日.png',
+            bounds: [[-97.9, -493.7], [569.8, 174.0]],
+            opacity: 1
+        },
     ];
 
     // ファイル名から拡張子(.png)を除いた部分をそのままラベルとして使う

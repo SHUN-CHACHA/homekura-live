@@ -172,10 +172,11 @@
         map.setView([y, x], map.getMaxZoom(), { animate: true, duration: 0.8 });
     }
 
-    // 中心 (0, 0) に戻る
+    // 初期表示の位置（MAP_HOME_VIEW、未設定なら (0, 0)）に戻る
     // ※ HTML側から onclick="resetMapView()" で呼ばれるためグローバル関数として公開する
     window.resetMapView = function () {
-        map.setView([0, 0], -2, { animate: true });
+        const home = window.MAP_HOME_VIEW || { center: [0, 0], zoom: -2 };
+        map.setView(home.center, home.zoom, { animate: true });
     };
 
     function initSearch() {
