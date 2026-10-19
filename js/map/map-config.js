@@ -15,7 +15,7 @@
 
     const mapImageList = [
         {
-            // 枠線なしの地図。区画の枠線は js/data/MAP_plots.js から線で描く（区画全体は X -112〜319 / Z -368〜63）
+            // 枠線なしの地図。区画の枠線は js/data/MAP_plots.js から線で描く（区画全体は X -136〜295 / Z -344〜87）
             fileName: 'map/10月18日.png',
             bounds: [[-225.9, -445.7], [441.8, 222.0]],
             opacity: 1
