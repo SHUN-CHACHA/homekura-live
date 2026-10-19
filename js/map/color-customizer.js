@@ -16,15 +16,16 @@
         zAxisColor: '#3b82f6',
         panelBg: '#1a1a1f',
         iconBorder: '#4caf50',
-        iconBg: '#26262b',
         textColor: '#ffffff',
         textBg: '#1a1a1f',
         // 透明にできる項目のON/OFF
         iconBorderTransparent: false,
-        iconBgTransparent: false,
         textBgTransparent: false,
         xAxisTransparent: false,
-        zAxisTransparent: false
+        zAxisTransparent: false,
+        // 地図上のネームタグに名前・座標を表示するか
+        showNames: true,
+        showCoords: true
     };
 
     function loadCustomColors() {
@@ -57,9 +58,14 @@
         root.setProperty('--custom-void-bg', customColors.voidBg);
         root.setProperty('--custom-panel-bg', customColors.panelBg);
         root.setProperty('--custom-icon-border', customColors.iconBorderTransparent ? 'transparent' : customColors.iconBorder);
-        root.setProperty('--custom-icon-bg', customColors.iconBgTransparent ? 'transparent' : customColors.iconBg);
         root.setProperty('--custom-text-color', customColors.textColor);
         root.setProperty('--custom-text-bg', customColors.textBgTransparent ? 'transparent' : hexToRgba(customColors.textBg, 0.85));
+
+        const mapContainer = document.getElementById('map-container');
+        if (mapContainer) {
+            mapContainer.classList.toggle('hide-names', !customColors.showNames);
+            mapContainer.classList.toggle('hide-coords', !customColors.showCoords);
+        }
 
         // グリッド線・軸線の色更新は地図側(map-grid.js)に任せる。
         // このイベントを購読して色を反映してもらう。
@@ -77,8 +83,8 @@
         applyCustomColors();
     }
 
-    function setTransparent(key, isTransparent) {
-        customColors[key] = isTransparent;
+    function setFlag(key, value) {
+        customColors[key] = value;
         applyCustomColors();
     }
 
@@ -94,7 +100,6 @@
         'cc-z-axis-color': 'zAxisColor',
         'cc-panel-bg': 'panelBg',
         'cc-icon-border': 'iconBorder',
-        'cc-icon-bg': 'iconBg',
         'cc-text-color': 'textColor',
         'cc-text-bg': 'textBg'
     };
@@ -102,10 +107,15 @@
     // 透明チェックボックスがある項目（input id -> customColorsのキー）
     const transparentInputMap = {
         'cc-icon-border-transparent': 'iconBorderTransparent',
-        'cc-icon-bg-transparent': 'iconBgTransparent',
         'cc-text-bg-transparent': 'textBgTransparent',
         'cc-x-axis-color-transparent': 'xAxisTransparent',
         'cc-z-axis-color-transparent': 'zAxisTransparent'
+    };
+
+    // 表示ON/OFFのチェックボックス（input id -> customColorsのキー）
+    const displayToggleMap = {
+        'cc-show-names': 'showNames',
+        'cc-show-coords': 'showCoords'
     };
 
     function syncColorInputsFromState() {
@@ -125,6 +135,11 @@
             checkbox.checked = !!customColors[key];
             const row = checkbox.closest('.color-row');
             if (row) row.classList.toggle('is-transparent', !!customColors[key]);
+        });
+
+        Object.keys(displayToggleMap).forEach((checkboxId) => {
+            const checkbox = document.getElementById(checkboxId);
+            if (checkbox) checkbox.checked = !!customColors[displayToggleMap[checkboxId]];
         });
     }
 
@@ -169,10 +184,22 @@
             if (!checkbox) return;
 
             checkbox.addEventListener('change', (e) => {
-                setTransparent(key, e.target.checked);
+                setFlag(key, e.target.checked);
                 saveCustomColors();
                 const row = checkbox.closest('.color-row');
                 if (row) row.classList.toggle('is-transparent', e.target.checked);
+            });
+        });
+
+        // 名前・座標の表示ON/OFFの配線
+        Object.keys(displayToggleMap).forEach((checkboxId) => {
+            const checkbox = document.getElementById(checkboxId);
+            const key = displayToggleMap[checkboxId];
+            if (!checkbox) return;
+
+            checkbox.addEventListener('change', (e) => {
+                setFlag(key, e.target.checked);
+                saveCustomColors();
             });
         });
 

@@ -182,6 +182,12 @@
         .permanent-name-label.unregistered .coord-line {
             color: #88888f;
         }
+        /* 🗺️ 地図の表示項目：名前・座標の表示切り替え（両方OFFならネームタグごと隠す） */
+        #map-container.hide-names .permanent-name-label .name-line,
+        #map-container.hide-coords .permanent-name-label .coord-line,
+        #map-container.hide-names.hide-coords .leaflet-tooltip-pane {
+            display: none !important;
+        }
         /* 吹き出しの小さな矢印を非表示にする */
         .permanent-name-label::before {
             display: none !important;
@@ -293,6 +299,24 @@
             font-size: 13px;
             font-weight: bold;
             margin: 0 0 10px;
+        }
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #cbd5c9;
+            cursor: pointer;
+        }
+        .toggle-row input[type="checkbox"] {
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+        }
+        .panel-divider {
+            border-top: 1px solid #333339;
+            margin: 10px 0 12px;
         }
         .color-row {
             display: flex;
@@ -517,6 +541,10 @@
             <div id="color-customizer-panel">
                 <h3>🗺️ 地図の表示項目（この端末のみ保存）</h3>
 
+                <label class="toggle-row"><input type="checkbox" id="cc-show-names" checked> 名前を表示</label>
+                <label class="toggle-row"><input type="checkbox" id="cc-show-coords" checked> 座標を表示</label>
+                <div class="panel-divider"></div>
+
                 <div class="color-row" data-key="voidBg">
                     <label>地図全体の背景色（Void）</label>
                     <input type="text" class="hex-input" id="cc-void-bg-text" value="#141417" maxlength="7">
@@ -550,12 +578,6 @@
                     <input type="checkbox" class="transparent-check" id="cc-icon-border-transparent" title="透明にする">
                     <input type="text" class="hex-input" id="cc-icon-border-text" value="#4caf50" maxlength="7">
                     <input type="color" id="cc-icon-border" value="#4caf50">
-                </div>
-                <div class="color-row" data-key="iconBg">
-                    <label>顔アイコンの背景色</label>
-                    <input type="checkbox" class="transparent-check" id="cc-icon-bg-transparent" title="透明にする">
-                    <input type="text" class="hex-input" id="cc-icon-bg-text" value="#26262b" maxlength="7">
-                    <input type="color" id="cc-icon-bg" value="#26262b">
                 </div>
                 <div class="color-row" data-key="textColor">
                     <label>ネームタグの文字色</label>
