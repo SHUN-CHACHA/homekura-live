@@ -35,6 +35,8 @@
         // ==========================================================
         function updateGrid() {
             gridLayerGroup.clearLayers();
+            // 「地図の表示項目」でグリッド線を消している時は描かない
+            if (getColors().showGrid === false) return;
 
             const bounds = map.getBounds();
             const west = bounds.getWest();

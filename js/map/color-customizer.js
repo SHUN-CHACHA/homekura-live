@@ -23,7 +23,8 @@
         textBgTransparent: false,
         xAxisTransparent: false,
         zAxisTransparent: false,
-        // 地図上に区画の枠線・顔アイコンを表示するか、ネームタグに名前・座標を表示するか
+        // 地図上にグリッド線・区画の枠線・顔アイコンを表示するか、ネームタグに名前・座標を表示するか
+        showGrid: true,
         showPlots: true,
         showFaces: true,
         showNames: true,
@@ -118,6 +119,7 @@
 
     // 表示ON/OFFのチェックボックス（input id -> customColorsのキー）
     const displayToggleMap = {
+        'cc-show-grid': 'showGrid',
         'cc-show-plots': 'showPlots',
         'cc-show-faces': 'showFaces',
         'cc-show-names': 'showNames',
@@ -197,7 +199,7 @@
             });
         });
 
-        // 区画の枠線・顔アイコン・名前・座標の表示ON/OFFの配線
+        // グリッド線・区画の枠線・顔アイコン・名前・座標の表示ON/OFFの配線
         Object.keys(displayToggleMap).forEach((checkboxId) => {
             const checkbox = document.getElementById(checkboxId);
             const key = displayToggleMap[checkboxId];
