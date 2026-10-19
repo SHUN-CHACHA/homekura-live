@@ -530,7 +530,7 @@
                 <div id="axis-labels"></div>
                 <div id="zoom-slider-wrap">
                     <span id="zoom-slider-label">1.0×</span>
-                    <input type="range" id="zoom-slider" min="-2" max="2.08496" step="0.001" value="0">
+                    <input type="range" id="zoom-slider" min="-3" max="2.08496" step="0.001" value="0">
                 </div>
             </div>
         </section>
@@ -569,7 +569,7 @@
         // ==========================================================
         const map = L.map('map', {
             crs: L.CRS.Simple,
-            minZoom: -2,
+            minZoom: -3,        // 1ブロック＝0.125px。PCなら一辺3,000ブロック（中心から±1,500）の地図も全体を表示できる
             maxZoom: 2.08496,   // 1ブロック≒4.2px（区画の顔アイコンが見やすい大きさ）
             zoomSnap: 0,        // 無段階ズームを可能にする
             zoomDelta: 0,
