@@ -6,7 +6,10 @@
 (function () {
     window.MapApp = window.MapApp || {};
 
-    const GRID_INTERVAL = 256;
+    // 格子線は3チャンク（48ブロック）ごと。Season3 の区画（X 0〜431 / Z -416〜15）の境目にそろえる
+    const GRID_INTERVAL = 48;
+    const GRID_ORIGIN_X = 0;
+    const GRID_ORIGIN_Z = -416;
     const AXIS_LABEL_INTERVAL = 512;
     const LOW_ZOOM_THRESHOLD = -2; // これより低いズームレベル（1倍未満）では座標を非表示にする
 
@@ -23,7 +26,7 @@
     }
 
     // ==========================================================
-    // 📏 動的格子線（X:0, Z:0 を起点に256ブロックごと）
+    // 📏 動的格子線（区画の境目 X:0, Z:-416 を起点に48ブロックごと）
     // 表示範囲（パン・ズーム）に合わせて、見えている範囲全体をカバーするように再描画する
     // ==========================================================
     function updateGrid() {
@@ -35,11 +38,13 @@
         const south = bounds.getSouth();
         const north = bounds.getNorth();
 
-        // 現在の表示範囲より少し広めに、256の倍数へスナップして描画開始/終了位置を決める
-        const xStart = Math.floor(west / GRID_INTERVAL) * GRID_INTERVAL - GRID_INTERVAL;
-        const xEnd = Math.ceil(east / GRID_INTERVAL) * GRID_INTERVAL + GRID_INTERVAL;
-        const yStart = Math.floor(south / GRID_INTERVAL) * GRID_INTERVAL - GRID_INTERVAL;
-        const yEnd = Math.ceil(north / GRID_INTERVAL) * GRID_INTERVAL + GRID_INTERVAL;
+        // 現在の表示範囲より少し広めに、格子の位置へスナップして描画開始/終了位置を決める（leafletY = -z）
+        const snapDown = (v, origin) => Math.floor((v - origin) / GRID_INTERVAL) * GRID_INTERVAL + origin;
+        const snapUp = (v, origin) => Math.ceil((v - origin) / GRID_INTERVAL) * GRID_INTERVAL + origin;
+        const xStart = snapDown(west, GRID_ORIGIN_X) - GRID_INTERVAL;
+        const xEnd = snapUp(east, GRID_ORIGIN_X) + GRID_INTERVAL;
+        const yStart = snapDown(south, -GRID_ORIGIN_Z) - GRID_INTERVAL;
+        const yEnd = snapUp(north, -GRID_ORIGIN_Z) + GRID_INTERVAL;
 
         const gridStyle = { color: getColors().gridColor, weight: 1, opacity: 0.12, interactive: false };
 
