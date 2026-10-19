@@ -9,7 +9,9 @@
 $ErrorActionPreference = 'Stop'
 
 $root = Split-Path -Parent $PSScriptRoot
-$version = Get-Date -Format 'yyyyMMddHHmm'
+# バージョン番号は日時ではなく、毎回ランダムな英小文字・数字6文字（例：k3f9a2）にする
+$chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
+$version = -join (1..6 | ForEach-Object { $chars[(Get-Random -Maximum $chars.Length)] })
 $utf8NoBom = New-Object System.Text.UTF8Encoding $false
 
 foreach ($name in @('index.html', 'minecraft_map.html', 'map_compare.html')) {
@@ -17,11 +19,11 @@ $file = Join-Path $root $name
 $text = [System.IO.File]::ReadAllText($file, $utf8NoBom)
 
 # src="..." / href="..." のうち、サイト内のファイル（http・#・${...} などで始まらないもの）が対象
-$attrPattern = '(?<attr>(?:src|href)=")(?<path>(?!https?:|//|#|data:|mailto:|javascript:|\$\{)[^"?#]+\.(?:css|js|png|jpe?g|gif|svg|ico|webp|pdf|html))(?:\?v=\d+)?"'
+$attrPattern = '(?<attr>(?:src|href)=")(?<path>(?!https?:|//|#|data:|mailto:|javascript:|\$\{)[^"?#]+\.(?:css|js|png|jpe?g|gif|svg|ico|webp|pdf|html))(?:\?v=[0-9a-z]+)?"'
 $text = [regex]::Replace($text, $attrPattern, { param($m) "$($m.Groups['attr'].Value)$($m.Groups['path'].Value)?v=$version`"" })
 
 # JavaScriptで組み立てるアバター画像のパス用
-$text = [regex]::Replace($text, "const ASSET_VERSION = '\d*';", "const ASSET_VERSION = '$version';")
+$text = [regex]::Replace($text, "const ASSET_VERSION = '[0-9a-z]*';", "const ASSET_VERSION = '$version';")
 
 [System.IO.File]::WriteAllText($file, $text, $utf8NoBom)
 Write-Host "$name asset version -> $version"
