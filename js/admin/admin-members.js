@@ -149,7 +149,7 @@ function updateAvatarPreview(mcId, uuid) {
     const note = document.getElementById('mineafarNote');
 
     if (uuid) {
-        const imgUrl = `https://api.mineatar.io/head/${uuid}?overlay=true&scale=8`;
+        const imgUrl = `https://api.mineatar.io/face/${uuid}?overlay=true&scale=16`;
         box.innerHTML = `<img class="mc-head-img" src="${imgUrl}"
             onerror="this.onerror=null; this.src='avatars/fallback.svg';">`;
         btn.disabled  = false;
@@ -179,7 +179,7 @@ async function downloadMinecraftAvatar() {
     btn.innerText = "ダウンロード中…";
 
     try {
-        const pngUrl  = `https://api.mineatar.io/head/${currentUUID}?overlay=true&scale=8`;
+        const pngUrl  = `https://api.mineatar.io/face/${currentUUID}?overlay=true&scale=16`;
         const response = await fetch(pngUrl);
         if (!response.ok) throw new Error("Mineatar画像の取得に失敗しました");
 
