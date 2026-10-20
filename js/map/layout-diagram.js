@@ -69,19 +69,22 @@
         return [chars.slice(0, at).join(''), chars.slice(at).join('')];
     }
 
-    // 枠の幅に収まるよう、名前を1行または2行にして文字の大きさを決める
+    // 枠の幅に収まるよう、名前を1行または2行にして文字の大きさ（行ごと）を決める
+    // 「KtR（こーたろー）」のように読みがなを（）で付けた名前は、名前の行は大きく、（）の行は横幅に収まる大きさにする
     function fitLines(names, innerWidth) {
+        const fit = (line) => Math.min(MAX_FONT_SIZE, innerWidth / textWidth(line));
         let lines = names;
-        let size = Math.min(MAX_FONT_SIZE, ...lines.map((l) => innerWidth / textWidth(l)));
+        let size = Math.min(...lines.map(fit));
         if (names.length === 1 && size < MIN_ONE_LINE && Array.from(names[0]).length > 3) {
             const split = splitName(names[0]);
-            const splitSize = Math.min(MAX_FONT_SIZE, ...split.map((l) => innerWidth / textWidth(l)));
+            if (/^[（(]/.test(split[1])) return { lines: split, sizes: split.map(fit) };
+            const splitSize = Math.min(...split.map(fit));
             if (splitSize > size) {
                 lines = split;
                 size = splitSize;
             }
         }
-        return { lines, size };
+        return { lines, sizes: lines.map(() => size) };
     }
 
     function el(name, attrs, parent) {
@@ -140,13 +143,16 @@
             }
 
             const names = [member.name, member.name2, member.name3].filter((n) => n && n.trim() !== '');
-            const { lines, size } = fitLines(names, w - TEXT_PADDING * 2);
-            const lineHeight = size * 1.25;
-            const firstZ = centerZ - (lineHeight * (lines.length - 1)) / 2;
+            const { lines, sizes } = fitLines(names, w - TEXT_PADDING * 2);
+            // 行ごとの高さ（文字の大きさ×1.25）を積み上げて、全体が枠の上下の真ん中に来るように並べる
+            const heights = sizes.map((s) => s * 1.25);
+            let top = centerZ - heights.reduce((a, c) => a + c, 0) / 2;
             lines.forEach((line, i) => {
+                const lineZ = top + heights[i] / 2;
+                top += heights[i];
                 const text = el('text', {
-                    x: centerX, y: firstZ + lineHeight * i, 'text-anchor': 'middle', 'dominant-baseline': 'central',
-                    'font-size': size.toFixed(2), 'font-weight': 'bold', fill: '#2a2a2a'
+                    x: centerX, y: lineZ, 'text-anchor': 'middle', 'dominant-baseline': 'central',
+                    'font-size': sizes[i].toFixed(2), 'font-weight': 'bold', fill: '#2a2a2a'
                 }, svg);
                 text.textContent = line;
             });
