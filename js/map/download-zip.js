@@ -26,6 +26,7 @@
         'js/map/location-list.js',
         'js/map/plot-frames.js',
         'js/map/zoom-slider.js',
+        'js/map/screenshot.js',
         'js/map/mobile-ui.js',
         'js/map/download-zip.js'
     ];

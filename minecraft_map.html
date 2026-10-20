@@ -17,9 +17,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- 🏠 ライトテーマ共通CSS（戻るボタン・スマホ用ドロワーの配色に使用） -->
-    <link rel="stylesheet" href="shared/theme.css?v=aj7761">
+    <link rel="stylesheet" href="shared/theme.css?v=4o1k7c">
     <!-- 🗺️ 顔アイコン・ネームタグの共通スタイル（地図の比較画面と共通） -->
-    <link rel="stylesheet" href="shared/map-markers.css?v=aj7761">
+    <link rel="stylesheet" href="shared/map-markers.css?v=4o1k7c">
     
     <style>
         body {
@@ -46,12 +46,19 @@
             pointer-events: none;
             z-index: 450;
         }
-        /* 🔍 ズームスライダー（無段階ズーム、1/3倍〜3倍） */
-        #zoom-slider-wrap {
+        /* 🔍 地図の左上の操作（倍率スライダーと、その下のスクリーンショットボタン） */
+        #map-tools {
             position: absolute;
             top: 12px;
             left: 12px;
             z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        /* 🔍 ズームスライダー（無段階ズーム、1/3倍〜3倍） */
+        #zoom-slider-wrap {
             background: rgba(26, 26, 31, 0.9);
             border: 1px solid #333339;
             border-radius: 10px;
@@ -74,6 +81,83 @@
             accent-color: #4caf50;
             cursor: pointer;
         }
+        /* 📷 スクリーンショットボタン（js/map/screenshot.js） */
+        #screenshot-btn {
+            background: rgba(26, 26, 31, 0.9);
+            border: 1px solid #333339;
+            border-radius: 10px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #e5ece3;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            cursor: pointer;
+        }
+        #screenshot-btn:hover { border-color: #4caf50; color: #ffffff; }
+        #screenshot-btn:disabled { opacity: 0.6; cursor: wait; }
+        .screenshot-toast {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%);
+            z-index: 3000;
+            background: rgba(26, 26, 31, 0.95);
+            border: 1px solid #4caf50;
+            color: #ffffff;
+            font-size: 13px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+            max-width: calc(100vw - 32px);
+        }
+        /* スマホ：撮った画像を表示して、共有メニューへ進む画面 */
+        .screenshot-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            background: rgba(0, 0, 0, 0.75);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .screenshot-sheet {
+            background: #1a1a1f;
+            border: 1px solid #333339;
+            border-radius: 12px;
+            padding: 12px;
+            max-width: 100%;
+            max-height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .screenshot-sheet img {
+            max-width: 100%;
+            max-height: 65vh;
+            object-fit: contain;
+            border-radius: 6px;
+            -webkit-touch-callout: default; /* 長押しで保存できるようにする */
+        }
+        .screenshot-hint {
+            margin: 0;
+            font-size: 12px;
+            color: #9ca39a;
+            text-align: center;
+        }
+        .screenshot-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .screenshot-actions button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .screenshot-share { background: #4caf50; color: #ffffff; }
+        .screenshot-close { background: #2a2a30; color: #e5ece3; border: 1px solid #44444b; }
         .axis-label-x {
             position: absolute;
             top: 4px;
@@ -392,7 +476,7 @@
         <div class="text-green-500 font-extrabold text-sm text-center truncate">homeクラ Season3 メンバー拠点マップ</div>
         <!-- 2行目：戻る・設定MENU -->
         <div class="flex items-center justify-between gap-2">
-            <a href="index.html?v=aj7761" class="pill-btn-light">🏠 ポータルに戻る</a>
+            <a href="index.html?v=4o1k7c" class="pill-btn-light">🏠 ポータルに戻る</a>
             <button id="member-drawer-toggle" class="pill-btn-light">☰ 設定MENU</button>
         </div>
         <!-- 3行目：地図画像の切り替え -->
@@ -410,8 +494,8 @@
 <aside id="member-drawer" class="w-full lg:w-[430px] flex flex-col gap-4 flex-shrink-0">
 <div class="drawer-header bg-[#1a1a1f] border-b border-gray-800 py-4 sm:py-6 px-4 text-center relative">
         <div class="hidden lg:flex text-left mb-3 gap-2">
-            <a href="index.html?v=aj7761" class="pill-btn-light">🏠 ポータルに戻る</a>
-            <a href="map_compare.html?v=aj7761" target="_blank" class="pill-btn-light">🔍 2枚の地図を比較</a>
+            <a href="index.html?v=4o1k7c" class="pill-btn-light">🏠 ポータルに戻る</a>
+            <a href="map_compare.html?v=4o1k7c" target="_blank" class="pill-btn-light">🔍 2枚の地図を比較</a>
         </div>
         <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-green-500 tracking-wider">homeクラ Season3 メンバー拠点マップ</h1>
         <p class="text-gray-400 mt-2 text-xs sm:text-sm">X=0, Z=0 を中心としたマルチサーバーの勢力図・拠点位置リスト</p>
@@ -432,7 +516,7 @@
     <span>📦</span>
     <span id="download-files-label">ファイル一式をDL</span>
 </button>
-                        <a href="background_image_guide.html?v=aj7761"
+                        <a href="background_image_guide.html?v=4o1k7c"
    class="text-xs bg-[#26262b] hover:bg-[#333339]
           border border-gray-700 hover:border-green-500
           text-gray-300 hover:text-green-400
@@ -564,9 +648,12 @@
             <div id="map-container" class="map-display-target flex-1 w-full rounded-lg border border-gray-800 overflow-hidden">
                 <div id="map"></div>
                 <div id="axis-labels"></div>
-                <div id="zoom-slider-wrap">
-                    <span id="zoom-slider-label">1.0×</span>
-                    <input type="range" id="zoom-slider" min="-4.5" max="2.08496" step="0.001" value="0">
+                <div id="map-tools">
+                    <div id="zoom-slider-wrap">
+                        <span id="zoom-slider-label">1.0×</span>
+                        <input type="range" id="zoom-slider" min="-4.5" max="2.08496" step="0.001" value="0">
+                    </div>
+                    <button type="button" id="screenshot-btn">📷 スクリーンショットを保存</button>
                 </div>
             </div>
         </section>
@@ -580,25 +667,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <!-- 📊 メンバーデータは js/data/MAP_member.js に分離（編集はそちらのファイルで） -->
-    <script src="js/data/MAP_member.js?v=aj7761"></script>
+    <script src="js/data/MAP_member.js?v=4o1k7c"></script>
 
     <!-- 📍 メンバー以外の目印（方位磁針・共有地など）は js/data/MAP_locations.js に分離 -->
-    <script src="js/data/MAP_locations.js?v=aj7761"></script>
+    <script src="js/data/MAP_locations.js?v=4o1k7c"></script>
 
     <!-- 🟥 区画の枠線（背景画像とは別に線で描く）は js/data/MAP_plots.js に分離 -->
-    <script src="js/data/MAP_plots.js?v=aj7761"></script>
+    <script src="js/data/MAP_plots.js?v=4o1k7c"></script>
 
     <!-- 🧩 機能ごとに分割したJSコンポーネント（js/フォルダ） -->
-    <script src="js/map/color-customizer.js?v=aj7761"></script>
-    <script src="js/map/map-config.js?v=aj7761"></script>
-    <script src="js/map/layout-diagram.js?v=aj7761"></script>
-    <script src="js/map/map-grid.js?v=aj7761"></script>
-    <script src="js/map/member-list.js?v=aj7761"></script>
-    <script src="js/map/location-list.js?v=aj7761"></script>
-    <script src="js/map/plot-frames.js?v=aj7761"></script>
-    <script src="js/map/mobile-ui.js?v=aj7761"></script>
-    <script src="js/map/download-zip.js?v=aj7761"></script>
-    <script src="js/map/zoom-slider.js?v=aj7761"></script>
+    <script src="js/map/color-customizer.js?v=4o1k7c"></script>
+    <script src="js/map/map-config.js?v=4o1k7c"></script>
+    <script src="js/map/layout-diagram.js?v=4o1k7c"></script>
+    <script src="js/map/map-grid.js?v=4o1k7c"></script>
+    <script src="js/map/member-list.js?v=4o1k7c"></script>
+    <script src="js/map/location-list.js?v=4o1k7c"></script>
+    <script src="js/map/plot-frames.js?v=4o1k7c"></script>
+    <script src="js/map/mobile-ui.js?v=4o1k7c"></script>
+    <script src="js/map/download-zip.js?v=4o1k7c"></script>
+    <script src="js/map/zoom-slider.js?v=4o1k7c"></script>
+    <script src="js/map/screenshot.js?v=4o1k7c"></script>
 
     <script>
         // ==========================================================
@@ -626,6 +714,7 @@
         MapApp.mapLocations.init(map);
         MapApp.mobileUI.init();
         MapApp.downloadZip.init();
+        MapApp.screenshot.init();
         // 初期表示：最新の地図画像（mapImageList の先頭）全体が画面に収まる最大の倍率で表示する
         // 「地図全体の表示に戻る」ボタンもこれを呼ぶ。地図画像がなければ (0, 0) を表示
         window.fitMapHomeView = function (animate) {
