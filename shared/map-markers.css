@@ -131,3 +131,67 @@
     width: 32px;
     height: 32px;
 }
+
+/* 📷 スクリーンショット（js/map/screenshot.js）の知らせと、スマホで撮った画像を表示して共有メニューへ進む画面。拠点マップ・地図の比較画面で共通 */
+.screenshot-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    z-index: 3000;
+    background: rgba(26, 26, 31, 0.95);
+    border: 1px solid #4caf50;
+    color: #ffffff;
+    font-size: 13px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+    max-width: calc(100vw - 32px);
+}
+.screenshot-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+.screenshot-sheet {
+    background: #1a1a1f;
+    border: 1px solid #333339;
+    border-radius: 12px;
+    padding: 12px;
+    max-width: 100%;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.screenshot-sheet img {
+    max-width: 100%;
+    max-height: 65vh;
+    object-fit: contain;
+    border-radius: 6px;
+    -webkit-touch-callout: default; /* 長押しで保存できるようにする */
+}
+.screenshot-hint {
+    margin: 0;
+    font-size: 12px;
+    color: #9ca39a;
+    text-align: center;
+}
+.screenshot-actions {
+    display: flex;
+    gap: 8px;
+}
+.screenshot-actions button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+}
+.screenshot-share { background: #4caf50; color: #ffffff; }
+.screenshot-close { background: #2a2a30; color: #e5ece3; border: 1px solid #44444b; }

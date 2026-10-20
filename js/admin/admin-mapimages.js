@@ -77,12 +77,16 @@ function renderMapImageList() {
 
     mapImages.forEach((m, idx) => {
         const b = m.bounds || [[0, 0], [0, 0]];
+        // 配置図は画像ファイルではなく区画とメンバーのデータから自動で描くので、ここでは編集しない（並べ替えだけできる）
+        const nameCell = m.layout
+            ? `<strong>${m.label || '配置図'}</strong> <span style="font-size:11px; color:#5c6b5a;">（自動で描く図）</span>`
+            : `<strong class="clickable-name" onclick="editMapImage(${idx})" title="クリックして編集">${stripMapPrefix(m.fileName) || '(未設定)'}</strong>`;
         tbody.innerHTML += `
             <tr>
                 <td style="text-align:center; font-family:monospace;">${idx + 1}</td>
-                <td><strong class="clickable-name" onclick="editMapImage(${idx})" title="クリックして編集">${stripMapPrefix(m.fileName) || '(未設定)'}</strong></td>
-                <td style="font-family:monospace; font-size:11px;">[${b[0][0]}, ${b[0][1]}] → [${b[1][0]}, ${b[1][1]}]</td>
-                <td style="font-family:monospace; font-size:12px; text-align:center;">${m.opacity}</td>
+                <td>${nameCell}</td>
+                <td style="font-family:monospace; font-size:11px;">${m.layout ? '—' : `[${b[0][0]}, ${b[0][1]}] → [${b[1][0]}, ${b[1][1]}]`}</td>
+                <td style="font-family:monospace; font-size:12px; text-align:center;">${m.layout ? '—' : m.opacity}</td>
                 <td>
                     <button class="btn-uuid-manual" style="font-size:11px;" onclick="moveMapImage(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>▲</button>
                     <button class="btn-uuid-manual" style="font-size:11px;" onclick="moveMapImage(${idx}, 1)" ${idx === mapImages.length - 1 ? 'disabled' : ''}>▼</button>
@@ -126,143 +130,130 @@ function clearMapImageForm() {
     document.getElementById('mc_opacity').value = "1";
 }
 
-// ─── js/map/map-config.js 全文の出力 ─────────────────────────
-// mapImageList 以外の部分（関数・エクスポート部分）は変更されないので、
-// 実際のファイルからそのまま抜き出した固定テキストとして持っておく。
-const MAP_CONFIG_HEAD = [
-    "// ==========================================================",
-    "// 🗺️ 背景地図画像コンポーネント",
-    "// window.MapApp.mapConfig として公開します。",
-    "//",
-    "// ★ 新しい月の地図ができたら、この mapImageList に追記してください！",
-    "// 毎月の地図画像は \"map\" フォルダの中に入れてください（ファイル名の.pngを除いた名前がそのまま地図のドロップダウンメニューに表示されます）",
-    "// 例：ファイル名：7月4日.png　→　「7月4日」",
-    "// 一番上（配列の先頭）が「初期表示される最新の地図」になります。新しい月の画像は",
-    "// 配列の先頭に追加してください。",
-    "// ==========================================================",
-    "(function () {",
-    "    window.MapApp = window.MapApp || {};",
-].join('\n');
+// ─── 📷 スクリーンショットのウォーターマーク（map-config.js の watermark） ─────────
+let mapWatermark = { enabled: true, lines: [] };
 
-const MAP_CONFIG_TAIL = [
-    "    // ファイル名から拡張子(.png)を除いた部分をそのままラベルとして使う",
-    "    function getMapLabel(fileName) {",
-    "        const base = fileName.split('/').pop();",
-    "        return base.replace(/\\.[^/.]+$/, '');",
-    "    }",
-    "",
-    "    // bounds([X, Z]の順)をLeafletが要求する[Z由来の緯度, X由来の経度]の順に変換する",
-    "    function toLeafletBounds(bounds) {",
-    "        return bounds.map(([x, z]) => [-z, x]);",
-    "    }",
-    "",
-    "    let map = null;",
-    "    let bgImageOverlay = null;",
-    "    const mapImageSelects = () => Array.from(document.querySelectorAll('.map-image-select'));",
-    "",
-    "    // ドロップダウンに mapImageList の一覧を反映する（先頭＝最新が選択された状態で開始）",
-    "    // デスクトップ用・スマホ用など、複数箇所にある .map-image-select すべてに反映する",
-    "    function populateMapImageSelect() {",
-    "        mapImageSelects().forEach((sel) => {",
-    "            sel.innerHTML = '';",
-    "            mapImageList.forEach((entry, index) => {",
-    "                const option = document.createElement('option');",
-    "                option.value = index;",
-    "                option.textContent = getMapLabel(entry.fileName);",
-    "                sel.appendChild(option);",
-    "            });",
-    "        });",
-    "    }",
-    "",
-    "    // どれか1つのドロップダウンが変更されたら、他のドロップダウンにも同じ選択を反映する",
-    "    function syncMapImageSelects(value) {",
-    "        mapImageSelects().forEach((sel) => { sel.value = value; });",
-    "    }",
-    "",
-    "    function loadBackgroundImage() {",
-    "        // 既存の画像レイヤーがあれば一旦地図から削除する",
-    "        if (bgImageOverlay) {",
-    "            map.removeLayer(bgImageOverlay);",
-    "            bgImageOverlay = null;",
-    "        }",
-    "",
-    "        // チェックボックスがON、かつ選択中の地図画像がある場合にのみ重ねる",
-    "        const isChecked = document.getElementById('toggle-bg-image').checked;",
-    "        const currentSelect = mapImageSelects()[0];",
-    "        const selectedEntry = mapImageList[Number(currentSelect ? currentSelect.value : 0)] || mapImageList[0];",
-    "",
-    "        if (isChecked && selectedEntry && selectedEntry.fileName) {",
-    "            bgImageOverlay = L.imageOverlay(selectedEntry.fileName, toLeafletBounds(selectedEntry.bounds), {",
-    "                opacity: selectedEntry.opacity,",
-    "                interactive: false // 画像がクリック操作を遮らないようにする",
-    "            });",
-    "",
-    "            // 画像が見つからなくても地図全体がクラッシュしないためのエラー対策",
-    "            bgImageOverlay.on('error', function () {",
-    "                console.log(`背景画像 ${selectedEntry.fileName} が見つからないか、ローカル制限でロードできません。`);",
-    "            });",
-    "",
-    "            bgImageOverlay.addTo(map);",
-    "        }",
-    "    }",
-    "",
-    "    function init(mapInstance) {",
-    "        map = mapInstance;",
-    "        populateMapImageSelect();",
-    "",
-    "        document.getElementById('toggle-bg-image').addEventListener('change', loadBackgroundImage);",
-    "        document.querySelectorAll('.map-image-select').forEach((sel) => {",
-    "            sel.addEventListener('change', (e) => {",
-    "                syncMapImageSelects(e.target.value);",
-    "                loadBackgroundImage();",
-    "            });",
-    "        });",
-    "    }",
-    "",
-    "    window.MapApp.mapConfig = {",
-    "        mapImageList,",
-    "        getMapLabel,",
-    "        toLeafletBounds,",
-    "        init,",
-    "        loadBackgroundImage: () => loadBackgroundImage()",
-    "    };",
-    "})();",
-    "",
-].join('\n');
+function renderWatermarkForm() {
+    document.getElementById('wm_enabled').checked = !!mapWatermark.enabled;
+    document.getElementById('wm_text').value = (mapWatermark.lines || []).join('\n');
+}
+
+function saveWatermark() {
+    mapWatermark = {
+        enabled: document.getElementById('wm_enabled').checked,
+        lines: document.getElementById('wm_text').value.split('\n').map((l) => l.trim()).filter(Boolean)
+    };
+    localStorage.setItem('custom_map_watermark', JSON.stringify(mapWatermark));
+    updateMapConfigOutput();
+    alert(mapWatermark.enabled
+        ? 'ウォーターマークの設定を保存しました！下の「map-config.jsの内容をコピー」で js/map/map-config.js に反映してください。'
+        : 'ウォーターマークを入れない設定にしました！下の「map-config.jsの内容をコピー」で js/map/map-config.js に反映してください。');
+}
+
+// ─── js/map/map-config.js 全文の出力 ─────────────────────────
+// 実際の js/map/map-config.js を読み込み、その中の「地図の一覧（mapImageList）」と「ウォーターマーク（watermark）」の部分だけを
+// この画面で編集した内容に差し替えて出力する（関数などそれ以外の部分は、今のファイルのまま変えない）。
+let mapConfigSource = null;   // 実際の map-config.js の文字
+let originalEntryTexts = {};  // 変更していない地図は、説明のコメントごと元の書き方のまま出すための対応表（中身 → 元の文字）
+
+const LIST_RE = /    const mapImageList = \[\n([\s\S]*?)\n    \];/;
+const WATERMARK_RE = /    const watermark = \{[\s\S]*?\n    \};/;
+
+function jsString(s) {
+    return `'${String(s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+}
+
+// 「const mapImageList = [ ... ];」の中身を、地図1つずつの元の文字（前に付いている説明のコメントも含む）に分ける
+function splitArrayEntries(body) {
+    const entries = [];
+    let depth = 0, quote = null, from = 0;
+    for (let i = 0; i < body.length; i++) {
+        const ch = body[i];
+        if (quote) {
+            if (ch === '\\') { i++; continue; }
+            if (ch === quote) quote = null;
+            continue;
+        }
+        if (ch === '/' && body[i + 1] === '/') { // 行コメントの中の括弧は数えない
+            const end = body.indexOf('\n', i);
+            i = end === -1 ? body.length : end;
+            continue;
+        }
+        if (ch === "'" || ch === '"' || ch === '`') { quote = ch; continue; }
+        if (ch === '{') depth++;
+        else if (ch === '}') {
+            depth--;
+            if (depth === 0) {
+                let end = i + 1;
+                if (body[end] === ',') end++;
+                entries.push(body.slice(from, end).replace(/^\n+/, ''));
+                from = end;
+            }
+        }
+    }
+    return entries;
+}
 
 function formatMapImageEntry(m) {
+    const original = originalEntryTexts[JSON.stringify(m)];
+    if (original) return original;
+    if (m.layout) {
+        return `        {
+            label: ${jsString(m.label || '配置図')},
+            layout: true
+        },`;
+    }
     const b = m.bounds || [[0, 0], [0, 0]];
-    const x1 = Number.isFinite(b[0][0]) ? b[0][0] : 0;
-    const z1 = Number.isFinite(b[0][1]) ? b[0][1] : 0;
-    const x2 = Number.isFinite(b[1][0]) ? b[1][0] : 0;
-    const z2 = Number.isFinite(b[1][1]) ? b[1][1] : 0;
+    const num = (v) => (Number.isFinite(v) ? v : 0);
     const opacity = Number.isFinite(m.opacity) ? m.opacity : 1;
-    const fileName = (m.fileName || '').replace(/'/g, "\\'");
     return `        {
-            fileName: '${fileName}',
-            bounds: [[${x1}, ${z1}], [${x2}, ${z2}]],
+            fileName: ${jsString(m.fileName)},
+            bounds: [[${num(b[0][0])}, ${num(b[0][1])}], [${num(b[1][0])}, ${num(b[1][1])}]],
             opacity: ${opacity}
         },`;
 }
 
+function formatWatermark(w) {
+    const lines = (w.lines || []).map(jsString).join(', ');
+    return `    const watermark = {
+        enabled: ${w.enabled ? 'true' : 'false'},
+        lines: [${lines}]
+    };`;
+}
+
 function updateMapConfigOutput() {
-    const entries = mapImages.map((m) => formatMapImageEntry(m));
-    const arrayBlock = `    const mapImageList = [\n${entries.join('\n')}\n    ];`;
-    const fullFile = `${MAP_CONFIG_HEAD}\n\n${arrayBlock}\n\n${MAP_CONFIG_TAIL}`;
-    document.getElementById('mapConfigOutput').value = fullFile;
+    const out = document.getElementById('mapConfigOutput');
+    if (!mapConfigSource || !LIST_RE.test(mapConfigSource) || !WATERMARK_RE.test(mapConfigSource)) {
+        out.value = '';
+        out.placeholder = 'js/map/map-config.js を読み込めなかったため、コードを作れません（サイトのアドレスで管理画面を開いてください）';
+        return;
+    }
+    const listBlock = `    const mapImageList = [\n${mapImages.map(formatMapImageEntry).join('\n')}\n    ];`;
+    out.value = mapConfigSource
+        .replace(LIST_RE, () => listBlock)
+        .replace(WATERMARK_RE, () => formatWatermark(mapWatermark));
 }
 
 function exportMapConfig() {
     updateMapConfigOutput();
+    if (!document.getElementById('mapConfigOutput').value) {
+        alert('js/map/map-config.js を読み込めなかったため、コピーできません。');
+        return;
+    }
     navigator.clipboard.writeText(document.getElementById('mapConfigOutput').value)
         .then(() => alert("js/map/map-config.js 用のコードをコピーしました！js/map/map-config.jsファイルに貼り付けて保存してください。"))
         .catch(() => { document.getElementById('mapConfigOutput').select(); alert('自動コピーに失敗しました。テキストエリアを全選択して手動でコピーしてください。'); });
 }
 
+function currentMapConfig() {
+    return (window.MapApp && window.MapApp.mapConfig) || null;
+}
+
 // js/map/map-config.js を直接手入力で編集した場合に、このページ側のキャッシュ(localStorage)を破棄して
-// 実際に読み込まれている mapImageList の内容に同期し直す
+// 実際に読み込まれている内容（地図の一覧・ウォーターマーク）に同期し直す
 function reloadFromMapConfigJs() {
-    if (!window.MapApp || !window.MapApp.mapConfig || !window.MapApp.mapConfig.mapImageList) {
+    const cfg = currentMapConfig();
+    if (!cfg || !cfg.mapImageList) {
         alert("js/map/map-config.js が読み込めていません。ページを開き直すか、map-config.js の内容をご確認ください。");
         return;
     }
@@ -270,21 +261,48 @@ function reloadFromMapConfigJs() {
         return;
     }
     localStorage.removeItem('custom_map_images');
-    mapImages = JSON.parse(JSON.stringify(window.MapApp.mapConfig.mapImageList));
+    localStorage.removeItem('custom_map_watermark');
+    mapImages = JSON.parse(JSON.stringify(cfg.mapImageList));
+    mapWatermark = JSON.parse(JSON.stringify(cfg.watermark || { enabled: true, lines: [] }));
     cancelMapImageEdit();
     renderMapImageList();
+    renderWatermarkForm();
     updateMapConfigOutput();
     alert("js/map/map-config.js の内容を読み込み直しました！");
 }
 
-function initMapConfigAdmin() {
+async function initMapConfigAdmin() {
+    const cfg = currentMapConfig();
     const saved = localStorage.getItem('custom_map_images');
     if (saved) {
         mapImages = JSON.parse(saved);
-    } else if (window.MapApp && window.MapApp.mapConfig && window.MapApp.mapConfig.mapImageList) {
-        mapImages = JSON.parse(JSON.stringify(window.MapApp.mapConfig.mapImageList));
+    } else if (cfg && cfg.mapImageList) {
+        mapImages = JSON.parse(JSON.stringify(cfg.mapImageList));
+    }
+    const savedWm = localStorage.getItem('custom_map_watermark');
+    if (savedWm) {
+        mapWatermark = JSON.parse(savedWm);
+    } else if (cfg && cfg.watermark) {
+        mapWatermark = JSON.parse(JSON.stringify(cfg.watermark));
     }
     document.getElementById('mc_opacity').value = "1";
     renderMapImageList();
+    renderWatermarkForm();
+
+    // 今の js/map/map-config.js を読み込んでおく（出力の土台にする）
+    try {
+        const res = await fetch('js/map/map-config.js', { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        mapConfigSource = (await res.text()).replace(/\r\n/g, '\n');
+        const m = mapConfigSource.match(LIST_RE);
+        if (m && cfg && cfg.mapImageList) {
+            const texts = splitArrayEntries(m[1]);
+            cfg.mapImageList.forEach((entry, i) => {
+                if (texts[i]) originalEntryTexts[JSON.stringify(entry)] = texts[i];
+            });
+        }
+    } catch (e) {
+        console.warn('js/map/map-config.js を読み込めませんでした:', e);
+    }
     updateMapConfigOutput();
 }

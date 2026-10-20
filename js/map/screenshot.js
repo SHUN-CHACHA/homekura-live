@@ -3,20 +3,31 @@
 // window.MapApp.screenshot として公開します。
 // 「📷 スクリーンショットを保存」ボタンで、今画面に見えている地図（背景地図・配置図・格子線・区画の枠線・
 // 顔アイコン・ネームタグ）を1枚の PNG 画像に描き直します。ボタン・スライダーなどの操作部分は写しません。
-// 右上に撮った日付、右下にウォーターマーク（サイト名とアドレス）を入れます。
+// 各地図の右上に表示中の地図背景画像の名前（取得した日付。例：10月18日）、全体の右下に1か所だけウォーターマーク
+// （サイト名とアドレス）を入れます。地図の比較画面では、左右2枚の地図を横に並べた1枚の画像にします。
 //
-//   PC     ：画像をダウンロード（ファイル名は 拠点マップMMDD.png）し、同時にクリップボードにもコピーする（Ctrl+V で貼れる）
+//   PC     ：画像をダウンロード（ファイル名は 拠点マップMMDD.png / 地図比較MMDD.png）し、同時にクリップボードにもコピーする（Ctrl+V で貼れる）
 //   スマホ ：画像を画面に表示し、「共有・保存」で共有メニュー（写真に保存・X・Discord・LINE など）を開く。長押しでも保存できる
 // ==========================================================
 (function () {
     window.MapApp = window.MapApp || {};
 
-    const SITE_NAME = 'homeクラ合衆国Season3';
-    const SITE_URL = 'shun-chacha.github.io/homekura-live';
+    const SITE_NAME = 'homeクラ合衆国Season3'; // スマホの共有メニューに出す題名
     const FONT_FAMILY = "'Hiragino Sans', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif";
 
-    let mapContainer = null;
+    const MAP_GAP = 2; // 地図を横に並べる時の、地図と地図の間の線の太さ
+
     let button = null;
+    // 拠点マップでの初期設定。地図の比較画面では init() に別の設定を渡す
+    let options = {
+        buttonId: 'screenshot-btn',
+        filePrefix: '拠点マップ',
+        // 写す地図の一覧（左から順に並べる）。label は地図の右上に入れる名前
+        getTargets: () => [{
+            el: document.getElementById('map'),
+            label: window.MapApp.mapConfig ? window.MapApp.mapConfig.getCurrentLabel() : ''
+        }]
+    };
 
     // スマホ（狭い画面、またはタッチ操作だけの端末）か
     function isMobile() {
@@ -25,7 +36,7 @@
 
     function isVisible(el) {
         if (!el || !el.isConnected) return false;
-        for (let node = el; node && node !== mapContainer; node = node.parentElement) {
+        for (let node = el; node; node = node.parentElement) {
             const cs = getComputedStyle(node);
             if (cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) === 0) return false;
         }
@@ -182,7 +193,7 @@
         });
     }
 
-    // ---------- 右上の日付・右下のウォーターマーク ----------
+    // ---------- 右上の地図の名前・右下のウォーターマーク ----------
     function drawLabel(ctx, text, x, y, align, size, alpha) {
         ctx.save();
         ctx.font = `bold ${size}px ${FONT_FAMILY}`;
@@ -201,22 +212,42 @@
         return h;
     }
 
-    function formatDate(d) {
-        const p = (n) => String(n).padStart(2, '0');
-        return `${d.getFullYear()}/${p(d.getMonth() + 1)}/${p(d.getDate())}`;
-    }
-
     function fileName(d) {
         const p = (n) => String(n).padStart(2, '0');
-        return `拠点マップ${p(d.getMonth() + 1)}${p(d.getDate())}.png`;
+        return `${options.filePrefix}${p(d.getMonth() + 1)}${p(d.getDate())}.png`;
     }
 
-    // 今見えている地図を canvas に描いて PNG の Blob にする
-    async function capture(now) {
-        const mapEl = document.getElementById('map');
+    // 1枚の地図を、画像の中の x の位置に描く
+    async function drawMap(ctx, target, x, height) {
+        const mapEl = target.el;
         const base = mapEl.getBoundingClientRect();
-        const width = Math.round(base.width);
-        const height = Math.round(base.height);
+        const w = Math.round(base.width);
+        ctx.save();
+        ctx.translate(x, 0);
+        ctx.beginPath();
+        ctx.rect(0, 0, w, height);
+        ctx.clip();
+
+        ctx.fillStyle = getComputedStyle(mapEl).backgroundColor || '#141417';
+        ctx.fillRect(0, 0, w, height);
+
+        await drawPane(ctx, mapEl.querySelector('.leaflet-overlay-pane'), base);
+        await drawPane(ctx, mapEl.querySelector('.leaflet-plotFrame-pane'), base);
+        drawMarkers(ctx, mapEl.querySelector('.leaflet-marker-pane'), base);
+        drawTooltips(ctx, mapEl.querySelector('.leaflet-tooltip-pane'), base);
+
+        // 右上：表示中の地図背景画像の名前（地図を取得した日付。例：10月18日）。背景を消している時は入れない
+        if (target.label) drawLabel(ctx, target.label, w - 10, 10, 'right', 13, 1);
+        ctx.restore();
+        return w;
+    }
+
+    // 今見えている地図（比較画面では左右2枚を横に並べたもの）を canvas に描いて PNG の Blob にする
+    async function capture() {
+        const targets = options.getTargets().filter((t) => t.el);
+        const rects = targets.map((t) => t.el.getBoundingClientRect());
+        const width = rects.reduce((sum, r) => sum + Math.round(r.width), 0) + MAP_GAP * (targets.length - 1);
+        const height = Math.max(...rects.map((r) => Math.round(r.height)));
         const scale = Math.min(3, Math.max(2, window.devicePixelRatio || 1)); // 画面より細かく描いてくっきりさせる
 
         const canvas = document.createElement('canvas');
@@ -225,26 +256,32 @@
         const ctx = canvas.getContext('2d');
         ctx.scale(scale, scale);
 
-        ctx.fillStyle = getComputedStyle(mapEl).backgroundColor || '#141417';
+        // 地図と地図の間の線（比較画面の左右の境目と同じ色）
+        ctx.fillStyle = '#333339';
         ctx.fillRect(0, 0, width, height);
 
-        await drawPane(ctx, mapEl.querySelector('.leaflet-overlay-pane'), base);
-        await drawPane(ctx, mapEl.querySelector('.leaflet-plotFrame-pane'), base);
-        drawMarkers(ctx, mapEl.querySelector('.leaflet-marker-pane'), base);
-        drawTooltips(ctx, mapEl.querySelector('.leaflet-tooltip-pane'), base);
+        let x = 0;
+        for (const target of targets) {
+            x += await drawMap(ctx, target, x, height) + MAP_GAP;
+        }
 
         const margin = 10;
-        drawLabel(ctx, formatDate(now), width - margin, margin, 'right', 13, 1);
-        // ウォーターマーク：1行に収まらない狭い画面（スマホ）では、サイト名とアドレスを2行に分ける
-        const wmSize = 11;
-        const wmLine = wmSize * 1.7;
-        const oneLine = `${SITE_NAME}  ${SITE_URL}`;
-        ctx.font = `bold ${wmSize}px ${FONT_FAMILY}`;
-        if (ctx.measureText(oneLine).width + wmSize * 1.2 <= width - margin * 2) {
-            drawLabel(ctx, oneLine, width - margin, height - margin - wmLine, 'right', wmSize, 0.75);
-        } else {
-            drawLabel(ctx, SITE_URL, width - margin, height - margin - wmLine, 'right', wmSize, 0.75);
-            drawLabel(ctx, SITE_NAME, width - margin, height - margin - wmLine * 2 - 3, 'right', wmSize, 0.75);
+        // ウォーターマーク（全体の右下に1か所だけ。文字と入れるかどうかは js/map/map-config.js の watermark＝管理画面で設定）
+        const wm = (window.MapApp.mapConfig && window.MapApp.mapConfig.watermark) || { enabled: false, lines: [] };
+        const wmLines = (wm.lines || []).map((l) => String(l).trim()).filter(Boolean);
+        if (wm.enabled && wmLines.length) {
+            const wmSize = 11;
+            const wmLine = wmSize * 1.7;
+            const oneLine = wmLines.join('  ');
+            ctx.font = `bold ${wmSize}px ${FONT_FAMILY}`;
+            if (ctx.measureText(oneLine).width + wmSize * 1.2 <= width - margin * 2) {
+                drawLabel(ctx, oneLine, width - margin, height - margin - wmLine, 'right', wmSize, 0.75);
+            } else {
+                // 1行に収まらない狭い画面（スマホ）では、行ごとに分けて下から積む
+                wmLines.slice().reverse().forEach((line, i) => {
+                    drawLabel(ctx, line, width - margin, height - margin - wmLine * (i + 1) - 3 * i, 'right', wmSize, 0.75);
+                });
+            }
         }
 
         return new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('画像を作れませんでした'))), 'image/png'));
@@ -262,7 +299,7 @@
     // ---------- PC：ダウンロード＋クリップボードにコピー ----------
     async function saveForPc() {
         const now = new Date();
-        const blobPromise = capture(now);
+        const blobPromise = capture();
         // クリップボードへのコピーは、ボタンを押した流れの中で始める必要があるので、画像ができる前に予約しておく
         let copyPromise = Promise.reject(new Error('クリップボード非対応'));
         if (navigator.clipboard && window.ClipboardItem) {
@@ -288,7 +325,7 @@
     // ---------- スマホ：画像を表示して共有メニューへ ----------
     async function saveForMobile() {
         const now = new Date();
-        const blob = await capture(now);
+        const blob = await capture();
         const file = new File([blob], fileName(now), { type: 'image/png' });
         const url = URL.createObjectURL(blob);
 
@@ -296,7 +333,7 @@
         overlay.className = 'screenshot-overlay';
         overlay.innerHTML = `
             <div class="screenshot-sheet">
-                <img alt="拠点マップのスクリーンショット">
+                <img alt="地図のスクリーンショット">
                 <p class="screenshot-hint">画像を長押しでも保存できます</p>
                 <div class="screenshot-actions">
                     <button type="button" class="screenshot-share">📤 共有・保存</button>
@@ -347,10 +384,12 @@
         }
     }
 
-    function init() {
-        mapContainer = document.getElementById('map-container');
-        button = document.getElementById('screenshot-btn');
-        if (!mapContainer || !button) return;
+    // opts を渡すと拠点マップでの初期設定を上書きする（地図の比較画面で使う）
+    //   buttonId: ボタンの id / filePrefix: 保存するファイル名の頭 / getTargets: 写す地図の一覧を返す関数
+    function init(opts) {
+        options = { ...options, ...(opts || {}) };
+        button = document.getElementById(options.buttonId);
+        if (!button) return;
         button.addEventListener('click', onClick);
     }
 

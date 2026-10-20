@@ -12,24 +12,25 @@
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="shared/theme.css?v=3fzx57">
+    <link rel="stylesheet" href="shared/theme.css?v=ztxxjz">
     <!-- 🗺️ 顔アイコン・ネームタグは拠点マップと共通のスタイルを使う -->
-    <link rel="stylesheet" href="shared/map-markers.css?v=3fzx57">
+    <link rel="stylesheet" href="shared/map-markers.css?v=ztxxjz">
 
     <!-- 📊 地図画像の一覧（mapImageList）は minecraft_map.html と共通のものを使う -->
-    <script src="js/map/map-config.js?v=3fzx57"></script>
-    <script src="js/map/layout-diagram.js?v=3fzx57"></script>
+    <script src="js/map/map-config.js?v=ztxxjz"></script>
+    <script src="js/map/layout-diagram.js?v=ztxxjz"></script>
     <!-- 📍 メンバー・「場所」（メンバーではない目印）のデータ -->
-    <script src="js/data/MAP_member.js?v=3fzx57"></script>
-    <script src="js/data/MAP_locations.js?v=3fzx57"></script>
-    <script src="js/data/MAP_plots.js?v=3fzx57"></script>
+    <script src="js/data/MAP_member.js?v=ztxxjz"></script>
+    <script src="js/data/MAP_locations.js?v=ztxxjz"></script>
+    <script src="js/data/MAP_plots.js?v=ztxxjz"></script>
     <!-- 🧩 拠点マップと共通のコンポーネント（表示項目の設定・格子線・顔アイコン・ズームスライダー） -->
-    <script src="js/map/color-customizer.js?v=3fzx57"></script>
-    <script src="js/map/map-grid.js?v=3fzx57"></script>
-    <script src="js/map/member-list.js?v=3fzx57"></script>
-    <script src="js/map/location-list.js?v=3fzx57"></script>
-    <script src="js/map/plot-frames.js?v=3fzx57"></script>
-    <script src="js/map/zoom-slider.js?v=3fzx57"></script>
+    <script src="js/map/color-customizer.js?v=ztxxjz"></script>
+    <script src="js/map/map-grid.js?v=ztxxjz"></script>
+    <script src="js/map/member-list.js?v=ztxxjz"></script>
+    <script src="js/map/location-list.js?v=ztxxjz"></script>
+    <script src="js/map/plot-frames.js?v=ztxxjz"></script>
+    <script src="js/map/zoom-slider.js?v=ztxxjz"></script>
+    <script src="js/map/screenshot.js?v=ztxxjz"></script>
 
     <style>
         html, body {
@@ -75,6 +76,20 @@
             cursor: pointer;
         }
 
+        /* 📷 スクリーンショットボタン（左右2枚の地図を並べた1枚の画像にする。js/map/screenshot.js） */
+        #screenshot-btn {
+            background: rgba(38, 38, 43, 0.95);
+            border: 1px solid #44444b;
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #e5ece3;
+            cursor: pointer;
+        }
+        #screenshot-btn:hover { border-color: #4caf50; color: #ffffff; }
+        #screenshot-btn:disabled { opacity: 0.6; cursor: wait; }
+
         #compare-wrap {
             display: flex;
             width: 100vw;
@@ -117,11 +132,12 @@
 <body>
 
 <div id="top-bar">
-    <a href="minecraft_map.html?v=3fzx57" class="pill-btn-light">🏠 拠点マップに戻る</a>
+    <a href="minecraft_map.html?v=ztxxjz" class="pill-btn-light">🏠 拠点マップに戻る</a>
     <div id="zoom-slider-wrap">
         <span id="zoom-slider-label">1.0×</span>
         <input type="range" id="zoom-slider" min="-4.5" max="2.08496" step="0.001" value="0">
     </div>
+    <button type="button" id="screenshot-btn">📷 スクリーンショットを保存</button>
 </div>
 
 <!-- 顔アイコン・名前・座標・色は拠点マップの「地図の表示項目」の設定を引き継ぐ -->
@@ -233,6 +249,15 @@
         mapLeft.fitBounds(toLeafletBounds(mapImageList[0].bounds), { animate: false });
     }
     MapApp.zoomSlider.init({ map: mapLeft, baseline: mapLeft.getZoom() });
+
+    // 📷 スクリーンショット：左右2枚の地図を並べた1枚の画像にし、それぞれの右上に地図の名前（取得した日付）を入れる
+    MapApp.screenshot.init({
+        filePrefix: '地図比較',
+        getTargets: () => [
+            { el: document.getElementById('map-left'), label: MapApp.mapConfig.getEntryLabel(mapImageList[Number(selectLeft.value)] || mapImageList[0]) },
+            { el: document.getElementById('map-right'), label: MapApp.mapConfig.getEntryLabel(mapImageList[Number(selectRight.value)] || mapImageList[0]) }
+        ]
+    });
 
     window.addEventListener('load', () => {
         mapLeft.invalidateSize();

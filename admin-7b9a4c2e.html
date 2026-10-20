@@ -418,10 +418,27 @@
                 <button id="mapImageCancelBtn" style="display:none; margin-left:10px;" onclick="cancelMapImageEdit()">編集をキャンセル</button>
             </div>
 
+            <!-- 📷 スクリーンショットのウォーターマーク（拠点マップ・地図の比較画面のスクショの右下に入れる文字） -->
+            <div class="helper-card" style="margin-top: 20px;">
+                <h3>📷 スクリーンショットのウォーターマーク</h3>
+                <label style="display:flex; width:auto; align-items:center; gap:8px; font-weight:bold; font-size:14px; margin-bottom:12px; cursor:pointer;">
+                    <input type="checkbox" id="wm_enabled" style="width:auto;"> スクリーンショットにウォーターマークを入れる
+                </label>
+                <div class="form-group">
+                    <label style="display:block; width:auto; margin-bottom:4px;">ウォーターマークの文字（1行ずつ）</label>
+                    <textarea id="wm_text" rows="3" style="min-height:70px; width:100%; box-sizing:border-box;" placeholder="例：homeクラ合衆国Season3&#10;shun-chacha.github.io/homekura-live"></textarea>
+                </div>
+                <p style="font-size: 12px; color: #5c6b5a; margin: 0 0 12px;">
+                    画像の右下に入ります。横幅に収まる時は1行につなげ、スマホなど狭い時は行ごとに分けて表示します。
+                    保存したら、下の「map-config.jsの内容をコピー」で <code>js/map/map-config.js</code> に反映してください。
+                </p>
+                <button type="button" class="btn-save" onclick="saveWatermark()">設定を保存</button>
+            </div>
+
             <div class="helper-card" style="margin-top: 20px;">
                 <h3>⚙️ map-config.js の書き換え</h3>
                 <p style="font-size: 13px; color: #5c6b5a; margin-bottom: 10px; margin-top: 0;">
-                    背景地図の追加・編集が終わったら、下のボタンで最新のコードをコピーし、ローカルの <code>js/map/map-config.js</code> を丸ごと上書き保存してください。
+                    背景地図・ウォーターマークの編集が終わったら、下のボタンで最新のコードをコピーし、ローカルの <code>js/map/map-config.js</code> を丸ごと上書き保存してください。
                 </p>
                 <button type="button" class="btn-export" style="width: 100%; padding: 10px; margin-bottom: 10px; font-size: 13px;" onclick="exportMapConfig()">
                     📋 map-config.jsの内容をコピー

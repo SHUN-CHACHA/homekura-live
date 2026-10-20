@@ -3,8 +3,9 @@
 // window.MapApp.mapConfig として公開します。
 //
 // ★ 新しいワールドの地図画像ができたら、この mapImageList に追記してください！
-// 地図画像は "map" フォルダの中に入れてください（ファイル名の拡張子（.png / .webp）を除いた名前がそのまま地図のドロップダウンメニューに表示されます）
-// 例：ファイル名：10月16日.png　→　「10月16日」
+// 地図画像は "map" フォルダの中に入れてください（ファイル名の拡張子（.png / .webp）を除いた名前がそのまま地図のドロップダウンメニューと、
+// スクリーンショットの右上に表示されます）
+// ★ ファイル名のルール：地図を取得した日付を「何月何日」の形式で付ける（例：10月18日に取得した地図 → 10月18日.webp →「10月18日」）
 // 一番上（配列の先頭）が「初期表示される最新の地図」になります。新しい地図画像は
 // 配列の先頭に追加してください。
 //
@@ -29,6 +30,14 @@
             layout: true
         },
     ];
+
+    // 📷 スクリーンショットのウォーターマーク（右下に入れる文字。管理画面の「背景地図」タブで編集できる）
+    //   enabled : 入れるかどうか
+    //   lines   : 文字（1行ずつ）。横幅に収まる時は1行につなげ、スマホなど狭い時は行ごとに分けて表示する
+    const watermark = {
+        enabled: true,
+        lines: ['homeクラ合衆国Season3', 'shun-chacha.github.io/homekura-live']
+    };
 
     // ファイル名から拡張子(.png / .webp)を除いた部分をそのままラベルとして使う
     function getMapLabel(fileName) {
@@ -104,6 +113,15 @@
         }
     }
 
+    // 今表示している地図の名前（例：10月18日・配置図）。背景画像を表示していない時は空欄
+    function getCurrentLabel() {
+        const toggle = document.getElementById('toggle-bg-image');
+        if (toggle && !toggle.checked) return '';
+        const currentSelect = mapImageSelects()[0];
+        const entry = mapImageList[Number(currentSelect ? currentSelect.value : 0)] || mapImageList[0];
+        return entry ? getEntryLabel(entry) : '';
+    }
+
     function init(mapInstance) {
         map = mapInstance;
         populateMapImageSelect();
@@ -119,8 +137,10 @@
 
     window.MapApp.mapConfig = {
         mapImageList,
+        watermark,
         getMapLabel,
         getEntryLabel,
+        getCurrentLabel,
         createOverlay,
         toLeafletBounds,
         init,
