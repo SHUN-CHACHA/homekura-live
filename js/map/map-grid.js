@@ -6,7 +6,7 @@
 (function () {
     window.MapApp = window.MapApp || {};
 
-    // 格子線は1チャンク（16ブロック）ごと。Season3 の区画（X -144〜383 / Z -400〜127）はチャンク単位なので、
+    // 格子線は1チャンク（16ブロック）ごと。Season3 の区画（X -128〜367 / Z -400〜127）はチャンク単位なので、
     // 区画の境目・区画の間の道（1チャンク）の境目はすべてこの線と重なる
     const GRID_INTERVAL = 16;
     const GRID_ORIGIN_X = 0;
