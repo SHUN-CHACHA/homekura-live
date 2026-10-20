@@ -25,7 +25,7 @@ const plotData = [
     { no: 13, area: 9, color: "orange", x: 272, z: -224, w: 48, h: 48 },
     { no: 14, area: 10, color: "orange", x: -128, z: -160, w: 48, h: 48 },
     { no: 15, color: "blue", x: -80, z: -160, w: 48, h: 48 },
-    { no: 16, area: 11, color: "red", x: -16, z: -160, w: 48, h: 48 },
+    { no: 16, area: 11, color: "orange", x: -16, z: -160, w: 48, h: 48 },
     { no: 17, area: 12, color: "red", x: 32, z: -160, w: 48, h: 48 },
     { no: 18, color: "yellow", x: 96, z: -160, w: 48, h: 48 },
     { no: 19, area: 13, color: "red", x: 160, z: -160, w: 48, h: 48 },
