@@ -12,19 +12,27 @@
 //     ttl  : 保存期間（秒）。600（10分）〜21600（6時間）の範囲に丸める。省略時は600
 //
 // ■ /channels・/playlistItems・/videos（これまでどおりの中継。キャッシュなし）
-//   古いページ（ブラウザに残っている古いJSなど）が動き続けるように残している。
+//   古いページ（ブラウザに残っている古いJSなど）が動き続けるように残している。YouTube に渡す項目は決めたものだけ。
+//
+// ■ これまでの Worker から引き継いでいること
+//   ・変数 ALLOWED_ORIGIN（https://shun-chacha.github.io）以外のサイトのページからの呼び出しは断る
+//   ・呼ばれるたびに、アクセス元の国・地域・都市などをログと Analytics Engine（バインディング YT_STATS）に記録する
+//   ・APIキーは Secret の YOUTUBE_API_KEY
 //
 // ■ Cloudflare での設定（ダッシュボードで1回だけ）
 //   1. Workers KV で名前空間を作る（例：homekura-portal-cache）
 //   2. Worker の「設定 → バインディング」で KV を追加し、変数名を PORTAL_CACHE にする
-//   3. APIキーの Secret の名前が YOUTUBE_API_KEY でなければ、下の getApiKey() に名前を足す
 //   ※ KV を付けなくても動くが、その場合はデータセンターごとの別々のキャッシュになる（効果が少し下がる）
 // ==========================================================
 
 const YT_API = 'https://www.googleapis.com/youtube/v3';
-const PASS_THROUGH_PATHS = ['channels', 'playlistItems', 'videos'];
-const ALLOWED_ORIGINS = [/^https:\/\/shun-chacha\.github\.io$/, /^http:\/\/localhost(:\d+)?$/, /^http:\/\/127\.0\.0\.1(:\d+)?$/];
-const DEFAULT_ORIGIN = 'https://shun-chacha.github.io';
+
+// 中継する窓口と、YouTube に渡してよい項目
+const ALLOWED_PARAMS = {
+    channels: ['id', 'part'],
+    playlistItems: ['playlistId', 'part', 'maxResults'],
+    videos: ['id', 'part']
+};
 
 const PORTAL_TTL_DEFAULT = 600;    // 10分
 const PORTAL_TTL_MIN = 600;        // 短くしすぎて使用量が増えないよう、10分より短くはしない
@@ -34,25 +42,48 @@ const MAX_CHANNELS = 80;           // 1回に指定できるチャンネル数�
 const CHANNEL_ID_RE = /^UC[\w-]{22}$/;
 
 function getApiKey(env) {
-    return env.YOUTUBE_API_KEY || env.YT_API_KEY || env.API_KEY || '';
+    return env.YOUTUBE_API_KEY || '';
 }
 
-function corsHeaders(request) {
+// 許可したサイト（変数 ALLOWED_ORIGIN）から呼ばれた時だけ、ブラウザが結果を読めるようにする
+function corsHeaders(request, env) {
     const origin = request.headers.get('Origin') || '';
-    const allowed = ALLOWED_ORIGINS.some((re) => re.test(origin));
-    return {
-        'Access-Control-Allow-Origin': allowed ? origin : DEFAULT_ORIGIN,
+    const allowedOrigin = env.ALLOWED_ORIGIN || '';
+    const headers = {
         'Access-Control-Allow-Methods': 'GET, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
+        'Cache-Control': 'public, max-age=60',
         'Vary': 'Origin'
     };
+    if (allowedOrigin && origin === allowedOrigin) headers['Access-Control-Allow-Origin'] = origin;
+    return headers;
 }
 
-function json(request, body, status = 200, extra = {}) {
+function json(request, env, body, status = 200, extra = {}) {
     return new Response(JSON.stringify(body), {
         status,
-        headers: { 'Content-Type': 'application/json; charset=utf-8', ...corsHeaders(request), ...extra }
+        headers: { 'Content-Type': 'application/json; charset=utf-8', ...corsHeaders(request, env), ...extra }
     });
+}
+
+// 📊 アクセス元の地域をログと Analytics Engine に記録する（失敗しても処理は続ける）
+function recordAccess(request, env, url) {
+    const { country, region, city, colo, timezone } = request.cf || {};
+    console.log({
+        message: '[homeクラ proxy] incoming request',
+        path: url.pathname,
+        country, region, city, colo, timezone
+    });
+    if (!env.YT_STATS) return;
+    try {
+        env.YT_STATS.writeDataPoint({
+            blobs: [country || 'unknown', region || 'unknown', city || 'unknown', colo || 'unknown', url.pathname],
+            doubles: [1],
+            indexes: [country || 'unknown']
+        });
+    } catch (e) {
+        console.error('writeDataPoint failed:', e);
+    }
 }
 
 async function ytGet(path, params, env) {
@@ -154,7 +185,7 @@ async function handlePortal(request, env, ctx, url) {
     const ids = parseIds(url.searchParams.get('ids'));
     const subs = parseIds(url.searchParams.get('subs'));
     if (!ids.length || ids.length + subs.length > MAX_CHANNELS) {
-        return json(request, { error: 'ids の指定が正しくありません' }, 400);
+        return json(request, env, { error: 'ids の指定が正しくありません' }, 400);
     }
     const ttlParam = Number(url.searchParams.get('ttl')) || PORTAL_TTL_DEFAULT;
     const ttl = Math.min(PORTAL_TTL_MAX, Math.max(PORTAL_TTL_MIN, ttlParam));
@@ -165,48 +196,65 @@ async function handlePortal(request, env, ctx, url) {
     const age = saved ? Math.floor((now - saved.timestamp) / 1000) : null;
 
     if (saved && age < ttl) {
-        return json(request, saved, 200, { 'Cache-Control': 'public, max-age=60', 'X-Portal-Cache': 'hit', 'X-Portal-Age': String(age) });
+        return json(request, env, saved, 200, { 'X-Portal-Cache': 'hit', 'X-Portal-Age': String(age) });
     }
 
     try {
         const [chInfoMap, vItems] = await Promise.all([getIcons(env, ids, now), getVideos(env, [...ids, ...subs])]);
         const fresh = { timestamp: now, chInfoMap, vItems };
         ctx.waitUntil(storePut(env, key, fresh));
-        return json(request, fresh, 200, { 'Cache-Control': 'public, max-age=60', 'X-Portal-Cache': 'miss' });
+        return json(request, env, fresh, 200, { 'X-Portal-Cache': 'miss' });
     } catch (e) {
         // YouTube API が失敗した時（割り当て切れなど）は、古くても保存してある結果を返す
         if (saved) {
-            return json(request, saved, 200, { 'Cache-Control': 'public, max-age=60', 'X-Portal-Cache': 'stale', 'X-Portal-Age': String(age) });
+            return json(request, env, saved, 200, { 'X-Portal-Cache': 'stale', 'X-Portal-Age': String(age) });
         }
-        return json(request, { error: String(e.message || e) }, 502);
+        return json(request, env, { error: String(e.message || e) }, 502);
     }
 }
 
+// これまでどおりの中継（決めた項目だけを YouTube に渡す）
 async function handlePassThrough(request, env, path, url) {
-    const params = {};
-    url.searchParams.forEach((v, k) => { if (k !== 'key') params[k] = v; });
     const target = new URL(`${YT_API}/${path}`);
-    Object.entries(params).forEach(([k, v]) => target.searchParams.set(k, v));
+    for (const p of ALLOWED_PARAMS[path]) {
+        const v = url.searchParams.get(p);
+        if (v !== null) target.searchParams.set(p, v);
+    }
     target.searchParams.set('key', getApiKey(env));
     const res = await fetch(target.toString());
-    return new Response(res.body, {
+    return new Response(await res.text(), {
         status: res.status,
-        headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=60', ...corsHeaders(request) }
+        headers: { 'Content-Type': 'application/json', ...corsHeaders(request, env) }
     });
 }
 
 export default {
     async fetch(request, env, ctx) {
+        const url = new URL(request.url);
+        recordAccess(request, env, url);
+
         if (request.method === 'OPTIONS') {
-            return new Response(null, { status: 204, headers: corsHeaders(request) });
+            return new Response(null, { headers: corsHeaders(request, env) });
         }
         if (request.method !== 'GET') {
-            return json(request, { error: 'GET のみ使えます' }, 405);
+            return new Response('Method Not Allowed', { status: 405 });
         }
-        const url = new URL(request.url);
+
+        // 許可したサイト以外のページからの呼び出しは断る（Origin のない直接のアクセスは通す。これまでと同じ）
+        const origin = request.headers.get('Origin') || '';
+        const allowedOrigin = env.ALLOWED_ORIGIN || '';
+        if (allowedOrigin && origin && origin !== allowedOrigin) {
+            return json(request, env, { error: 'Origin not allowed' }, 403);
+        }
+
         const path = url.pathname.replace(/^\/+|\/+$/g, '');
+        if (path !== 'portal' && !ALLOWED_PARAMS[path]) {
+            return json(request, env, { error: 'Unknown endpoint' }, 404);
+        }
+        if (!getApiKey(env)) {
+            return json(request, env, { error: 'Server not configured (missing YOUTUBE_API_KEY secret)' }, 500);
+        }
         if (path === 'portal') return handlePortal(request, env, ctx, url);
-        if (PASS_THROUGH_PATHS.includes(path)) return handlePassThrough(request, env, path, url);
-        return json(request, { error: 'Not Found' }, 404);
+        return handlePassThrough(request, env, path, url);
     }
 };
