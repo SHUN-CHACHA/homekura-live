@@ -126,7 +126,7 @@
             const color = FRAME_COLORS[plot.color] || '#9a9a9a';
             el('rect', { x, y: z, width: w, height: h, fill: '#ffffff', stroke: color, 'stroke-width': 1.5 }, svg);
 
-            // 名前を書くのは顔アイコンを置けるエリア（赤・オレンジ）だけ
+            // 名前を書くのは顔アイコンを置けるエリア（エリア番号のある区画）だけ
             if (!plot.area) return;
             const member = findMember(plot.area);
             const centerX = x + w / 2;
