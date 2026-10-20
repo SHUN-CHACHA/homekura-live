@@ -663,6 +663,23 @@ async function loadPortal(forceRefresh = false) {
         } catch (_) { /* キャッシュ破損時は無視してAPI取得へ */ }
     }
 
+    // ── まとめて取得（Worker の /portal。Worker 側でみんなの分を共有して保存するので、見に来る人数が増えても
+    //    YouTube API の使用量は増えない）。使えない時（Worker が古い・エラーなど）は、下の各チャンネルごとの取得に戻る ──
+    try {
+        const ids  = channels.map(c => c.id).join(',');
+        const subs = channels.filter(c => c.id2).map(c => c.id2).join(',');
+        const res  = await fetch(`${PROXY_URL}/portal?ids=${ids}&subs=${subs}&ttl=3600`);
+        if (!res.ok) throw new Error(`portal HTTP ${res.status}`);
+        const shared = await res.json();
+        if (!shared || !Array.isArray(shared.vItems)) throw new Error('portal の形式が違います');
+        localStorage.setItem('portal_cache', JSON.stringify({ timestamp: now, chInfoMap: shared.chInfoMap || {}, vItems: shared.vItems }));
+        console.log(`[homeクラ] ポータル: まとめて取得（Worker の保存: ${res.headers.get('X-Portal-Cache') || '不明'}）`);
+        renderGrids(shared.chInfoMap || {}, shared.vItems);
+        return;
+    } catch (e) {
+        console.warn('[homeクラ] まとめて取得できなかったので、チャンネルごとに取得します:', e);
+    }
+
     const channelIds = channels.map(c => c.id).join(',');
     try {
         // ── チャンネルアイコンキャッシュ（24時間） ──────────────────────
