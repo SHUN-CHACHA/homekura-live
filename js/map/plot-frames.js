@@ -14,7 +14,7 @@
         blue: '#05a7fb',
         yellow: '#fef90e'
     };
-    const FRAME_INSET_BLOCKS = 1; // 隣り合う区画の線が重ならないよう、少し内側に描く
+    const FRAME_WEIGHT = 3; // 枠線の太さ（画面上のピクセル）
 
     // 1つの地図に区画の枠線と外周線を描く（拠点マップ・地図の比較画面で共通）
     function create(map) {
@@ -29,18 +29,27 @@
             L.polygon(plotOutline.map(([x, z]) => [-z, x]), { ...common, color: '#ffffff', weight: 4, opacity: 0.95 }).addTo(layer);
         }
 
-        (typeof plotData !== 'undefined' ? plotData : []).forEach((plot) => {
-            const x0 = plot.x + FRAME_INSET_BLOCKS;
-            const x1 = plot.x + plot.w - FRAME_INSET_BLOCKS;
-            const z0 = plot.z + FRAME_INSET_BLOCKS;
-            const z1 = plot.z + plot.h - FRAME_INSET_BLOCKS;
-            L.rectangle([[-z0, x0], [-z1, x1]], {
+        // 枠線の外側が区画の端（48×48ブロックなど）にぴったり来るよう、線の太さの半分だけ内側に描く。
+        // 線の太さは画面上のピクセルなので、ブロック数に直した内側への幅はズームのたびに計算し直す（1ブロック＝2^ズーム px）。
+        // 隣り合う赤・オレンジの区画の枠はくっつく
+        const frames = (typeof plotData !== 'undefined' ? plotData : []).map((plot) => ({
+            plot,
+            rect: L.rectangle([[0, 0], [0, 0]], {
                 ...common,
                 color: FRAME_COLORS[plot.color] || '#ffffff',
-                weight: 3,
+                weight: FRAME_WEIGHT,
                 opacity: 1
-            }).addTo(layer);
-        });
+            }).addTo(layer)
+        }));
+
+        function updateFrameBounds() {
+            const inset = (FRAME_WEIGHT / 2) / Math.pow(2, map.getZoom());
+            frames.forEach(({ plot, rect }) => {
+                rect.setBounds([[-(plot.z + inset), plot.x + inset], [-(plot.z + plot.h - inset), plot.x + plot.w - inset]]);
+            });
+        }
+        updateFrameBounds();
+        map.on('zoomend', updateFrameBounds);
 
         return layer;
     }
