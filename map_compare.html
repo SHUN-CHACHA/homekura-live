@@ -12,23 +12,24 @@
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="shared/theme.css?v=7exz8s">
+    <link rel="stylesheet" href="shared/theme.css?v=j0ygkp">
     <!-- 🗺️ 顔アイコン・ネームタグは拠点マップと共通のスタイルを使う -->
-    <link rel="stylesheet" href="shared/map-markers.css?v=7exz8s">
+    <link rel="stylesheet" href="shared/map-markers.css?v=j0ygkp">
 
     <!-- 📊 地図画像の一覧（mapImageList）は minecraft_map.html と共通のものを使う -->
-    <script src="js/map/map-config.js?v=7exz8s"></script>
+    <script src="js/map/map-config.js?v=j0ygkp"></script>
+    <script src="js/map/layout-diagram.js?v=j0ygkp"></script>
     <!-- 📍 メンバー・「場所」（メンバーではない目印）のデータ -->
-    <script src="js/data/MAP_member.js?v=7exz8s"></script>
-    <script src="js/data/MAP_locations.js?v=7exz8s"></script>
-    <script src="js/data/MAP_plots.js?v=7exz8s"></script>
+    <script src="js/data/MAP_member.js?v=j0ygkp"></script>
+    <script src="js/data/MAP_locations.js?v=j0ygkp"></script>
+    <script src="js/data/MAP_plots.js?v=j0ygkp"></script>
     <!-- 🧩 拠点マップと共通のコンポーネント（表示項目の設定・格子線・顔アイコン・ズームスライダー） -->
-    <script src="js/map/color-customizer.js?v=7exz8s"></script>
-    <script src="js/map/map-grid.js?v=7exz8s"></script>
-    <script src="js/map/member-list.js?v=7exz8s"></script>
-    <script src="js/map/location-list.js?v=7exz8s"></script>
-    <script src="js/map/plot-frames.js?v=7exz8s"></script>
-    <script src="js/map/zoom-slider.js?v=7exz8s"></script>
+    <script src="js/map/color-customizer.js?v=j0ygkp"></script>
+    <script src="js/map/map-grid.js?v=j0ygkp"></script>
+    <script src="js/map/member-list.js?v=j0ygkp"></script>
+    <script src="js/map/location-list.js?v=j0ygkp"></script>
+    <script src="js/map/plot-frames.js?v=j0ygkp"></script>
+    <script src="js/map/zoom-slider.js?v=j0ygkp"></script>
 
     <style>
         html, body {
@@ -116,7 +117,7 @@
 <body>
 
 <div id="top-bar">
-    <a href="minecraft_map.html?v=7exz8s" class="pill-btn-light">🏠 拠点マップに戻る</a>
+    <a href="minecraft_map.html?v=j0ygkp" class="pill-btn-light">🏠 拠点マップに戻る</a>
     <div id="zoom-slider-wrap">
         <span id="zoom-slider-label">1.0×</span>
         <input type="range" id="zoom-slider" min="-4.5" max="2.08496" step="0.001" value="0">
@@ -158,7 +159,6 @@
     const mapRight = createCompareMap('map-right');
 
     const mapImageList = (window.MapApp && window.MapApp.mapConfig) ? window.MapApp.mapConfig.mapImageList : [];
-    const getMapLabel = (window.MapApp && window.MapApp.mapConfig) ? window.MapApp.mapConfig.getMapLabel : (f => f);
     const toLeafletBounds = (window.MapApp && window.MapApp.mapConfig) ? window.MapApp.mapConfig.toLeafletBounds : (b => b);
 
     function populateSelect(selectEl, defaultIndex) {
@@ -166,7 +166,7 @@
         mapImageList.forEach((entry, index) => {
             const option = document.createElement('option');
             option.value = index;
-            option.textContent = getMapLabel(entry.fileName);
+            option.textContent = MapApp.mapConfig.getEntryLabel(entry);
             selectEl.appendChild(option);
         });
         selectEl.value = defaultIndex;
@@ -181,13 +181,7 @@
             }
             const entry = mapImageList[index];
             if (!entry) return;
-            overlay = L.imageOverlay(entry.fileName, toLeafletBounds(entry.bounds), {
-                opacity: entry.opacity,
-                interactive: false
-            });
-            overlay.on('error', () => {
-                console.log(`背景画像 ${entry.fileName} が見つからないか、ローカル制限でロードできません。`);
-            });
+            overlay = MapApp.mapConfig.createOverlay(entry, map);
             overlay.addTo(map);
         };
     }

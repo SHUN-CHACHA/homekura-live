@@ -20,6 +20,7 @@
         'js/data/MAP_plots.js',
         'js/map/color-customizer.js',
         'js/map/map-config.js',
+        'js/map/layout-diagram.js',
         'js/map/map-grid.js',
         'js/map/member-list.js',
         'js/map/location-list.js',
@@ -53,7 +54,7 @@
     function getOptionalDownloadFiles() {
         const mapImageList = (window.MapApp.mapConfig && window.MapApp.mapConfig.mapImageList) || [];
         return [
-            ...mapImageList.map((entry) => entry.fileName),
+            ...mapImageList.map((entry) => entry.fileName).filter(Boolean),
             ...getAvatarFileList(),
             ...getLocationFileList()
         ];

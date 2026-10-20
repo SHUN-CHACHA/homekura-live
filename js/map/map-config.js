@@ -23,12 +23,37 @@
             bounds: [[-418, -656], [606, 368]],
             opacity: 1
         },
+        {
+            // 区画と配信者名だけの配置図（画像ファイルではなく、区画とメンバーのデータからその場で描く。js/map/layout-diagram.js）
+            label: '配置図',
+            layout: true
+        },
     ];
 
     // ファイル名から拡張子(.png / .webp)を除いた部分をそのままラベルとして使う
     function getMapLabel(fileName) {
         const base = fileName.split('/').pop();
         return base.replace(/\.[^/.]+$/, '');
+    }
+
+    // ドロップダウンに表示する名前（label があればそれ、なければファイル名から）
+    function getEntryLabel(entry) {
+        return entry.label || getMapLabel(entry.fileName);
+    }
+
+    // 選んだ地図のレイヤーを作る。配置図の時は、地図の上の区画の枠線・顔アイコン・ネームタグを隠す（配置図に名前が書いてあるため）
+    function createOverlay(entry, targetMap) {
+        targetMap.getContainer().classList.toggle('layout-mode', !!entry.layout);
+        if (entry.layout) return window.MapApp.layoutDiagram.createOverlay();
+        const overlay = L.imageOverlay(entry.fileName, toLeafletBounds(entry.bounds), {
+            opacity: entry.opacity,
+            interactive: false // 画像がクリック操作を遮らないようにする
+        });
+        // 画像が見つからなくても地図全体がクラッシュしないためのエラー対策
+        overlay.on('error', function () {
+            console.log(`背景画像 ${entry.fileName} が見つからないか、ローカル制限でロードできません。`);
+        });
+        return overlay;
     }
 
     // bounds([X, Z]の順)をLeafletが要求する[Z由来の緯度, X由来の経度]の順に変換する
@@ -48,7 +73,7 @@
             mapImageList.forEach((entry, index) => {
                 const option = document.createElement('option');
                 option.value = index;
-                option.textContent = getMapLabel(entry.fileName);
+                option.textContent = getEntryLabel(entry);
                 sel.appendChild(option);
             });
         });
@@ -71,18 +96,11 @@
         const currentSelect = mapImageSelects()[0];
         const selectedEntry = mapImageList[Number(currentSelect ? currentSelect.value : 0)] || mapImageList[0];
 
-        if (isChecked && selectedEntry && selectedEntry.fileName) {
-            bgImageOverlay = L.imageOverlay(selectedEntry.fileName, toLeafletBounds(selectedEntry.bounds), {
-                opacity: selectedEntry.opacity,
-                interactive: false // 画像がクリック操作を遮らないようにする
-            });
-
-            // 画像が見つからなくても地図全体がクラッシュしないためのエラー対策
-            bgImageOverlay.on('error', function () {
-                console.log(`背景画像 ${selectedEntry.fileName} が見つからないか、ローカル制限でロードできません。`);
-            });
-
+        if (isChecked && selectedEntry) {
+            bgImageOverlay = createOverlay(selectedEntry, map);
             bgImageOverlay.addTo(map);
+        } else {
+            map.getContainer().classList.remove('layout-mode');
         }
     }
 
@@ -102,6 +120,8 @@
     window.MapApp.mapConfig = {
         mapImageList,
         getMapLabel,
+        getEntryLabel,
+        createOverlay,
         toLeafletBounds,
         init,
         loadBackgroundImage: () => loadBackgroundImage()
