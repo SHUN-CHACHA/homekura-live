@@ -1,11 +1,12 @@
 ﻿# ==========================================================
-# index.html・拠点マップ・地図の比較画面が読み込むCSS・JS・画像・PDF・ページへのリンクに「?v=バージョン番号」を付け直すスクリプト
+# サイト内のすべての HTML ページが読み込む CSS・JS・画像・PDF・ページへのリンクに「?v=バージョン番号」を付け直すスクリプト
 # （ブラウザのキャッシュで古いファイルが表示され続けるのを防ぐ）
 #
-# 普段は git commit 時に scripts/git-hooks/pre-commit から自動で実行されます。
+# 普段は git commit 時に scripts/git-hooks/pre-commit から自動で実行されます（-Stage 付きで、書き換えたページをコミットに含める）。
 # 手動で実行する場合：
 #   powershell -ExecutionPolicy Bypass -File scripts\bump-asset-version.ps1
 # ==========================================================
+param([switch]$Stage)
 $ErrorActionPreference = 'Stop'
 
 $root = Split-Path -Parent $PSScriptRoot
@@ -14,17 +15,22 @@ $chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
 $version = -join (1..6 | ForEach-Object { $chars[(Get-Random -Maximum $chars.Length)] })
 $utf8NoBom = New-Object System.Text.UTF8Encoding $false
 
-foreach ($name in @('index.html', 'minecraft_map.html', 'map_compare.html')) {
-$file = Join-Path $root $name
-$text = [System.IO.File]::ReadAllText($file, $utf8NoBom)
-
 # src="..." / href="..." のうち、サイト内のファイル（http・#・${...} などで始まらないもの）が対象
 $attrPattern = '(?<attr>(?:src|href)=")(?<path>(?!https?:|//|#|data:|mailto:|javascript:|\$\{)[^"?#]+\.(?:css|js|png|jpe?g|gif|svg|ico|webp|pdf|html))(?:\?v=[0-9a-z]+)?"'
-$text = [regex]::Replace($text, $attrPattern, { param($m) "$($m.Groups['attr'].Value)$($m.Groups['path'].Value)?v=$version`"" })
 
-# JavaScriptで組み立てるアバター画像のパス用
-$text = [regex]::Replace($text, "const ASSET_VERSION = '[0-9a-z]*';", "const ASSET_VERSION = '$version';")
+# .git フォルダ以外にあるすべての HTML ページ
+$pages = Get-ChildItem -Path $root -Recurse -File -Filter '*.html' | Where-Object { $_.FullName -notmatch '[\\/]\.git[\\/]' }
 
-[System.IO.File]::WriteAllText($file, $text, $utf8NoBom)
-Write-Host "$name asset version -> $version"
+foreach ($page in $pages) {
+    $file = $page.FullName
+    $before = [System.IO.File]::ReadAllText($file, $utf8NoBom)
+    $text = [regex]::Replace($before, $attrPattern, { param($m) "$($m.Groups['attr'].Value)$($m.Groups['path'].Value)?v=$version`"" })
+    # JavaScriptで組み立てるアバター画像のパス用
+    $text = [regex]::Replace($text, "const ASSET_VERSION = '[0-9a-z]*';", "const ASSET_VERSION = '$version';")
+    if ($text -eq $before) { continue } # 読み込みのないページ（空のページなど）は書き換えない
+
+    [System.IO.File]::WriteAllText($file, $text, $utf8NoBom)
+    $rel = $file.Substring($root.Length + 1)
+    if ($Stage) { git -C $root add -- $rel }
+    Write-Host "$rel asset version -> $version"
 }
