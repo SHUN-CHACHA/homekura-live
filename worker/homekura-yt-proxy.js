@@ -66,18 +66,26 @@ function json(request, env, body, status = 200, extra = {}) {
     });
 }
 
+// サイトが付けてくる「何がきっかけの読み込みか」（?src=）。決めた値以外は other、付いていなければ none
+//   load=ページを開いた / auto=10分ごとの自動更新 / manual=更新ボタン / reserve=通知予約の切り替え
+const ACCESS_SOURCES = ['load', 'auto', 'manual', 'reserve'];
+
 // 📊 アクセス元の地域をログと Analytics Engine に記録する（失敗しても処理は続ける）
+//   blob1〜5: 国・地域・都市・データセンター・パス、blob6: きっかけ（ACCESS_SOURCES）
 function recordAccess(request, env, url) {
     const { country, region, city, colo, timezone } = request.cf || {};
+    const srcParam = url.searchParams.get('src');
+    const src = srcParam === null ? 'none' : (ACCESS_SOURCES.includes(srcParam) ? srcParam : 'other');
     console.log({
         message: '[homeクラ proxy] incoming request',
         path: url.pathname,
+        src,
         country, region, city, colo, timezone
     });
     if (!env.YT_STATS) return;
     try {
         env.YT_STATS.writeDataPoint({
-            blobs: [country || 'unknown', region || 'unknown', city || 'unknown', colo || 'unknown', url.pathname],
+            blobs: [country || 'unknown', region || 'unknown', city || 'unknown', colo || 'unknown', url.pathname, src],
             doubles: [1],
             indexes: [country || 'unknown']
         });

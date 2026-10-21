@@ -10,7 +10,7 @@
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
 
-    <link rel="stylesheet" href="shared/theme.css?v=f4tdm7">
+    <link rel="stylesheet" href="shared/theme.css?v=ezp7so">
 
     <style>
         body {
@@ -505,22 +505,22 @@
 </head>
 <body>
 <div style="background:#4b5563; color:#fff; text-align:center; padding:8px 12px; font-size:13px; font-weight:bold;">
-    📁 これは過去シーズン（Season2）のアーカイブです　<a href="../index.html?v=f4tdm7" style="color:#fde68a;">→ 最新の Season3 はこちら</a>
+    📁 これは過去シーズン（Season2）のアーカイブです　<a href="../index.html?v=ezp7so" style="color:#fde68a;">→ 最新の Season3 はこちら</a>
 </div>
 
 <div class="banner-container">
-    <img src="img/logo.png?v=f4tdm7" alt="homeクラ" class="header-logo">
+    <img src="img/logo.png?v=ezp7so" alt="homeクラ" class="header-logo">
 </div>
 
 <div class="top-buttons-wrapper">
     <a href="https://www.yurugp.jp/characters/4345" class="yurugp-btn" target="_blank" title="ゆるキャラグランプリ2026">
-        <img src="img/sakaisander-yurugp-icon.png?v=f4tdm7" alt="ゆるキャラグランプリ2026">
+        <img src="img/sakaisander-yurugp-icon.png?v=ezp7so" alt="ゆるキャラグランプリ2026">
     </a>
     <a href="https://github.com/SHUN-CHACHA/minecraft-tools/tree/main" class="yurugp-btn github-btn" target="_blank" title="旬茶オリジナルMInecraft Tools">
-        <img src="img/github-icon.png?v=f4tdm7" alt="旬茶オリジナルMInecraft Tools">
+        <img src="img/github-icon.png?v=ezp7so" alt="旬茶オリジナルMInecraft Tools">
     </a>
     <a href="https://modrinth.com/user/SHUNCHA" class="yurugp-btn modrinth-btn" target="_blank" title="Modrinth">
-        <img src="img/modrinth-icon.png?v=f4tdm7" alt="Modrinth">
+        <img src="img/modrinth-icon.png?v=ezp7so" alt="Modrinth">
     </a>
     <div class="top-buttons-stack">
         <div class="external-links-container">
@@ -537,7 +537,7 @@
         <div class="header-controls">
             <div class="controls-left">
                 <a href="https://shun-chacha.github.io/homekura-live/roulette.html" class="roulette-btn" target="_blank">
-                    <img src="img/roulette-icon.png?v=f4tdm7" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
+                    <img src="img/roulette-icon.png?v=ezp7so" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
                     旬茶作 ルーレット
                 </a>
             </div>
@@ -563,7 +563,7 @@
 </div>
 
 <div class="map-link-container">
-    <a href="minecraft_map.html?v=f4tdm7" target="_blank" class="map-link-btn">homeクラ Season２ メンバー拠点マップ</a>
+    <a href="minecraft_map.html?v=ezp7so" target="_blank" class="map-link-btn">homeクラ Season２ メンバー拠点マップ</a>
 </div>
 
 <div class="main-wrapper">
@@ -593,7 +593,7 @@
     </div>
 </div>
 
-<script src="js/data/config.js?v=f4tdm7"></script>
+<script src="js/data/config.js?v=ezp7so"></script>
 
 <!-- 🧊 3Dスキンビューアー用ライブラリ（ESM配信のみのためmoduleで読み込みwindowに公開） -->
 <script type="module">
@@ -645,7 +645,9 @@ function init() {
     setInterval(checkNotifications, 30000);
 }
 
-async function loadPortal(forceRefresh = false) {
+// src: 何がきっかけの読み込みか（load=ページを開いた / auto=10分ごとの自動更新 / manual=更新ボタン / reserve=通知予約の切り替え）。
+//      Worker がアクセス統計に記録して、自動更新と人が開いたアクセスを区別できるようにする
+async function loadPortal(forceRefresh = false, src = 'load') {
     if (!channels.length) return;
     if (!PROXY_URL) { console.error('[homeクラ] YOUTUBE_PROXY_URL が config.js に設定されていません。'); return; }
 
@@ -668,7 +670,7 @@ async function loadPortal(forceRefresh = false) {
     try {
         const ids  = channels.map(c => c.id).join(',');
         const subs = channels.filter(c => c.id2).map(c => c.id2).join(',');
-        const res  = await fetch(`${PROXY_URL}/portal?ids=${ids}&subs=${subs}&ttl=3600`);
+        const res  = await fetch(`${PROXY_URL}/portal?ids=${ids}&subs=${subs}&ttl=3600&src=${src}`);
         if (!res.ok) throw new Error(`portal HTTP ${res.status}`);
         const shared = await res.json();
         if (!shared || !Array.isArray(shared.vItems)) throw new Error('portal の形式が違います');
@@ -693,7 +695,7 @@ async function loadPortal(forceRefresh = false) {
                 throw new Error('icon cache miss');
             }
         } catch (_) {
-            const chRes = await fetch(`${PROXY_URL}/channels?id=${channelIds}&part=snippet`);
+            const chRes = await fetch(`${PROXY_URL}/channels?id=${channelIds}&part=snippet&src=${src}`);
             const chData = await chRes.json();
             chData.items?.forEach(i => { chInfoMap[i.id] = { icon: i.snippet?.thumbnails?.medium?.url || '' }; });
             localStorage.setItem('channel_icon_cache', JSON.stringify({ timestamp: now, data: chInfoMap }));
@@ -710,7 +712,7 @@ async function loadPortal(forceRefresh = false) {
         const playlistResults = await Promise.all(
             fetchIds.map(id => {
                 const pId = id.replace(/^UC/, 'UU');
-                return fetch(`${PROXY_URL}/playlistItems?playlistId=${pId}&part=snippet&maxResults=10`)
+                return fetch(`${PROXY_URL}/playlistItems?playlistId=${pId}&part=snippet&maxResults=10&src=${src}`)
                     .then(r => r.json()).catch(() => null);
             })
         );
@@ -742,7 +744,7 @@ async function loadPortal(forceRefresh = false) {
             }
             const vResults = await Promise.all(
                 idChunks.map(chunk =>
-                    fetch(`${PROXY_URL}/videos?id=${chunk.join(',')}&part=snippet,liveStreamingDetails`)
+                    fetch(`${PROXY_URL}/videos?id=${chunk.join(',')}&part=snippet,liveStreamingDetails&src=${src}`)
                         .then(r => r.json()).catch(() => null)
                 )
             );
@@ -948,7 +950,7 @@ function toggleReserve(id, name, startTime) {
         if (Notification.permission !== "granted") Notification.requestPermission();
     }
     localStorage.setItem('reserved_videos', JSON.stringify(reservedVideos));
-    loadPortal();
+    loadPortal(false, 'reserve');
 }
 
 function checkNotifications() {
@@ -965,14 +967,14 @@ function checkNotifications() {
 
 function manualRefresh() {
     timeLeft = 600;
-    loadPortal(true); // キャッシュを無視して強制更新
+    loadPortal(true, 'manual'); // キャッシュを無視して強制更新
 }
 
 setInterval(() => {
     timeLeft--;
     if (timeLeft < 0) {
         timeLeft = 600;
-        loadPortal();
+        loadPortal(false, 'auto');
     }
     document.getElementById('timer').innerText =
         `Next Update: ${String(Math.floor(timeLeft/60)).padStart(2,'0')}:${String(timeLeft%60).padStart(2,'0')}`;
