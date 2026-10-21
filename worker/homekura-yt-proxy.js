@@ -72,20 +72,22 @@ const ACCESS_SOURCES = ['load', 'auto', 'manual', 'reserve'];
 
 // 📊 アクセス元の地域をログと Analytics Engine に記録する（失敗しても処理は続ける）
 //   blob1〜5: 国・地域・都市・データセンター・パス、blob6: きっかけ（ACCESS_SOURCES）
+//   blob7: owner＝関係者のブラウザ（サイトを ?me=1 で開いて登録したもの）、visitor＝それ以外
 function recordAccess(request, env, url) {
     const { country, region, city, colo, timezone } = request.cf || {};
     const srcParam = url.searchParams.get('src');
     const src = srcParam === null ? 'none' : (ACCESS_SOURCES.includes(srcParam) ? srcParam : 'other');
+    const who = url.searchParams.get('who') === 'owner' ? 'owner' : 'visitor';
     console.log({
         message: '[homeクラ proxy] incoming request',
         path: url.pathname,
-        src,
+        src, who,
         country, region, city, colo, timezone
     });
     if (!env.YT_STATS) return;
     try {
         env.YT_STATS.writeDataPoint({
-            blobs: [country || 'unknown', region || 'unknown', city || 'unknown', colo || 'unknown', url.pathname, src],
+            blobs: [country || 'unknown', region || 'unknown', city || 'unknown', colo || 'unknown', url.pathname, src, who],
             doubles: [1],
             indexes: [country || 'unknown']
         });
