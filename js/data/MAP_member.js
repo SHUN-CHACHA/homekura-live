@@ -35,6 +35,7 @@ const memberData = [
     { area: "エリア15", name: "Ｍさん", icon: "MrMsan.png", name2: "", icon2: "", name3: "", icon3: "" },
     { area: "エリア16", name: "鶴太郎", icon: "turu0004.png", name2: "", icon2: "", name3: "", icon3: "" },
     { area: "エリア17", name: "神宮寺", icon: "jingujich.png", name2: "", icon2: "", name3: "", icon3: "" },
+    { area: "エリア18", name: "じゃじゃーん菊池", icon: "jajaankikuchi.png", name2: "", icon2: "", name3: "", icon3: "" },
     { area: "エリア19", name: "KtR（こーたろー）", icon: "HAOgame_KtR.png", name2: "", icon2: "", name3: "", icon3: "" },
     { area: "エリア20", name: "早乙女燈真", icon: "Saotome_UUUM.png", name2: "", icon2: "", name3: "", icon3: "" },
     { area: "エリア21", name: "タツナミ先生", icon: "shyutan.png", name2: "", icon2: "", name3: "", icon3: "" },
