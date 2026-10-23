@@ -53,19 +53,26 @@
         return 'other';
     }
 
+    // 行の頭に来てはいけない文字（伸ばし棒・小さい「ゃ」など）
+    const NO_LINE_START = /[ーぁぃぅぇぉゃゅょっゎァィゥェォャュョッヮ]/;
+
     // 長い名前を2行に分ける（「（」があればその前で、なければ真ん中に近い文字の種類が変わるところで、
-    // それもなければ前半が短くなる真ん中で。例：さかい／さんだー、珍珠花／こまり）
+    // それもなければ前半が短くなる真ん中で。例：さかい／さんだー、珍珠花／こまり、じゃじゃーん／菊池）
     function splitName(name) {
         if (NAME_BREAKS[name]) return NAME_BREAKS[name];
         const paren = name.search(/[（(]/);
         if (paren > 0) return [name.slice(0, paren), name.slice(paren)];
         const chars = Array.from(name);
+        // 伸ばし棒「ー」は前の文字と同じ種類として扱う（じゃじゃーん はひらがなのまとまり）
+        const types = [];
+        chars.forEach((ch, i) => { types.push(ch === 'ー' && i > 0 ? types[i - 1] : charType(ch)); });
         const half = Math.floor(chars.length / 2);
         let at = half;
-        for (let d = 0; d <= 1; d++) {
-            const found = [half - d, half + d].find((i) => i >= 2 && i <= chars.length - 2 && charType(chars[i - 1]) !== charType(chars[i]));
+        for (let d = 0; d <= 2; d++) {
+            const found = [half - d, half + d].find((i) => i >= 2 && i <= chars.length - 2 && types[i - 1] !== types[i]);
             if (found) { at = found; break; }
         }
+        while (at < chars.length - 1 && NO_LINE_START.test(chars[at])) at++;
         return [chars.slice(0, at).join(''), chars.slice(at).join('')];
     }
 

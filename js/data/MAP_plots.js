@@ -4,7 +4,7 @@
 //
 // no    : 区画番号（全35区画に、全体図の枠の上の段から左→右の順で振った番号）
 // area  : エリア番号（顔アイコンを置ける区画だけ）。赤・オレンジの24区画は上の段から左→右の順に1〜24。
-//         青の4区画は追加の枠で、25＝しろくると久遠星那の間（上）・26＝よいよいと鶴太郎の間（左）・
+//         25〜28は追加の枠（もとは青い区画）で、25＝しろくると久遠星那の間（上）・26＝よいよいと鶴太郎の間（左）・
 //         27＝さかいさんだーと神宮寺の間（右）・28＝タツナミ先生と黎乃鈴の間（下）
 //         MAP_member.js の area に「エリア01」のように書くと、その区画の中心に顔アイコンが置かれる
 // color : 枠線の色（red / orange / blue / yellow）
@@ -15,7 +15,7 @@ const plotData = [
     { no: 1, area: 1, color: "orange", x: 96, z: -400, w: 48, h: 48 },
     { no: 2, area: 2, color: "orange", x: -16, z: -336, w: 48, h: 48 },
     { no: 3, area: 3, color: "red", x: 32, z: -336, w: 48, h: 48 },
-    { no: 4, area: 25, color: "blue", x: 96, z: -336, w: 48, h: 48 },
+    { no: 4, area: 25, color: "orange", x: 96, z: -336, w: 48, h: 48 },
     { no: 5, area: 4, color: "red", x: 160, z: -336, w: 48, h: 48 },
     { no: 6, area: 5, color: "orange", x: 208, z: -336, w: 48, h: 48 },
     { no: 7, area: 6, color: "red", x: -80, z: -272, w: 48, h: 48 },
@@ -26,13 +26,13 @@ const plotData = [
     { no: 12, area: 8, color: "orange", x: -80, z: -224, w: 48, h: 48 },
     { no: 13, area: 9, color: "orange", x: 272, z: -224, w: 48, h: 48 },
     { no: 14, area: 10, color: "orange", x: -128, z: -160, w: 48, h: 48 },
-    { no: 15, area: 26, color: "blue", x: -80, z: -160, w: 48, h: 48 },
+    { no: 15, area: 26, color: "red", x: -80, z: -160, w: 48, h: 48 },
     { no: 16, area: 11, color: "orange", x: -16, z: -160, w: 48, h: 48 },
     { no: 17, area: 12, color: "red", x: 32, z: -160, w: 48, h: 48 },
     { no: 18, color: "yellow", x: 96, z: -160, w: 48, h: 48 },
     { no: 19, area: 13, color: "red", x: 160, z: -160, w: 48, h: 48 },
     { no: 20, area: 14, color: "orange", x: 208, z: -160, w: 48, h: 48 },
-    { no: 21, area: 27, color: "blue", x: 272, z: -160, w: 48, h: 48 },
+    { no: 21, area: 27, color: "orange", x: 272, z: -160, w: 48, h: 48 },
     { no: 22, area: 15, color: "red", x: 320, z: -160, w: 48, h: 48 },
     { no: 23, area: 16, color: "red", x: -80, z: -96, w: 48, h: 48 },
     { no: 24, area: 17, color: "red", x: 272, z: -96, w: 48, h: 48 },
@@ -43,7 +43,7 @@ const plotData = [
     { no: 29, area: 19, color: "orange", x: 272, z: -48, w: 48, h: 48 },
     { no: 30, area: 20, color: "orange", x: -16, z: 16, w: 48, h: 48 },
     { no: 31, area: 21, color: "red", x: 32, z: 16, w: 48, h: 48 },
-    { no: 32, area: 28, color: "blue", x: 96, z: 16, w: 48, h: 48 },
+    { no: 32, area: 28, color: "orange", x: 96, z: 16, w: 48, h: 48 },
     { no: 33, area: 22, color: "red", x: 160, z: 16, w: 48, h: 48 },
     { no: 34, area: 23, color: "orange", x: 208, z: 16, w: 48, h: 48 },
     { no: 35, area: 24, color: "orange", x: 96, z: 80, w: 48, h: 48 }
