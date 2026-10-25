@@ -67,8 +67,8 @@ function json(request, env, body, status = 200, extra = {}) {
 }
 
 // サイトが付けてくる「何がきっかけの読み込みか」（?src=）。決めた値以外は other、付いていなければ none
-//   load=ページを開いた / auto=10分ごとの自動更新 / manual=更新ボタン / reserve=通知予約の切り替え
-const ACCESS_SOURCES = ['load', 'auto', 'manual', 'reserve'];
+//   load=ページを開いた / auto=10分ごとの自動更新 / manual=更新ボタン / reserve=通知予約の切り替え / resume=離席から戻って再開
+const ACCESS_SOURCES = ['load', 'auto', 'manual', 'reserve', 'resume'];
 
 // 📊 アクセス元の地域をログと Analytics Engine に記録する（失敗しても処理は続ける）
 //   blob1〜5: 国・地域・都市・データセンター・パス、blob6: きっかけ（ACCESS_SOURCES）

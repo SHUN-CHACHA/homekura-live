@@ -10,7 +10,7 @@
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
 
-    <link rel="stylesheet" href="shared/theme.css?v=vuc0ab">
+    <link rel="stylesheet" href="shared/theme.css?v=rboqhv">
 
     <style>
         body {
@@ -558,8 +558,8 @@
 
 <div class="banner-container">
     <div class="header-logo-wrap">
-        <img src="img/logo.png?v=vuc0ab" alt="homeクラ" class="header-logo">
-        <img src="img/season3-text.png?v=vuc0ab" alt="Season３" class="header-season">
+        <img src="img/logo.png?v=rboqhv" alt="homeクラ" class="header-logo">
+        <img src="img/season3-text.png?v=rboqhv" alt="Season３" class="header-season">
     </div>
 </div>
 
@@ -569,13 +569,13 @@
 
 <div class="top-buttons-wrapper">
     <a href="https://charagp.full-comi.jp/event/lp/84?chara_event_id=7" class="yurugp-btn" target="_blank" title="世界ご当地キャラ グランプリ">
-        <img src="img/charagp-icon.jpg?v=vuc0ab" alt="世界ご当地キャラ グランプリ">
+        <img src="img/charagp-icon.jpg?v=rboqhv" alt="世界ご当地キャラ グランプリ">
     </a>
     <a href="https://github.com/SHUN-CHACHA/minecraft-tools/tree/main" class="yurugp-btn github-btn" target="_blank" title="旬茶オリジナルMInecraft Tools">
-        <img src="img/github-icon.png?v=vuc0ab" alt="旬茶オリジナルMInecraft Tools">
+        <img src="img/github-icon.png?v=rboqhv" alt="旬茶オリジナルMInecraft Tools">
     </a>
     <a href="https://modrinth.com/user/SHUNCHA" class="yurugp-btn modrinth-btn" target="_blank" title="Modrinth">
-        <img src="img/modrinth-icon.png?v=vuc0ab" alt="Modrinth">
+        <img src="img/modrinth-icon.png?v=rboqhv" alt="Modrinth">
     </a>
     <div class="top-buttons-stack">
         <div class="external-links-container">
@@ -592,7 +592,7 @@
         <div class="header-controls">
             <div class="controls-left">
                 <a href="https://shun-chacha.github.io/homekura-live/roulette.html" class="roulette-btn" target="_blank">
-                    <img src="img/roulette-icon.png?v=vuc0ab" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
+                    <img src="img/roulette-icon.png?v=rboqhv" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
                     旬茶作 ルーレット
                 </a>
             </div>
@@ -618,8 +618,8 @@
 </div>
 
 <div class="map-link-container">
-    <a href="minecraft_map.html?v=vuc0ab" target="_blank" class="map-link-btn">homeクラ Season3 メンバー拠点マップ</a>
-    <a href="season2/index.html?v=vuc0ab" class="map-link-btn" style="opacity:0.75;">📁 Season2（過去シーズン）はこちら</a>
+    <a href="minecraft_map.html?v=rboqhv" target="_blank" class="map-link-btn">homeクラ Season3 メンバー拠点マップ</a>
+    <a href="season2/index.html?v=rboqhv" class="map-link-btn" style="opacity:0.75;">📁 Season2（過去シーズン）はこちら</a>
 </div>
 
 <div class="main-wrapper">
@@ -645,13 +645,13 @@
 
     <div class="section-box" id="member">
         <div class="section-title">👥 メンバー一覧
-            <a href="members.pdf?v=vuc0ab" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
+            <a href="members.pdf?v=rboqhv" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
         </div>
         <div id="allList" class="list-container"></div>
     </div>
 </div>
 
-<script src="js/data/config.js?v=vuc0ab"></script>
+<script src="js/data/config.js?v=rboqhv"></script>
 
 <!-- 🧊 3Dスキンビューアー用ライブラリ（ESM配信のみのためmoduleで読み込みwindowに公開） -->
 <script type="module">
@@ -667,10 +667,35 @@ const PROXY_URL = (window.CONFIG?.YOUTUBE_PROXY_URL || '').replace(/\/$/, '');
 const CACHE_DURATION_MS         = window.CONFIG?.CACHE_DURATION_MS          ?? (5  * 60 * 1000);
 const CHANNEL_ICON_CACHE_DURATION_MS = window.CONFIG?.CHANNEL_ICON_CACHE_DURATION_MS ?? (24 * 60 * 60 * 1000);
 // 画像のキャッシュ対策用バージョン番号（コミット時に scripts/bump-asset-version.ps1 が自動更新する）
-const ASSET_VERSION = 'vuc0ab';
+const ASSET_VERSION = 'rboqhv';
 let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 let timeLeft = 600;
+
+// 💤 見ていないときは10分ごとの自動更新を止める（開いたまま離席したときに YouTube API を使い続けないように）
+//   ・タブが裏に回っている／最小化・画面オフのあいだは止める
+//   ・AWAY_LIMIT_MS のあいだマウス・キー・タッチの操作がなければ止める
+//   戻ってきたとき、前回の取得から10分以上たっていればすぐに更新する（統計上は src=resume）
+const AWAY_LIMIT_MS = 30 * 60 * 1000;
+let lastActivityAt = Date.now();
+let lastLoadAt = Date.now();
+let away = false;
+function isAway() {
+    return document.hidden || Date.now() - lastActivityAt > AWAY_LIMIT_MS;
+}
+function onUserActivity() {
+    if (document.hidden) { away = true; return; }
+    lastActivityAt = Date.now();
+    if (!away) return;
+    away = false;
+    if (Date.now() - lastLoadAt >= 600 * 1000) {
+        timeLeft = 600;
+        loadPortal(false, 'resume');
+    }
+}
+['pointerdown', 'pointermove', 'keydown', 'wheel', 'touchstart', 'scroll'].forEach(ev =>
+    window.addEventListener(ev, onUserActivity, { passive: true }));
+document.addEventListener('visibilitychange', onUserActivity);
 
 const SVG_ICONS = {
     youtube:   `<svg viewBox="0 0 24 24"><path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.516 0-9.387.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.387.508 9.387.508s7.517 0 9.387-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`,
@@ -730,9 +755,10 @@ function statsQuery(src) {
     return `src=${src}${owner ? '&who=owner' : ''}`;
 }
 
-// src: 何がきっかけの読み込みか（load=ページを開いた / auto=10分ごとの自動更新 / manual=更新ボタン / reserve=通知予約の切り替え）。
+// src: 何がきっかけの読み込みか（load=ページを開いた / auto=10分ごとの自動更新 / manual=更新ボタン / reserve=通知予約の切り替え / resume=離席から戻って再開）。
 //      Worker がアクセス統計に記録して、自動更新と人が開いたアクセスを区別できるようにする
 async function loadPortal(forceRefresh = false, src = 'load') {
+    lastLoadAt = Date.now();
     if (!channels.length) return;
     if (!PROXY_URL) { console.error('[homeクラ] YOUTUBE_PROXY_URL が config.js に設定されていません。'); return; }
 
@@ -1056,6 +1082,11 @@ function manualRefresh() {
 }
 
 setInterval(() => {
+    if (isAway()) {
+        away = true;
+        document.getElementById('timer').innerText = '一時停止中（操作すると再開）';
+        return;
+    }
     timeLeft--;
     if (timeLeft < 0) {
         timeLeft = 600;
