@@ -8,6 +8,7 @@
 //
 // 登録は localStorage と Cookie の両方に保存し、どちらか片方が消えていても、もう片方から自動で戻す（外れにくくする）。
 // Cookie の有効期限はブラウザの上限（約400日）に合わせ、開くたびに延ばす。
+// 手元のパソコンのサーバー（localhost・127.0.0.1）で開いた動作確認用のページは、登録がなくても常に関係者として扱う。
 // ==========================================================
 (function () {
     const KEY = 'homekura_stats_owner';
@@ -38,8 +39,14 @@
         writeCookie(on);
     }
 
+    // 手元のパソコンのサーバー（localhost・127.0.0.1）で開いたページは、動作確認なので常に関係者として扱う
+    function isLocalDev() {
+        return ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+    }
+
     // どちらかに印が残っていれば関係者とみなし、消えている方を書き戻す（Cookie の期限もここで延ばす）
     function isOwner() {
+        if (isLocalDev()) return true;
         const owner = readStorage() || readCookie();
         if (owner) setOwner(true);
         return owner;
@@ -57,6 +64,8 @@
         } else if (me === '0') {
             setOwner(false);
             alert('このブラウザの関係者登録を外しました。');
+        } else if (isLocalDev()) {
+            alert('手元のパソコンのサーバー（localhost）で開いているので、登録がなくても関係者として扱っています。');
         } else {
             const storage = readStorage();
             const cookie = readCookie();
