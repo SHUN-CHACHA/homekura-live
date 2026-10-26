@@ -18,9 +18,9 @@
         iconBorder: '#4caf50',
         textColor: '#ffffff',
         textBg: '#1a1a1f',
+        textBgOpacity: 85, // ネームタグの背景の濃さ（0〜100%。0 で透明）
         // 透明にできる項目のON/OFF
         iconBorderTransparent: false,
-        textBgTransparent: false,
         xAxisTransparent: false,
         zAxisTransparent: false,
         // 地図上にグリッド線・区画の枠線・顔アイコンを表示するか、ネームタグに名前・座標を表示するか
@@ -33,8 +33,11 @@
 
     function loadCustomColors() {
         try {
-            const saved = JSON.parse(localStorage.getItem(CUSTOM_COLOR_STORAGE_KEY));
-            return { ...defaultCustomColors, ...(saved || {}) };
+            const saved = JSON.parse(localStorage.getItem(CUSTOM_COLOR_STORAGE_KEY)) || {};
+            // 以前の「ネームタグの背景を透明にする」チェックは、背景の濃さ 0% に引き継ぐ
+            if (saved.textBgTransparent && saved.textBgOpacity === undefined) saved.textBgOpacity = 0;
+            delete saved.textBgTransparent;
+            return { ...defaultCustomColors, ...saved };
         } catch (e) {
             return { ...defaultCustomColors };
         }
@@ -62,7 +65,8 @@
         root.setProperty('--custom-panel-bg', customColors.panelBg);
         root.setProperty('--custom-icon-border', customColors.iconBorderTransparent ? 'transparent' : customColors.iconBorder);
         root.setProperty('--custom-text-color', customColors.textColor);
-        root.setProperty('--custom-text-bg', customColors.textBgTransparent ? 'transparent' : hexToRgba(customColors.textBg, 0.85));
+        const textBgAlpha = Math.max(0, Math.min(100, Number(customColors.textBgOpacity))) / 100;
+        root.setProperty('--custom-text-bg', textBgAlpha > 0 ? hexToRgba(customColors.textBg, textBgAlpha) : 'transparent');
 
         // 表示切り替えは .map-display-target の付いた要素（拠点マップ・地図の比較画面の地図）に反映する
         document.querySelectorAll('.map-display-target').forEach((el) => {
@@ -112,7 +116,6 @@
     // 透明チェックボックスがある項目（input id -> customColorsのキー）
     const transparentInputMap = {
         'cc-icon-border-transparent': 'iconBorderTransparent',
-        'cc-text-bg-transparent': 'textBgTransparent',
         'cc-x-axis-color-transparent': 'xAxisTransparent',
         'cc-z-axis-color-transparent': 'zAxisTransparent'
     };
@@ -149,6 +152,11 @@
             const checkbox = document.getElementById(checkboxId);
             if (checkbox) checkbox.checked = !!customColors[displayToggleMap[checkboxId]];
         });
+
+        const opacitySlider = document.getElementById('cc-text-bg-opacity');
+        const opacityLabel = document.getElementById('cc-text-bg-opacity-label');
+        if (opacitySlider) opacitySlider.value = customColors.textBgOpacity;
+        if (opacityLabel) opacityLabel.textContent = `${customColors.textBgOpacity}%`;
     }
 
     function initUI() {
@@ -210,6 +218,17 @@
                 saveCustomColors();
             });
         });
+
+        // ネームタグの背景の濃さ（シークバーを動かすとその場で地図に反映し、離した時に保存）
+        const opacitySlider = document.getElementById('cc-text-bg-opacity');
+        const opacityLabel = document.getElementById('cc-text-bg-opacity-label');
+        if (opacitySlider) {
+            opacitySlider.addEventListener('input', (e) => {
+                setColor('textBgOpacity', Number(e.target.value));
+                if (opacityLabel) opacityLabel.textContent = `${e.target.value}%`;
+            });
+            opacitySlider.addEventListener('change', saveCustomColors);
+        }
 
         const resetBtn = document.getElementById('color-customizer-reset');
         if (resetBtn) {
