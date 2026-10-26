@@ -21,6 +21,7 @@
 
     // 1つの地図に格子線・軸線・座標ラベルを付ける
     // options.axisLabelContainer：座標ラベルを表示する要素（なければラベルは出さない）
+    // options.isGridVisible：格子線を描くかどうかを返す関数（なければ「地図の表示項目」の設定に従う）
     function create(map, options) {
         const opts = options || {};
         const mapEl = map.getContainer();
@@ -35,8 +36,9 @@
         // ==========================================================
         function updateGrid() {
             gridLayerGroup.clearLayers();
-            // 「地図の表示項目」でグリッド線を消している時は描かない
-            if (getColors().showGrid === false) return;
+            // 「地図の表示項目」でグリッド線を消している時は描かない（比較画面では地図ごとの設定 options.isGridVisible を使う）
+            const visible = opts.isGridVisible ? opts.isGridVisible() : getColors().showGrid !== false;
+            if (!visible) return;
 
             const bounds = map.getBounds();
             const west = bounds.getWest();

@@ -54,12 +54,18 @@
 .permanent-name-label.unregistered .coord-line {
     color: #88888f;
 }
-/* 🗺️ 地図の表示項目：区画の枠線・顔アイコン・名前・座標の表示切り替え（名前・座標が両方OFFならネームタグごと隠す） */
+/* 🗺️ 地図の表示項目：区画の枠線・顔アイコン・名前・座標の表示切り替え（名前・座標が両方OFFならネームタグごと隠す）
+   .map-display-target は「地図の表示項目」の設定（拠点マップ）、.compare-display は地図の比較画面の地図1枚ごとの設定 */
 .map-display-target.hide-plots .plot-frame,
 .map-display-target.hide-faces .leaflet-marker-pane,
 .map-display-target.hide-names .permanent-name-label .name-line,
 .map-display-target.hide-coords .permanent-name-label .coord-line,
-.map-display-target.hide-names.hide-coords .leaflet-tooltip-pane {
+.map-display-target.hide-names.hide-coords .leaflet-tooltip-pane,
+.compare-display.hide-plots .plot-frame,
+.compare-display.hide-faces .leaflet-marker-pane,
+.compare-display.hide-names .permanent-name-label .name-line,
+.compare-display.hide-coords .permanent-name-label .coord-line,
+.compare-display.hide-names.hide-coords .leaflet-tooltip-pane {
     display: none !important;
 }
 /* 📋 配置図を表示している時は、配置図に名前が書いてあるので区画の枠線・顔アイコン・ネームタグを隠す */

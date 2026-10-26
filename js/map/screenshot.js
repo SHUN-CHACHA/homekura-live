@@ -4,7 +4,7 @@
 // 「📷 スクリーンショットを保存」ボタンで、今画面に見えている地図（背景地図・配置図・格子線・区画の枠線・
 // 顔アイコン・ネームタグ）を1枚の PNG 画像に描き直します。ボタン・スライダーなどの操作部分は写しません。
 // 各地図の右上に表示中の地図背景画像の名前（取得した日付。例：10月18日）、全体の右下に1か所だけウォーターマーク
-// （サイト名とアドレス）を入れます。地図の比較画面では、左右2枚の地図を横に並べた1枚の画像にします。
+// （サイト名とアドレス）を入れます。地図の比較画面では、2枚の地図を画面と同じ並び（PCは左右、スマホの縦向きは上下）で1枚の画像にします。
 //
 //   PC     ：画像をダウンロード（ファイル名は 拠点マップMMDD.png / 地図比較MMDD.png）し、同時にクリップボードにもコピーする（Ctrl+V で貼れる）
 //   スマホ ：画像を画面に表示し、「共有・保存」で共有メニュー（写真に保存・X・Discord・LINE など）を開く。長押しでも保存できる
@@ -14,8 +14,6 @@
 
     const SITE_NAME = 'homeクラ合衆国Season3'; // スマホの共有メニューに出す題名
     const FONT_FAMILY = "'Hiragino Sans', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif";
-
-    const MAP_GAP = 2; // 地図を横に並べる時の、地図と地図の間の線の太さ
 
     let button = null;
     // 拠点マップでの初期設定。地図の比較画面では init() に別の設定を渡す
@@ -217,19 +215,20 @@
         return `${options.filePrefix}${p(d.getMonth() + 1)}${p(d.getDate())}.png`;
     }
 
-    // 1枚の地図を、画像の中の x の位置に描く
-    async function drawMap(ctx, target, x, height) {
+    // 1枚の地図を、画像の中の (x, y) の位置に描く
+    async function drawMap(ctx, target, x, y) {
         const mapEl = target.el;
         const base = mapEl.getBoundingClientRect();
-        const w = Math.round(base.width);
+        const w = base.width;
+        const h = base.height;
         ctx.save();
-        ctx.translate(x, 0);
+        ctx.translate(x, y);
         ctx.beginPath();
-        ctx.rect(0, 0, w, height);
+        ctx.rect(0, 0, w, h);
         ctx.clip();
 
         ctx.fillStyle = getComputedStyle(mapEl).backgroundColor || '#141417';
-        ctx.fillRect(0, 0, w, height);
+        ctx.fillRect(0, 0, w, h);
 
         await drawPane(ctx, mapEl.querySelector('.leaflet-overlay-pane'), base);
         await drawPane(ctx, mapEl.querySelector('.leaflet-plotFrame-pane'), base);
@@ -239,16 +238,26 @@
         // 右上：表示中の地図背景画像の名前（地図を取得した日付。例：10月18日）。背景を消している時は入れない
         if (target.label) drawLabel(ctx, target.label, w - 10, 10, 'right', 13, 1);
         ctx.restore();
-        return w;
     }
 
-    // 今見えている地図（比較画面では左右2枚を横に並べたもの）を canvas に描いて PNG の Blob にする
+    // 画像の細かさ（画面の何倍で描くか）。スマホや、メモリの少ない端末では2倍までにして軽くする
+    function captureScale() {
+        const dpr = window.devicePixelRatio || 1;
+        const lowMemory = navigator.deviceMemory && navigator.deviceMemory <= 4;
+        const max = (isMobile() || lowMemory) ? 2 : 3;
+        return Math.min(max, Math.max(2, dpr));
+    }
+
+    // 今見えている地図を canvas に描いて PNG の Blob にする。
+    // 比較画面のように地図が2枚ある時は、画面と同じ位置関係（PCは左右、スマホの縦向きは上下）のまま1枚にする
     async function capture() {
         const targets = options.getTargets().filter((t) => t.el);
         const rects = targets.map((t) => t.el.getBoundingClientRect());
-        const width = rects.reduce((sum, r) => sum + Math.round(r.width), 0) + MAP_GAP * (targets.length - 1);
-        const height = Math.max(...rects.map((r) => Math.round(r.height)));
-        const scale = Math.min(3, Math.max(2, window.devicePixelRatio || 1)); // 画面より細かく描いてくっきりさせる
+        const left = Math.min(...rects.map((r) => r.left));
+        const top = Math.min(...rects.map((r) => r.top));
+        const width = Math.round(Math.max(...rects.map((r) => r.right)) - left);
+        const height = Math.round(Math.max(...rects.map((r) => r.bottom)) - top);
+        const scale = captureScale(); // 画面より細かく描いてくっきりさせる
 
         const canvas = document.createElement('canvas');
         canvas.width = width * scale;
@@ -256,13 +265,12 @@
         const ctx = canvas.getContext('2d');
         ctx.scale(scale, scale);
 
-        // 地図と地図の間の線（比較画面の左右の境目と同じ色）
+        // 地図と地図の間の線（比較画面の境目と同じ色。地図のすき間がそのまま線になる）
         ctx.fillStyle = '#333339';
         ctx.fillRect(0, 0, width, height);
 
-        let x = 0;
-        for (const target of targets) {
-            x += await drawMap(ctx, target, x, height) + MAP_GAP;
+        for (let i = 0; i < targets.length; i++) {
+            await drawMap(ctx, targets[i], rects[i].left - left, rects[i].top - top);
         }
 
         const margin = 10;

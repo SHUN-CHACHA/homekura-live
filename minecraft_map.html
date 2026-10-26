@@ -17,9 +17,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- 🏠 ライトテーマ共通CSS（戻るボタン・スマホ用ドロワーの配色に使用） -->
-    <link rel="stylesheet" href="shared/theme.css?v=rboqhv">
+    <link rel="stylesheet" href="shared/theme.css?v=ljzr4j">
     <!-- 🗺️ 顔アイコン・ネームタグの共通スタイル（地図の比較画面と共通） -->
-    <link rel="stylesheet" href="shared/map-markers.css?v=rboqhv">
+    <link rel="stylesheet" href="shared/map-markers.css?v=ljzr4j">
     
     <style>
         body {
@@ -349,7 +349,8 @@
                 transform: translateX(-100%);
                 transition: transform 0.25s ease-out;
                 overflow-y: auto;
-                padding: 16px 12px;
+                /* 上は、画面上部に固定された上部バー（タイトル・戻る/設定MENU・地図切り替え、高さ約117px）の下から始める */
+                padding: 128px 12px 16px;
                 background: var(--bg-color, #eef3ee) !important;
                 display: block !important; /* テーブル用の固定高さレイアウトをやめ、自然な縦積みにする */
             }
@@ -402,7 +403,7 @@
         <div class="text-green-500 font-extrabold text-sm text-center truncate">homeクラ Season3 メンバー拠点マップ</div>
         <!-- 2行目：戻る・設定MENU -->
         <div class="flex items-center justify-between gap-2">
-            <a href="index.html?v=rboqhv" class="pill-btn-light">🏠 ポータルに戻る</a>
+            <a href="index.html?v=ljzr4j" class="pill-btn-light">🏠 ポータルに戻る</a>
             <button id="member-drawer-toggle" class="pill-btn-light">☰ 設定MENU</button>
         </div>
         <!-- 3行目：地図画像の切り替え -->
@@ -419,9 +420,10 @@
 <div class="flex flex-col lg:flex-row gap-4 lg:h-screen">
 <aside id="member-drawer" class="w-full lg:w-[430px] flex flex-col gap-4 flex-shrink-0">
 <div class="drawer-header bg-[#1a1a1f] border-b border-gray-800 py-4 sm:py-6 px-4 text-center relative">
-        <div class="hidden lg:flex text-left mb-3 gap-2">
-            <a href="index.html?v=rboqhv" class="pill-btn-light">🏠 ポータルに戻る</a>
-            <a href="map_compare.html?v=rboqhv" target="_blank" class="pill-btn-light">🔍 2枚の地図を比較</a>
+        <!-- PC：ポータルに戻る・2枚の地図を比較／スマホ（設定MENUの中）：2枚の地図を比較だけ（ポータルに戻るは上部バーにある） -->
+        <div class="flex text-left mb-3 gap-2">
+            <a href="index.html?v=ljzr4j" class="pill-btn-light hidden lg:inline-flex">🏠 ポータルに戻る</a>
+            <a href="map_compare.html?v=ljzr4j" target="_blank" class="pill-btn-light">🔍 2枚の地図を比較</a>
         </div>
         <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-green-500 tracking-wider">homeクラ Season3 メンバー拠点マップ</h1>
         <p class="text-gray-400 mt-2 text-xs sm:text-sm">X=0, Z=0 を中心としたマルチサーバーの勢力図・拠点位置リスト</p>
@@ -572,25 +574,25 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <!-- 📊 メンバーデータは js/data/MAP_member.js に分離（編集はそちらのファイルで） -->
-    <script src="js/data/MAP_member.js?v=rboqhv"></script>
+    <script src="js/data/MAP_member.js?v=ljzr4j"></script>
 
     <!-- 📍 メンバー以外の目印（方位磁針・共有地など）は js/data/MAP_locations.js に分離 -->
-    <script src="js/data/MAP_locations.js?v=rboqhv"></script>
+    <script src="js/data/MAP_locations.js?v=ljzr4j"></script>
 
     <!-- 🟥 区画の枠線（背景画像とは別に線で描く）は js/data/MAP_plots.js に分離 -->
-    <script src="js/data/MAP_plots.js?v=rboqhv"></script>
+    <script src="js/data/MAP_plots.js?v=ljzr4j"></script>
 
     <!-- 🧩 機能ごとに分割したJSコンポーネント（js/フォルダ） -->
-    <script src="js/map/color-customizer.js?v=rboqhv"></script>
-    <script src="js/map/map-config.js?v=rboqhv"></script>
-    <script src="js/map/layout-diagram.js?v=rboqhv"></script>
-    <script src="js/map/map-grid.js?v=rboqhv"></script>
-    <script src="js/map/member-list.js?v=rboqhv"></script>
-    <script src="js/map/location-list.js?v=rboqhv"></script>
-    <script src="js/map/plot-frames.js?v=rboqhv"></script>
-    <script src="js/map/mobile-ui.js?v=rboqhv"></script>
-    <script src="js/map/zoom-slider.js?v=rboqhv"></script>
-    <script src="js/map/screenshot.js?v=rboqhv"></script>
+    <script src="js/map/color-customizer.js?v=ljzr4j"></script>
+    <script src="js/map/map-config.js?v=ljzr4j"></script>
+    <script src="js/map/layout-diagram.js?v=ljzr4j"></script>
+    <script src="js/map/map-grid.js?v=ljzr4j"></script>
+    <script src="js/map/member-list.js?v=ljzr4j"></script>
+    <script src="js/map/location-list.js?v=ljzr4j"></script>
+    <script src="js/map/plot-frames.js?v=ljzr4j"></script>
+    <script src="js/map/mobile-ui.js?v=ljzr4j"></script>
+    <script src="js/map/zoom-slider.js?v=ljzr4j"></script>
+    <script src="js/map/screenshot.js?v=ljzr4j"></script>
 
     <script>
         // ==========================================================

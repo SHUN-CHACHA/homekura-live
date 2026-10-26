@@ -12,25 +12,25 @@
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="shared/theme.css?v=rboqhv">
+    <link rel="stylesheet" href="shared/theme.css?v=ljzr4j">
     <!-- 🗺️ 顔アイコン・ネームタグは拠点マップと共通のスタイルを使う -->
-    <link rel="stylesheet" href="shared/map-markers.css?v=rboqhv">
+    <link rel="stylesheet" href="shared/map-markers.css?v=ljzr4j">
 
     <!-- 📊 地図画像の一覧（mapImageList）は minecraft_map.html と共通のものを使う -->
-    <script src="js/map/map-config.js?v=rboqhv"></script>
-    <script src="js/map/layout-diagram.js?v=rboqhv"></script>
+    <script src="js/map/map-config.js?v=ljzr4j"></script>
+    <script src="js/map/layout-diagram.js?v=ljzr4j"></script>
     <!-- 📍 メンバー・「場所」（メンバーではない目印）のデータ -->
-    <script src="js/data/MAP_member.js?v=rboqhv"></script>
-    <script src="js/data/MAP_locations.js?v=rboqhv"></script>
-    <script src="js/data/MAP_plots.js?v=rboqhv"></script>
+    <script src="js/data/MAP_member.js?v=ljzr4j"></script>
+    <script src="js/data/MAP_locations.js?v=ljzr4j"></script>
+    <script src="js/data/MAP_plots.js?v=ljzr4j"></script>
     <!-- 🧩 拠点マップと共通のコンポーネント（表示項目の設定・格子線・顔アイコン・ズームスライダー） -->
-    <script src="js/map/color-customizer.js?v=rboqhv"></script>
-    <script src="js/map/map-grid.js?v=rboqhv"></script>
-    <script src="js/map/member-list.js?v=rboqhv"></script>
-    <script src="js/map/location-list.js?v=rboqhv"></script>
-    <script src="js/map/plot-frames.js?v=rboqhv"></script>
-    <script src="js/map/zoom-slider.js?v=rboqhv"></script>
-    <script src="js/map/screenshot.js?v=rboqhv"></script>
+    <script src="js/map/color-customizer.js?v=ljzr4j"></script>
+    <script src="js/map/map-grid.js?v=ljzr4j"></script>
+    <script src="js/map/member-list.js?v=ljzr4j"></script>
+    <script src="js/map/location-list.js?v=ljzr4j"></script>
+    <script src="js/map/plot-frames.js?v=ljzr4j"></script>
+    <script src="js/map/zoom-slider.js?v=ljzr4j"></script>
+    <script src="js/map/screenshot.js?v=ljzr4j"></script>
 
     <style>
         html, body {
@@ -76,7 +76,7 @@
             cursor: pointer;
         }
 
-        /* 📷 スクリーンショットボタン（左右2枚の地図を並べた1枚の画像にする。js/map/screenshot.js） */
+        /* 📷 スクリーンショットボタン（2枚の地図を画面と同じ並びで1枚の画像にする。js/map/screenshot.js） */
         #screenshot-btn {
             background: rgba(38, 38, 43, 0.95);
             border: 1px solid #44444b;
@@ -110,11 +110,20 @@
             height: 100%;
             background: var(--custom-void-bg);
         }
-        .compare-select {
+        /* 各地図の左上：地図選び・表示項目ボタン */
+        .compare-tools {
             position: absolute;
             top: 10px;
             left: 10px;
+            right: 10px;
             z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            pointer-events: none; /* すき間の部分は地図を操作できるようにする */
+        }
+        .compare-tools > * { pointer-events: auto; }
+        .compare-select {
             background: rgba(26, 26, 31, 0.92);
             color: #e5e5e5;
             border: 1px solid #4caf50;
@@ -124,6 +133,97 @@
             max-width: 60%;
         }
         .compare-select:focus { outline: none; border-color: #7ee787; }
+        .compare-display-btn {
+            background: rgba(26, 26, 31, 0.92);
+            color: #e5e5e5;
+            border: 1px solid #44444b;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .compare-display-btn:hover,
+        .compare-display-btn.is-open { border-color: #4caf50; color: #ffffff; }
+        /* 地図1枚ごとの表示項目の設定（その地図の上に重ねて出す） */
+        .compare-display-panel {
+            position: absolute;
+            top: 52px;
+            left: 10px;
+            z-index: 1001;
+            width: 230px;
+            max-width: calc(100% - 20px);
+            max-height: calc(100% - 62px);
+            overflow-y: auto;
+            box-sizing: border-box;
+            background: rgba(26, 26, 31, 0.96);
+            border: 1px solid #4caf50;
+            border-radius: 10px;
+            padding: 10px 12px;
+            color: #e5ece3;
+            font-size: 13px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+        }
+        .compare-display-panel[hidden] { display: none; }
+        .compare-display-panel h3 {
+            margin: 0 0 6px;
+            font-size: 13px;
+            color: #7ee787;
+        }
+        .compare-display-panel label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 0;
+            cursor: pointer;
+        }
+        .compare-display-panel input { width: 16px; height: 16px; accent-color: #4caf50; }
+        .compare-display-panel .panel-note {
+            margin: 6px 0 8px;
+            font-size: 11px;
+            color: #9ca39a;
+        }
+        .compare-display-close {
+            width: 100%;
+            padding: 6px;
+            border-radius: 8px;
+            border: 1px solid #44444b;
+            background: #2a2a30;
+            color: #e5ece3;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* 📱 スマホの縦向き：上部バーを2段（1段目：戻る・スクショ／2段目：倍率）にし、2枚の地図を上下に並べる。
+              横向き・PCでは左右に並べたまま */
+        @media (max-width: 767px) and (orientation: portrait) {
+            #top-bar {
+                height: 92px;
+                flex-wrap: wrap;
+                align-content: center;
+                justify-content: space-between;
+                gap: 8px 8px;
+                padding: 6px 10px;
+            }
+            #top-bar .pill-btn-light { font-size: 12px; }
+            #screenshot-btn { padding: 6px 12px; }
+            #zoom-slider-wrap { order: 3; width: 100%; }
+            #zoom-slider { flex: 1; width: auto; }
+            #compare-wrap {
+                flex-direction: column;
+                height: calc(100vh - 92px);
+                height: calc(100dvh - 92px); /* スマホのアドレスバーの分を除いた高さ */
+                margin-top: 92px;
+            }
+            .compare-pane { flex: 1 1 50%; min-height: 0; height: auto; }
+            .compare-pane + .compare-pane { border-left: none; border-top: 2px solid #333339; }
+            .compare-tools { top: 8px; left: 8px; right: 8px; }
+            .compare-select { font-size: 12px; padding: 4px 8px; }
+            .compare-display-btn { font-size: 12px; padding: 4px 8px; }
+            .compare-display-panel { top: 42px; left: 8px; max-width: calc(100% - 16px); max-height: calc(100% - 50px); }
+        }
     </style>
     <!-- Cloudflare Web Analytics (要: 実トークンに差し替え。Cloudflareダッシュボード > Web Analytics > Add a site で取得) -->
     <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "ef48e3b395a94deb8375d839e1887bb2"}'></script>
@@ -132,7 +232,7 @@
 <body>
 
 <div id="top-bar">
-    <a href="minecraft_map.html?v=rboqhv" class="pill-btn-light">🏠 拠点マップに戻る</a>
+    <a href="minecraft_map.html?v=ljzr4j" class="pill-btn-light">🏠 拠点マップに戻る</a>
     <div id="zoom-slider-wrap">
         <span id="zoom-slider-label">1.0×</span>
         <input type="range" id="zoom-slider" min="-4.5" max="2.08496" step="0.001" value="0">
@@ -140,14 +240,40 @@
     <button type="button" id="screenshot-btn">📷 スクリーンショットを保存</button>
 </div>
 
-<!-- 顔アイコン・名前・座標・色は拠点マップの「地図の表示項目」の設定を引き継ぐ -->
-<div id="compare-wrap" class="map-display-target">
-    <div class="compare-pane">
-        <select id="select-left" class="compare-select"></select>
+<!-- グリッド線・区画の枠線・顔アイコン・名前・座標は地図1枚ごとに「⚙ 表示項目」で切り替える。色は拠点マップの「地図の表示項目」と共通 -->
+<div id="compare-wrap">
+    <div class="compare-pane compare-display" data-side="left">
+        <div class="compare-tools">
+            <select id="select-left" class="compare-select"></select>
+            <button type="button" class="compare-display-btn" aria-expanded="false">⚙ 表示項目</button>
+        </div>
+        <div class="compare-display-panel" hidden>
+            <h3>このの地図の表示項目</h3>
+            <label><input type="checkbox" data-key="showGrid"> グリッド線</label>
+            <label><input type="checkbox" data-key="showPlots"> 区画の枠線</label>
+            <label><input type="checkbox" data-key="showFaces"> 顔アイコン</label>
+            <label><input type="checkbox" data-key="showNames"> 名前</label>
+            <label><input type="checkbox" data-key="showCoords"> 座標</label>
+            <p class="panel-note">この地図だけに効きます（この端末に保存）。色は拠点マップの「地図の表示項目」と共通です。</p>
+            <button type="button" class="compare-display-close">閉じる</button>
+        </div>
         <div id="map-left" class="compare-map"></div>
     </div>
-    <div class="compare-pane">
-        <select id="select-right" class="compare-select"></select>
+    <div class="compare-pane compare-display" data-side="right">
+        <div class="compare-tools">
+            <select id="select-right" class="compare-select"></select>
+            <button type="button" class="compare-display-btn" aria-expanded="false">⚙ 表示項目</button>
+        </div>
+        <div class="compare-display-panel" hidden>
+            <h3>このの地図の表示項目</h3>
+            <label><input type="checkbox" data-key="showGrid"> グリッド線</label>
+            <label><input type="checkbox" data-key="showPlots"> 区画の枠線</label>
+            <label><input type="checkbox" data-key="showFaces"> 顔アイコン</label>
+            <label><input type="checkbox" data-key="showNames"> 名前</label>
+            <label><input type="checkbox" data-key="showCoords"> 座標</label>
+            <p class="panel-note">この地図だけに効きます（この端末に保存）。色は拠点マップの「地図の表示項目」と共通です。</p>
+            <button type="button" class="compare-display-close">閉じる</button>
+        </div>
         <div id="map-right" class="compare-map"></div>
     </div>
 </div>
@@ -231,14 +357,70 @@
     mapRight.on('move zoom', () => syncMaps(mapRight, mapLeft));
 
     // ==========================================================
-    // 📍 拠点マップと同じ区画の枠線・顔アイコン・ネームタグ・格子線・軸線を両方の地図に表示する
-    //     （顔アイコン・名前・座標の表示と色は、拠点マップの「地図の表示項目」の設定を引き継ぐ）
+    // ⚙ 地図1枚ごとの表示項目（グリッド線・区画の枠線・顔アイコン・名前・座標）
+    //     左右（スマホでは上下）の地図で別々にオン・オフでき、この端末に保存する。最初は拠点マップの設定と同じ状態から始める
     // ==========================================================
-    [mapLeft, mapRight].forEach((map) => {
-        MapApp.mapGrid.create(map);
+    const DISPLAY_KEYS = ['showGrid', 'showPlots', 'showFaces', 'showNames', 'showCoords'];
+    const DISPLAY_STORAGE_KEY = 'homekura_compare_display';
+    const displayState = (() => {
+        const base = MapApp.colorCustomizer ? MapApp.colorCustomizer.getColors() : {};
+        const fromMain = {};
+        DISPLAY_KEYS.forEach((k) => { fromMain[k] = base[k] !== false; });
+        let saved = null;
+        try { saved = JSON.parse(localStorage.getItem(DISPLAY_STORAGE_KEY)); } catch (e) { saved = null; }
+        return {
+            left: { ...fromMain, ...((saved && saved.left) || {}) },
+            right: { ...fromMain, ...((saved && saved.right) || {}) }
+        };
+    })();
+    function saveDisplayState() {
+        try { localStorage.setItem(DISPLAY_STORAGE_KEY, JSON.stringify(displayState)); } catch (e) { /* 保存できなくても表示は切り替える */ }
+    }
+
+    const grids = {};
+    function applyDisplay(side) {
+        const pane = document.querySelector(`.compare-pane[data-side="${side}"]`);
+        const s = displayState[side];
+        pane.classList.toggle('hide-plots', !s.showPlots);
+        pane.classList.toggle('hide-faces', !s.showFaces);
+        pane.classList.toggle('hide-names', !s.showNames);
+        pane.classList.toggle('hide-coords', !s.showCoords);
+        if (grids[side]) grids[side].updateGrid();
+    }
+
+    // ==========================================================
+    // 📍 拠点マップと同じ区画の枠線・顔アイコン・ネームタグ・格子線・軸線を両方の地図に表示する
+    // ==========================================================
+    [['left', mapLeft], ['right', mapRight]].forEach(([side, map]) => {
+        grids[side] = MapApp.mapGrid.create(map, { isGridVisible: () => displayState[side].showGrid });
         MapApp.plotFrames.create(map);
         MapApp.memberList.addMemberMarkers(map);
         MapApp.mapLocations.init(map);
+    });
+
+    // 「⚙ 表示項目」ボタンと設定パネル
+    document.querySelectorAll('.compare-pane[data-side]').forEach((pane) => {
+        const side = pane.dataset.side;
+        const btn = pane.querySelector('.compare-display-btn');
+        const panel = pane.querySelector('.compare-display-panel');
+        const setOpen = (open) => {
+            panel.hidden = !open;
+            btn.classList.toggle('is-open', open);
+            btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        };
+        btn.addEventListener('click', () => setOpen(panel.hidden));
+        pane.querySelector('.compare-display-close').addEventListener('click', () => setOpen(false));
+        panel.querySelectorAll('input[data-key]').forEach((input) => {
+            input.checked = !!displayState[side][input.dataset.key];
+            input.addEventListener('change', () => {
+                displayState[side][input.dataset.key] = input.checked;
+                saveDisplayState();
+                applyDisplay(side);
+            });
+        });
+        // 地図をさわったらパネルを閉じる（スマホで地図が隠れたままにならないように）
+        (side === 'left' ? mapLeft : mapRight).on('click dragstart', () => setOpen(false));
+        applyDisplay(side);
     });
 
     // ==========================================================
@@ -250,7 +432,8 @@
     }
     MapApp.zoomSlider.init({ map: mapLeft, baseline: mapLeft.getZoom() });
 
-    // 📷 スクリーンショット：左右2枚の地図を並べた1枚の画像にし、それぞれの右上に地図の名前（取得した日付）を入れる
+    // 📷 スクリーンショット：2枚の地図を画面と同じ並び（PCは左右、スマホの縦向きは上下）で1枚の画像にし、
+    //    それぞれの右上に地図の名前（取得した日付）を入れる
     MapApp.screenshot.init({
         filePrefix: '地図比較',
         getTargets: () => [
