@@ -234,7 +234,8 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "https://lit.link/haochktr",
                 "color": "#240f0f",
-                "avatarImg": "avatars/HAOgame_KtR.png"
+                "avatarImg": "avatars/HAOgame_KtR.png",
+                "order": 126
         },
         {
                 "name": "むっこさん",
@@ -402,7 +403,8 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "",
                 "color": "#ffea00",
-                "avatarImg": "avatars/taitai0904.png"
+                "avatarImg": "avatars/taitai0904.png",
+                "order": 117
         }
 ]
 };
