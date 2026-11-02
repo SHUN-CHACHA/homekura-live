@@ -65,7 +65,7 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "homepageUrl": "",
-                "color": "#00ffff",
+                "color": "#cc8f7b",
                 "avatarImg": "avatars/MrMsan.png",
                 "id2": "UCGmr1TOXPviYKW84X_r11OQ",
                 "order": 103
@@ -233,7 +233,7 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "homepageUrl": "https://lit.link/haochktr",
-                "color": "#ff3333",
+                "color": "#240f0f",
                 "avatarImg": "avatars/HAOgame_KtR.png"
         },
         {
@@ -355,7 +355,7 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "homepageUrl": "",
-                "color": "#ff9900",
+                "color": "#9bf3c5",
                 "avatarImg": "avatars/ftb28.png",
                 "order": 109
         },
@@ -385,7 +385,7 @@ window.CONFIG = {
                 "instaId": "",
                 "discordUrl": "",
                 "homepageUrl": "",
-                "color": "#ffffff",
+                "color": "#030c87",
                 "avatarImg": "avatars/MizukiYuki22.png",
                 "order": 43,
                 "group": "イリクス学園"
@@ -396,14 +396,13 @@ window.CONFIG = {
                 "minecraftId": "taitai0904",
                 "uuid": "65620d1a-889e-407f-9b0a-cfbb579f8963",
                 "twitterId": "taitaiMEN1997",
-                "twitchId": "",
+                "twitchId": "taitai19970904",
                 "tiktokId": "",
                 "instaId": "",
                 "discordUrl": "",
                 "homepageUrl": "",
-                "color": "#ffffff",
-                "avatarImg": "avatars/taitai0904.png",
-                "order": 126
+                "color": "#ffea00",
+                "avatarImg": "avatars/taitai0904.png"
         }
 ]
 };
