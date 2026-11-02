@@ -389,6 +389,21 @@ window.CONFIG = {
                 "avatarImg": "avatars/MizukiYuki22.png",
                 "order": 43,
                 "group": "イリクス学園"
+        },
+        {
+                "name": "たいたい",
+                "id": "UCds-nvoKCcvixVXJ_54QcbQ",
+                "minecraftId": "",
+                "uuid": "",
+                "twitterId": "taitaiMEN1997",
+                "twitchId": "",
+                "tiktokId": "",
+                "instaId": "",
+                "discordUrl": "",
+                "homepageUrl": "",
+                "color": "#ffffff",
+                "avatarImg": "",
+                "order": 126
         }
 ]
 };
