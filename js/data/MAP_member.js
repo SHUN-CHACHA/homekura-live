@@ -42,5 +42,5 @@ const memberData = [
     { area: "エリア22", name: "黎乃鈴", icon: "kuronosuzu.png", name2: "", icon2: "", name3: "", icon3: "" },
     { area: "エリア23", name: "珍珠花こまり", icon: "yukiyanagiKOMARI.png", name2: "", icon2: "", name3: "", icon3: "" },
     { area: "エリア24", name: "こみちん", icon: "komichin.png", name2: "", icon2: "", name3: "", icon3: "" },
-    { area: "エリア25", name: "たいたい", icon: "", name2: "", icon2: "", name3: "", icon3: "" }
+    { area: "エリア25", name: "たいたい", icon: "taitai0904.png", name2: "", icon2: "", name3: "", icon3: "" }
 ];

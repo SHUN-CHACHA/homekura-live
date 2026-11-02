@@ -393,8 +393,8 @@ window.CONFIG = {
         {
                 "name": "たいたい",
                 "id": "UCds-nvoKCcvixVXJ_54QcbQ",
-                "minecraftId": "",
-                "uuid": "",
+                "minecraftId": "taitai0904",
+                "uuid": "65620d1a-889e-407f-9b0a-cfbb579f8963",
                 "twitterId": "taitaiMEN1997",
                 "twitchId": "",
                 "tiktokId": "",
@@ -402,7 +402,7 @@ window.CONFIG = {
                 "discordUrl": "",
                 "homepageUrl": "",
                 "color": "#ffffff",
-                "avatarImg": "",
+                "avatarImg": "avatars/taitai0904.png",
                 "order": 126
         }
 ]
