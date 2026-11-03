@@ -38,10 +38,11 @@
 <body>
 <div id="sheet"></div>
 
-<script src="js/data/config.js?v=b43b3m"></script>
+<script src="js/data/config.js?v=14097o"></script>
 <script>
 (function () {
-    const channels = (window.CONFIG && CONFIG.DEFAULT_CHANNELS) ? CONFIG.DEFAULT_CHANNELS : [];
+    // 管理画面で「非公開」にしたメンバー（hidden: true）は載せない
+    const channels = ((window.CONFIG && CONFIG.DEFAULT_CHANNELS) ? CONFIG.DEFAULT_CHANNELS : []).filter(c => !c.hidden);
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const sorted = [...channels].sort((a, b) => {
         const orderA = (typeof a.order === 'number') ? a.order : Infinity;
@@ -91,7 +92,7 @@
     const today = new Date();
     document.getElementById("sheet").innerHTML = `
         <div class="pms-header">
-            <img src="img/logo.png?v=b43b3m" alt="homeクラ">
+            <img src="img/logo.png?v=14097o" alt="homeクラ">
             <h1>Season３ メンバー一覧（${sorted.length}名）</h1>
             <div class="pms-date">${today.getFullYear()}/${today.getMonth()+1}/${today.getDate()} 時点</div>
         </div>${body}`;

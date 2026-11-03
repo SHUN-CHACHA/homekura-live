@@ -208,7 +208,7 @@ function renderMemberList() {
     tbody.innerHTML = "";
 
     if (!channels.length) {
-        tbody.innerHTML = `<tr><td colspan="15" style="text-align:center; color:#8ca08a; padding:20px; font-size:13px;">まだメンバーが登録されていません。左のフォームから追加してください。</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="16" style="text-align:center; color:#8ca08a; padding:20px; font-size:13px;">まだメンバーが登録されていません。左のフォームから追加してください。</td></tr>`;
         populateChannelSelects();
         return;
     }
@@ -230,7 +230,7 @@ function renderMemberList() {
     sorted.forEach(({ ch, origIdx }) => {
         if (ch.group && ch.group.trim() !== "") {
             if (ch.group !== lastGroupLabel) {
-                tbody.innerHTML += `<tr><td colspan="15" class="member-group-heading">${ch.group}</td></tr>`;
+                tbody.innerHTML += `<tr><td colspan="16" class="member-group-heading">${ch.group}</td></tr>`;
                 lastGroupLabel = ch.group;
             }
         } else {
@@ -264,9 +264,14 @@ function renderMemberList() {
         const discordCell  = ch.discordUrl  ? `<a href="${ch.discordUrl}" target="_blank" style="font-size:12px;color:#5865f2;">リンク</a>` : "";
         const homepageCell = ch.homepageUrl ? `<a href="${ch.homepageUrl}" target="_blank" style="font-size:12px;color:var(--accent-blue);">🏠 リンク</a>` : "";
         const orderCell = (typeof ch.order === 'number') ? ch.order : `<span style="color:#94a3b8;">—</span>`;
+        // 公開・非公開はボタンでその場で切り替えられる。非公開の人は行を薄く表示する
+        const hiddenCell = ch.hidden
+            ? `<button onclick="toggleHidden(${idx})" title="クリックで公開にする" style="padding:3px 8px; font-size:11px; background:#64748b; color:#fff; border:none; border-radius:10px; cursor:pointer;">🔒 非公開</button>`
+            : `<button onclick="toggleHidden(${idx})" title="クリックで非公開にする" style="padding:3px 8px; font-size:11px; background:#16a34a; color:#fff; border:none; border-radius:10px; cursor:pointer;">公開中</button>`;
 
         tbody.innerHTML += `
-            <tr>
+            <tr${ch.hidden ? ' style="opacity:0.5;"' : ''}>
+                <td style="text-align:center;">${hiddenCell}</td>
                 <td style="text-align:center; font-size:12px; color:var(--secondary-text);">${orderCell}</td>
                 <td style="text-align:center;"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:${ch.color||'#ff9900'};border:1px solid var(--border-color);"></span></td>
                 <td style="text-align:center;">${mcHeadHtml}</td>
@@ -334,6 +339,7 @@ function editMember(idx) {
 
     document.getElementById('m_order').value = (typeof ch.order === 'number') ? ch.order : "";
     document.getElementById('m_group').value = ch.group || "";
+    document.getElementById('m_hidden').checked = !!ch.hidden;
 
     document.getElementById('memberFormContainer').className = "editing";
     document.getElementById('editNotice').style.display      = "block";
@@ -359,6 +365,7 @@ function clearForm() {
     document.getElementById('uuidManualToggleBtn').style.display = "none";
     closeUuidManual();
     updateAvatarPreview("", "");
+    document.getElementById('m_hidden').checked = false;
     document.getElementById('m_color').value      = "#ff9900";
     document.getElementById('m_color_text').value = "#FF9900";
 }
@@ -378,6 +385,7 @@ function addMember() {
     const color      = document.getElementById('m_color_text').value.trim().toLowerCase();
     const orderRaw   = document.getElementById('m_order').value.trim();
     const group      = document.getElementById('m_group').value.trim();
+    const hidden     = document.getElementById('m_hidden').checked;
 
     if (!name || !id) { alert("名前とYouTubeチャンネルIDは必須です！"); return; }
     if (!color.match(/^#[0-9a-fA-F]{6}$/)) { alert("カラーコードは #ffffff のような形式で入力してください！"); return; }
@@ -396,6 +404,10 @@ function addMember() {
     // group は入力した時だけ保存する（同じgroup名の人同士が隣接する時だけ見出しが出る仕様）
     if (group !== "") {
         memberData.group = group;
+    }
+    // hidden は非公開の時だけ保存する（無ければ公開）
+    if (hidden) {
+        memberData.hidden = true;
     }
 
     if (editIndex > -1) {
@@ -421,6 +433,17 @@ function deleteMember(idx) {
         renderMemberList();
         updateConfigOutput();
     }
+}
+
+// 一覧の「公開中／非公開」ボタンで切り替える
+function toggleHidden(idx) {
+    const ch = channels[idx];
+    if (ch.hidden) delete ch.hidden;
+    else ch.hidden = true;
+    if (editIndex === idx) document.getElementById('m_hidden').checked = !!ch.hidden;
+    localStorage.setItem('custom_channels', JSON.stringify(channels));
+    renderMemberList();
+    updateConfigOutput();
 }
 
 // ─── config.js 出力 ────────────────────────────────────
@@ -471,13 +494,14 @@ function exportMembersCSV() {
         .map(x => x.ch);
 
     const headers = [
-        "順番", "グループ", "名前", "Minecraft ID", "UUID",
+        "公開", "順番", "グループ", "名前", "Minecraft ID", "UUID",
         "YouTubeチャンネルID", "サブYouTubeチャンネルID",
         "X(Twitter)ID", "TwitchID", "TikTokID", "InstagramID",
         "Discord招待URL", "ホームページURL", "カラーコード", "アバター画像パス"
     ];
 
     const rows = sorted.map(ch => [
+        ch.hidden ? "非公開" : "公開",
         (typeof ch.order === 'number') ? ch.order : "",
         ch.group || "",
         ch.name || "",

@@ -8,15 +8,15 @@
     <link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/img/apple-touch-icon.png">
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
-    <link rel="stylesheet" href="shared/theme.css?v=b43b3m">
-    <link rel="stylesheet" href="shared/admin.css?v=b43b3m">
+    <link rel="stylesheet" href="shared/theme.css?v=14097o">
+    <link rel="stylesheet" href="shared/admin.css?v=14097o">
 </head>
 <body>
 
     <!-- ナビゲーション -->
     <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
-        <a href="index.html?v=b43b3m" class="pill-btn-light">🏠 ポータルに戻る</a>
-        <a href="features.html?v=b43b3m" class="pill-btn-light">📋 機能一覧を見る</a>
+        <a href="index.html?v=14097o" class="pill-btn-light">🏠 ポータルに戻る</a>
+        <a href="features.html?v=14097o" class="pill-btn-light">📋 機能一覧を見る</a>
     </div>
 
     <!-- 📑 セクション切り替えタブ -->
@@ -112,6 +112,13 @@
                     <label>グループ見出し（group）</label>
                     <input type="text" id="m_group" placeholder="例: ○○夫婦（同じ名前の人同士が隣接表示され、見出しが付きます）">
                 </div>
+                <div class="form-group">
+                    <label>公開・非公開</label>
+                    <label style="display:flex; align-items:center; gap:6px; font-weight:normal; cursor:pointer;">
+                        <input type="checkbox" id="m_hidden" style="width:auto; margin:0;">
+                        非公開にする（トップページの一覧・配信状況・メンバー印刷用ページに表示しません）
+                    </label>
+                </div>
 
                 <button id="saveBtn" class="btn-save" onclick="addMember()">メンバーを保存</button>
                 <button id="cancelBtn" style="display:none; margin-left:10px;" onclick="cancelEdit()">編集をキャンセル</button>
@@ -183,6 +190,7 @@
     <table class="member-table">
         <thead>
             <tr>
+                <th style="width: 70px; text-align:center;">公開</th>
                 <th style="width: 44px; text-align:center;">順番</th>
                 <th style="width: 40px; text-align:center;">カラー</th>
                 <th style="width: 44px; text-align:center;">顔</th>
@@ -484,17 +492,17 @@
     </div>
     </div><!-- /#tab-panel-mapimages -->
 
-<script src="js/data/config.js?v=b43b3m"></script>
-<script src="js/data/MAP_member.js?v=b43b3m"></script>
+<script src="js/data/config.js?v=14097o"></script>
+<script src="js/data/MAP_member.js?v=14097o"></script>
 <!-- エリア番号から座標（区画の中心）を決めるために区画データも読み込む -->
-<script src="js/data/MAP_plots.js?v=b43b3m"></script>
-<script src="js/data/MAP_locations.js?v=b43b3m"></script>
-<script src="js/map/map-config.js?v=b43b3m"></script>
-<script src="js/admin/admin-members.js?v=b43b3m"></script>
-<script src="js/admin/admin-locations.js?v=b43b3m"></script>
-<script src="js/admin/admin-places.js?v=b43b3m"></script>
-<script src="js/admin/admin-mapimages.js?v=b43b3m"></script>
-<script src="js/admin/admin-tabs.js?v=b43b3m"></script>
+<script src="js/data/MAP_plots.js?v=14097o"></script>
+<script src="js/data/MAP_locations.js?v=14097o"></script>
+<script src="js/map/map-config.js?v=14097o"></script>
+<script src="js/admin/admin-members.js?v=14097o"></script>
+<script src="js/admin/admin-locations.js?v=14097o"></script>
+<script src="js/admin/admin-places.js?v=14097o"></script>
+<script src="js/admin/admin-mapimages.js?v=14097o"></script>
+<script src="js/admin/admin-tabs.js?v=14097o"></script>
 <script>
 initAdmin();
 initLocAdmin();
