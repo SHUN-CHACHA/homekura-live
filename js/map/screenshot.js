@@ -215,20 +215,34 @@
         return `${options.filePrefix}${p(d.getMonth() + 1)}${p(d.getDate())}.png`;
     }
 
-    // 1枚の地図を、画像の中の (x, y) の位置に描く
-    async function drawMap(ctx, target, x, y) {
+    // 地図の中で、背景地図（または配置図）が見えている範囲（地図の左上が 0, 0）。
+    // 背景を消している時や、背景が画面に入っていない時は地図全体
+    function contentRect(mapEl) {
+        const base = mapEl.getBoundingClientRect();
+        const full = { x: 0, y: 0, w: base.width, h: base.height };
+        const layers = Array.from(mapEl.querySelectorAll('.leaflet-overlay-pane .leaflet-image-layer')).filter(isVisible);
+        if (!layers.length) return full;
+        const rs = layers.map((el) => relRect(el, base));
+        const x1 = Math.max(0, Math.min(...rs.map((r) => r.x)));
+        const y1 = Math.max(0, Math.min(...rs.map((r) => r.y)));
+        const x2 = Math.min(full.w, Math.max(...rs.map((r) => r.x + r.w)));
+        const y2 = Math.min(full.h, Math.max(...rs.map((r) => r.y + r.h)));
+        if (x2 - x1 < 1 || y2 - y1 < 1) return full;
+        return { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
+    }
+
+    // 1枚の地図の crop の範囲を、画像の中の (x, y) の位置に描く
+    async function drawMap(ctx, target, x, y, crop) {
         const mapEl = target.el;
         const base = mapEl.getBoundingClientRect();
-        const w = base.width;
-        const h = base.height;
         ctx.save();
-        ctx.translate(x, y);
+        ctx.translate(x - crop.x, y - crop.y);
         ctx.beginPath();
-        ctx.rect(0, 0, w, h);
+        ctx.rect(crop.x, crop.y, crop.w, crop.h);
         ctx.clip();
 
         ctx.fillStyle = getComputedStyle(mapEl).backgroundColor || '#141417';
-        ctx.fillRect(0, 0, w, h);
+        ctx.fillRect(crop.x, crop.y, crop.w, crop.h);
 
         await drawPane(ctx, mapEl.querySelector('.leaflet-overlay-pane'), base);
         await drawPane(ctx, mapEl.querySelector('.leaflet-plotFrame-pane'), base);
@@ -236,7 +250,7 @@
         drawTooltips(ctx, mapEl.querySelector('.leaflet-tooltip-pane'), base);
 
         // 右上：表示中の地図背景画像の名前（地図を取得した日付。例：10月18日）。背景を消している時は入れない
-        if (target.label) drawLabel(ctx, target.label, w - 10, 10, 'right', 13, 1);
+        if (target.label) drawLabel(ctx, target.label, crop.x + crop.w - 10, crop.y + 10, 'right', 13, 1);
         ctx.restore();
     }
 
@@ -249,14 +263,29 @@
     }
 
     // 今見えている地図を canvas に描いて PNG の Blob にする。
-    // 比較画面のように地図が2枚ある時は、画面と同じ位置関係（PCは左右、スマホの縦向きは上下）のまま1枚にする
+    // 地図の外（背景地図の無い黒い所）は写さず、背景地図が見えている範囲だけに切り抜く。
+    // 比較画面のように地図が2枚ある時は、画面と同じ位置関係（PCは左右、スマホの縦向きは上下）のまま1枚にする。
+    // 2枚は同じ場所を映しているので、どちらの地図にも背景がある範囲で同じように切り抜く
     async function capture() {
         const targets = options.getTargets().filter((t) => t.el);
         const rects = targets.map((t) => t.el.getBoundingClientRect());
-        const left = Math.min(...rects.map((r) => r.left));
-        const top = Math.min(...rects.map((r) => r.top));
-        const width = Math.round(Math.max(...rects.map((r) => r.right)) - left);
-        const height = Math.round(Math.max(...rects.map((r) => r.bottom)) - top);
+        const crop = targets.map((t) => contentRect(t.el)).reduce((a, c) => {
+            const x = Math.max(a.x, c.x), y = Math.max(a.y, c.y);
+            const r = { x, y, w: Math.min(a.x + a.w, c.x + c.w) - x, h: Math.min(a.y + a.h, c.y + c.h) - y };
+            return (r.w >= 1 && r.h >= 1) ? r : a;
+        });
+        crop.w = Math.round(crop.w);
+        crop.h = Math.round(crop.h);
+        // 地図の並び（何列目・何行目か）と、地図と地図のすき間は画面のまま
+        const gap = rects.length > 1
+            ? Math.max(0, Math.round(Math.max(rects[1].left - rects[0].right, rects[1].top - rects[0].bottom)))
+            : 0;
+        const places = rects.map((r) => ({
+            x: rects.filter((o) => o.right <= r.left + 1).length * (crop.w + gap),
+            y: rects.filter((o) => o.bottom <= r.top + 1).length * (crop.h + gap)
+        }));
+        const width = Math.max(...places.map((p) => p.x)) + crop.w;
+        const height = Math.max(...places.map((p) => p.y)) + crop.h;
         const scale = captureScale(); // 画面より細かく描いてくっきりさせる
 
         const canvas = document.createElement('canvas');
@@ -270,7 +299,7 @@
         ctx.fillRect(0, 0, width, height);
 
         for (let i = 0; i < targets.length; i++) {
-            await drawMap(ctx, targets[i], rects[i].left - left, rects[i].top - top);
+            await drawMap(ctx, targets[i], places[i].x, places[i].y, crop);
         }
 
         const margin = 10;
