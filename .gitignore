@@ -1,2 +1,5 @@
 # 公開しない自分用のツール（GitHub に上げない）
 tools/private/
+
+# 非公開メンバー（管理画面の「config.private.js の内容をコピー」で作る。GitHub に上げない）
+js/data/config.private.js

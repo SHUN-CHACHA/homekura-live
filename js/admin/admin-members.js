@@ -7,10 +7,24 @@ let currentUUID = "";
 let uuidTimer   = null;
 
 // ─── 初期化 ───────────────────────────────────────────
+// 非公開メンバー（js/data/config.private.js。GitHub に上げないファイルで、ローカルで開いた時だけ読み込まれる）
+function privateChannels() {
+    const list = window.CONFIG_PRIVATE?.CHANNELS || [];
+    return list.map(ch => ({ ...ch, hidden: true }));
+}
+
+// config.private.js にいて、まだ一覧にいない人を足す（同じ YouTube チャンネルIDの人は足さない）
+function mergePrivateChannels() {
+    privateChannels().forEach(ch => {
+        if (!channels.some(c => c.id === ch.id)) channels.push(ch);
+    });
+}
+
 function initAdmin() {
     const saved = localStorage.getItem('custom_channels');
     if (saved) { channels = JSON.parse(saved); }
     else if (window.CONFIG?.DEFAULT_CHANNELS) { channels = [...window.CONFIG.DEFAULT_CHANNELS]; }
+    mergePrivateChannels();
     renderMemberList();
     updateConfigOutput();
 }
@@ -448,7 +462,8 @@ function toggleHidden(idx) {
 
 // ─── config.js 出力 ────────────────────────────────────
 function updateConfigOutput() {
-    const formatted = channels.map(ch => {
+    // 非公開の人は config.js（GitHub に上がる）には入れず、config.private.js の方に出す
+    const formatted = channels.filter(ch => !ch.hidden).map(ch => {
         const pureMcId = cleanMcId(ch.minecraftId);
         return { ...ch, avatarImg: pureMcId ? `avatars/${pureMcId}.png` : "" };
     });
@@ -460,6 +475,32 @@ function updateConfigOutput() {
     const iconCacheDuration = cfg.CHANNEL_ICON_CACHE_DURATION_MS ?? (24 * 60 * 60 * 1000);
     document.getElementById('configOutput').value =
         `window.CONFIG = {\n    // ⚠️ APIキーはここに書きません（Cloudflare Worker側のSecretで管理）\n    YOUTUBE_API_KEY: "",\n    // YouTube APIプロキシ（Cloudflare Worker）のURL\n    YOUTUBE_PROXY_URL: "${proxyUrl}",\n    // キャッシュ有効期間（ミリ秒）。デフォルト5分。\n    CACHE_DURATION_MS: ${cacheDuration},\n    // チャンネルアイコンのキャッシュ有効期間（ミリ秒）。デフォルト24時間。\n    CHANNEL_ICON_CACHE_DURATION_MS: ${iconCacheDuration},\n    DEFAULT_CHANNELS: ${JSON.stringify(formatted, null, 8)}\n};`;
+    updatePrivateOutput();
+}
+
+function updatePrivateOutput() {
+    const hiddenList = channels.filter(ch => ch.hidden).map(ch => {
+        const pureMcId = cleanMcId(ch.minecraftId);
+        return { ...ch, avatarImg: pureMcId ? `avatars/${pureMcId}.png` : "" };
+    });
+    document.getElementById('configPrivateOutput').value =
+        `// 🔒 非公開メンバー（GitHub に上げないファイル。.gitignore で除外している）\n// 管理画面の「config.private.js の内容をコピー」で作り、丸ごと上書き保存する。ローカルで開いた管理画面だけが読み込む\nwindow.CONFIG_PRIVATE = {\n    CHANNELS: ${JSON.stringify(hiddenList, null, 8)}\n};\n`;
+
+    const status = document.getElementById('privateStatus');
+    if (status) {
+        const fileCount = window.CONFIG_PRIVATE ? (window.CONFIG_PRIVATE.CHANNELS || []).length : null;
+        status.textContent = fileCount === null
+            ? '⚠️ config.private.js は読み込まれていません（ローカル以外で開いている時は読み込みません。非公開の人はこのブラウザにだけ残っています）'
+            : `✅ config.private.js を読み込みました（ファイルの中の非公開メンバー：${fileCount}人／今の一覧の非公開メンバー：${hiddenList.length}人）`;
+        status.style.color = fileCount === null ? '#b45309' : '#065f46';
+    }
+}
+
+function exportPrivateConfig() {
+    updateConfigOutput();
+    navigator.clipboard.writeText(document.getElementById('configPrivateOutput').value)
+        .then(() => alert("js/data/config.private.js 用のコードをコピーしました！js/data/config.private.js に貼り付けて保存してください（GitHub には上がりません）。"))
+        .catch(() => { document.getElementById('configPrivateOutput').select(); alert('自動コピーに失敗しました。テキストエリアを全選択して手動でコピーしてください。'); });
 }
 
 function exportConfig() {
@@ -542,11 +583,12 @@ function reloadFromConfigJs() {
         alert("js/data/config.js が読み込めていません。ページを開き直すか、config.js の内容をご確認ください。");
         return;
     }
-    if (!confirm("このブラウザに保存されている編集中のデータは破棄され、js/data/config.js の内容に置き換わります。よろしいですか？")) {
+    if (!confirm("このブラウザに保存されている編集中のデータは破棄され、js/data/config.js（と、ローカルなら config.private.js）の内容に置き換わります。よろしいですか？")) {
         return;
     }
     localStorage.removeItem('custom_channels');
     channels = [...window.CONFIG.DEFAULT_CHANNELS];
+    mergePrivateChannels();
     cancelEdit();
     renderMemberList();
     updateConfigOutput();

@@ -8,15 +8,15 @@
     <link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/img/apple-touch-icon.png">
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
-    <link rel="stylesheet" href="shared/theme.css?v=14097o">
-    <link rel="stylesheet" href="shared/admin.css?v=14097o">
+    <link rel="stylesheet" href="shared/theme.css?v=7rey8f">
+    <link rel="stylesheet" href="shared/admin.css?v=7rey8f">
 </head>
 <body>
 
     <!-- ナビゲーション -->
     <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
-        <a href="index.html?v=14097o" class="pill-btn-light">🏠 ポータルに戻る</a>
-        <a href="features.html?v=14097o" class="pill-btn-light">📋 機能一覧を見る</a>
+        <a href="index.html?v=7rey8f" class="pill-btn-light">🏠 ポータルに戻る</a>
+        <a href="features.html?v=7rey8f" class="pill-btn-light">📋 機能一覧を見る</a>
     </div>
 
     <!-- 📑 セクション切り替えタブ -->
@@ -128,11 +128,24 @@
                 <h3>⚙️ config.js の書き換え</h3>
                 <p style="font-size: 13px; color: #5c6b5a; margin-bottom: 10px; margin-top: 0;">
                     メンバーの追加・編集が終わったら、下のボタンで最新の設定をコピーし、ローカルの <code>js/data/config.js</code> を丸ごと上書き保存してください。
+                    <b>非公開のメンバーはここには入りません</b>（下の config.private.js に入ります）。
                 </p>
                 <button type="button" class="btn-export" style="width: 100%; padding: 10px; margin-bottom: 10px; font-size: 13px;" onclick="exportConfig()">
                     📋 config.jsの内容をコピー
                 </button>
                 <textarea id="configOutput" readonly placeholder="メンバー情報を保存すると最新の設定データがここに自動同期されます"></textarea>
+
+                <h4 style="margin: 16px 0 6px; font-size: 14px;">🔒 非公開メンバー（js/data/config.private.js）</h4>
+                <p style="font-size: 12px; color: #5c6b5a; margin: 0 0 8px;">
+                    非公開のメンバーは、GitHub に上がらないファイル <code>js/data/config.private.js</code> に保存します（ソースを見られても分かりません）。
+                    ローカル（localhost）で開いた管理画面だけがこのファイルを読み込みます。
+                    公開・非公開を切り替えたら、<b>config.js と config.private.js の両方</b>を上書き保存してください。
+                </p>
+                <p id="privateStatus" style="font-size: 12px; margin: 0 0 8px;"></p>
+                <button type="button" class="btn-export" style="width: 100%; padding: 10px; margin-bottom: 10px; font-size: 13px; background: #475569;" onclick="exportPrivateConfig()">
+                    📋 config.private.jsの内容をコピー
+                </button>
+                <textarea id="configPrivateOutput" readonly placeholder="非公開のメンバーがいると、ここに config.private.js 用のデータが出ます"></textarea>
 
                 <p style="font-size: 12px; color: #5c6b5a; margin: 14px 0 6px;">
                     <b>js/data/config.js を直接手入力で編集した場合</b>は、下のボタンでこのページのデータを最新のconfig.jsに合わせ直してください（このブラウザに保存されている編集中のデータは破棄されます）。
@@ -492,17 +505,23 @@
     </div>
     </div><!-- /#tab-panel-mapimages -->
 
-<script src="js/data/config.js?v=14097o"></script>
-<script src="js/data/MAP_member.js?v=14097o"></script>
+<script src="js/data/config.js?v=7rey8f"></script>
+<script>
+// 非公開メンバー（GitHub に上げない js/data/config.private.js）。ローカルで開いた時だけ読み込む
+if (location.protocol === 'file:' || ['localhost', '127.0.0.1'].includes(location.hostname)) {
+    document.write('<script src="js/data/config.private.js?t=' + Date.now() + '"><\/script>');
+}
+</script>
+<script src="js/data/MAP_member.js?v=7rey8f"></script>
 <!-- エリア番号から座標（区画の中心）を決めるために区画データも読み込む -->
-<script src="js/data/MAP_plots.js?v=14097o"></script>
-<script src="js/data/MAP_locations.js?v=14097o"></script>
-<script src="js/map/map-config.js?v=14097o"></script>
-<script src="js/admin/admin-members.js?v=14097o"></script>
-<script src="js/admin/admin-locations.js?v=14097o"></script>
-<script src="js/admin/admin-places.js?v=14097o"></script>
-<script src="js/admin/admin-mapimages.js?v=14097o"></script>
-<script src="js/admin/admin-tabs.js?v=14097o"></script>
+<script src="js/data/MAP_plots.js?v=7rey8f"></script>
+<script src="js/data/MAP_locations.js?v=7rey8f"></script>
+<script src="js/map/map-config.js?v=7rey8f"></script>
+<script src="js/admin/admin-members.js?v=7rey8f"></script>
+<script src="js/admin/admin-locations.js?v=7rey8f"></script>
+<script src="js/admin/admin-places.js?v=7rey8f"></script>
+<script src="js/admin/admin-mapimages.js?v=7rey8f"></script>
+<script src="js/admin/admin-tabs.js?v=7rey8f"></script>
 <script>
 initAdmin();
 initLocAdmin();
