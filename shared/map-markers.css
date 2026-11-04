@@ -31,6 +31,8 @@
     white-space: nowrap;
     text-align: center;
     line-height: 1.3;
+    /* ネームタグ自身の高さの半分だけ上にずらす（Leaflet が位置決めに使う transform とは別に効く） */
+    translate: 0 -50%;
 }
 .permanent-name-label .coord-line {
     font-weight: normal;
