@@ -32,6 +32,13 @@
         return window.matchMedia('(max-width: 767px)').matches || window.matchMedia('(hover: none) and (pointer: coarse)').matches;
     }
 
+    // Android のアプリ内ブラウザ（X・LINE・Instagram などでリンクを押した時に、そのアプリの中で開く画面）か。
+    // Android の WebView は User-Agent に「; wv)」が入る
+    function isAndroidInAppBrowser() {
+        const ua = navigator.userAgent;
+        return /Android/i.test(ua) && (/; wv\)/.test(ua) || /Line\/|Instagram|FBAN|FBAV|Twitter/i.test(ua));
+    }
+
     function isVisible(el) {
         if (!el || !el.isConnected) return false;
         for (let node = el; node; node = node.parentElement) {
@@ -384,7 +391,17 @@
 
         const shareBtn = overlay.querySelector('.screenshot-share');
         const canShareFile = navigator.canShare && navigator.canShare({ files: [file] });
-        if (canShareFile) {
+        if (!canShareFile && isAndroidInAppBrowser()) {
+            // X・LINE などのアプリ内ブラウザ（Android）は、共有メニュー・ダウンロード・長押しの保存がどれも使えない。
+            // 同じページを Chrome で開き直してもらう
+            overlay.querySelector('.screenshot-hint').textContent =
+                'アプリ内のブラウザでは画像を保存できません。Chrome で開いて、もう一度「スクリーンショットを保存」を押してください';
+            shareBtn.textContent = '🌐 Chrome で開く';
+            shareBtn.addEventListener('click', () => {
+                const fallback = encodeURIComponent(location.href);
+                location.href = `intent://${location.host}${location.pathname}${location.search}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${fallback};end`;
+            });
+        } else if (canShareFile) {
             // 共有メニュー（写真に保存・X・Discord・LINE など）を開く
             shareBtn.addEventListener('click', () => {
                 navigator.share({ files: [file], title: SITE_NAME }).catch(() => {});
