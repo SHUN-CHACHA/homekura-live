@@ -393,13 +393,24 @@
         const canShareFile = navigator.canShare && navigator.canShare({ files: [file] });
         if (!canShareFile && isAndroidInAppBrowser()) {
             // X・LINE などのアプリ内ブラウザ（Android）は、共有メニュー・ダウンロード・長押しの保存がどれも使えない。
-            // 同じページを Chrome で開き直してもらう
+            // ページから Chrome を開くこと（intent:// のリンク）も X アプリでは「実行できるアプリがありません」になるので、
+            // アプリのメニューの「ブラウザで開く」を案内し、URL をコピーできるようにする
             overlay.querySelector('.screenshot-hint').textContent =
-                'アプリ内のブラウザでは画像を保存できません。Chrome で開いて、もう一度「スクリーンショットを保存」を押してください';
-            shareBtn.textContent = '🌐 Chrome で開く';
-            shareBtn.addEventListener('click', () => {
-                const fallback = encodeURIComponent(location.href);
-                location.href = `intent://${location.host}${location.pathname}${location.search}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${fallback};end`;
+                'アプリ内のブラウザでは画像を保存できません。画面右上のメニュー（⋮ や …）の「ブラウザで開く」で Chrome などで開き、もう一度「スクリーンショットを保存」を押してください。この画面をスマホのスクリーンショット（電源＋音量下）で撮ることもできます';
+            shareBtn.textContent = '🔗 URLをコピー';
+            shareBtn.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(location.href);
+                } catch (e) {
+                    // クリップボードの機能が使えない時は、昔ながらの方法でコピーする
+                    const ta = document.createElement('textarea');
+                    ta.value = location.href;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    ta.remove();
+                }
+                toast('🔗 URLをコピーしました。Chrome のアドレス欄に貼り付けて開いてください');
             });
         } else if (canShareFile) {
             // 共有メニュー（写真に保存・X・Discord・LINE など）を開く
