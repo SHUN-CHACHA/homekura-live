@@ -201,3 +201,11 @@
 }
 .screenshot-share { background: #4caf50; color: #ffffff; }
 .screenshot-close { background: #2a2a30; color: #e5ece3; border: 1px solid #44444b; }
+
+/* アプリ内ブラウザ（X など）では、画面の下にアプリのバーが重なるので、案内とボタンを画像の上にして画面の上に寄せる */
+.screenshot-overlay.screenshot-in-app { align-items: flex-start; }
+.screenshot-in-app .screenshot-hint { order: -2; font-size: 13px; color: #e5ece3; text-align: left; }
+.screenshot-in-app .screenshot-actions { order: -1; }
+.screenshot-in-app .screenshot-sheet img { max-height: 45vh; }
+/* アプリ内ブラウザでの知らせは、下のバーに隠れないよう画面の上に出す */
+.screenshot-toast.screenshot-toast-top { top: 16px; bottom: auto; z-index: 3001; }

@@ -332,9 +332,10 @@
     }
 
     // ---------- 知らせ（画面下に数秒だけ出す） ----------
-    function toast(message) {
+    // top: 画面の上に出す（アプリ内ブラウザで、下のバーに隠れないようにする）
+    function toast(message, top) {
         const el = document.createElement('div');
-        el.className = 'screenshot-toast';
+        el.className = top ? 'screenshot-toast screenshot-toast-top' : 'screenshot-toast';
         el.textContent = message;
         document.body.appendChild(el);
         setTimeout(() => el.remove(), 3500);
@@ -395,6 +396,7 @@
             // X・LINE などのアプリ内ブラウザ（Android）は、共有メニュー・ダウンロード・長押しの保存がどれも使えない。
             // ページから Chrome を開くこと（intent:// のリンク）も X アプリでは「実行できるアプリがありません」になるので、
             // アプリのメニューの「ブラウザで開く」を案内し、URL をコピーできるようにする
+            overlay.classList.add('screenshot-in-app');
             overlay.querySelector('.screenshot-hint').textContent =
                 'アプリ内のブラウザでは画像を保存できません。画面右上のメニュー（⋮ や …）の「ブラウザで開く」で Chrome などで開き、もう一度「スクリーンショットを保存」を押してください。この画面をスマホのスクリーンショット（電源＋音量下）で撮ることもできます';
             shareBtn.textContent = '🔗 URLをコピー';
@@ -410,7 +412,7 @@
                     document.execCommand('copy');
                     ta.remove();
                 }
-                toast('🔗 URLをコピーしました。Chrome のアドレス欄に貼り付けて開いてください');
+                toast('🔗 URLをコピーしました。Chrome のアドレス欄に貼り付けて開いてください', true);
             });
         } else if (canShareFile) {
             // 共有メニュー（写真に保存・X・Discord・LINE など）を開く
