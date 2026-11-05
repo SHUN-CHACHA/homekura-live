@@ -27,6 +27,42 @@ function initAdmin() {
     mergePrivateChannels();
     renderMemberList();
     updateConfigOutput();
+    checkStaleChannels();
+}
+
+// このブラウザに残っている編集データ（公開の人）と、実際の js/data/config.js を比べ、違えば上に知らせを出す。
+// config.js を直接書き換えた後に管理画面を開くと、古いデータのまま表示されてしまうのを気付けるようにする
+function checkStaleChannels() {
+    const notice = document.getElementById('staleNotice');
+    if (!notice) return;
+    const fileList = window.CONFIG?.DEFAULT_CHANNELS || [];
+    if (!localStorage.getItem('custom_channels') || !fileList.length) { notice.style.display = 'none'; return; }
+
+    // 比べる時は、項目の並び順と空欄の項目、顔アイコンのパス（書き出す時に作り直すもの）は気にしない
+    const normalize = (ch) => {
+        const o = {};
+        Object.keys(ch).sort().forEach((k) => {
+            if (k === 'avatarImg' || k === 'hidden') return;
+            if (ch[k] === '' || ch[k] === undefined || ch[k] === null) return;
+            o[k] = ch[k];
+        });
+        return JSON.stringify(o);
+    };
+    const mine = channels.filter(ch => !ch.hidden);
+    const onlyFile = fileList.filter(f => !mine.some(m => m.id === f.id)).map(f => f.name);
+    const onlyMine = mine.filter(m => !fileList.some(f => f.id === m.id)).map(m => m.name);
+    const changed = mine.filter(m => {
+        const f = fileList.find(x => x.id === m.id);
+        return f && normalize(f) !== normalize(m);
+    }).map(m => m.name);
+
+    if (!onlyFile.length && !onlyMine.length && !changed.length) { notice.style.display = 'none'; return; }
+    const lines = [];
+    if (onlyFile.length) lines.push(`config.js にいて、ここにいない人：${onlyFile.join('、')}`);
+    if (onlyMine.length) lines.push(`ここにいて、config.js にいない人：${onlyMine.join('、')}`);
+    if (changed.length) lines.push(`内容（順番・色・IDなど）が違う人：${changed.join('、')}`);
+    document.getElementById('staleDetail').innerHTML = lines.map(l => `・${l}`).join('<br>');
+    notice.style.display = 'block';
 }
 
 // ─── カラー同期 ────────────────────────────────────────
@@ -592,5 +628,6 @@ function reloadFromConfigJs() {
     cancelEdit();
     renderMemberList();
     updateConfigOutput();
+    checkStaleChannels();
     alert("js/data/config.js の内容を読み込み直しました！");
 }
