@@ -4,6 +4,7 @@
 # 使い方：js/data/config.js のメンバーを変更したあと、PowerShellで次を実行
 #   powershell -ExecutionPolicy Bypass -File scripts\make-members-pdf.ps1
 # できあがった members.pdf をコミット・プッシュすると、トップページの「PDF」ボタンに反映されます。
+# ※ js/data/config.js をコミットする時は、scripts/git-hooks/pre-commit が自動で実行してコミットに含めます。
 # ==========================================================
 $ErrorActionPreference = 'Stop'
 
