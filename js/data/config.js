@@ -420,6 +420,21 @@ window.CONFIG = {
                 "color": "#a12730",
                 "avatarImg": "avatars/KamikadoAgari.png",
                 "order": 127
+        },
+        {
+                "name": "末吉かき",
+                "id": "UCjQr49diwFaQaFviJWb0m-g",
+                "minecraftId": "Kaki_Sueyoshi",
+                "uuid": "cd428efe-f69a-4d30-8d93-2c8ecd2d174f",
+                "twitterId": "Kaki_Sueyoshi",
+                "twitchId": "kakisueyoshi",
+                "tiktokId": "",
+                "instaId": "",
+                "discordUrl": "",
+                "homepageUrl": "",
+                "color": "#6a45b8",
+                "avatarImg": "avatars/Kaki_Sueyoshi.png",
+                "order": 128
         }
 ]
 };
