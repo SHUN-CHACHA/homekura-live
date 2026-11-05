@@ -26,6 +26,7 @@ window.CONFIG = {
         },
         {
                 "name": "じゃじゃーん菊池",
+                "kana": "じゃじゃーん きくち",
                 "id": "UCi2kiw8hMo0vMAh5lXiafug",
                 "minecraftId": "jajaankikuchi",
                 "uuid": "563bd621-fd52-4a24-946d-aa8d199d3ecc",
@@ -88,6 +89,7 @@ window.CONFIG = {
         },
         {
                 "name": "神近",
+                "kana": "かみちか",
                 "id": "UCdLe2q91fJkN9GEyDvItp-w",
                 "minecraftId": "kamichika",
                 "uuid": "f06cbdea-3f49-48ec-a9ca-39beade0e990",
@@ -118,6 +120,7 @@ window.CONFIG = {
         },
         {
                 "name": "神宮寺",
+                "kana": "じんぐうじ",
                 "id": "UCou8IVB8jJPk56H0farYQdA",
                 "minecraftId": "jingujich",
                 "uuid": "9944cd57-19b4-4516-a232-48a6b6ec9f25",
@@ -193,6 +196,7 @@ window.CONFIG = {
         },
         {
                 "name": "久那式リン",
+                "kana": "くなしき りん",
                 "id": "UCPs7s2VlkwVWWpjcyjviINA",
                 "minecraftId": "Kunashiki_Lin",
                 "uuid": "445a1617-cc6f-49b0-be6d-a102c5dcdf33",
@@ -209,6 +213,7 @@ window.CONFIG = {
         },
         {
                 "name": "珍珠花こまり",
+                "kana": "ゆきやなぎ こまり",
                 "id": "UCSLCZ5uhCYUMQ9TG9Cs1ERQ",
                 "minecraftId": "yukiyanagiKOMARI",
                 "uuid": "eab1fd9e-92b4-4594-86b0-5c4b6f00c520",
@@ -270,6 +275,7 @@ window.CONFIG = {
         },
         {
                 "name": "鶴太郎",
+                "kana": "つるたろう",
                 "id": "UC44DZLHQJOW-of5m5XZunLQ",
                 "minecraftId": "turu0004",
                 "uuid": "ffe0bac5-b1d5-42e8-9f74-6e7ba8668fdc",
@@ -300,6 +306,7 @@ window.CONFIG = {
         },
         {
                 "name": "久遠星那",
+                "kana": "くおん せな",
                 "id": "UC-jJgNH2jX-I6eyXoOuLfAg",
                 "minecraftId": "kuon_irix",
                 "uuid": "1d1a367d-27ef-4ca0-b5b0-c202fe0f6761",
@@ -316,6 +323,7 @@ window.CONFIG = {
         },
         {
                 "name": "早乙女燈真",
+                "kana": "さおとめ とうま",
                 "id": "UCGSNOUcXKZ5IFYJLycyHR2A",
                 "minecraftId": "Saotome_UUUM",
                 "uuid": "b039c461-602b-42f0-9283-ac9e35083ad0",
@@ -332,6 +340,7 @@ window.CONFIG = {
         },
         {
                 "name": "黎乃鈴",
+                "kana": "くろの すず",
                 "id": "UCvq_7I63tALUzJJvFOrjHPg",
                 "minecraftId": "kuronosuzu",
                 "uuid": "200306b6-40e3-4b30-9b44-d5aa0d1c2b8f",
@@ -377,6 +386,7 @@ window.CONFIG = {
         },
         {
                 "name": "瑞木ゆき",
+                "kana": "みずき ゆき",
                 "id": "UCdQ7Ik70o_c0Gsg0ZQ9C-eA",
                 "minecraftId": "MizukiYuki22",
                 "uuid": "bb3fd173-f4df-4f4c-9e4b-8c8951bd8e60",
@@ -408,6 +418,7 @@ window.CONFIG = {
         },
         {
                 "name": "神圭アガリ",
+                "kana": "かみかど あがり",
                 "id": "UCegAfLg7wlJk_K6VCIa3iXg",
                 "minecraftId": "KamikadoAgari",
                 "uuid": "a9859dbe-a8e3-4210-8a7b-feaddf48489f",
@@ -423,6 +434,7 @@ window.CONFIG = {
         },
         {
                 "name": "末吉かき",
+                "kana": "すえよし かき",
                 "id": "UCjQr49diwFaQaFviJWb0m-g",
                 "minecraftId": "Kaki_Sueyoshi",
                 "uuid": "cd428efe-f69a-4d30-8d93-2c8ecd2d174f",

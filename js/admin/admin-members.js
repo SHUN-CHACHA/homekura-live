@@ -349,6 +349,7 @@ function editMember(idx) {
     const ch = channels[idx];
 
     document.getElementById('m_name').value = ch.name || "";
+    document.getElementById('m_kana').value = ch.kana || "";
     document.getElementById('m_id').value   = ch.id   || "";
     document.getElementById('m_id2').value  = ch.id2  || "";
 
@@ -409,7 +410,7 @@ function cancelEdit() {
 }
 
 function clearForm() {
-    ['m_name','m_id','m_id2','m_mc','m_x','m_tw','m_tt','m_inst','m_discord','m_homepage','m_order','m_group'].forEach(id => document.getElementById(id).value = "");
+    ['m_name','m_kana','m_id','m_id2','m_mc','m_x','m_tw','m_tt','m_inst','m_discord','m_homepage','m_order','m_group'].forEach(id => document.getElementById(id).value = "");
     currentUUID = "";
     resetUuidUI();
     document.getElementById('uuidManualToggleBtn').style.display = "none";
@@ -423,6 +424,7 @@ function clearForm() {
 // ─── 保存・削除 ────────────────────────────────────────
 function addMember() {
     const name       = document.getElementById('m_name').value.trim();
+    const kana       = document.getElementById('m_kana').value.trim();
     const id         = document.getElementById('m_id').value.trim();
     const id2        = document.getElementById('m_id2').value.trim();
     const minecraftId = cleanMcId(document.getElementById('m_mc').value);
@@ -443,6 +445,10 @@ function addMember() {
     const pureMcId = cleanMcId(minecraftId);
     const memberData = { name, id, minecraftId, uuid: currentUUID, twitterId, twitchId, tiktokId, instaId, discordUrl, homepageUrl, color, avatarImg: pureMcId ? `avatars/${pureMcId}.png` : "" };
 
+    // よみがなは入力した時だけ保存する（トップページの配信の枠で、名前の上に小さく出る）
+    if (kana !== "") {
+        memberData.kana = kana;
+    }
     // サブチャンネルは入力した時だけ保存する（配信中・予約・新着の判定にも反映される）
     if (id2 !== "") {
         memberData.id2 = id2;
@@ -571,7 +577,7 @@ function exportMembersCSV() {
         .map(x => x.ch);
 
     const headers = [
-        "公開", "順番", "グループ", "名前", "Minecraft ID", "UUID",
+        "公開", "順番", "グループ", "名前", "よみがな", "Minecraft ID", "UUID",
         "YouTubeチャンネルID", "サブYouTubeチャンネルID",
         "X(Twitter)ID", "TwitchID", "TikTokID", "InstagramID",
         "Discord招待URL", "ホームページURL", "カラーコード", "アバター画像パス"
@@ -582,6 +588,7 @@ function exportMembersCSV() {
         (typeof ch.order === 'number') ? ch.order : "",
         ch.group || "",
         ch.name || "",
+        ch.kana || "",
         ch.minecraftId || "",
         ch.uuid || "",
         ch.id || "",

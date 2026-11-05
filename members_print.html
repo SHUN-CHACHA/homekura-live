@@ -30,6 +30,8 @@
         .pms-card { display: flex; gap: 8px; align-items: flex-start; border: 1px solid #ccc; border-left-width: 5px; border-radius: 6px; padding: 6px; break-inside: avoid; }
         .pms-card img { width: 36px; height: 36px; image-rendering: pixelated; flex-shrink: 0; }
         .pms-name { font-size: 12px; font-weight: bold; margin-bottom: 2px; }
+        /* よみがな（ルビ）。名前の上に小さく乗せる */
+        .pms-name rt { font-size: 0.6em; font-weight: normal; color: #777; }
         .pms-links { line-height: 1.5; word-break: break-all; }
         .pms-links a { color: #1a4d8f; text-decoration: none; }
         .pms-links b { display: inline-block; min-width: 58px; color: #555; font-weight: normal; }
@@ -38,7 +40,7 @@
 <body>
 <div id="sheet"></div>
 
-<script src="js/data/config.js?v=wiodxh"></script>
+<script src="js/data/config.js?v=3qf7ng"></script>
 <script>
 (function () {
     // 管理画面で「非公開」にしたメンバー（hidden: true）は載せない
@@ -70,7 +72,7 @@
         if (ch.homepageUrl) links += link('HP', ch.homepageUrl, ch.homepageUrl.replace(/^https?:\/\//, ''));
         return `<div class="pms-card" style="border-left-color:${esc(ch.color || '#ccc')}">
             <img src="${esc(img)}" alt="" onerror="this.onerror=null; this.src='avatars/fallback.svg';">
-            <div><div class="pms-name">${esc(ch.name)}</div><div class="pms-links">${links}</div></div>
+            <div><div class="pms-name">${ch.kana ? `<ruby>${esc(ch.name)}<rt>${esc(ch.kana)}</rt></ruby>` : esc(ch.name)}</div><div class="pms-links">${links}</div></div>
         </div>`;
     };
 
@@ -92,7 +94,7 @@
     const today = new Date();
     document.getElementById("sheet").innerHTML = `
         <div class="pms-header">
-            <img src="img/logo.png?v=wiodxh" alt="homeクラ">
+            <img src="img/logo.png?v=3qf7ng" alt="homeクラ">
             <h1>Season３ メンバー一覧（${sorted.length}名）</h1>
             <div class="pms-date">${today.getFullYear()}/${today.getMonth()+1}/${today.getDate()} 時点</div>
         </div>${body}`;
