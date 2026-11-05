@@ -26,7 +26,6 @@ window.CONFIG = {
         },
         {
                 "name": "じゃじゃーん菊池",
-                "kana": "じゃじゃーん きくち",
                 "id": "UCi2kiw8hMo0vMAh5lXiafug",
                 "minecraftId": "jajaankikuchi",
                 "uuid": "563bd621-fd52-4a24-946d-aa8d199d3ecc",
@@ -89,7 +88,6 @@ window.CONFIG = {
         },
         {
                 "name": "神近",
-                "kana": "かみちか",
                 "id": "UCdLe2q91fJkN9GEyDvItp-w",
                 "minecraftId": "kamichika",
                 "uuid": "f06cbdea-3f49-48ec-a9ca-39beade0e990",
@@ -120,7 +118,6 @@ window.CONFIG = {
         },
         {
                 "name": "神宮寺",
-                "kana": "じんぐうじ",
                 "id": "UCou8IVB8jJPk56H0farYQdA",
                 "minecraftId": "jingujich",
                 "uuid": "9944cd57-19b4-4516-a232-48a6b6ec9f25",
@@ -275,7 +272,6 @@ window.CONFIG = {
         },
         {
                 "name": "鶴太郎",
-                "kana": "つるたろう",
                 "id": "UC44DZLHQJOW-of5m5XZunLQ",
                 "minecraftId": "turu0004",
                 "uuid": "ffe0bac5-b1d5-42e8-9f74-6e7ba8668fdc",
