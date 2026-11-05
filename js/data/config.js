@@ -405,6 +405,21 @@ window.CONFIG = {
                 "color": "#ffea00",
                 "avatarImg": "avatars/taitai0904.png",
                 "order": 117
+        },
+        {
+                "name": "神圭アガリ",
+                "id": "UCegAfLg7wlJk_K6VCIa3iXg",
+                "minecraftId": "KamikadoAgari",
+                "uuid": "a9859dbe-a8e3-4210-8a7b-feaddf48489f",
+                "twitterId": "r_kamikado_0808",
+                "twitchId": "kamikadoagari",
+                "tiktokId": "",
+                "instaId": "",
+                "discordUrl": "",
+                "homepageUrl": "",
+                "color": "#a12730",
+                "avatarImg": "avatars/KamikadoAgari.png",
+                "order": 127
         }
 ]
 };
