@@ -30,6 +30,7 @@ const memberData = [
     { area: "エリア09", name: "さかいさんだー", icon: "Sakai_Thunder.png", name2: "", icon2: "", name3: "", icon3: "" },
     { area: "エリア10", name: "メッス", icon: "messu009.png", name2: "", icon2: "", name3: "", icon3: "" },
     { area: "エリア11", name: "LeftLily", icon: "LeftLily0427.png", name2: "", icon2: "", name3: "", icon3: "" },
+    { area: "エリア12", name: "神圭アガリ", icon: "KamikadoAgari.png", name2: "", icon2: "", name3: "", icon3: "" },
     { area: "エリア13", name: "まぐにぃ", icon: "maguro29.png", name2: "", icon2: "", name3: "", icon3: "" },
     { area: "エリア14", name: "ナナホシナナ", icon: "nanahoshiNanaVT.png", name2: "", icon2: "", name3: "", icon3: "" },
     { area: "エリア15", name: "Ｍさん", icon: "MrMsan.png", name2: "", icon2: "", name3: "", icon3: "" },
@@ -43,5 +44,6 @@ const memberData = [
     { area: "エリア23", name: "珍珠花こまり", icon: "yukiyanagiKOMARI.png", name2: "", icon2: "", name3: "", icon3: "" },
     { area: "エリア24", name: "こみちん", icon: "komichin.png", name2: "", icon2: "", name3: "", icon3: "" },
     { area: "エリア25", name: "たいたい", icon: "taitai0904.png", name2: "", icon2: "", name3: "", icon3: "" },
+    { area: "エリア26", name: "末吉かき", icon: "Kaki_Sueyoshi.png", name2: "", icon2: "", name3: "", icon3: "" },
     { area: "エリア27", name: "UDON", icon: "UDON_130.png", name2: "", icon2: "", name3: "", icon3: "" }
 ];
