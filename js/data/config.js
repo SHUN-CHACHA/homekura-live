@@ -378,6 +378,7 @@ window.CONFIG = {
                 "homepageUrl": "",
                 "color": "#ffea00",
                 "avatarImg": "avatars/UDON_130.png",
+                "id2": "UCUftwHdRWO-ckevvKd7P4bQ",
                 "order": 110
         },
         {
