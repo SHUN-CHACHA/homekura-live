@@ -10,7 +10,7 @@
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
 
-    <link rel="stylesheet" href="shared/theme.css?v=70r8m6">
+    <link rel="stylesheet" href="shared/theme.css?v=q0undi">
 
     <style>
         body {
@@ -565,8 +565,8 @@
 
 <div class="banner-container">
     <div class="header-logo-wrap">
-        <img src="img/logo.png?v=70r8m6" alt="homeクラ" class="header-logo">
-        <img src="img/season3-text.png?v=70r8m6" alt="Season３" class="header-season">
+        <img src="img/logo.png?v=q0undi" alt="homeクラ" class="header-logo">
+        <img src="img/season3-text.png?v=q0undi" alt="Season３" class="header-season">
     </div>
 </div>
 
@@ -576,13 +576,13 @@
 
 <div class="top-buttons-wrapper">
     <a href="https://charagp.full-comi.jp/event/lp/84?chara_event_id=7" class="yurugp-btn" target="_blank" title="世界ご当地キャラ グランプリ">
-        <img src="img/charagp-icon.jpg?v=70r8m6" alt="世界ご当地キャラ グランプリ">
+        <img src="img/charagp-icon.jpg?v=q0undi" alt="世界ご当地キャラ グランプリ">
     </a>
     <a href="https://github.com/SHUN-CHACHA/minecraft-tools/tree/main" class="yurugp-btn github-btn" target="_blank" title="旬茶オリジナルMInecraft Tools">
-        <img src="img/github-icon.png?v=70r8m6" alt="旬茶オリジナルMInecraft Tools">
+        <img src="img/github-icon.png?v=q0undi" alt="旬茶オリジナルMInecraft Tools">
     </a>
     <a href="https://modrinth.com/user/SHUNCHA" class="yurugp-btn modrinth-btn" target="_blank" title="Modrinth">
-        <img src="img/modrinth-icon.png?v=70r8m6" alt="Modrinth">
+        <img src="img/modrinth-icon.png?v=q0undi" alt="Modrinth">
     </a>
     <div class="top-buttons-stack">
         <div class="external-links-container">
@@ -599,7 +599,7 @@
         <div class="header-controls">
             <div class="controls-left">
                 <a href="https://shun-chacha.github.io/homekura-live/roulette.html" class="roulette-btn" target="_blank">
-                    <img src="img/roulette-icon.png?v=70r8m6" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
+                    <img src="img/roulette-icon.png?v=q0undi" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
                     旬茶作 ルーレット
                 </a>
             </div>
@@ -625,8 +625,8 @@
 </div>
 
 <div class="map-link-container">
-    <a href="minecraft_map.html?v=70r8m6" target="_blank" class="map-link-btn">homeクラ Season3 メンバー拠点マップ</a>
-    <a href="season2/index.html?v=70r8m6" class="map-link-btn" style="opacity:0.75;">📁 Season2（過去シーズン）はこちら</a>
+    <a href="minecraft_map.html?v=q0undi" target="_blank" class="map-link-btn">homeクラ Season3 メンバー拠点マップ</a>
+    <a href="season2/index.html?v=q0undi" class="map-link-btn" style="opacity:0.75;">📁 Season2（過去シーズン）はこちら</a>
 </div>
 
 <div class="main-wrapper">
@@ -657,14 +657,14 @@
 
     <div class="section-box" id="member">
         <div class="section-title">👥 メンバー一覧
-            <a href="members.pdf?v=70r8m6" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
+            <a href="members.pdf?v=q0undi" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
         </div>
         <div id="allList" class="list-container"></div>
     </div>
 </div>
 
-<script src="js/data/config.js?v=70r8m6"></script>
-<script src="js/stats-owner.js?v=70r8m6"></script>
+<script src="js/data/config.js?v=q0undi"></script>
+<script src="js/stats-owner.js?v=q0undi"></script>
 
 <!-- 🧊 3Dスキンビューアー用ライブラリ（ESM配信のみのためmoduleで読み込みwindowに公開） -->
 <script type="module">
@@ -680,7 +680,7 @@ const PROXY_URL = (window.CONFIG?.YOUTUBE_PROXY_URL || '').replace(/\/$/, '');
 const CACHE_DURATION_MS         = window.CONFIG?.CACHE_DURATION_MS          ?? (5  * 60 * 1000);
 const CHANNEL_ICON_CACHE_DURATION_MS = window.CONFIG?.CHANNEL_ICON_CACHE_DURATION_MS ?? (24 * 60 * 60 * 1000);
 // 画像のキャッシュ対策用バージョン番号（コミット時に scripts/bump-asset-version.ps1 が自動更新する）
-const ASSET_VERSION = '70r8m6';
+const ASSET_VERSION = 'q0undi';
 let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 let timeLeft = 600;
@@ -874,12 +874,13 @@ async function loadPortal(forceRefresh = false, src = 'load') {
     }
 }
 
-// 動画のタイトル・概要欄に「#homeクラ」のハッシュタグがあるか（#homeクラ合衆国 なども対象。全角＃・大文字も可）
-// ※ 「#」なしの「homeクラ」は数えない（チャンネル紹介文の定型文に書いている人がいるため）
+// homeクラの配信か：タイトルに「homeクラ」がある（#の有無は問わない）、または概要欄に「#homeクラ」のハッシュタグがある
+// （#homeクラ合衆国 なども対象。全角＃・大文字も可）
+// ※ 概要欄の「#」なしの「homeクラ」は数えない（チャンネル紹介文の定型文に書いている人がいるため）
 function isHomekuraVideo(v) {
     const sn = v?.snippet || {};
-    const text = [sn.title, sn.description].join(' ').normalize('NFKC').toLowerCase();
-    return text.includes('#homeクラ');
+    const norm = t => (t || '').normalize('NFKC').toLowerCase();
+    return norm(sn.title).includes('homeクラ') || norm(sn.description).includes('#homeクラ');
 }
 
 function renderGrids(chInfoMap, vItems) {
@@ -980,7 +981,7 @@ function renderGrids(chInfoMap, vItems) {
                 </div>
             </div>`;
 
-            // タイトル・概要欄に「#homeクラ」のハッシュタグがあれば「homeクラ LIVE中」へ
+            // homeクラの配信（isHomekuraVideo）なら「homeクラ LIVE中」へ
             if (isLive && isHomekuraVideo(lastV)) { htmls.homekuraLive += card; counts.homekuraLive++; }
             else if (isLive) { htmls.live += card; counts.live++; }
             else if (isUpcoming) { htmls.upcoming += card; counts.upcoming++; }
