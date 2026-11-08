@@ -101,15 +101,17 @@
         return node;
     }
 
-    // エリア番号（数字）から、そのエリアに入っているメンバーの行を探す
-    function findMember(areaNo) {
-        return memberData.find((m) => {
+    // エリア番号（数字）から、そのエリアに入っているメンバーの行を探す（members：配置。席替え前などの割り当て）
+    function findMember(areaNo, members) {
+        return members.find((m) => {
             const match = String(m.area || '').trim().match(/^(?:エリア)?\s*(\d+)$/);
             return match && Number(match[1]) === areaNo && m.name && m.name.trim() !== '';
         });
     }
 
-    function buildSvg() {
+    // members を省略すると今の割り当て（memberData）で描く
+    function buildSvg(members) {
+        members = members || memberData;
         const [[minX, minZ], [maxX, maxZ]] = getBounds();
         const svg = el('svg', {
             xmlns: SVG_NS,
@@ -135,7 +137,7 @@
 
             // 名前を書くのは顔アイコンを置けるエリア（エリア番号のある区画）だけ
             if (!plot.area) return;
-            const member = findMember(plot.area);
+            const member = findMember(plot.area, members);
             const centerX = x + w / 2;
             const centerZ = z + h / 2;
 
@@ -168,10 +170,10 @@
         return svg;
     }
 
-    // 地図に重ねる配置図のレイヤーを作る（呼ぶたびに最新のメンバーで描き直す）
-    function createOverlay() {
+    // 地図に重ねる配置図のレイヤーを作る（呼ぶたびに最新のメンバーで描き直す。members で席替え前などの割り当てを指定できる）
+    function createOverlay(members) {
         const bounds = window.MapApp.mapConfig.toLeafletBounds(getBounds());
-        return L.svgOverlay(buildSvg(), bounds, { interactive: false, className: 'layout-diagram' });
+        return L.svgOverlay(buildSvg(members), bounds, { interactive: false, className: 'layout-diagram' });
     }
 
     window.MapApp.layoutDiagram = { getBounds, buildSvg, createOverlay };

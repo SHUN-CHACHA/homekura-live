@@ -67,9 +67,12 @@ function getAreaCenter(area) {
 }
 
 // MAP_member.js の各行の座標を、エリア番号の区画の中心に合わせる（エリア番号のない行は書いてある x, z のまま）
-if (typeof memberData !== 'undefined') {
-    memberData.forEach((member) => {
+// 配置の履歴（MAP_member_history.js。席替え前など）を読み込んでいるページでは、その行も同じように合わせる
+function applyAreaCenters(members) {
+    members.forEach((member) => {
         const center = getAreaCenter(member.area);
         if (center) { member.x = center.x; member.z = center.z; }
     });
 }
+if (typeof memberData !== 'undefined') applyAreaCenters(memberData);
+if (typeof memberLayoutHistory !== 'undefined') memberLayoutHistory.forEach((layout) => applyAreaCenters(layout.members));

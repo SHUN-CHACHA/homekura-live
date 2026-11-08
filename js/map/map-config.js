@@ -51,9 +51,10 @@
     }
 
     // 選んだ地図のレイヤーを作る。配置図の時は、地図の上の区画の枠線・顔アイコン・ネームタグを隠す（配置図に名前が書いてあるため）
-    function createOverlay(entry, targetMap) {
+    // members：配置図に書く割り当て（地図の比較ページで席替え前などを選んだ時。省略すると今の割り当て）
+    function createOverlay(entry, targetMap, members) {
         targetMap.getContainer().classList.toggle('layout-mode', !!entry.layout);
-        if (entry.layout) return window.MapApp.layoutDiagram.createOverlay();
+        if (entry.layout) return window.MapApp.layoutDiagram.createOverlay(members);
         const overlay = L.imageOverlay(entry.fileName, toLeafletBounds(entry.bounds), {
             opacity: entry.opacity,
             interactive: false // 画像がクリック操作を遮らないようにする

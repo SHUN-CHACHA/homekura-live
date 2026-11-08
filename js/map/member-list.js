@@ -95,11 +95,19 @@
         });
     }
 
+    // 配置の一覧：[{ label, members }]。先頭が今の割り当て（MAP_member.js）、続いて MAP_member_history.js の前の割り当て（席替え前など）
+    function getLayouts() {
+        const current = { label: (typeof memberLayoutCurrentLabel !== 'undefined') ? memberLayoutCurrentLabel : '現在', members: memberData };
+        const history = (typeof memberLayoutHistory !== 'undefined') ? memberLayoutHistory : [];
+        return [current, ...history];
+    }
+
     // 登録済みメンバーの顔アイコン＋ネームタグを地図に置く（拠点マップ・地図の比較画面で共通）
+    // members を渡すとその割り当て（席替え前など）で置く。省略すると今の割り当て（memberData）
     // 戻り値：メンバー名 -> マーカー
-    function addMemberMarkers(targetMap) {
+    function addMemberMarkers(targetMap, members) {
         const placed = {};
-        memberData.forEach((member) => {
+        (members || memberData).forEach((member) => {
             // 未登録（名前が空欄）のメンバーは地図にも一覧にも表示しない
             if (!member.name || member.name.trim() === "") return;
 
@@ -119,9 +127,13 @@
             placed[member.name] = marker;
         });
 
-        const list = Object.values(placed);
-        updateFaceSize(targetMap, list);
-        targetMap.on('zoom zoomend', () => updateFaceSize(targetMap, list));
+        // 置き直した時（配置の切り替え）は、前のマーカーの分は数えず、今のマーカーだけを大きさ合わせの対象にする
+        targetMap._faceMarkers = Object.values(placed);
+        updateFaceSize(targetMap, targetMap._faceMarkers);
+        if (!targetMap._faceSizeHooked) {
+            targetMap._faceSizeHooked = true;
+            targetMap.on('zoom zoomend', () => updateFaceSize(targetMap, targetMap._faceMarkers));
+        }
         return placed;
     }
 
@@ -203,6 +215,7 @@
         markers,
         memberData: () => memberData,
         addMemberMarkers,
+        getLayouts,
         focusOnBase
     };
 })();

@@ -12,25 +12,26 @@
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="shared/theme.css?v=ajiayj">
+    <link rel="stylesheet" href="shared/theme.css?v=lpkei9">
     <!-- 🗺️ 顔アイコン・ネームタグは拠点マップと共通のスタイルを使う -->
-    <link rel="stylesheet" href="shared/map-markers.css?v=ajiayj">
+    <link rel="stylesheet" href="shared/map-markers.css?v=lpkei9">
 
     <!-- 📊 地図画像の一覧（mapImageList）は minecraft_map.html と共通のものを使う -->
-    <script src="js/map/map-config.js?v=ajiayj"></script>
-    <script src="js/map/layout-diagram.js?v=ajiayj"></script>
+    <script src="js/map/map-config.js?v=lpkei9"></script>
+    <script src="js/map/layout-diagram.js?v=lpkei9"></script>
     <!-- 📍 メンバー・「場所」（メンバーではない目印）のデータ -->
-    <script src="js/data/MAP_member.js?v=ajiayj"></script>
-    <script src="js/data/MAP_locations.js?v=ajiayj"></script>
-    <script src="js/data/MAP_plots.js?v=ajiayj"></script>
+    <script src="js/data/MAP_member.js?v=lpkei9"></script>
+    <script src="js/data/MAP_member_history.js?v=lpkei9"></script>
+    <script src="js/data/MAP_locations.js?v=lpkei9"></script>
+    <script src="js/data/MAP_plots.js?v=lpkei9"></script>
     <!-- 🧩 拠点マップと共通のコンポーネント（表示項目の設定・格子線・顔アイコン・ズームスライダー） -->
-    <script src="js/map/color-customizer.js?v=ajiayj"></script>
-    <script src="js/map/map-grid.js?v=ajiayj"></script>
-    <script src="js/map/member-list.js?v=ajiayj"></script>
-    <script src="js/map/location-list.js?v=ajiayj"></script>
-    <script src="js/map/plot-frames.js?v=ajiayj"></script>
-    <script src="js/map/zoom-slider.js?v=ajiayj"></script>
-    <script src="js/map/screenshot.js?v=ajiayj"></script>
+    <script src="js/map/color-customizer.js?v=lpkei9"></script>
+    <script src="js/map/map-grid.js?v=lpkei9"></script>
+    <script src="js/map/member-list.js?v=lpkei9"></script>
+    <script src="js/map/location-list.js?v=lpkei9"></script>
+    <script src="js/map/plot-frames.js?v=lpkei9"></script>
+    <script src="js/map/zoom-slider.js?v=lpkei9"></script>
+    <script src="js/map/screenshot.js?v=lpkei9"></script>
 
     <style>
         html, body {
@@ -133,6 +134,11 @@
             max-width: 60%;
         }
         .compare-select:focus { outline: none; border-color: #7ee787; }
+        /* 「配置」の選択欄（席替え前・後など。js/data/MAP_member_history.js に前の割り当てがある時だけ出す）。地図の選択欄と並ぶので幅を分け合い、枠の色で見分ける */
+        .compare-layout-select { border-color: #f0a030; }
+        .compare-layout-select:focus { border-color: #ffc870; }
+        .compare-layout-select[hidden] { display: none; }
+        .compare-tools.has-layout .compare-select { max-width: 38%; }
         .compare-display-btn {
             background: rgba(26, 26, 31, 0.92);
             color: #e5e5e5;
@@ -232,7 +238,7 @@
 <body>
 
 <div id="top-bar">
-    <a href="minecraft_map.html?v=ajiayj" class="pill-btn-light">🏠 拠点マップに戻る</a>
+    <a href="minecraft_map.html?v=lpkei9" class="pill-btn-light">🏠 拠点マップに戻る</a>
     <div id="zoom-slider-wrap">
         <span id="zoom-slider-label">1.0×</span>
         <input type="range" id="zoom-slider" min="-4.5" max="2.08496" step="0.001" value="0">
@@ -244,7 +250,8 @@
 <div id="compare-wrap">
     <div class="compare-pane compare-display" data-side="left">
         <div class="compare-tools">
-            <select id="select-left" class="compare-select"></select>
+            <select id="select-left" class="compare-select" title="背景の地図"></select>
+            <select id="layout-left" class="compare-select compare-layout-select" title="メンバーの配置（席替え前・後など）" hidden></select>
             <button type="button" class="compare-display-btn" aria-expanded="false">⚙ 表示項目</button>
         </div>
         <div class="compare-display-panel" hidden>
@@ -261,7 +268,8 @@
     </div>
     <div class="compare-pane compare-display" data-side="right">
         <div class="compare-tools">
-            <select id="select-right" class="compare-select"></select>
+            <select id="select-right" class="compare-select" title="背景の地図"></select>
+            <select id="layout-right" class="compare-select compare-layout-select" title="メンバーの配置（席替え前・後など）" hidden></select>
             <button type="button" class="compare-display-btn" aria-expanded="false">⚙ 表示項目</button>
         </div>
         <div class="compare-display-panel" hidden>
@@ -314,7 +322,16 @@
         selectEl.value = defaultIndex;
     }
 
-    function makeOverlayController(map) {
+    // ==========================================================
+    // 🔄 メンバーの配置（席替え前・後など）。先頭が今の割り当て（MAP_member.js）、続いて MAP_member_history.js の前の割り当て
+    //     左右それぞれで選べる。前の割り当てがある時は、最初は左＝今の割り当て、右＝1つ前の割り当て（同じ地図）で開く
+    // ==========================================================
+    const layouts = MapApp.memberList.getLayouts();
+    const hasLayoutHistory = layouts.length > 1;
+    const layoutIndex = { left: 0, right: hasLayoutHistory ? 1 : 0 };
+    const membersOf = (side) => (layouts[layoutIndex[side]] || layouts[0]).members;
+
+    function makeOverlayController(map, side) {
         let overlay = null;
         return function setImage(index) {
             if (overlay) {
@@ -323,20 +340,21 @@
             }
             const entry = mapImageList[index];
             if (!entry) return;
-            overlay = MapApp.mapConfig.createOverlay(entry, map);
+            overlay = MapApp.mapConfig.createOverlay(entry, map, membersOf(side));
             overlay.addTo(map);
         };
     }
 
-    const setLeftImage = makeOverlayController(mapLeft);
-    const setRightImage = makeOverlayController(mapRight);
+    const setLeftImage = makeOverlayController(mapLeft, 'left');
+    const setRightImage = makeOverlayController(mapRight, 'right');
 
     const selectLeft = document.getElementById('select-left');
     const selectRight = document.getElementById('select-right');
 
     // 初期表示：左は一番新しい地図、右は2番目に新しい地図（無ければ同じもの）
+    // 席替え前などの配置がある時は、配置の違いを見比べられるよう右も一番新しい地図にする
     populateSelect(selectLeft, 0);
-    populateSelect(selectRight, mapImageList.length > 1 ? 1 : 0);
+    populateSelect(selectRight, (mapImageList.length > 1 && !hasLayoutHistory) ? 1 : 0);
     setLeftImage(Number(selectLeft.value));
     setRightImage(Number(selectRight.value));
 
@@ -378,6 +396,13 @@
     }
 
     const grids = {};
+
+    // 顔アイコン＋ネームタグを、その側で選んでいる配置で置き直す
+    const placedMarkers = { left: [], right: [] };
+    function placeMembers(side, map) {
+        placedMarkers[side].forEach((marker) => map.removeLayer(marker));
+        placedMarkers[side] = Object.values(MapApp.memberList.addMemberMarkers(map, membersOf(side)));
+    }
     function applyDisplay(side) {
         const pane = document.querySelector(`.compare-pane[data-side="${side}"]`);
         const s = displayState[side];
@@ -394,8 +419,28 @@
     [['left', mapLeft], ['right', mapRight]].forEach(([side, map]) => {
         grids[side] = MapApp.mapGrid.create(map, { isGridVisible: () => displayState[side].showGrid });
         MapApp.plotFrames.create(map);
-        MapApp.memberList.addMemberMarkers(map);
+        placeMembers(side, map);
         MapApp.mapLocations.init(map);
+    });
+
+    // 「配置」の選択欄（前の割り当てがある時だけ出す）。切り替えたら顔アイコンを置き直し、配置図を表示中なら描き直す
+    [['left', mapLeft, selectLeft, setLeftImage], ['right', mapRight, selectRight, setRightImage]].forEach(([side, map, mapSelect, setImage]) => {
+        const sel = document.getElementById(`layout-${side}`);
+        if (!hasLayoutHistory) return;
+        layouts.forEach((layout, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = layout.label;
+            sel.appendChild(option);
+        });
+        sel.value = layoutIndex[side];
+        sel.hidden = false;
+        sel.parentElement.classList.add('has-layout');
+        sel.addEventListener('change', () => {
+            layoutIndex[side] = Number(sel.value);
+            placeMembers(side, map);
+            if (mapImageList[Number(mapSelect.value)]?.layout) setImage(Number(mapSelect.value));
+        });
     });
 
     // 「⚙ 表示項目」ボタンと設定パネル
@@ -434,11 +479,16 @@
 
     // 📷 スクリーンショット：2枚の地図を画面と同じ並び（PCは左右、スマホの縦向きは上下）で1枚の画像にし、
     //    それぞれの右上に地図の名前（取得した日付）を入れる
+    //    席替え前などの配置がある時は、地図の名前のあとに配置の名前も入れる（例：10月18日・席替え前）
+    const shotLabel = (mapSelect, side) => {
+        const mapLabel = MapApp.mapConfig.getEntryLabel(mapImageList[Number(mapSelect.value)] || mapImageList[0]);
+        return hasLayoutHistory ? `${mapLabel}・${layouts[layoutIndex[side]].label}` : mapLabel;
+    };
     MapApp.screenshot.init({
         filePrefix: '地図比較',
         getTargets: () => [
-            { el: document.getElementById('map-left'), label: MapApp.mapConfig.getEntryLabel(mapImageList[Number(selectLeft.value)] || mapImageList[0]) },
-            { el: document.getElementById('map-right'), label: MapApp.mapConfig.getEntryLabel(mapImageList[Number(selectRight.value)] || mapImageList[0]) }
+            { el: document.getElementById('map-left'), label: shotLabel(selectLeft, 'left') },
+            { el: document.getElementById('map-right'), label: shotLabel(selectRight, 'right') }
         ]
     });
 
