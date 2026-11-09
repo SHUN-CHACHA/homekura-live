@@ -10,6 +10,11 @@
 //     ids  : メインチャンネルのID（アイコンと最新動画を取る）
 //     subs : サブチャンネルのID（最新動画だけ取る。なければ省略）
 //     ttl  : 保存期間（秒）。600（10分）〜21600（6時間）の範囲に丸める。省略時は600
+//     news : タイトルにこの言葉が入った動画を、各チャンネルの直近10本から最新1本ずつ newsItems として返す
+//            （トップページの「だいたい週刊homeクラNEWS」バナー用。配信中・配信予定の枠がある間や、
+//             後から別の動画が出た後でも見つけられるようにするため）。省略時は newsItems なし
+//
+//   返す内容：{ timestamp, chInfoMap, vItems, newsItems }
 //
 // ■ /channels・/playlistItems・/videos（これまでどおりの中継。キャッシュなし）
 //   古いページ（ブラウザに残っている古いJSなど）が動き続けるように残している。YouTube に渡す項目は決めたものだけ。
@@ -40,6 +45,12 @@ const PORTAL_TTL_MAX = 21600;      // 6時間
 const ICON_TTL = 86400;            // チャンネルアイコンは24時間
 const MAX_CHANNELS = 80;           // 1回に指定できるチャンネル数の上限（いたずらで大量に呼ばれないように）
 const CHANNEL_ID_RE = /^UC[\w-]{22}$/;
+const NEWS_TAG_MAX = 40;           // news（タイトルで探す言葉）の最大文字数
+
+// タイトル比較用：全角・半角と大文字・小文字の違いをなくす（サイト側の比較と同じ）
+function normTitle(s) {
+    return (s || '').normalize('NFKC').toLowerCase();
+}
 
 function getApiKey(env) {
     return env.YOUTUBE_API_KEY || '';
@@ -162,7 +173,9 @@ async function getIcons(env, ids, now) {
 }
 
 // ---------- 最新動画・配信中/配信予定（サイトの index.html で以前やっていた処理と同じ） ----------
-async function getVideos(env, playlistChannelIds) {
+// newsTag を渡すと、タイトルにその言葉が入った動画（各チャンネル最新1本）も一緒に取り、newsItems として分けて返す。
+// （vItems に混ぜると「新着動画」欄にも出てしまうため分けている。videos の呼び出し回数はほぼ増えない）
+async function getVideos(env, playlistChannelIds, newsTag = '') {
     const playlistResults = await Promise.all(playlistChannelIds.map((id) =>
         ytGet('playlistItems', { playlistId: id.replace(/^UC/, 'UU'), part: 'snippet', maxResults: '10' }, env)
             .catch((e) => {
@@ -186,12 +199,26 @@ async function getVideos(env, playlistChannelIds) {
         return items.slice(0, 2).map((i) => i.snippet?.resourceId?.videoId).filter(Boolean);
     });
 
-    const vItems = [];
-    for (let i = 0; i < videoIds.length; i += 50) {
-        const data = await ytGet('videos', { id: videoIds.slice(i, i + 50).join(','), part: 'snippet,liveStreamingDetails' }, env);
-        vItems.push(...(data.items || []));
+    // NEWS：各チャンネルの直近10本（新しい順）から、タイトルに newsTag が入った最初の1本（＝最新）
+    const tag = normTitle(newsTag);
+    const newsIds = !tag ? [] : playlistResults.flatMap((r) => {
+        const hit = (r?.items || []).find((i) => normTitle(i.snippet?.title).includes(tag));
+        const id = hit?.snippet?.resourceId?.videoId;
+        return id ? [id] : [];
+    });
+
+    const allIds = [...new Set([...videoIds, ...newsIds])];
+    const fetched = [];
+    for (let i = 0; i < allIds.length; i += 50) {
+        const data = await ytGet('videos', { id: allIds.slice(i, i + 50).join(','), part: 'snippet,liveStreamingDetails' }, env);
+        fetched.push(...(data.items || []));
     }
-    return vItems;
+    const mainSet = new Set(videoIds);
+    const newsSet = new Set(newsIds);
+    return {
+        vItems: fetched.filter((v) => mainSet.has(v.id)),
+        newsItems: fetched.filter((v) => newsSet.has(v.id))
+    };
 }
 
 async function handlePortal(request, env, ctx, url) {
@@ -202,9 +229,11 @@ async function handlePortal(request, env, ctx, url) {
     }
     const ttlParam = Number(url.searchParams.get('ttl')) || PORTAL_TTL_DEFAULT;
     const ttl = Math.min(PORTAL_TTL_MAX, Math.max(PORTAL_TTL_MIN, ttlParam));
+    const newsTag = (url.searchParams.get('news') || '').trim().slice(0, NEWS_TAG_MAX);
 
     const now = Date.now();
-    const key = await hashKey('portal', `${ids.join(',')}|${subs.join(',')}`);
+    // news の有無・中身で返す内容が変わるので、保存場所も分ける（news なしの時は以前と同じ保存場所）
+    const key = await hashKey('portal', `${ids.join(',')}|${subs.join(',')}${newsTag ? `|news:${newsTag}` : ''}`);
     const saved = await storeGet(env, key);
     const age = saved ? Math.floor((now - saved.timestamp) / 1000) : null;
 
@@ -213,8 +242,8 @@ async function handlePortal(request, env, ctx, url) {
     }
 
     try {
-        const [chInfoMap, vItems] = await Promise.all([getIcons(env, ids, now), getVideos(env, [...ids, ...subs])]);
-        const fresh = { timestamp: now, chInfoMap, vItems };
+        const [chInfoMap, { vItems, newsItems }] = await Promise.all([getIcons(env, ids, now), getVideos(env, [...ids, ...subs], newsTag)]);
+        const fresh = { timestamp: now, chInfoMap, vItems, newsItems };
         ctx.waitUntil(storePut(env, key, fresh));
         return json(request, env, fresh, 200, { 'X-Portal-Cache': 'miss' });
     } catch (e) {
