@@ -9,7 +9,7 @@
     <link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/img/apple-touch-icon.png">
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
-    <link rel="stylesheet" href="shared/theme.css?v=lpkei9">
+    <link rel="stylesheet" href="shared/theme.css?v=ciivm0">
     <style>
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -230,36 +230,49 @@
 
 <!-- バナー -->
 <div class="banner-container">
-    <img src="img/logo.png?v=lpkei9" alt="homeクラ" class="header-logo">
+    <img src="img/logo.png?v=ciivm0" alt="homeクラ" class="header-logo">
 </div>
 
 <!-- ナビゲーション -->
 <nav class="nav-bar">
-    <a href="index.html?v=lpkei9">🏠 ポータル</a>
-    <a href="admin-7b9a4c2e.html?v=lpkei9">⚙️ 管理画面</a>
-    <a href="features.html?v=lpkei9" class="current">📋 機能一覧</a>
+    <a href="index.html?v=ciivm0">🏠 ポータル</a>
+    <a href="minecraft_map.html?v=ciivm0">🗺️ 拠点マップ</a>
+    <a href="map_compare.html?v=ciivm0">🔍 地図の比較</a>
+    <a href="admin-7b9a4c2e.html?v=ciivm0">⚙️ 管理画面</a>
+    <a href="features.html?v=ciivm0" class="current">📋 機能一覧</a>
 </nav>
 
 <!-- ページタイトル -->
 <div class="page-title-area">
     <h1>📋 homeクラ 機能一覧</h1>
-    <p>配信ポータル（index.html）と管理画面（admin）に組み込まれている機能の一覧です。</p>
+    <p>トップページ・拠点マップ・地図の比較・管理画面と、裏側の仕組みの一覧です（2026年11月9日 更新）。</p>
 </div>
 
-<!-- ────────── INDEX：配信表示 ────────── -->
 <div class="section">
-    <div class="section-label">🏠 index.html ― 配信ポータル（表示系）</div>
+    <div class="section-label">🏠 トップページ（index.html）― 配信の表示</div>
     <div class="card-grid">
 
         <div class="feat-card">
             <div class="feat-card-top">
                 <div class="feat-icon red">🔴</div>
                 <div>
-                    <div class="feat-name">LIVE 中メンバー表示</div>
+                    <div class="feat-name">homeクラ LIVE中！</div>
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">YouTube Live APIでリアルタイムに配信中チャンネルを検出し、サムネ付きカードで最上部に表示。緑ボーダー＋LIVEバッジで強調。</div>
+            <div class="feat-desc">配信中のうち、配信タイトルに「homeクラ」が入っているものだけを一番上のブロックに出す。「#」の有無・全角・大文字は問わない（#homeクラ も #homeクラ合衆国 も対象）。概要欄は定型文の「homeクラ」で間違えるため見ない。</div>
+            <div class="feat-tags"><span class="tag api">YouTube API</span><span class="tag ui">2026-11-08</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon red">📡</div>
+                <div>
+                    <div class="feat-name">LIVE中！（homeクラ以外）</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">タイトルに「homeクラ」がない配信は、homeクラ LIVE中！の下の「LIVE中！」ブロックに出す。どちらも0件の時は見出しごと隠す。</div>
             <div class="feat-tags"><span class="tag api">YouTube API</span></div>
         </div>
 
@@ -267,11 +280,11 @@
             <div class="feat-card-top">
                 <div class="feat-icon yellow">🕒</div>
                 <div>
-                    <div class="feat-name">配信予定（Upcoming）表示</div>
+                    <div class="feat-name">配信予定のメンバー</div>
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">liveStreamingDetails の scheduledStartTime を取得し、日時をフォーマットして「配信予定のメンバー」セクションに表示。</div>
+            <div class="feat-desc">予約枠の開始予定時刻を「🕒 11/9 21:00～」の形で表示。1つのチャンネルが同じ日に2枠以上入れていても全部出す。</div>
             <div class="feat-tags"><span class="tag api">YouTube API</span></div>
         </div>
 
@@ -279,354 +292,620 @@
             <div class="feat-card-top">
                 <div class="feat-icon blue">🎬</div>
                 <div>
-                    <div class="feat-name">24時間以内の新着動画</div>
+                    <div class="feat-name">24時間以内の新着（配信アーカイブ）</div>
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">公開から24時間以内の動画を「新着」として検出し、NEWバッジ付きカードで表示。</div>
+            <div class="feat-desc">終わった配信のうち、実際に配信を始めた時刻から24時間以内のものを、新しい順に表示。</div>
             <div class="feat-tags"><span class="tag api">YouTube API</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon blue">🆕</div>
+                <div>
+                    <div class="feat-name">2週間以内の新着（動画）</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">配信ではない投稿動画のうち、公開から2週間以内のものを各チャンネル2本まで、新しい順に表示。NEWバッジ付き。</div>
+            <div class="feat-tags"><span class="tag api">YouTube API</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon teal">📺</div>
+                <div>
+                    <div class="feat-name">サブチャンネル対応</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">メンバーにサブチャンネルを登録すると、その配信・予定・新着もその人のカードとして出る。メンバー一覧にもサブチャンネルの YouTube ボタンが増える。</div>
+            <div class="feat-tags"><span class="tag ui">config.js の id2</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon purple">🔤</div>
+                <div>
+                    <div class="feat-name">名前のよみがな</div>
+                    <span class="feat-file both">index / PDF</span>
+                </div>
+            </div>
+            <div class="feat-desc">よみがなを登録したメンバーは、配信のカード・メンバー一覧・名簿PDFで名前の上に小さく出す。名前の横幅は広がらない。</div>
+            <div class="feat-tags"><span class="tag ui">UI</span></div>
         </div>
 
         <div class="feat-card">
             <div class="feat-card-top">
                 <div class="feat-icon gray">👥</div>
                 <div>
-                    <div class="feat-name">メンバー一覧（リスト表示）</div>
+                    <div class="feat-name">メンバー一覧</div>
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">全メンバーをMinecraftアバター＋SNSアイコンボタン付きでグリッド表示。YouTube / X / Twitch / TikTok / Instagram / Discord / ホームページに対応。<code id="member"</code>アンカーで直接スクロール可能。</div>
+            <div class="feat-desc">全メンバーを並び順とグループ見出しで並べ、顔アイコン・メンバーカラー・SNSボタン（YouTube / X / Twitch / TikTok / Instagram / Discord / ホームページ）付きで表示。#member で直接移動できる。</div>
             <div class="feat-tags"><span class="tag ui">UI</span></div>
         </div>
 
         <div class="feat-card">
             <div class="feat-card-top">
-                <div class="feat-icon teal">🔗</div>
+                <div class="feat-icon green">🧍</div>
                 <div>
-                    <div class="feat-name">SNS ポップアップモーダル</div>
+                    <div class="feat-name">3Dスキン表示</div>
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">カードの「🔗 詳細」ボタンを押すと、そのメンバーの登録済み SNS リンクをポップアップ表示。YouTube / X / Twitch / TikTok / Instagram / Discord / ホームページを色分けリストで一覧表示。「👥 メンバー一覧へ」ボタンも内包。背景クリック・Escキーで閉じる。</div>
-            <div class="feat-tags"><span class="tag ui">モーダル</span><span class="tag ui">SNS</span></div>
+            <div class="feat-desc">メンバー一覧の顔アイコンを押すと、そのメンバーのスキンを3Dで回して見られる。</div>
+            <div class="feat-tags"><span class="tag mc">Minecraft</span></div>
         </div>
 
         <div class="feat-card">
             <div class="feat-card-top">
-                <div class="feat-icon green">👥</div>
+                <div class="feat-icon blue">💬</div>
                 <div>
-                    <div class="feat-name">一覧ジャンプボタン</div>
+                    <div class="feat-name">SNSポップアップ</div>
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">各カードの「👥 一覧」ボタンを押すと、ページ内の <code>#member</code>（メンバー一覧セクション）へスクロール。SNSポップアップ内の「メンバー一覧へ」も同様。</div>
-            <div class="feat-tags"><span class="tag ui">アンカーリンク</span></div>
-        </div>
-
-        <div class="feat-card">
-            <div class="feat-card-top">
-                <div class="feat-icon teal">🎲</div>
-                <div>
-                    <div class="feat-name">ルーレットボタン</div>
-                    <span class="feat-file index">index</span>
-                </div>
-            </div>
-            <div class="feat-desc">ヘッダー左に配置。外部の旬茶作ルーレットページ（roulette.html）を新しいタブで開くリンク。</div>
+            <div class="feat-desc">カードの「🔗 詳細」ボタンを押すと、その人のSNSリンクとメンバー一覧への移動ボタンをまとめたポップアップを出す。</div>
             <div class="feat-tags"><span class="tag ui">UI</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon orange">📄</div>
+                <div>
+                    <div class="feat-name">メンバー一覧PDF</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">「📄 PDF」ボタンで、顔アイコン・メンバーカラー・SNS・よみがな入りの名簿（members.pdf）を開く。メンバーを変更してコミットすると自動で作り直される。</div>
+            <div class="feat-tags"><span class="tag ui">PDF</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon gray">📱</div>
+                <div>
+                    <div class="feat-name">QRコード</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">ヘッダーのボタンでトップページのQRコードを表示。パソコンで見ているページをスマホですぐ開ける。</div>
+            <div class="feat-tags"><span class="tag ui">UI</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon yellow">🎰</div>
+                <div>
+                    <div class="feat-name">旬茶作 ルーレット</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">トップページからルーレットのページ（roulette.html）を開ける。</div>
+            <div class="feat-tags"><span class="tag ui">リンク</span></div>
         </div>
 
     </div>
 </div>
 
-
-<!-- ────────── INDEX：キャッシュ ────────── -->
 <div class="section">
-    <div class="section-label">⚡ index.html ― API クォータ最適化・キャッシュ</div>
+    <div class="section-label">⚡ 更新の仕組みと YouTube API の節約</div>
     <div class="card-grid">
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon green">🧺</div>
+                <div>
+                    <div class="feat-name">Worker でまとめて取得・みんなで共有</div>
+                    <span class="feat-file both">Worker</span>
+                </div>
+            </div>
+            <div class="feat-desc">トップページは Cloudflare Worker に1回聞くだけ。Worker が全メンバー分をまとめて YouTube から取り、10分間保存してみんなで共有するので、見る人が増えても API の使用量は増えない。</div>
+            <div class="feat-tags"><span class="tag cache">10分</span><span class="tag api">YouTube API</span></div>
+        </div>
 
         <div class="feat-card">
             <div class="feat-card-top">
                 <div class="feat-icon green">💾</div>
                 <div>
-                    <div class="feat-name">ポータルキャッシュ（5分）</div>
+                    <div class="feat-name">ブラウザ側の保存</div>
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">動画情報（chInfoMap・vItems）を <code>portal_cache</code> キーで localStorage に保存。5分以内の再ロードは API を叩かずキャッシュを使用。API エラー時も古いキャッシュでフォールバック表示する。有効期間は js/data/config.js の <code>CACHE_DURATION_MS</code> で変更可能（デフォルト 5 分）。</div>
-            <div class="feat-tags"><span class="tag cache">キャッシュ</span><span class="tag local">localStorage</span><span class="tag api">YouTube API</span></div>
+            <div class="feat-desc">取得したデータをブラウザにも5分間保存し、その間に開き直してもすぐ表示する。チャンネルアイコンは24時間保存。取れなかった時は前回のデータで表示する。</div>
+            <div class="feat-tags"><span class="tag cache">5分 / 24時間</span><span class="tag local">localStorage</span></div>
         </div>
 
         <div class="feat-card">
             <div class="feat-card-top">
-                <div class="feat-icon teal">🖼️</div>
+                <div class="feat-icon blue">⏱️</div>
                 <div>
-                    <div class="feat-name">チャンネルアイコン長期キャッシュ（24時間）</div>
+                    <div class="feat-name">10分ごとの自動更新</div>
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">channels API で取得したアイコン URL を <code>channel_icon_cache</code> に保存。24時間以内は channels API を呼ばない。有効期間は js/data/config.js の <code>CHANNEL_ICON_CACHE_DURATION_MS</code> で変更可能。</div>
-            <div class="feat-tags"><span class="tag cache">キャッシュ</span><span class="tag local">localStorage</span><span class="tag api">YouTube API</span></div>
+            <div class="feat-desc">画面上のタイマーで10分ごとに自動更新。ページを見ていない時（別のタブ・離席）は止めて、操作すると再開する。</div>
+            <div class="feat-tags"><span class="tag ui">自動更新</span></div>
         </div>
 
         <div class="feat-card">
             <div class="feat-card-top">
-                <div class="feat-icon yellow">🔄</div>
+                <div class="feat-icon blue">🔄</div>
                 <div>
-                    <div class="feat-name">強制更新（キャッシュ無視）</div>
+                    <div class="feat-name">更新ボタン（強制更新）</div>
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">ヘッダーの「更新」ボタン押下時は <code>loadPortal(true)</code> を呼び、キャッシュを無視して API から最新データを取得・保存し直す。</div>
-            <div class="feat-tags"><span class="tag api">YouTube API</span><span class="tag cache">強制更新</span></div>
+            <div class="feat-desc">「更新」ボタンを押すと、ブラウザの保存を使わずに最新データを取り直す。</div>
+            <div class="feat-tags"><span class="tag cache">強制更新</span></div>
         </div>
 
         <div class="feat-card">
             <div class="feat-card-top">
-                <div class="feat-icon blue">📉</div>
+                <div class="feat-icon yellow">⚠️</div>
                 <div>
-                    <div class="feat-name">playlistItems maxResults=2</div>
+                    <div class="feat-name">表示のタイムラグ</div>
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">playlistItems の取得件数を maxResults=2 に設定。LIVE / Upcoming 優先ロジック（先頭2件からステータス付き動画を優先）を維持しつつ、不要な取得を削減。</div>
-            <div class="feat-tags"><span class="tag api">YouTube API</span></div>
+            <div class="feat-desc">保存期間があるため、配信の開始・終了がトップページに出るまで最大20分ほどかかることがある。ロゴの下に注意書きを出している。</div>
+            <div class="feat-tags"><span class="tag guard">仕様</span></div>
         </div>
 
     </div>
 </div>
 
-
-<!-- ────────── INDEX：通知・予約 ────────── -->
 <div class="section">
-    <div class="section-label">🔔 index.html ― 通知・予約</div>
+    <div class="section-label">🔔 通知</div>
     <div class="card-grid">
 
         <div class="feat-card">
             <div class="feat-card-top">
                 <div class="feat-icon yellow">🔔</div>
                 <div>
-                    <div class="feat-name">配信開始 通知予約</div>
+                    <div class="feat-name">配信開始の通知予約</div>
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">Upcoming動画に「🔔 通知予約」ボタンを表示。予約するとブラウザ通知の許可を求め、開始時刻に「配信開始！」をプッシュ通知。予約状態はlocalStorageに保存。</div>
-            <div class="feat-tags"><span class="tag notif">通知API</span><span class="tag local">localStorage</span></div>
+            <div class="feat-desc">配信予定のカードで予約すると、その配信が始まった時にブラウザの通知で知らせる。</div>
+            <div class="feat-tags"><span class="tag notif">通知</span></div>
         </div>
 
         <div class="feat-card">
             <div class="feat-card-top">
-                <div class="feat-icon green">✅</div>
+                <div class="feat-icon yellow">📌</div>
                 <div>
-                    <div class="feat-name">通知状態の永続化</div>
+                    <div class="feat-name">予約の保存</div>
                     <span class="feat-file index">index</span>
                 </div>
             </div>
-            <div class="feat-desc">通知済みかどうかを <code>notified</code> フラグでlocalStorageに管理。30秒ごとにポーリングして重複通知を防ぐ。</div>
+            <div class="feat-desc">予約した配信はブラウザに保存され、ページを開き直しても残る。</div>
             <div class="feat-tags"><span class="tag local">localStorage</span></div>
         </div>
 
     </div>
 </div>
 
-<!-- ────────── INDEX：QR ────────── -->
 <div class="section">
-    <div class="section-label">📱 index.html ― スマホ連携</div>
+    <div class="section-label">🗺️ 拠点マップ（minecraft_map.html）</div>
     <div class="card-grid">
 
         <div class="feat-card">
             <div class="feat-card-top">
-                <div class="feat-icon teal">📱</div>
+                <div class="feat-icon green">🗺️</div>
                 <div>
-                    <div class="feat-name">QRコード モーダル</div>
-                    <span class="feat-file index">index</span>
+                    <div class="feat-name">背景地図と配置図</div>
+                    <span class="feat-file index">map</span>
                 </div>
             </div>
-            <div class="feat-desc">ヘッダーの「QR」ボタンを押すと現在URLのQRコードをモーダル表示。スマホカメラでスキャンしてブックマーク登録が簡単にできる。閉じ方は×ボタン・背景クリック・Escキーの3通り。</div>
-            <div class="feat-tags"><span class="tag ui">UI</span><span class="tag ui">qrious.js</span></div>
+            <div class="feat-desc">取得した日付の名前（例：10月18日）の背景地図を選んで表示。ブロックを積み上げた立体の地図（軽量なWebP）。「配置図」を選ぶと、区画と名前だけの図になる。</div>
+            <div class="feat-tags"><span class="tag mc">Minecraft</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon orange">🟧</div>
+                <div>
+                    <div class="feat-name">エリア番号で配置</div>
+                    <span class="feat-file index">map</span>
+                </div>
+            </div>
+            <div class="feat-desc">赤・オレンジの区画にエリア01〜28の番号があり、エリア番号を書くだけで、その区画の真ん中に顔アイコンが置かれる（座標は自動）。</div>
+            <div class="feat-tags"><span class="tag ui">MAP_member.js</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon green">🙂</div>
+                <div>
+                    <div class="feat-name">顔アイコンとネームタグ</div>
+                    <span class="feat-file index">map</span>
+                </div>
+            </div>
+            <div class="feat-desc">区画いっぱいの顔アイコンと、名前・座標のネームタグを表示。拡大縮小に合わせて大きさが変わる。</div>
+            <div class="feat-tags"><span class="tag ui">UI</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon purple">🎛️</div>
+                <div>
+                    <div class="feat-name">地図の表示項目</div>
+                    <span class="feat-file index">map</span>
+                </div>
+            </div>
+            <div class="feat-desc">グリッド線・区画の枠線・顔アイコン・名前・座標の表示切り替えと、背景・線・ネームタグの色、ネームタグの背景の濃さ（0〜100%）を変えられる。設定はブラウザに保存。</div>
+            <div class="feat-tags"><span class="tag local">localStorage</span><span class="tag ui">UI</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon red">📍</div>
+                <div>
+                    <div class="feat-name">目印の場所</div>
+                    <span class="feat-file index">map</span>
+                </div>
+            </div>
+            <div class="feat-desc">共有地などの目印を地図の上に表示。</div>
+            <div class="feat-tags"><span class="tag ui">MAP_locations.js</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon blue">🔍</div>
+                <div>
+                    <div class="feat-name">メンバーへジャンプ・倍率シークバー</div>
+                    <span class="feat-file index">map</span>
+                </div>
+            </div>
+            <div class="feat-desc">メンバーを選ぶとその拠点へ移動。倍率は無段階のシークバーで変えられ、「地図全体の表示に戻る」で全体表示に戻る。</div>
+            <div class="feat-tags"><span class="tag ui">UI</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon teal">📷</div>
+                <div>
+                    <div class="feat-name">スクリーンショット保存</div>
+                    <span class="feat-file index">map</span>
+                </div>
+            </div>
+            <div class="feat-desc">今見ている地図を画像で保存。地図の外の黒い所は写さないよう背景地図の範囲で切り抜き、右上に地図の名前、右下にウォーターマークを入れる。</div>
+            <div class="feat-tags"><span class="tag ui">画像保存</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon teal">🔗</div>
+                <div>
+                    <div class="feat-name">アプリ内ブラウザ対応</div>
+                    <span class="feat-file index">map</span>
+                </div>
+            </div>
+            <div class="feat-desc">X などのアプリの中のブラウザ（Android）では画像を保存できないため、案内文と「🔗 URLをコピー」ボタンを出して、Chrome などで開き直してもらう。</div>
+            <div class="feat-tags"><span class="tag guard">Android</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon gray">📱</div>
+                <div>
+                    <div class="feat-name">スマホ表示</div>
+                    <span class="feat-file index">map</span>
+                </div>
+            </div>
+            <div class="feat-desc">スマホでは「設定MENU」とメンバーの引き出しにまとめ、地図を広く使う。上部バーの「🔍 比較」から比較ページへすぐ行ける。</div>
+            <div class="feat-tags"><span class="tag ui">レスポンシブ</span></div>
         </div>
 
     </div>
 </div>
 
-<!-- ────────── ADMIN ────────── -->
 <div class="section">
-    <div class="section-label">⚙️ admin ― メンバー管理</div>
+    <div class="section-label">🔍 2枚の地図を比較（map_compare.html）</div>
     <div class="card-grid">
 
         <div class="feat-card">
             <div class="feat-card-top">
-                <div class="feat-icon green">➕</div>
+                <div class="feat-icon blue">↔️</div>
+                <div>
+                    <div class="feat-name">2枚並べて連動</div>
+                    <span class="feat-file index">比較</span>
+                </div>
+            </div>
+            <div class="feat-desc">2枚の地図を左右（スマホの縦向きは上下）に並べ、動かす・拡大すると両方が一緒に動く。</div>
+            <div class="feat-tags"><span class="tag ui">UI</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon orange">🔄</div>
+                <div>
+                    <div class="feat-name">席替え前・後の配置切り替え</div>
+                    <span class="feat-file index">比較</span>
+                </div>
+            </div>
+            <div class="feat-desc">左右それぞれの「配置」の選択欄で、今の割り当て（席替え後）と前の割り当て（席替え前）を選べる。顔アイコンも配置図も切り替わる。</div>
+            <div class="feat-tags"><span class="tag ui">2026-11-08</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon purple">🎛️</div>
+                <div>
+                    <div class="feat-name">地図ごとの表示項目</div>
+                    <span class="feat-file index">比較</span>
+                </div>
+            </div>
+            <div class="feat-desc">グリッド線・区画の枠線・顔アイコン・名前・座標を、左右の地図で別々にオン・オフできる。</div>
+            <div class="feat-tags"><span class="tag local">localStorage</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon teal">📷</div>
+                <div>
+                    <div class="feat-name">比較のスクリーンショット</div>
+                    <span class="feat-file index">比較</span>
+                </div>
+            </div>
+            <div class="feat-desc">2枚を画面と同じ並びで1枚の画像にする。それぞれの右上に地図の名前と配置（例：10月18日・席替え前）を入れる。</div>
+            <div class="feat-tags"><span class="tag ui">画像保存</span></div>
+        </div>
+
+    </div>
+</div>
+
+<div class="section">
+    <div class="section-label">⚙️ 管理画面 ― メンバー管理</div>
+    <div class="card-grid">
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon blue">✏️</div>
                 <div>
                     <div class="feat-name">メンバー追加・編集・削除</div>
                     <span class="feat-file admin">admin</span>
                 </div>
             </div>
-            <div class="feat-desc">フォームから名前・YouTube CH ID・各SNS ID・ホームページURL・メンバーカラーを入力して追加。メンバー一覧の名前クリックで再編集モードに切り替え。削除は確認ダイアログ付き。</div>
-            <div class="feat-tags"><span class="tag local">localStorage</span></div>
+            <div class="feat-desc">名前・よみがな・チャンネルID・サブチャンネル・Minecraft ID・各SNS・メンバーカラー・並び順・グループを入力して保存。</div>
+            <div class="feat-tags"><span class="tag ui">UI</span></div>
         </div>
 
         <div class="feat-card">
             <div class="feat-card-top">
-                <div class="feat-icon green">🏠</div>
+                <div class="feat-icon green">🆔</div>
                 <div>
-                    <div class="feat-name">ホームページURL 登録</div>
+                    <div class="feat-name">UUIDと顔アイコンの取得</div>
                     <span class="feat-file admin">admin</span>
                 </div>
             </div>
-            <div class="feat-desc">メンバーごとにホームページURLを登録可能。登録するとポータルの SNS ポップアップモーダルに「ホームページ」リンクとして表示される。未登録の場合は非表示。</div>
-            <div class="feat-tags"><span class="tag ui">SNS</span></div>
+            <div class="feat-desc">Minecraft ID から UUID を自動取得。正面の顔画像（アウターレイヤー込み）をプレビューし、「[マイクラID].png」で保存できる。</div>
+            <div class="feat-tags"><span class="tag mc">Minecraft</span><span class="tag api">外部API</span></div>
         </div>
 
         <div class="feat-card">
             <div class="feat-card-top">
-                <div class="feat-icon mc">🎮</div>
+                <div class="feat-icon purple">🔒</div>
                 <div>
-                    <div class="feat-name">UUID 自動取得（Ashcon API）</div>
+                    <div class="feat-name">公開・非公開</div>
                     <span class="feat-file admin">admin</span>
                 </div>
             </div>
-            <div class="feat-desc">Minecraft IDを入力すると700ms debounce後にashcon.app経由でUUIDを自動取得。MojangはCORSブロックのため中継APIを使用。取得成功・失敗・待機状態をバッジで表示。</div>
-            <div class="feat-tags"><span class="tag api">Ashcon API</span><span class="tag mc">UUID</span></div>
-        </div>
-
-        <div class="feat-card">
-            <div class="feat-card-top">
-                <div class="feat-icon yellow">✏️</div>
-                <div>
-                    <div class="feat-name">UUID 手動入力フォールバック</div>
-                    <span class="feat-file admin">admin</span>
-                </div>
-            </div>
-            <div class="feat-desc">自動取得に失敗した場合、「手動入力」ボタンが出現。ハイフンあり/なし両対応の正規表現バリデーション付き。32文字の場合は自動でハイフン付きに変換。</div>
-            <div class="feat-tags"><span class="tag mc">UUID</span><span class="tag ui">バリデーション</span></div>
-        </div>
-
-        <div class="feat-card">
-            <div class="feat-card-top">
-                <div class="feat-icon teal">🖼️</div>
-                <div>
-                    <div class="feat-name">Minecraftアバタープレビュー</div>
-                    <span class="feat-file admin">admin</span>
-                </div>
-            </div>
-            <div class="feat-desc">UUID取得後にMineatar（api.mineatar.io）から正面の顔画像をリアルタイムプレビュー。アウターレイヤーも反映。スマホでの外部APIブロック問題を回避するためローカル保存方式を採用。</div>
-            <div class="feat-tags"><span class="tag api">Mineatar API</span><span class="tag mc">スキン</span></div>
-        </div>
-
-        <div class="feat-card">
-            <div class="feat-card-top">
-                <div class="feat-icon orange">⬇️</div>
-                <div>
-                    <div class="feat-name">アバター PNG ダウンロード</div>
-                    <span class="feat-file admin">admin</span>
-                </div>
-            </div>
-            <div class="feat-desc">「画像を [マイクラID].png で保存」ボタンでMineatar画像をそのままローカルに保存。ファイル名は自動で「{minecraftId}.png」になる。（旧仕様ではBase64エンコードしてSVGラッパーに格納していたが、二重の縮小処理でマップ上の表示が崩れる場合があったため2026-08-18にPNG直接保存に変更）</div>
-            <div class="feat-tags"><span class="tag mc">PNG</span><span class="tag ui">ダウンロード</span></div>
+            <div class="feat-desc">メンバーごとに公開・非公開をワンクリックで切り替え。非公開のメンバーは GitHub に上げないファイルに分けて保存し、公開ページのソースにも出ない。</div>
+            <div class="feat-tags"><span class="tag guard">非公開</span></div>
         </div>
 
         <div class="feat-card">
             <div class="feat-card-top">
                 <div class="feat-icon blue">📋</div>
                 <div>
-                    <div class="feat-name">js/data/config.js 出力・コピー（window.CONFIG 形式）</div>
+                    <div class="feat-name">config.js の出力・コピー</div>
                     <span class="feat-file admin">admin</span>
                 </div>
             </div>
-            <div class="feat-desc">メンバー追加・編集するたびに <code>window.CONFIG = {...}</code> 形式のコードを自動生成。APIキー・キャッシュ設定値（CACHE_DURATION_MS・CHANNEL_ICON_CACHE_DURATION_MS）・homepageUrl も含めて出力。「コピー」でクリップボードにコピーしてローカルの js/data/config.js に貼り付けて使う。</div>
-            <div class="feat-tags"><span class="tag ui">コピー</span></div>
+            <div class="feat-desc">編集結果を公開用（js/data/config.js）と非公開用（config.private.js）の形で出力し、コピーして上書き保存する。</div>
+            <div class="feat-tags"><span class="tag ui">config.js</span></div>
         </div>
 
         <div class="feat-card">
             <div class="feat-card-top">
-                <div class="feat-icon gray">🎨</div>
+                <div class="feat-icon yellow">⚠️</div>
                 <div>
-                    <div class="feat-name">メンバーカラー選択</div>
+                    <div class="feat-name">保存データの食い違いのお知らせ</div>
                     <span class="feat-file admin">admin</span>
                 </div>
             </div>
-            <div class="feat-desc">カラーピッカーとHEXコード入力が連動。入力した色はポータル側のメンバー名やアバターボーダーに反映される。明度が高い色は自動で暗色補正してテキストの視認性を確保。</div>
-            <div class="feat-tags"><span class="tag ui">カラーピッカー</span></div>
+            <div class="feat-desc">ブラウザに残っている編集データが config.js と違う時に、画面の上で知らせる（古いデータで上書きしてしまうのを防ぐ）。</div>
+            <div class="feat-tags"><span class="tag guard">安全</span></div>
         </div>
 
         <div class="feat-card">
             <div class="feat-card-top">
-                <div class="feat-icon green">📊</div>
+                <div class="feat-icon gray">📊</div>
                 <div>
-                    <div class="feat-name">メンバー一覧テーブル</div>
+                    <div class="feat-name">メンバー一覧のCSV出力</div>
                     <span class="feat-file admin">admin</span>
                 </div>
             </div>
-            <div class="feat-desc">登録済みメンバーをカラー・顔アイコン・各SNSリンク・ホームページリンク付きの横スクロールテーブルで確認。UUIDは先頭8文字を表示しホバーでフル表示（title属性）。</div>
-            <div class="feat-tags"><span class="tag ui">テーブル</span></div>
+            <div class="feat-desc">メンバー一覧をCSVファイルで書き出す。</div>
+            <div class="feat-tags"><span class="tag ui">CSV</span></div>
         </div>
 
     </div>
 </div>
 
-<!-- ────────── 共通 ────────── -->
 <div class="section">
-    <div class="section-label">🔗 共通 ― データ連携</div>
+    <div class="section-label">⚙️ 管理画面 ― 地図の管理</div>
     <div class="card-grid">
 
         <div class="feat-card">
             <div class="feat-card-top">
-                <div class="feat-icon green">🔗</div>
+                <div class="feat-icon orange">📍</div>
                 <div>
-                    <div class="feat-name">js/data/config.js 共有データ</div>
-                    <span class="feat-file both">index / admin</span>
+                    <div class="feat-name">拠点マップの編集</div>
+                    <span class="feat-file admin">admin</span>
                 </div>
             </div>
-            <div class="feat-desc">APIキー・キャッシュ設定・デフォルトメンバー定義を <code>window.CONFIG</code> として js/data/config.js に集約。index・admin どちらもこのファイルを読み込み、localStorage の上書きデータがあればそちらを優先使用する。</div>
-            <div class="feat-tags"><span class="tag local">localStorage</span></div>
+            <div class="feat-desc">エリア番号とメンバー（1区画に3人まで）を選んで拠点を登録し、MAP_member.js の形で出力する。</div>
+            <div class="feat-tags"><span class="tag ui">MAP_member.js</span></div>
         </div>
 
         <div class="feat-card">
             <div class="feat-card-top">
-                <div class="feat-icon purple">💡</div>
+                <div class="feat-icon red">🗺️</div>
                 <div>
-                    <div class="feat-name">テキストカラー自動補正</div>
-                    <span class="feat-file both">index / admin</span>
+                    <div class="feat-name">目印の編集</div>
+                    <span class="feat-file admin">admin</span>
                 </div>
             </div>
-            <div class="feat-desc">adjustColorForText() 関数で luma 輝度値を計算し、明るすぎる色のメンバー名テキストを自動的に50%暗色化して視認性を確保。</div>
-            <div class="feat-tags"><span class="tag ui">アクセシビリティ</span></div>
+            <div class="feat-desc">共有地などの目印の名前と座標を登録し、MAP_locations.js の形で出力する。</div>
+            <div class="feat-tags"><span class="tag ui">MAP_locations.js</span></div>
         </div>
 
         <div class="feat-card">
             <div class="feat-card-top">
-                <div class="feat-icon teal">📱</div>
+                <div class="feat-icon green">🖼️</div>
                 <div>
-                    <div class="feat-name">マルチプラットフォーム SNS 対応</div>
-                    <span class="feat-file both">index / admin</span>
+                    <div class="feat-name">背景地図・ウォーターマークの編集</div>
+                    <span class="feat-file admin">admin</span>
                 </div>
             </div>
-            <div class="feat-desc">YouTube / X(Twitter) / Twitch / TikTok / Instagram / Discord / ホームページの7プラットフォームに対応。各 SNS ID・URL の有無でリンクを動的表示。TikTok は @ プレフィックスを自動除去。</div>
-            <div class="feat-tags"><span class="tag ui">SNS</span></div>
+            <div class="feat-desc">背景地図の一覧（一番上が最初に出る地図）と、スクリーンショットのウォーターマークの文字を編集し、map-config.js の形で出力する。</div>
+            <div class="feat-tags"><span class="tag ui">map-config.js</span></div>
+        </div>
+
+    </div>
+</div>
+
+<div class="section">
+    <div class="section-label">🛡️ 裏側の仕組み</div>
+    <div class="card-grid">
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon purple">🔑</div>
+                <div>
+                    <div class="feat-name">APIキーを隠す</div>
+                    <span class="feat-file both">Worker</span>
+                </div>
+            </div>
+            <div class="feat-desc">YouTube の APIキーは Cloudflare Worker の中だけに置き、ページには書かない。許可したサイト以外からの呼び出しは断り、中継する項目も必要なものに絞る。</div>
+            <div class="feat-tags"><span class="tag guard">セキュリティ</span></div>
         </div>
 
         <div class="feat-card">
             <div class="feat-card-top">
-                <div class="feat-icon mc">🟩</div>
+                <div class="feat-icon blue">📈</div>
                 <div>
-                    <div class="feat-name">Minecraft アバター表示（SVG）</div>
-                    <span class="feat-file both">index / admin</span>
+                    <div class="feat-name">アクセス統計</div>
+                    <span class="feat-file both">Worker</span>
                 </div>
             </div>
-            <div class="feat-desc">avatars/{minecraftId}.svg を優先参照し、なければ avatars/fallback.svg を表示。onerror ハンドラで読み込み失敗時も自動フォールバック。拡張子の表記ゆれ（png/jpg等）も .svg に正規化。</div>
-            <div class="feat-tags"><span class="tag mc">SVG</span><span class="tag ui">フォールバック</span></div>
+            <div class="feat-desc">アクセスを記録し、10分ごとの自動更新と人が開いたアクセスを区別する。関係者のブラウザ（?me=1 で登録、?me=check で確認）や手元のサーバーからのアクセスは除外できる。</div>
+            <div class="feat-tags"><span class="tag guard">統計</span></div>
         </div>
 
         <div class="feat-card">
             <div class="feat-card-top">
-                <div class="feat-icon gray">📐</div>
+                <div class="feat-icon gray">🧹</div>
                 <div>
-                    <div class="feat-name">レスポンシブ対応</div>
-                    <span class="feat-file both">index / admin</span>
+                    <div class="feat-name">古いファイルが残らない工夫</div>
+                    <span class="feat-file both">共通</span>
                 </div>
             </div>
-            <div class="feat-desc">スマホ（〜599px）・タブレット（600px〜）・PC（950px〜）の3段階でグリッド列数・カードサイズを切り替え。管理画面はスマホで縦積みレイアウトに変形。</div>
-            <div class="feat-tags"><span class="tag ui">レスポンシブ</span></div>
+            <div class="feat-desc">コミットのたびに、全ページの読み込みファイルに更新番号を付け直し、スマホなどで古いJS・CSSが残らないようにする。</div>
+            <div class="feat-tags"><span class="tag cache">キャッシュ対策</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon orange">📄</div>
+                <div>
+                    <div class="feat-name">名簿PDFの自動作り直し</div>
+                    <span class="feat-file both">共通</span>
+                </div>
+            </div>
+            <div class="feat-desc">メンバーのデータ（js/data/config.js）をコミットする時に members.pdf を自動で作り直し、同じコミットに入れる。</div>
+            <div class="feat-tags"><span class="tag ui">自動</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon purple">🎨</div>
+                <div>
+                    <div class="feat-name">文字色の自動補正</div>
+                    <span class="feat-file index">index</span>
+                </div>
+            </div>
+            <div class="feat-desc">明るすぎるメンバーカラーは、白い背景で読めるよう文字に使う時だけ自動で濃くする。</div>
+            <div class="feat-tags"><span class="tag ui">UI</span></div>
+        </div>
+
+    </div>
+</div>
+
+<div class="section">
+    <div class="section-label">🧰 その他のページ</div>
+    <div class="card-grid">
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon gray">📚</div>
+                <div>
+                    <div class="feat-name">Season2 アーカイブ</div>
+                    <span class="feat-file index">season2</span>
+                </div>
+            </div>
+            <div class="feat-desc">Season2 のトップページ・拠点マップを /season2/ にそのまま残している。</div>
+            <div class="feat-tags"><span class="tag ui">アーカイブ</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon green">⛏️</div>
+                <div>
+                    <div class="feat-name">OreHighlighter の紹介</div>
+                    <span class="feat-file index">tools</span>
+                </div>
+            </div>
+            <div class="feat-desc">旬茶作の Minecraft 用ツール OreHighlighter の紹介・ダウンロードページ。</div>
+            <div class="feat-tags"><span class="tag mc">Minecraft</span></div>
+        </div>
+
+        <div class="feat-card">
+            <div class="feat-card-top">
+                <div class="feat-icon gray">🧭</div>
+                <div>
+                    <div class="feat-name">背景地図の作成ガイド</div>
+                    <span class="feat-file index">guide</span>
+                </div>
+            </div>
+            <div class="feat-desc">背景地図の画像の準備・切り取り・ファイル名の付け方・動作確認の手順。</div>
+            <div class="feat-tags"><span class="tag ui">ガイド</span></div>
         </div>
 
     </div>

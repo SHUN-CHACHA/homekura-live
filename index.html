@@ -10,7 +10,7 @@
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
 
-    <link rel="stylesheet" href="shared/theme.css?v=lpkei9">
+    <link rel="stylesheet" href="shared/theme.css?v=ciivm0">
 
     <style>
         body {
@@ -232,6 +232,34 @@
         }
 
         .section-title { font-size: 16px; font-weight: bold; margin-top: 0; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+        /* 「LIVE中」の上に出す、homeクラワールドの速報動画（横長バナー） */
+        .news-banner {
+            display: flex; align-items: stretch; gap: 16px;
+            background: var(--container-bg); border: 2px solid var(--accent-blue); border-radius: 16px;
+            padding: 12px; margin-bottom: 20px; text-decoration: none; color: inherit; overflow: hidden;
+            box-shadow: 0 4px 12px -2px rgba(45, 90, 39, 0.08); transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .news-banner:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(45, 90, 39, 0.12); }
+        .news-thumb-wrap { position: relative; flex: 0 0 40%; max-width: 360px; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background: #e6ede6; }
+        .news-thumb { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .news-play {
+            position: absolute; inset: 0; margin: auto; width: 48px; height: 48px; border-radius: 50%;
+            background: rgba(0,0,0,0.55); color: #fff; font-size: 20px; display: flex; align-items: center; justify-content: center; padding-left: 3px; box-sizing: border-box;
+        }
+        .news-body { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+        .news-label { align-self: flex-start; background: var(--accent-blue); color: #fff; font-size: 12px; font-weight: bold; padding: 3px 10px; border-radius: 12px; }
+        .news-title { font-size: 16px; font-weight: 800; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .news-meta { font-size: 12px; color: var(--secondary-text); }
+        @media (max-width: 599px) {
+            .news-banner { gap: 10px; padding: 8px; border-radius: 12px; }
+            .news-thumb-wrap { flex: 0 0 42%; border-radius: 8px; }
+            .news-play { width: 30px; height: 30px; font-size: 13px; padding-left: 2px; }
+            .news-body { gap: 3px; }
+            .news-label { font-size: 10px; padding: 2px 7px; }
+            .news-title { font-size: 12px; line-height: 1.35; -webkit-line-clamp: 2; }
+            .news-meta { font-size: 10px; }
+        }
 
         /* メンバー一覧タイトル横の「PDF」ボタン（members.pdf を開く） */
         .btn-member-pdf {
@@ -565,8 +593,8 @@
 
 <div class="banner-container">
     <div class="header-logo-wrap">
-        <img src="img/logo.png?v=lpkei9" alt="homeクラ" class="header-logo">
-        <img src="img/season3-text.png?v=lpkei9" alt="Season３" class="header-season">
+        <img src="img/logo.png?v=ciivm0" alt="homeクラ" class="header-logo">
+        <img src="img/season3-text.png?v=ciivm0" alt="Season３" class="header-season">
     </div>
 </div>
 
@@ -576,13 +604,13 @@
 
 <div class="top-buttons-wrapper">
     <a href="https://charagp.full-comi.jp/event/lp/84?chara_event_id=7" class="yurugp-btn" target="_blank" title="世界ご当地キャラ グランプリ">
-        <img src="img/charagp-icon.jpg?v=lpkei9" alt="世界ご当地キャラ グランプリ">
+        <img src="img/charagp-icon.jpg?v=ciivm0" alt="世界ご当地キャラ グランプリ">
     </a>
     <a href="https://github.com/SHUN-CHACHA/minecraft-tools/tree/main" class="yurugp-btn github-btn" target="_blank" title="旬茶オリジナルMInecraft Tools">
-        <img src="img/github-icon.png?v=lpkei9" alt="旬茶オリジナルMInecraft Tools">
+        <img src="img/github-icon.png?v=ciivm0" alt="旬茶オリジナルMInecraft Tools">
     </a>
     <a href="https://modrinth.com/user/SHUNCHA" class="yurugp-btn modrinth-btn" target="_blank" title="Modrinth">
-        <img src="img/modrinth-icon.png?v=lpkei9" alt="Modrinth">
+        <img src="img/modrinth-icon.png?v=ciivm0" alt="Modrinth">
     </a>
     <div class="top-buttons-stack">
         <div class="external-links-container">
@@ -599,7 +627,7 @@
         <div class="header-controls">
             <div class="controls-left">
                 <a href="https://shun-chacha.github.io/homekura-live/roulette.html" class="roulette-btn" target="_blank">
-                    <img src="img/roulette-icon.png?v=lpkei9" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
+                    <img src="img/roulette-icon.png?v=ciivm0" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
                     旬茶作 ルーレット
                 </a>
             </div>
@@ -625,11 +653,24 @@
 </div>
 
 <div class="map-link-container">
-    <a href="minecraft_map.html?v=lpkei9" target="_blank" class="map-link-btn">homeクラ Season3 メンバー拠点マップ</a>
-    <a href="season2/index.html?v=lpkei9" class="map-link-btn" style="opacity:0.75;">📁 Season2（過去シーズン）はこちら</a>
+    <a href="minecraft_map.html?v=ciivm0" target="_blank" class="map-link-btn">homeクラ Season3 メンバー拠点マップ</a>
+    <a href="season2/index.html?v=ciivm0" class="map-link-btn" style="opacity:0.75;">📁 Season2（過去シーズン）はこちら</a>
 </div>
 
 <div class="main-wrapper">
+    <!-- homeクラワールドの速報動画（js/data/news.js で設定。ナナホシナナさん制作「だいたい週刊homeクラNEWS」） -->
+    <a id="newsBanner" class="news-banner" href="#" target="_blank" rel="noopener" style="display: none;">
+        <div class="news-thumb-wrap">
+            <img id="newsThumb" class="news-thumb" src="" alt="" loading="lazy">
+            <span class="news-play" aria-hidden="true">▶</span>
+        </div>
+        <div class="news-body">
+            <div class="news-label">📰 だいたい週刊homeクラNEWS</div>
+            <div id="newsTitle" class="news-title"></div>
+            <div id="newsMeta" class="news-meta"></div>
+        </div>
+    </a>
+
     <div id="homekuraLiveSection" class="section-box" style="display: none;">
         <div class="section-title" style="color:var(--accent-green)">🟢 【🔴 homeクラ LIVE中！】</div>
         <div id="homekuraLiveGrid" class="grid"></div>
@@ -657,14 +698,15 @@
 
     <div class="section-box" id="member">
         <div class="section-title">👥 メンバー一覧
-            <a href="members.pdf?v=lpkei9" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
+            <a href="members.pdf?v=ciivm0" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
         </div>
         <div id="allList" class="list-container"></div>
     </div>
 </div>
 
-<script src="js/data/config.js?v=lpkei9"></script>
-<script src="js/stats-owner.js?v=lpkei9"></script>
+<script src="js/data/config.js?v=ciivm0"></script>
+<script src="js/data/news.js?v=ciivm0"></script>
+<script src="js/stats-owner.js?v=ciivm0"></script>
 
 <!-- 🧊 3Dスキンビューアー用ライブラリ（ESM配信のみのためmoduleで読み込みwindowに公開） -->
 <script type="module">
@@ -680,7 +722,7 @@ const PROXY_URL = (window.CONFIG?.YOUTUBE_PROXY_URL || '').replace(/\/$/, '');
 const CACHE_DURATION_MS         = window.CONFIG?.CACHE_DURATION_MS          ?? (5  * 60 * 1000);
 const CHANNEL_ICON_CACHE_DURATION_MS = window.CONFIG?.CHANNEL_ICON_CACHE_DURATION_MS ?? (24 * 60 * 60 * 1000);
 // 画像のキャッシュ対策用バージョン番号（コミット時に scripts/bump-asset-version.ps1 が自動更新する）
-const ASSET_VERSION = 'lpkei9';
+const ASSET_VERSION = 'ciivm0';
 let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 let timeLeft = 600;
@@ -741,6 +783,7 @@ function init() {
     // 管理画面で「非公開」にしたメンバー（hidden: true）は、一覧にも配信状況の取得にも入れない
     channels = channels.filter(c => !c.hidden);
 
+    renderNewsBanner([]);
     loadPortal();
     setInterval(checkNotifications, 30000);
 }
@@ -766,7 +809,7 @@ async function loadPortal(forceRefresh = false, src = 'load') {
             const cached = JSON.parse(localStorage.getItem('portal_cache') || 'null');
             if (cached && (now - cached.timestamp) < CACHE_DURATION_MS) {
                 console.log(`[homeクラ] キャッシュ使用（残り ${Math.ceil((CACHE_DURATION_MS - (now - cached.timestamp)) / 1000)} 秒）`);
-                renderGrids(cached.chInfoMap, cached.vItems);
+                renderGrids(cached.chInfoMap, cached.vItems, cached.newsItems);
                 return;
             }
         } catch (_) { /* キャッシュ破損時は無視してAPI取得へ */ }
@@ -777,13 +820,15 @@ async function loadPortal(forceRefresh = false, src = 'load') {
     try {
         const ids  = channels.map(c => c.id).join(',');
         const subs = channels.filter(c => c.id2).map(c => c.id2).join(',');
-        const res  = await fetch(`${PROXY_URL}/portal?ids=${ids}&subs=${subs}&ttl=600&${statsQuery(src)}`);
+        // news：「だいたい週刊homeクラNEWS」バナー用に、タイトルにこの言葉が入った最新動画も返してもらう（js/data/news.js）
+        const newsTag = (window.HOMEKURA_NEWS?.enabled && window.HOMEKURA_NEWS.titleTag) ? `&news=${encodeURIComponent(window.HOMEKURA_NEWS.titleTag)}` : '';
+        const res  = await fetch(`${PROXY_URL}/portal?ids=${ids}&subs=${subs}&ttl=600${newsTag}&${statsQuery(src)}`);
         if (!res.ok) throw new Error(`portal HTTP ${res.status}`);
         const shared = await res.json();
         if (!shared || !Array.isArray(shared.vItems)) throw new Error('portal の形式が違います');
-        localStorage.setItem('portal_cache', JSON.stringify({ timestamp: now, chInfoMap: shared.chInfoMap || {}, vItems: shared.vItems }));
+        localStorage.setItem('portal_cache', JSON.stringify({ timestamp: now, chInfoMap: shared.chInfoMap || {}, vItems: shared.vItems, newsItems: shared.newsItems || [] }));
         console.log(`[homeクラ] ポータル: まとめて取得（Worker の保存: ${res.headers.get('X-Portal-Cache') || '不明'}）`);
-        renderGrids(shared.chInfoMap || {}, shared.vItems);
+        renderGrids(shared.chInfoMap || {}, shared.vItems, shared.newsItems || []);
         return;
     } catch (e) {
         console.warn('[homeクラ] まとめて取得できなかったので、チャンネルごとに取得します:', e);
@@ -840,14 +885,25 @@ async function loadPortal(forceRefresh = false, src = 'load') {
             return recentTargets.map(i => i.snippet?.resourceId?.videoId).filter(Boolean);
         });
 
+        // 「だいたい週刊homeクラNEWS」バナー用：各チャンネルの直近10本から、タイトルにタグが入った最新1本（Worker の /portal と同じ）
+        const newsNorm = s => (s || '').normalize('NFKC').toLowerCase();
+        const newsTagNorm = window.HOMEKURA_NEWS?.enabled ? newsNorm(window.HOMEKURA_NEWS.titleTag) : '';
+        const newsIds = !newsTagNorm ? [] : playlistResults.flatMap(r => {
+            const hit = (r?.items || []).find(i => newsNorm(i.snippet?.title).includes(newsTagNorm));
+            const id = hit?.snippet?.resourceId?.videoId;
+            return id ? [id] : [];
+        });
+        const allVideoIds = [...new Set([...videoIds, ...newsIds])];
+
         let vItems = [];
-        if (videoIds.length > 0) {
+        let newsItems = [];
+        if (allVideoIds.length > 0) {
             // videos.list の id パラメータは最大50件までしか指定できないため、50件ずつに分割して取得する
             // （サブチャンネル対応・新着動画を各チャンネル2件まで取得するようにしたことでID数が増えたため必須）
             const VIDEOS_ID_CHUNK_SIZE = 50;
             const idChunks = [];
-            for (let i = 0; i < videoIds.length; i += VIDEOS_ID_CHUNK_SIZE) {
-                idChunks.push(videoIds.slice(i, i + VIDEOS_ID_CHUNK_SIZE));
+            for (let i = 0; i < allVideoIds.length; i += VIDEOS_ID_CHUNK_SIZE) {
+                idChunks.push(allVideoIds.slice(i, i + VIDEOS_ID_CHUNK_SIZE));
             }
             const vResults = await Promise.all(
                 idChunks.map(chunk =>
@@ -855,20 +911,23 @@ async function loadPortal(forceRefresh = false, src = 'load') {
                         .then(r => r.json()).catch(() => null)
                 )
             );
-            vItems = vResults.flatMap(r => r?.items || []);
+            const fetched = vResults.flatMap(r => r?.items || []);
+            // NEWS 用に足した動画は「新着動画」欄に出さないよう、newsItems として分けておく
+            vItems = fetched.filter(v => videoIds.includes(v.id));
+            newsItems = fetched.filter(v => newsIds.includes(v.id));
         }
 
         // ── ポータルキャッシュ保存 ──────────────────────────────────────
-        localStorage.setItem('portal_cache', JSON.stringify({ timestamp: now, chInfoMap, vItems }));
+        localStorage.setItem('portal_cache', JSON.stringify({ timestamp: now, chInfoMap, vItems, newsItems }));
         console.log('[homeクラ] ポータル: API取得・キャッシュ保存');
 
-        renderGrids(chInfoMap, vItems);
+        renderGrids(chInfoMap, vItems, newsItems);
     } catch (e) {
         console.error("ポータル読み込みエラー:", e);
         // エラー時は古いキャッシュがあれば使う
         try {
             const cached = JSON.parse(localStorage.getItem('portal_cache') || 'null');
-            if (cached) { renderGrids(cached.chInfoMap, cached.vItems); return; }
+            if (cached) { renderGrids(cached.chInfoMap, cached.vItems, cached.newsItems); return; }
         } catch (_) {}
         renderGrids({}, []);
     }
@@ -880,7 +939,42 @@ function isHomekuraVideo(v) {
     return (v?.snippet?.title || '').normalize('NFKC').toLowerCase().includes('homeクラ');
 }
 
-function renderGrids(chInfoMap, vItems) {
+// 「LIVE中」の上の速報動画バナー（設定は js/data/news.js）。
+// 取得した動画の中に、news.js の回より新しい「だいたい週刊homeクラNEWS」があればそちらを出す
+function renderNewsBanner(vItems) {
+    const cfg = window.HOMEKURA_NEWS;
+    const banner = document.getElementById('newsBanner');
+    if (!banner || !cfg || !cfg.enabled) return;
+    const norm = s => (s || '').normalize('NFKC').toLowerCase();
+    const tag = norm(cfg.titleTag);
+
+    let pick = cfg.videoId ? { id: cfg.videoId, title: cfg.title, publishedAt: cfg.publishedAt, thumb: '' } : null;
+    (vItems || []).forEach(v => {
+        const sn = v?.snippet;
+        if (!sn || sn.liveBroadcastContent !== 'none') return;
+        if (cfg.channelId && sn.channelId !== cfg.channelId) return;
+        if (!norm(sn.title).includes(tag)) return;
+        if (pick && new Date(sn.publishedAt) <= new Date(pick.publishedAt || 0)) return;
+        pick = { id: v.id, title: sn.title, publishedAt: sn.publishedAt, thumb: sn.thumbnails?.maxres?.url || sn.thumbnails?.high?.url || '' };
+    });
+    const d = pick?.publishedAt ? new Date(pick.publishedAt) : null;
+    // 公開から maxDays 日（既定7日）を過ぎた回は出さない
+    const maxMs = (cfg.maxDays ?? 7) * 24 * 60 * 60 * 1000;
+    const expired = d && (Date.now() - d.getTime() > maxMs);
+    if (!pick || !pick.id || expired) { banner.style.display = 'none'; return; }
+
+    banner.href = `https://youtube.com/watch?v=${encodeURIComponent(pick.id)}`;
+    const thumb = document.getElementById('newsThumb');
+    thumb.src = pick.thumb || `https://i.ytimg.com/vi/${encodeURIComponent(pick.id)}/maxresdefault.jpg`;
+    thumb.alt = pick.title || '';
+    document.getElementById('newsTitle').textContent = pick.title || '';
+    document.getElementById('newsMeta').textContent =
+        `制作：${cfg.creatorName || ''}${d ? `　/　${d.getMonth()+1}/${d.getDate()} 公開` : ''}`;
+    banner.style.display = '';
+}
+
+function renderGrids(chInfoMap, vItems, newsItems = []) {
+    renderNewsBanner([...(vItems || []), ...(newsItems || [])]);
     let htmls = { homekuraLive: "", live: "", newArchive: "", newVideo: "", upcoming: "", all: "" };
     let counts = { homekuraLive: 0, live: 0, newArchive: 0, newVideo: 0, upcoming: 0 };
     // newVideo（新着動画）・newArchive（配信アーカイブ）は最後に時刻の新しい順へ並べ替えるため、
