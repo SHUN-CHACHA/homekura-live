@@ -8,15 +8,15 @@
     <link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/img/apple-touch-icon.png">
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
-    <link rel="stylesheet" href="shared/theme.css?v=gn80w1">
-    <link rel="stylesheet" href="shared/admin.css?v=gn80w1">
+    <link rel="stylesheet" href="shared/theme.css?v=8cj6m5">
+    <link rel="stylesheet" href="shared/admin.css?v=8cj6m5">
 </head>
 <body>
 
     <!-- ナビゲーション -->
     <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
-        <a href="index.html?v=gn80w1" class="pill-btn-light">🏠 ポータルに戻る</a>
-        <a href="features.html?v=gn80w1" class="pill-btn-light">📋 機能一覧を見る</a>
+        <a href="index.html?v=8cj6m5" class="pill-btn-light">🏠 ポータルに戻る</a>
+        <a href="features.html?v=8cj6m5" class="pill-btn-light">📋 機能一覧を見る</a>
     </div>
 
     <!-- 📑 セクション切り替えタブ -->
@@ -238,6 +238,12 @@
     <div class="admin-tab-panel" id="tab-panel-locations">
     <h2>📍 拠点マップ 編集（MAP_member.js）</h2>
 
+    <div id="staleNoticeMapMember" style="display:none; background:#fef3c7; border:1px solid #f59e0b; border-radius:8px; padding:12px 14px; margin-bottom:16px; font-size:13px; color:#78350f;">
+        <b>⚠️ このブラウザに残っている編集データが、js/data/MAP_member.js と違います。</b>
+        <div style="margin:6px 0 10px; line-height:1.6;">js/data/MAP_member.js の方が新しい時（ファイルを直接書き換えた後など）は、下のボタンで読み込み直してください。そのままコピーして保存すると、古い内容に戻ってしまいます。このブラウザで編集してまだ書き出していない時は、先に下の「コピー」で書き出してください。</div>
+        <button type="button" style="padding:8px 14px; font-size:13px; background:#b45309; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="reloadFromMapMemberJs()">🔄 MAP_member.jsを読み込み直す</button>
+    </div>
+
     <div class="admin-main-layout">
         <div class="admin-left-col">
             <div id="locFormContainer">
@@ -346,6 +352,12 @@
     <div class="admin-tab-panel" id="tab-panel-places">
     <h2>🗺️ 場所（目印）編集（MAP_locations.js）</h2>
 
+    <div id="staleNoticePlaces" style="display:none; background:#fef3c7; border:1px solid #f59e0b; border-radius:8px; padding:12px 14px; margin-bottom:16px; font-size:13px; color:#78350f;">
+        <b>⚠️ このブラウザに残っている編集データが、js/data/MAP_locations.js と違います。</b>
+        <div style="margin:6px 0 10px; line-height:1.6;">js/data/MAP_locations.js の方が新しい時（ファイルを直接書き換えた後など）は、下のボタンで読み込み直してください。そのままコピーして保存すると、古い内容に戻ってしまいます。このブラウザで編集してまだ書き出していない時は、先に下の「コピー」で書き出してください。</div>
+        <button type="button" style="padding:8px 14px; font-size:13px; background:#b45309; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="reloadFromLocationJs()">🔄 MAP_locations.jsを読み込み直す</button>
+    </div>
+
     <div class="admin-main-layout">
         <div class="admin-left-col">
             <div id="placeFormContainer">
@@ -421,6 +433,12 @@
 
     <div class="admin-tab-panel" id="tab-panel-mapimages">
     <h2>🖼️ 背景地図 編集（map-config.js）</h2>
+
+    <div id="staleNoticeMapConfig" style="display:none; background:#fef3c7; border:1px solid #f59e0b; border-radius:8px; padding:12px 14px; margin-bottom:16px; font-size:13px; color:#78350f;">
+        <b>⚠️ このブラウザに残っている編集データが、js/map/map-config.js と違います。</b>
+        <div style="margin:6px 0 10px; line-height:1.6;">js/map/map-config.js の方が新しい時（ファイルを直接書き換えた後など）は、下のボタンで読み込み直してください。そのままコピーして保存すると、古い内容に戻ってしまいます。このブラウザで編集してまだ書き出していない時は、先に下の「コピー」で書き出してください。</div>
+        <button type="button" style="padding:8px 14px; font-size:13px; background:#b45309; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="reloadFromMapConfigJs()">🔄 map-config.jsを読み込み直す</button>
+    </div>
 
     <div class="admin-main-layout">
         <div class="admin-left-col">
@@ -514,23 +532,23 @@
     </div>
     </div><!-- /#tab-panel-mapimages -->
 
-<script src="js/data/config.js?v=gn80w1"></script>
+<script src="js/data/config.js?v=8cj6m5"></script>
 <script>
 // 非公開メンバー（GitHub に上げない js/data/config.private.js）。ローカルで開いた時だけ読み込む
 if (location.protocol === 'file:' || ['localhost', '127.0.0.1'].includes(location.hostname)) {
     document.write('<script src="js/data/config.private.js?t=' + Date.now() + '"><\/script>');
 }
 </script>
-<script src="js/data/MAP_member.js?v=gn80w1"></script>
+<script src="js/data/MAP_member.js?v=8cj6m5"></script>
 <!-- エリア番号から座標（区画の中心）を決めるために区画データも読み込む -->
-<script src="js/data/MAP_plots.js?v=gn80w1"></script>
-<script src="js/data/MAP_locations.js?v=gn80w1"></script>
-<script src="js/map/map-config.js?v=gn80w1"></script>
-<script src="js/admin/admin-members.js?v=gn80w1"></script>
-<script src="js/admin/admin-locations.js?v=gn80w1"></script>
-<script src="js/admin/admin-places.js?v=gn80w1"></script>
-<script src="js/admin/admin-mapimages.js?v=gn80w1"></script>
-<script src="js/admin/admin-tabs.js?v=gn80w1"></script>
+<script src="js/data/MAP_plots.js?v=8cj6m5"></script>
+<script src="js/data/MAP_locations.js?v=8cj6m5"></script>
+<script src="js/map/map-config.js?v=8cj6m5"></script>
+<script src="js/admin/admin-members.js?v=8cj6m5"></script>
+<script src="js/admin/admin-locations.js?v=8cj6m5"></script>
+<script src="js/admin/admin-places.js?v=8cj6m5"></script>
+<script src="js/admin/admin-mapimages.js?v=8cj6m5"></script>
+<script src="js/admin/admin-tabs.js?v=8cj6m5"></script>
 <script>
 initAdmin();
 initLocAdmin();

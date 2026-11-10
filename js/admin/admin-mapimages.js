@@ -249,6 +249,18 @@ function currentMapConfig() {
     return (window.MapApp && window.MapApp.mapConfig) || null;
 }
 
+// このブラウザに残っている背景地図・ウォーターマークの編集データが js/map/map-config.js と違う時に、タブの上のお知らせを出す
+// （showStaleNotice は admin-locations.js。項目の並び順は気にしない）
+function checkStaleMapConfig() {
+    const cfg = currentMapConfig();
+    const sorted = (o) => JSON.stringify(o, (k, v) => (v && typeof v === 'object' && !Array.isArray(v))
+        ? Object.keys(v).sort().reduce((a, key) => { a[key] = v[key]; return a; }, {}) : v);
+    const hasSaved = !!(localStorage.getItem('custom_map_images') || localStorage.getItem('custom_map_watermark'));
+    showStaleNotice('staleNoticeMapConfig', hasSaved && !!(cfg && cfg.mapImageList),
+        sorted({ images: mapImages, watermark: mapWatermark }),
+        sorted({ images: (cfg && cfg.mapImageList) || [], watermark: (cfg && cfg.watermark) || { enabled: true, lines: [] } }));
+}
+
 // js/map/map-config.js を直接手入力で編集した場合に、このページ側のキャッシュ(localStorage)を破棄して
 // 実際に読み込まれている内容（地図の一覧・ウォーターマーク）に同期し直す
 function reloadFromMapConfigJs() {
@@ -268,6 +280,7 @@ function reloadFromMapConfigJs() {
     renderMapImageList();
     renderWatermarkForm();
     updateMapConfigOutput();
+    checkStaleMapConfig();
     alert("js/map/map-config.js の内容を読み込み直しました！");
 }
 
@@ -288,6 +301,7 @@ async function initMapConfigAdmin() {
     document.getElementById('mc_opacity').value = "1";
     renderMapImageList();
     renderWatermarkForm();
+    checkStaleMapConfig();
 
     // 今の js/map/map-config.js を読み込んでおく（出力の土台にする）
     try {

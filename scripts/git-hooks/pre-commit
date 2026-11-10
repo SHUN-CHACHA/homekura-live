@@ -10,6 +10,17 @@ fi
 
 root="$(git rev-parse --show-toplevel)"
 
+# 作業途中（まだコミットに入れていない変更がある）の HTML ページがあったら、コミットを止めて知らせる。
+# 下のバージョン番号の付け直しはページをまるごとコミットに入れるので、止めないと作業途中の変更まで一緒に公開されてしまう
+dirty="$(git -c core.quotepath=false diff --name-only -- '*.html')"
+if [ -n "$dirty" ]; then
+    echo "コミットを止めました：作業途中の変更が残っている HTML ページがあります。"
+    echo "$dirty" | sed 's/^/  - /'
+    echo "このままだと、その変更も一緒にコミット（公開）されます。"
+    echo "一緒に入れてよければ git add してから、まだ入れたくなければ git stash で退避してから、もう一度コミットしてください。"
+    exit 1
+fi
+
 # メンバー名簿（js/data/config.js）を変えた時は、トップページの「PDF」ボタンで開く members.pdf も必ず作り直してコミットに含める
 if git diff --cached --name-only | grep -qx 'js/data/config.js'; then
     powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$root/scripts/make-members-pdf.ps1" || exit 1

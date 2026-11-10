@@ -211,6 +211,7 @@ function reloadFromMapMemberJs() {
     cancelLocEdit();
     renderLocList();
     updateMapMemberOutput();
+    checkStaleMapMembers();
     alert("js/data/MAP_member.js の内容を読み込み直しました！");
 }
 
@@ -223,4 +224,24 @@ function initLocAdmin() {
     }
     renderLocList();
     updateMapMemberOutput();
+    checkStaleMapMembers();
+}
+
+// このブラウザに残っている編集データと、実際に読み込んだファイルの内容が違う時に、タブの上のお知らせを出す（同じなら隠す）。
+// ファイルを直接書き換えた後（席替えなど）に管理画面を開くと古いデータのまま表示され、そのまま書き出すと元に戻ってしまうのを防ぐ。
+// 拠点マップ・場所（目印）・背景地図の各タブで共通（メンバーのタブは admin-members.js の checkStaleChannels）
+function showStaleNotice(noticeId, hasSaved, mineText, fileText) {
+    const notice = document.getElementById(noticeId);
+    if (!notice) return;
+    notice.style.display = (hasSaved && mineText !== fileText) ? 'block' : 'none';
+}
+
+// 拠点マップ：エリアと名前・アイコンだけを比べる（座標はエリア番号から自動で入るので気にしない。並び順も気にしない）
+function checkStaleMapMembers() {
+    const norm = (list) => JSON.stringify((list || [])
+        .map((m) => ['area', 'name', 'icon', 'name2', 'icon2', 'name3', 'icon3'].map((k) => String(m[k] || '')).join('|'))
+        .sort());
+    showStaleNotice('staleNoticeMapMember',
+        !!localStorage.getItem('custom_map_members') && typeof memberData !== 'undefined',
+        norm(mapMembers), norm(typeof memberData !== 'undefined' ? memberData : []));
 }

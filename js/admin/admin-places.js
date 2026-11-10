@@ -187,6 +187,7 @@ function reloadFromLocationJs() {
     cancelPlaceEdit();
     renderPlaceList();
     updateLocationOutput();
+    checkStalePlaces();
     alert("js/data/MAP_locations.js の内容を読み込み直しました！");
 }
 
@@ -199,4 +200,16 @@ function initPlaceAdmin() {
     }
     renderPlaceList();
     updateLocationOutput();
+    checkStalePlaces();
+}
+
+// このブラウザに残っている場所（目印）の編集データが js/data/MAP_locations.js と違う時に、タブの上のお知らせを出す
+// （showStaleNotice は admin-locations.js）
+function checkStalePlaces() {
+    const norm = (list) => JSON.stringify((list || [])
+        .map((p) => [p.name || '', p.icon || '', Number(p.x) || 0, Number(p.z) || 0].join('|'))
+        .sort());
+    showStaleNotice('staleNoticePlaces',
+        !!localStorage.getItem('custom_locations') && typeof locationData !== 'undefined',
+        norm(places), norm(typeof locationData !== 'undefined' ? locationData : []));
 }
