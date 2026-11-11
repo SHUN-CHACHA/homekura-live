@@ -3,7 +3,7 @@
 // window.MapApp.layoutDiagram として公開します。
 // 区画（js/data/MAP_plots.js）とメンバー（js/data/MAP_member.js）から、白地に色付きの枠と配信者名だけを描いた
 // 「配置図」を SVG で作ります。地図の選択肢で「配置図」を選ぶと、地図画像の代わりにこれを表示します。
-// メンバーが入っていないエリアには、エリア番号を表示します。
+// メンバーがいるエリアは「エリア番号（改行）名前」、入っていないエリアにはエリア番号だけを表示します。
 // ==========================================================
 (function () {
     window.MapApp = window.MapApp || {};
@@ -18,6 +18,7 @@
     const PLOT_INSET = 0.75;   // 枠線の太さ（1.5ブロック）の半分だけ内側に描き、線の外側を区画の端（48×48ブロック）にぴったり合わせる。隣り合う赤・オレンジの枠はくっつく
     const TEXT_PADDING = 3;    // 枠の内側の余白（ブロック数）
     const MAX_FONT_SIZE = 9;   // 名前の文字の大きさの上限（ブロック数）
+    const AREA_NO_FONT_SIZE = 8; // 名前の上に入れるエリア番号の文字の大きさ（ブロック数）
     const MIN_ONE_LINE = 7.5;  // これより小さくなる長い名前は2行に分ける
     // 自動では区切り位置がうまく決まらない名前だけ、2行に分ける位置をここで指定する
     const NAME_BREAKS = {
@@ -154,6 +155,9 @@
             const names = [member.name, member.name2, member.name3].filter((n) => n && n.trim() !== '');
             const { lines, sizes } = fitLines(names, w - TEXT_PADDING * 2);
             // 行ごとの高さ（文字の大きさ×1.25）を積み上げて、全体が枠の上下の真ん中に来るように並べる
+            // 名前の上に、エリア番号を1行で入れる（枠と同じ色）
+            lines.unshift(String(plot.area));
+            sizes.unshift(AREA_NO_FONT_SIZE);
             const heights = sizes.map((s) => s * 1.25);
             let top = centerZ - heights.reduce((a, c) => a + c, 0) / 2;
             lines.forEach((line, i) => {
@@ -161,7 +165,7 @@
                 top += heights[i];
                 const text = el('text', {
                     x: centerX, y: lineZ, 'text-anchor': 'middle', 'dominant-baseline': 'central',
-                    'font-size': sizes[i].toFixed(2), 'font-weight': 'bold', fill: '#2a2a2a'
+                    'font-size': sizes[i].toFixed(2), 'font-weight': 'bold', fill: i === 0 ? color : '#2a2a2a'
                 }, svg);
                 text.textContent = line;
             });
