@@ -10,7 +10,7 @@
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
 
-    <link rel="stylesheet" href="shared/theme.css?v=uaq1o1">
+    <link rel="stylesheet" href="shared/theme.css?v=i0t99e">
 
     <style>
         body {
@@ -593,8 +593,8 @@
 
 <div class="banner-container">
     <div class="header-logo-wrap">
-        <img src="img/logo.png?v=uaq1o1" alt="homeクラ" class="header-logo">
-        <img src="img/season3-text.png?v=uaq1o1" alt="Season３" class="header-season">
+        <img src="img/logo.png?v=i0t99e" alt="homeクラ" class="header-logo">
+        <img src="img/season3-text.png?v=i0t99e" alt="Season３" class="header-season">
     </div>
 </div>
 
@@ -604,13 +604,13 @@
 
 <div class="top-buttons-wrapper">
     <a href="https://charagp.full-comi.jp/event/lp/84?chara_event_id=7" class="yurugp-btn" target="_blank" title="世界ご当地キャラ グランプリ">
-        <img src="img/charagp-icon.jpg?v=uaq1o1" alt="世界ご当地キャラ グランプリ">
+        <img src="img/charagp-icon.jpg?v=i0t99e" alt="世界ご当地キャラ グランプリ">
     </a>
     <a href="https://github.com/SHUN-CHACHA/minecraft-tools/tree/main" class="yurugp-btn github-btn" target="_blank" title="旬茶オリジナルMInecraft Tools">
-        <img src="img/github-icon.png?v=uaq1o1" alt="旬茶オリジナルMInecraft Tools">
+        <img src="img/github-icon.png?v=i0t99e" alt="旬茶オリジナルMInecraft Tools">
     </a>
     <a href="https://modrinth.com/user/SHUNCHA" class="yurugp-btn modrinth-btn" target="_blank" title="Modrinth">
-        <img src="img/modrinth-icon.png?v=uaq1o1" alt="Modrinth">
+        <img src="img/modrinth-icon.png?v=i0t99e" alt="Modrinth">
     </a>
     <div class="top-buttons-stack">
         <div class="external-links-container">
@@ -627,7 +627,7 @@
         <div class="header-controls">
             <div class="controls-left">
                 <a href="https://shun-chacha.github.io/homekura-live/roulette.html" class="roulette-btn" target="_blank">
-                    <img src="img/roulette-icon.png?v=uaq1o1" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
+                    <img src="img/roulette-icon.png?v=i0t99e" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
                     旬茶作 ルーレット
                 </a>
             </div>
@@ -653,8 +653,8 @@
 </div>
 
 <div class="map-link-container">
-    <a href="minecraft_map.html?v=uaq1o1" target="_blank" class="map-link-btn">homeクラ Season3 メンバー拠点マップ</a>
-    <a href="season2/index.html?v=uaq1o1" class="map-link-btn" style="opacity:0.75;">📁 Season2（過去シーズン）はこちら</a>
+    <a href="minecraft_map.html?v=i0t99e" target="_blank" class="map-link-btn">homeクラ Season3 メンバー拠点マップ</a>
+    <a href="season2/index.html?v=i0t99e" class="map-link-btn" style="opacity:0.75;">📁 Season2（過去シーズン）はこちら</a>
 </div>
 
 <div class="main-wrapper">
@@ -698,15 +698,15 @@
 
     <div class="section-box" id="member">
         <div class="section-title">👥 メンバー一覧
-            <a href="members.pdf?v=uaq1o1" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
+            <a href="members.pdf?v=i0t99e" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
         </div>
         <div id="allList" class="list-container"></div>
     </div>
 </div>
 
-<script src="js/data/config.js?v=uaq1o1"></script>
-<script src="js/data/news.js?v=uaq1o1"></script>
-<script src="js/stats-owner.js?v=uaq1o1"></script>
+<script src="js/data/config.js?v=i0t99e"></script>
+<script src="js/data/news.js?v=i0t99e"></script>
+<script src="js/stats-owner.js?v=i0t99e"></script>
 
 <!-- 🧊 3Dスキンビューアー用ライブラリ（ESM配信のみのためmoduleで読み込みwindowに公開） -->
 <script type="module">
@@ -722,7 +722,7 @@ const PROXY_URL = (window.CONFIG?.YOUTUBE_PROXY_URL || '').replace(/\/$/, '');
 const CACHE_DURATION_MS         = window.CONFIG?.CACHE_DURATION_MS          ?? (5  * 60 * 1000);
 const CHANNEL_ICON_CACHE_DURATION_MS = window.CONFIG?.CHANNEL_ICON_CACHE_DURATION_MS ?? (24 * 60 * 60 * 1000);
 // 画像のキャッシュ対策用バージョン番号（コミット時に scripts/bump-asset-version.ps1 が自動更新する）
-const ASSET_VERSION = 'uaq1o1';
+const ASSET_VERSION = 'i0t99e';
 let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 let timeLeft = 600;
@@ -794,6 +794,27 @@ function statsQuery(src) {
     return window.HomekuraStats ? window.HomekuraStats.statsQuery(src) : `src=${src}`;
 }
 
+// Worker の /portal からまとめて受け取る。失敗したら少し待ってやり直す
+// （スマホが離席・スリープから戻った直後は通信がまだつながっていないことがある。すぐにチャンネルごとの取得に切り替えると、
+//   YouTube API を多く使ううえに、通信が不安定なまま一部のチャンネルしか取れず、欠けた画面になってしまうため）
+const PORTAL_RETRY_DELAYS_MS = [3000, 6000];
+async function fetchPortal(url) {
+    for (let attempt = 0; ; attempt++) {
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`portal HTTP ${res.status}`);
+            const shared = await res.json();
+            if (!shared || !Array.isArray(shared.vItems)) throw new Error('portal の形式が違います');
+            return { shared, cacheState: res.headers.get('X-Portal-Cache') };
+        } catch (e) {
+            if (attempt >= PORTAL_RETRY_DELAYS_MS.length) throw e;
+            const wait = PORTAL_RETRY_DELAYS_MS[attempt];
+            console.warn(`[homeクラ] まとめて取得できなかったので、${wait / 1000}秒後にやり直します:`, e);
+            await new Promise(r => setTimeout(r, wait));
+        }
+    }
+}
+
 // src: 何がきっかけの読み込みか（load=ページを開いた / auto=10分ごとの自動更新 / manual=更新ボタン / reserve=通知予約の切り替え / resume=離席から戻って再開）。
 //      Worker がアクセス統計に記録して、自動更新と人が開いたアクセスを区別できるようにする
 async function loadPortal(forceRefresh = false, src = 'load') {
@@ -822,12 +843,9 @@ async function loadPortal(forceRefresh = false, src = 'load') {
         const subs = channels.filter(c => c.id2).map(c => c.id2).join(',');
         // news：「だいたい週刊homeクラNEWS」バナー用に、タイトルにこの言葉が入った最新動画も返してもらう（js/data/news.js）
         const newsTag = (window.HOMEKURA_NEWS?.enabled && window.HOMEKURA_NEWS.titleTag) ? `&news=${encodeURIComponent(window.HOMEKURA_NEWS.titleTag)}` : '';
-        const res  = await fetch(`${PROXY_URL}/portal?ids=${ids}&subs=${subs}&ttl=600${newsTag}&${statsQuery(src)}`);
-        if (!res.ok) throw new Error(`portal HTTP ${res.status}`);
-        const shared = await res.json();
-        if (!shared || !Array.isArray(shared.vItems)) throw new Error('portal の形式が違います');
+        const { shared, cacheState } = await fetchPortal(`${PROXY_URL}/portal?ids=${ids}&subs=${subs}&ttl=600${newsTag}&${statsQuery(src)}`);
         localStorage.setItem('portal_cache', JSON.stringify({ timestamp: now, chInfoMap: shared.chInfoMap || {}, vItems: shared.vItems, newsItems: shared.newsItems || [] }));
-        console.log(`[homeクラ] ポータル: まとめて取得（Worker の保存: ${res.headers.get('X-Portal-Cache') || '不明'}）`);
+        console.log(`[homeクラ] ポータル: まとめて取得（Worker の保存: ${cacheState || '不明'}）`);
         renderGrids(shared.chInfoMap || {}, shared.vItems, shared.newsItems || []);
         return;
     } catch (e) {
@@ -868,6 +886,8 @@ async function loadPortal(forceRefresh = false, src = 'load') {
                     .then(r => r.json()).catch(() => null);
             })
         );
+        // 通信が途中で切れて取れなかったチャンネルがあるか（null＝届かなかった。動画のないチャンネルのエラー応答は null にならない）
+        let incomplete = playlistResults.some(r => r === null);
 
         const videoIds = playlistResults.flatMap(r => {
             const items = r?.items || [];
@@ -911,10 +931,23 @@ async function loadPortal(forceRefresh = false, src = 'load') {
                         .then(r => r.json()).catch(() => null)
                 )
             );
+            if (vResults.some(r => r === null)) incomplete = true;
             const fetched = vResults.flatMap(r => r?.items || []);
             // NEWS 用に足した動画は「新着動画」欄に出さないよう、newsItems として分けておく
             vItems = fetched.filter(v => videoIds.includes(v.id));
             newsItems = fetched.filter(v => newsIds.includes(v.id));
+        }
+
+        // 一部しか取れなかったときは保存せず、前回の完全な結果があればそちらを表示する。1分後にもう一度取りに行く
+        if (incomplete) {
+            console.warn('[homeクラ] 一部のチャンネルを取得できませんでした。前回の結果を表示し、1分後にやり直します');
+            timeLeft = Math.min(timeLeft, 60);
+            try {
+                const cached = JSON.parse(localStorage.getItem('portal_cache') || 'null');
+                if (cached) { renderGrids(cached.chInfoMap, cached.vItems, cached.newsItems); return; }
+            } catch (_) {}
+            renderGrids(chInfoMap, vItems, newsItems);
+            return;
         }
 
         // ── ポータルキャッシュ保存 ──────────────────────────────────────
