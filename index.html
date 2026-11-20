@@ -10,7 +10,7 @@
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
 
-    <link rel="stylesheet" href="shared/theme.css?v=klxad6">
+    <link rel="stylesheet" href="shared/theme.css?v=1f8t4k">
 
     <style>
         body {
@@ -102,24 +102,7 @@
             flex-wrap: wrap;
             row-gap: 10px;
         }
-        .controls-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; row-gap: 8px; }
         .controls-right { display: flex; align-items: center; gap: 12px; }
-
-        .roulette-btn {
-            text-decoration: none;
-            color: var(--secondary-text);
-            font-size: 13px;
-            font-weight: bold;
-            padding: 6px 14px;
-            border-radius: 20px;
-            background: var(--container-bg);
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-        }
-        .roulette-btn:hover { background: #fffbeb; color: #b45309; border-color: #fde68a; }
 
         .yurugp-btn {
             display: flex;
@@ -240,8 +223,11 @@
             padding: 12px; text-decoration: none; color: inherit; overflow: hidden;
             box-shadow: 0 4px 12px -2px rgba(45, 90, 39, 0.08); transition: transform 0.2s, box-shadow 0.2s;
         }
-        .news-banner:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(45, 90, 39, 0.12); }
-        .news-thumb-wrap { position: relative; flex: 0 0 40%; max-width: 360px; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background: #e6ede6; }
+        .news-banner:hover { box-shadow: 0 10px 15px -3px rgba(45, 90, 39, 0.12); }
+        /* 最新回（左：サムネイルと文字。押すと YouTube） */
+        .news-main { flex: 1; min-width: 0; display: flex; align-items: stretch; gap: 16px; text-decoration: none; color: inherit; }
+        .news-main:hover .news-title { color: var(--accent-blue); }
+        .news-thumb-wrap { position: relative; flex: 0 0 45%; max-width: 360px; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background: #e6ede6; }
         .news-thumb { width: 100%; height: 100%; object-fit: cover; display: block; }
         .news-play {
             position: absolute; inset: 0; margin: auto; width: 48px; height: 48px; border-radius: 50%;
@@ -251,10 +237,30 @@
         .news-label { align-self: flex-start; background: var(--accent-blue); color: #fff; font-size: 12px; font-weight: bold; padding: 3px 10px; border-radius: 12px; }
         .news-title { font-size: 16px; font-weight: 800; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         .news-meta { font-size: 12px; color: var(--secondary-text); }
+        /* これまでの回（右。広い画面だけ。最大3件と一覧へのリンク） */
+        .news-past { display: none; }
+        .news-past-head { font-size: 12px; font-weight: bold; color: var(--accent-blue); }
+        .news-past-list { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+        .news-past-item { display: flex; gap: 8px; text-decoration: none; color: inherit; border-radius: 6px; }
+        .news-past-item:hover .news-past-title { color: var(--accent-blue); }
+        .news-past-item img { flex: 0 0 80px; width: 80px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 5px; background: #e6ede6; }
+        .news-past-text { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+        .news-past-date { font-size: 11px; font-weight: bold; color: var(--secondary-text); }
+        .news-past-title { font-size: 12px; font-weight: bold; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .news-past-all { align-self: flex-end; font-size: 12px; font-weight: bold; color: var(--accent-blue); text-decoration: none; padding: 3px 10px; border: 1px solid var(--accent-blue); border-radius: 12px; }
+        .news-past-all:hover { background: var(--accent-blue); color: #fff; }
+        @media (min-width: 900px) {
+            .news-past { display: flex; flex-direction: column; gap: 6px; flex: 0 0 300px; padding-left: 16px; border-left: 1px dashed var(--border-color); }
+        }
+
         /* バナーと「過去の回」リンクをまとめた NEWS ブロック */
         .news-block { margin-bottom: 20px; }
         .news-list-link {
             display: flex; justify-content: flex-end; margin-top: 6px;
+        }
+        /* 広い画面では一覧へのリンクはバナーの右側にあるので、下のリンクはバナーが出ていない時だけ */
+        @media (min-width: 900px) {
+            .news-block:not(.no-banner) .news-list-link { display: none; }
         }
         .news-list-link a {
             font-size: 13px; font-weight: bold; color: var(--accent-blue); text-decoration: none;
@@ -262,7 +268,8 @@
         }
         .news-list-link a:hover { background: var(--accent-blue); color: #fff; }
         @media (max-width: 599px) {
-            .news-banner { gap: 10px; padding: 8px; border-radius: 12px; }
+            .news-banner { padding: 8px; border-radius: 12px; }
+            .news-main { gap: 10px; }
             .news-thumb-wrap { flex: 0 0 42%; border-radius: 8px; }
             .news-play { width: 30px; height: 30px; font-size: 13px; padding-left: 2px; }
             .news-body { gap: 3px; }
@@ -595,6 +602,14 @@
             transition: opacity 0.2s, transform 0.2s;
         }
         .map-link-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+        .map-link-btn .ml-short { display: none; }
+        /* スマホでは短い文字にして、Season3 と Season2 を1行に並べる */
+        @media (max-width: 599px) {
+            .map-link-container { display: flex; justify-content: center; gap: 8px; padding: 0 12px; }
+            .map-link-btn { padding: 10px 14px; font-size: 14px; white-space: nowrap; }
+            .map-link-btn .ml-long { display: none; }
+            .map-link-btn .ml-short { display: inline; }
+        }
     </style>
     <!-- Cloudflare Web Analytics (要: 実トークンに差し替え。Cloudflareダッシュボード > Web Analytics > Add a site で取得) -->
     <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "ef48e3b395a94deb8375d839e1887bb2"}'></script>
@@ -604,8 +619,8 @@
 
 <div class="banner-container">
     <div class="header-logo-wrap">
-        <img src="img/logo.png?v=klxad6" alt="homeクラ" class="header-logo">
-        <img src="img/season3-text.png?v=klxad6" alt="Season３" class="header-season">
+        <img src="img/logo.png?v=1f8t4k" alt="homeクラ" class="header-logo">
+        <img src="img/season3-text.png?v=1f8t4k" alt="Season３" class="header-season">
     </div>
 </div>
 
@@ -615,13 +630,13 @@
 
 <div class="top-buttons-wrapper">
     <a href="https://charagp.full-comi.jp/event/lp/84?chara_event_id=7" class="yurugp-btn" target="_blank" title="世界ご当地キャラ グランプリ">
-        <img src="img/charagp-icon.jpg?v=klxad6" alt="世界ご当地キャラ グランプリ">
+        <img src="img/charagp-icon.jpg?v=1f8t4k" alt="世界ご当地キャラ グランプリ">
     </a>
     <a href="https://github.com/SHUN-CHACHA/minecraft-tools/tree/main" class="yurugp-btn github-btn" target="_blank" title="旬茶オリジナルMInecraft Tools">
-        <img src="img/github-icon.png?v=klxad6" alt="旬茶オリジナルMInecraft Tools">
+        <img src="img/github-icon.png?v=1f8t4k" alt="旬茶オリジナルMInecraft Tools">
     </a>
     <a href="https://modrinth.com/user/SHUNCHA" class="yurugp-btn modrinth-btn" target="_blank" title="Modrinth">
-        <img src="img/modrinth-icon.png?v=klxad6" alt="Modrinth">
+        <img src="img/modrinth-icon.png?v=1f8t4k" alt="Modrinth">
     </a>
     <div class="top-buttons-stack">
         <div class="external-links-container">
@@ -636,12 +651,6 @@
         </div>
 
         <div class="header-controls">
-            <div class="controls-left">
-                <a href="https://shun-chacha.github.io/homekura-live/roulette.html" class="roulette-btn" target="_blank">
-                    <img src="img/roulette-icon.png?v=klxad6" alt="" style="width: 16px; height: 16px; vertical-align: middle;">
-                    旬茶作 ルーレット
-                </a>
-            </div>
             <div class="controls-right">
                 <button class="btn-qr" onclick="openQrModal()" title="QRコードを表示">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -664,14 +673,15 @@
 </div>
 
 <div class="map-link-container">
-    <a href="minecraft_map.html?v=klxad6" target="_blank" class="map-link-btn">homeクラ Season3 メンバー拠点マップ</a>
-    <a href="season2/index.html?v=klxad6" class="map-link-btn" style="opacity:0.75;">📁 Season2（過去シーズン）はこちら</a>
+    <a href="minecraft_map.html?v=1f8t4k" target="_blank" class="map-link-btn"><span class="ml-long">homeクラ Season3 メンバー拠点マップ</span><span class="ml-short">🗺️ Season3拠点MAP</span></a>
+    <a href="season2/index.html?v=1f8t4k" class="map-link-btn" style="opacity:0.75;"><span class="ml-long">📁 Season2（過去シーズン）はこちら</span><span class="ml-short">📁 Season2</span></a>
 </div>
 
 <div class="main-wrapper">
     <!-- homeクラワールドの速報動画（js/data/news.js で設定。ナナホシナナさん制作「だいたい週刊homeクラNEWS」）と過去の回一覧へのリンク -->
     <div id="newsBlock" class="news-block" style="display: none;">
-    <a id="newsBanner" class="news-banner" href="#" target="_blank" rel="noopener" style="display: none;">
+    <div id="newsBanner" class="news-banner" style="display: none;">
+    <a id="newsMain" class="news-main" href="#" target="_blank" rel="noopener">
         <div class="news-thumb-wrap">
             <img id="newsThumb" class="news-thumb" src="" alt="" loading="lazy">
             <span class="news-play" aria-hidden="true">▶</span>
@@ -682,7 +692,13 @@
             <div id="newsMeta" class="news-meta"></div>
         </div>
     </a>
-    <div class="news-list-link"><a href="news.html?v=klxad6">📚 だいたい週刊homeクラNEWS 過去の回一覧 →</a></div>
+    <div class="news-past">
+        <div class="news-past-head">📚 これまでの回</div>
+        <div id="newsPastList" class="news-past-list"></div>
+        <a class="news-past-all" href="news.html?v=1f8t4k">過去の回一覧 →</a>
+    </div>
+    </div>
+    <div class="news-list-link"><a href="news.html?v=1f8t4k">📚 だいたい週刊homeクラNEWS 過去の回一覧 →</a></div>
     </div>
 
     <div id="homekuraLiveSection" class="section-box" style="display: none;">
@@ -712,16 +728,16 @@
 
     <div class="section-box" id="member">
         <div class="section-title">👥 メンバー一覧
-            <a href="members.pdf?v=klxad6" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
+            <a href="members.pdf?v=1f8t4k" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
         </div>
         <div id="allList" class="list-container"></div>
     </div>
 </div>
 
-<script src="js/data/config.js?v=klxad6"></script>
-<script src="js/data/news.js?v=klxad6"></script>
-<script src="js/news-list.js?v=klxad6"></script>
-<script src="js/stats-owner.js?v=klxad6"></script>
+<script src="js/data/config.js?v=1f8t4k"></script>
+<script src="js/data/news.js?v=1f8t4k"></script>
+<script src="js/news-list.js?v=1f8t4k"></script>
+<script src="js/stats-owner.js?v=1f8t4k"></script>
 
 <!-- 🧊 3Dスキンビューアー用ライブラリ（ESM配信のみのためmoduleで読み込みwindowに公開） -->
 <script type="module">
@@ -737,7 +753,7 @@ const PROXY_URL = (window.CONFIG?.YOUTUBE_PROXY_URL || '').replace(/\/$/, '');
 const CACHE_DURATION_MS         = window.CONFIG?.CACHE_DURATION_MS          ?? (5  * 60 * 1000);
 const CHANNEL_ICON_CACHE_DURATION_MS = window.CONFIG?.CHANNEL_ICON_CACHE_DURATION_MS ?? (24 * 60 * 60 * 1000);
 // 画像のキャッシュ対策用バージョン番号（コミット時に scripts/bump-asset-version.ps1 が自動更新する）
-const ASSET_VERSION = 'klxad6';
+const ASSET_VERSION = '1f8t4k';
 let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 let timeLeft = 600;
@@ -799,6 +815,8 @@ function init() {
     channels = channels.filter(c => !c.hidden);
 
     renderNewsBanner([]);
+    // Worker が記録してきた NEWS の回（「これまでの回」用）。届いたら描き直す
+    if (window.fetchNewsArchive) window.fetchNewsArchive().then(a => { newsArchive = a; renderNewsBanner(lastNewsVideos); });
     loadPortal();
     setInterval(checkNotifications, 30000);
 }
@@ -988,29 +1006,62 @@ function isHomekuraVideo(v) {
 }
 
 // 「LIVE中」の上の速報動画バナー（設定は js/data/news.js）。
-// news.js の episodes と取得した動画のうち、いちばん新しい「だいたい週刊homeクラNEWS」を出す。
+// news.js の episodes・Worker の記録（/news）・取得した動画のうち、いちばん新しい「だいたい週刊homeクラNEWS」を出し、
+// 広い画面では右側にその前の回を最大3件並べる。
 // 公開から maxDays 日を過ぎたらバナーは消し、「過去の回一覧」のリンクだけ残す
+let newsArchive = [];
+let lastNewsVideos = [];
+const NEWS_PAST_MAX = 3;
 function renderNewsBanner(vItems) {
+    lastNewsVideos = vItems || [];
     const cfg = window.HOMEKURA_NEWS;
     const block = document.getElementById('newsBlock');
     const banner = document.getElementById('newsBanner');
     if (!block || !banner || !cfg || !cfg.enabled || !window.collectNewsEpisodes) return;
 
-    const episodes = window.collectNewsEpisodes(vItems);
+    const episodes = window.collectNewsEpisodes(lastNewsVideos, newsArchive);
     block.style.display = episodes.length ? '' : 'none';
     const pick = episodes[0];
     const d = pick?.publishedAt ? new Date(pick.publishedAt) : null;
     const maxMs = (cfg.maxDays ?? 7) * 24 * 60 * 60 * 1000;
     const expired = d && (Date.now() - d.getTime() > maxMs);
-    if (!pick || expired) { banner.style.display = 'none'; return; }
+    const show = Boolean(pick && !expired);
+    block.classList.toggle('no-banner', !show);
+    if (!show) { banner.style.display = 'none'; return; }
 
-    banner.href = `https://youtube.com/watch?v=${encodeURIComponent(pick.id)}`;
+    document.getElementById('newsMain').href = `https://youtube.com/watch?v=${encodeURIComponent(pick.id)}`;
     const thumb = document.getElementById('newsThumb');
     thumb.src = window.newsThumbUrl(pick);
     thumb.alt = pick.title || '';
     document.getElementById('newsTitle').textContent = pick.title || '';
     document.getElementById('newsMeta').textContent =
         `制作：${cfg.creatorName || ''}${d ? `　/　${d.getMonth()+1}/${d.getDate()} 公開` : ''}`;
+
+    // これまでの回（最新回の前から最大3件）
+    const list = document.getElementById('newsPastList');
+    list.replaceChildren(...episodes.slice(1, 1 + NEWS_PAST_MAX).map(ep => {
+        const pd = ep.publishedAt ? new Date(ep.publishedAt) : null;
+        const a = document.createElement('a');
+        a.className = 'news-past-item';
+        a.href = `https://youtube.com/watch?v=${encodeURIComponent(ep.id)}`;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        const img = document.createElement('img');
+        img.src = window.newsThumbUrl(ep);
+        img.alt = '';
+        img.loading = 'lazy';
+        const text = document.createElement('div');
+        text.className = 'news-past-text';
+        const date = document.createElement('div');
+        date.className = 'news-past-date';
+        date.textContent = pd ? `${pd.getMonth()+1}/${pd.getDate()} 公開` : '';
+        const title = document.createElement('div');
+        title.className = 'news-past-title';
+        title.textContent = ep.title || '';
+        text.append(date, title);
+        a.append(img, text);
+        return a;
+    }));
     banner.style.display = '';
 }
 
