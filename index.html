@@ -10,7 +10,7 @@
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
 
-    <link rel="stylesheet" href="shared/theme.css?v=1f8t4k">
+    <link rel="stylesheet" href="shared/theme.css?v=oqiwl1">
 
     <style>
         body {
@@ -181,17 +181,16 @@
         }
         .site-link-btn.maguro-btn:hover { background: #eab446; border-color: #4a2f0a; transform: translateY(-1px); }
 
-        /* スマホ幅：丸アイコンを1段目に並べ、リンクボタン群は2段目で横幅いっぱいに使う */
+        /* スマホ幅：GitHub・Modrinth は出さない。ご当地キャラのアイコンの右に
+           「homeクラ LIVE!」「まぐにぃさんのページ」を縦に2つ並べ、QR・更新の行はその下に横幅いっぱいで置く */
         @media (max-width: 599px) {
-            .top-buttons-wrapper { flex-wrap: wrap; justify-content: center; row-gap: 12px; }
-            .top-buttons-stack { flex: 1 1 100%; }
-        }
-
-        @media (max-width: 420px) {
-            .site-link-btn { padding: 8px 6px; gap: 5px; height: 40px; }
-            .site-link-btn .sl-icon { font-size: 15px; }
-            .site-link-btn .sl-line1 { font-size: 11px; }
-            .yurugp-btn { width: 64px; height: 64px; }
+            .top-buttons-wrapper { flex-wrap: wrap; align-items: center; gap: 10px; row-gap: 12px; }
+            .github-btn, .modrinth-btn { display: none; }
+            .top-buttons-stack { display: contents; }
+            .yurugp-btn { width: 88px; height: 88px; }
+            .external-links-container { flex: 1 1 0; min-width: 0; flex-direction: column; gap: 8px; }
+            .site-link-btn { flex: none; height: 40px; }
+            .header-controls { flex: 1 1 100%; }
         }
 
         .btn-tool {
@@ -619,8 +618,8 @@
 
 <div class="banner-container">
     <div class="header-logo-wrap">
-        <img src="img/logo.png?v=1f8t4k" alt="homeクラ" class="header-logo">
-        <img src="img/season3-text.png?v=1f8t4k" alt="Season３" class="header-season">
+        <img src="img/logo.png?v=oqiwl1" alt="homeクラ" class="header-logo">
+        <img src="img/season3-text.png?v=oqiwl1" alt="Season３" class="header-season">
     </div>
 </div>
 
@@ -630,13 +629,13 @@
 
 <div class="top-buttons-wrapper">
     <a href="https://charagp.full-comi.jp/event/lp/84?chara_event_id=7" class="yurugp-btn" target="_blank" title="世界ご当地キャラ グランプリ">
-        <img src="img/charagp-icon.jpg?v=1f8t4k" alt="世界ご当地キャラ グランプリ">
+        <img src="img/charagp-icon.jpg?v=oqiwl1" alt="世界ご当地キャラ グランプリ">
     </a>
     <a href="https://github.com/SHUN-CHACHA/minecraft-tools/tree/main" class="yurugp-btn github-btn" target="_blank" title="旬茶オリジナルMInecraft Tools">
-        <img src="img/github-icon.png?v=1f8t4k" alt="旬茶オリジナルMInecraft Tools">
+        <img src="img/github-icon.png?v=oqiwl1" alt="旬茶オリジナルMInecraft Tools">
     </a>
     <a href="https://modrinth.com/user/SHUNCHA" class="yurugp-btn modrinth-btn" target="_blank" title="Modrinth">
-        <img src="img/modrinth-icon.png?v=1f8t4k" alt="Modrinth">
+        <img src="img/modrinth-icon.png?v=oqiwl1" alt="Modrinth">
     </a>
     <div class="top-buttons-stack">
         <div class="external-links-container">
@@ -673,8 +672,8 @@
 </div>
 
 <div class="map-link-container">
-    <a href="minecraft_map.html?v=1f8t4k" target="_blank" class="map-link-btn"><span class="ml-long">homeクラ Season3 メンバー拠点マップ</span><span class="ml-short">🗺️ Season3拠点MAP</span></a>
-    <a href="season2/index.html?v=1f8t4k" class="map-link-btn" style="opacity:0.75;"><span class="ml-long">📁 Season2（過去シーズン）はこちら</span><span class="ml-short">📁 Season2</span></a>
+    <a href="minecraft_map.html?v=oqiwl1" target="_blank" class="map-link-btn"><span class="ml-long">homeクラ Season3 メンバー拠点マップ</span><span class="ml-short">🗺️ Season3拠点MAP</span></a>
+    <a href="season2/index.html?v=oqiwl1" class="map-link-btn" style="opacity:0.75;"><span class="ml-long">📁 Season2（過去シーズン）はこちら</span><span class="ml-short">📁 Season2</span></a>
 </div>
 
 <div class="main-wrapper">
@@ -695,10 +694,10 @@
     <div class="news-past">
         <div class="news-past-head">📚 これまでの回</div>
         <div id="newsPastList" class="news-past-list"></div>
-        <a class="news-past-all" href="news.html?v=1f8t4k">過去の回一覧 →</a>
+        <a class="news-past-all" href="news.html?v=oqiwl1">過去の回一覧 →</a>
     </div>
     </div>
-    <div class="news-list-link"><a href="news.html?v=1f8t4k">📚 だいたい週刊homeクラNEWS 過去の回一覧 →</a></div>
+    <div class="news-list-link"><a href="news.html?v=oqiwl1">📚 だいたい週刊homeクラNEWS 過去の回一覧 →</a></div>
     </div>
 
     <div id="homekuraLiveSection" class="section-box" style="display: none;">
@@ -728,16 +727,16 @@
 
     <div class="section-box" id="member">
         <div class="section-title">👥 メンバー一覧
-            <a href="members.pdf?v=1f8t4k" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
+            <a href="members.pdf?v=oqiwl1" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
         </div>
         <div id="allList" class="list-container"></div>
     </div>
 </div>
 
-<script src="js/data/config.js?v=1f8t4k"></script>
-<script src="js/data/news.js?v=1f8t4k"></script>
-<script src="js/news-list.js?v=1f8t4k"></script>
-<script src="js/stats-owner.js?v=1f8t4k"></script>
+<script src="js/data/config.js?v=oqiwl1"></script>
+<script src="js/data/news.js?v=oqiwl1"></script>
+<script src="js/news-list.js?v=oqiwl1"></script>
+<script src="js/stats-owner.js?v=oqiwl1"></script>
 
 <!-- 🧊 3Dスキンビューアー用ライブラリ（ESM配信のみのためmoduleで読み込みwindowに公開） -->
 <script type="module">
@@ -753,7 +752,7 @@ const PROXY_URL = (window.CONFIG?.YOUTUBE_PROXY_URL || '').replace(/\/$/, '');
 const CACHE_DURATION_MS         = window.CONFIG?.CACHE_DURATION_MS          ?? (5  * 60 * 1000);
 const CHANNEL_ICON_CACHE_DURATION_MS = window.CONFIG?.CHANNEL_ICON_CACHE_DURATION_MS ?? (24 * 60 * 60 * 1000);
 // 画像のキャッシュ対策用バージョン番号（コミット時に scripts/bump-asset-version.ps1 が自動更新する）
-const ASSET_VERSION = '1f8t4k';
+const ASSET_VERSION = 'oqiwl1';
 let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 let timeLeft = 600;
