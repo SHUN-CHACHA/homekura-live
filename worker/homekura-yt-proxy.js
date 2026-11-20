@@ -15,6 +15,13 @@
 //             後から別の動画が出た後でも見つけられるようにするため）。省略時は newsItems なし
 //
 //   返す内容：{ timestamp, chInfoMap, vItems, newsItems }
+//   ※ news を付けた時は、見つけた回（公開済みのもの）を KV に記録していく（下の /news で一覧を返すため）
+//
+// ■ /news（「だいたい週刊homeクラNEWS」の過去の回の一覧。YouTube API は使わない）
+//   例：/news?tag=だいたい週刊homeクラNEWS
+//     tag : /portal の news と同じ言葉
+//   /portal が見つけて記録してきた回を、新しい順に返す。記録は期限なしで残る（KV がない時は残らない）
+//   返す内容：{ episodes: [{ id, title, publishedAt, channelId, thumb }] }
 //
 // ■ /channels・/playlistItems・/videos（これまでどおりの中継。キャッシュなし）
 //   古いページ（ブラウザに残っている古いJSなど）が動き続けるように残している。YouTube に渡す項目は決めたものだけ。
@@ -46,6 +53,7 @@ const ICON_TTL = 86400;            // チャンネルアイコンは24時間
 const MAX_CHANNELS = 80;           // 1回に指定できるチャンネル数の上限（いたずらで大量に呼ばれないように）
 const CHANNEL_ID_RE = /^UC[\w-]{22}$/;
 const NEWS_TAG_MAX = 40;           // news（タイトルで探す言葉）の最大文字数
+const NEWS_ARCHIVE_MAX = 500;      // /news に記録しておく回の上限（週1回なら約10年分）
 
 // タイトル比較用：全角・半角と大文字・小文字の違いをなくす（サイト側の比較と同じ）
 function normTitle(s) {
@@ -133,11 +141,12 @@ async function storeGet(env, key) {
     return hit ? hit.json() : null;
 }
 
-async function storePut(env, key, value) {
+// permanent：期限なしで残す（NEWS の回の記録用）。KV がない時は残し続けられないので、ほかと同じ7日
+async function storePut(env, key, value, { permanent = false } = {}) {
     // 古いデータも「YouTube API が失敗した時の予備」として使うので、保存期間より長め（7日）に残しておく
     const body = JSON.stringify(value);
     if (env.PORTAL_CACHE) {
-        await env.PORTAL_CACHE.put(key, body, { expirationTtl: 7 * 86400 });
+        await env.PORTAL_CACHE.put(key, body, permanent ? {} : { expirationTtl: 7 * 86400 });
         return;
     }
     await caches.default.put(`https://portal-cache.internal/${key}`, new Response(body, {
@@ -149,6 +158,52 @@ async function hashKey(prefix, text) {
     const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
     const hex = Array.from(new Uint8Array(digest)).slice(0, 16).map((b) => b.toString(16).padStart(2, '0')).join('');
     return `${prefix}:${hex}`;
+}
+
+// ---------- 「だいたい週刊homeクラNEWS」の回の記録（期限なし） ----------
+function newsArchiveKey(tag) {
+    return hashKey('news-archive', normTitle(tag));
+}
+
+async function getNewsArchive(env, tag) {
+    return (await storeGet(env, await newsArchiveKey(tag))) || { episodes: [] };
+}
+
+// /portal が見つけた回のうち、公開済み（配信中・配信予定ではない）でまだ記録していないものを足す。
+// 何も増えない時は書き込まない（KV の書き込み回数を増やさないため）
+async function recordNewsEpisodes(env, tag, newsItems) {
+    const found = (newsItems || []).filter((v) => v?.id && v.snippet?.liveBroadcastContent === 'none');
+    if (!found.length) return;
+    const key = await newsArchiveKey(tag);
+    const archive = (await storeGet(env, key)) || { episodes: [] };
+    const byId = new Map(archive.episodes.map((e) => [e.id, e]));
+    let changed = false;
+    found.forEach((v) => {
+        const sn = v.snippet;
+        const entry = {
+            id: v.id,
+            title: sn.title || '',
+            publishedAt: sn.publishedAt || '',
+            channelId: sn.channelId || '',
+            thumb: sn.thumbnails?.maxres?.url || sn.thumbnails?.high?.url || ''
+        };
+        const old = byId.get(v.id);
+        if (old && old.title === entry.title && old.thumb === entry.thumb) return;
+        byId.set(v.id, entry);
+        changed = true;
+    });
+    if (!changed) return;
+    const episodes = [...byId.values()]
+        .sort((a, b) => new Date(b.publishedAt || 0) - new Date(a.publishedAt || 0))
+        .slice(0, NEWS_ARCHIVE_MAX);
+    await storePut(env, key, { updatedAt: Date.now(), episodes }, { permanent: true });
+}
+
+async function handleNews(request, env, url) {
+    const tag = (url.searchParams.get('tag') || '').trim().slice(0, NEWS_TAG_MAX);
+    if (!tag) return json(request, env, { error: 'tag の指定がありません' }, 400);
+    const archive = await getNewsArchive(env, tag);
+    return json(request, env, { episodes: archive.episodes || [] });
 }
 
 function parseIds(value) {
@@ -199,13 +254,14 @@ async function getVideos(env, playlistChannelIds, newsTag = '') {
         return items.slice(0, 2).map((i) => i.snippet?.resourceId?.videoId).filter(Boolean);
     });
 
-    // NEWS：各チャンネルの直近10本（新しい順）から、タイトルに newsTag が入った最初の1本（＝最新）
+    // NEWS：各チャンネルの直近10本（新しい順）から、タイトルに newsTag が入った最初の1本（＝最新）。
+    // 最新が配信予定・配信中の枠の時は、公開済みの最新回も一緒に取る（過去の回の記録から漏れないように）
     const tag = normTitle(newsTag);
-    const newsIds = !tag ? [] : playlistResults.flatMap((r) => {
-        const hit = (r?.items || []).find((i) => normTitle(i.snippet?.title).includes(tag));
-        const id = hit?.snippet?.resourceId?.videoId;
-        return id ? [id] : [];
-    });
+    const newsIds = !tag ? [] : [...new Set(playlistResults.flatMap((r) => {
+        const hits = (r?.items || []).filter((i) => normTitle(i.snippet?.title).includes(tag));
+        const published = hits.find((i) => i.snippet?.liveBroadcastContent === 'none');
+        return [hits[0], published].map((i) => i?.snippet?.resourceId?.videoId).filter(Boolean);
+    }))];
 
     const allIds = [...new Set([...videoIds, ...newsIds])];
     const fetched = [];
@@ -245,6 +301,7 @@ async function handlePortal(request, env, ctx, url) {
         const [chInfoMap, { vItems, newsItems }] = await Promise.all([getIcons(env, ids, now), getVideos(env, [...ids, ...subs], newsTag)]);
         const fresh = { timestamp: now, chInfoMap, vItems, newsItems };
         ctx.waitUntil(storePut(env, key, fresh));
+        if (newsTag) ctx.waitUntil(recordNewsEpisodes(env, newsTag, newsItems).catch((e) => console.error('recordNewsEpisodes failed:', e)));
         return json(request, env, fresh, 200, { 'X-Portal-Cache': 'miss' });
     } catch (e) {
         // YouTube API が失敗した時（割り当て切れなど）は、古くても保存してある結果を返す
@@ -290,9 +347,11 @@ export default {
         }
 
         const path = url.pathname.replace(/^\/+|\/+$/g, '');
-        if (path !== 'portal' && !ALLOWED_PARAMS[path]) {
+        if (path !== 'portal' && path !== 'news' && !ALLOWED_PARAMS[path]) {
             return json(request, env, { error: 'Unknown endpoint' }, 404);
         }
+        // /news は記録した一覧を返すだけで YouTube API を使わない
+        if (path === 'news') return handleNews(request, env, url);
         if (!getApiKey(env)) {
             return json(request, env, { error: 'Server not configured (missing YOUTUBE_API_KEY secret)' }, 500);
         }

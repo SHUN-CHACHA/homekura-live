@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>だいたい週刊homeクラNEWS 過去の回 | homeクラ合衆国Season3</title>
+    <link rel="icon" href="https://shun-chacha.github.io/homekura-live/img/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="https://shun-chacha.github.io/homekura-live/img/icon.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/img/apple-touch-icon.png">
+    <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
+    <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
+    <link rel="stylesheet" href="shared/theme.css?v=klxad6">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 60px;
+        }
+
+        /* ── ヘッダー・ナビ（機能一覧と同じ） ── */
+        .banner-container {
+            width: 100%; background: var(--green); aspect-ratio: 16 / 1.75;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .header-logo { height: 75%; width: auto; object-fit: contain; filter: drop-shadow(0px 2px 6px rgba(0,0,0,0.15)); }
+        .nav-bar {
+            background: var(--surface); border-bottom: 1px solid var(--border);
+            padding: 10px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        }
+        .nav-bar a {
+            text-decoration: none; font-size: 13px; font-weight: bold; color: var(--sub);
+            padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg); transition: 0.2s;
+        }
+        .nav-bar a:hover { background: var(--green-lt); color: var(--green); border-color: var(--green); }
+        .nav-bar a.current { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+        /* ── ページタイトル ── */
+        .page-title-area { max-width: 960px; margin: 28px auto 0; padding: 0 16px; }
+        .page-title-area h1 { font-size: 22px; font-weight: 900; color: var(--blue); }
+        .page-title-area p { font-size: 13px; color: var(--sub); margin-top: 4px; }
+        .page-title-area p a { color: var(--blue); }
+
+        /* ── 回の一覧 ── */
+        .episode-grid {
+            max-width: 960px; margin: 20px auto 0; padding: 0 16px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;
+        }
+        .episode-card {
+            display: flex; flex-direction: column; text-decoration: none; color: inherit;
+            background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+            box-shadow: 0 4px 12px -2px rgba(45, 90, 39, 0.06); transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .episode-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(45, 90, 39, 0.12); border-color: var(--blue); }
+        .episode-card.latest { border: 2px solid var(--blue); }
+        .episode-thumb-wrap { position: relative; aspect-ratio: 16 / 9; background: #e6ede6; }
+        .episode-thumb { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .episode-badge {
+            position: absolute; top: 8px; left: 8px; background: var(--blue); color: #fff;
+            font-size: 11px; font-weight: bold; padding: 2px 9px; border-radius: 10px;
+        }
+        .episode-body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 4px; }
+        .episode-date { font-size: 12px; font-weight: bold; color: var(--blue); }
+        .episode-title { font-size: 14px; font-weight: 800; line-height: 1.45; }
+        .episode-empty { max-width: 960px; margin: 20px auto 0; padding: 0 16px; color: var(--sub); font-size: 14px; }
+
+        @media (max-width: 599px) {
+            .page-title-area h1 { font-size: 18px; }
+            .episode-grid { grid-template-columns: 1fr; gap: 12px; }
+        }
+    </style>
+    <!-- Cloudflare Web Analytics (要: 実トークンに差し替え。Cloudflareダッシュボード > Web Analytics > Add a site で取得) -->
+    <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "ef48e3b395a94deb8375d839e1887bb2"}'></script>
+    <!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+
+<!-- バナー -->
+<div class="banner-container">
+    <img src="img/logo.png?v=klxad6" alt="homeクラ" class="header-logo">
+</div>
+
+<!-- ナビゲーション -->
+<nav class="nav-bar">
+    <a href="index.html?v=klxad6">🏠 ポータル</a>
+    <a href="minecraft_map.html?v=klxad6">🗺️ 拠点マップ</a>
+    <a href="map_compare.html?v=klxad6">🔍 地図の比較</a>
+    <a href="news.html?v=klxad6" class="current">📰 NEWS 過去の回</a>
+</nav>
+
+<!-- ページタイトル -->
+<div class="page-title-area">
+    <h1>📰 だいたい週刊homeクラNEWS 過去の回</h1>
+    <p id="newsLead">homeクラワールドの出来事をまとめたニュース動画です（制作：<a href="https://www.youtube.com/channel/UCncsOsnMBAAaYb6WidBYIDw" target="_blank" rel="noopener">ナナホシナナ</a>さん）。</p>
+</div>
+
+<div id="episodeGrid" class="episode-grid"></div>
+<p id="episodeEmpty" class="episode-empty" style="display: none;">まだ回がありません。</p>
+
+<script src="js/data/config.js?v=klxad6"></script>
+<script src="js/stats-owner.js?v=klxad6"></script>
+<script src="js/data/news.js?v=klxad6"></script>
+<script src="js/news-list.js?v=klxad6"></script>
+<script>
+// 回の一覧を描く。js/data/news.js の episodes に、Worker が記録してきた回（/news）と、
+// トップページで取得した最新動画（ブラウザに保存した portal_cache）を合わせる
+(async function () {
+    let videos = [];
+    try {
+        const cached = JSON.parse(localStorage.getItem('portal_cache') || 'null');
+        if (cached) videos = [...(cached.vItems || []), ...(cached.newsItems || [])];
+    } catch (e) { /* 保存したものが読めなくても、news.js の回だけで表示する */ }
+
+    const episodes = window.collectNewsEpisodes(videos, await window.fetchNewsArchive());
+    const grid = document.getElementById('episodeGrid');
+    if (!episodes.length) { document.getElementById('episodeEmpty').style.display = ''; return; }
+
+    episodes.forEach((ep, i) => {
+        const d = ep.publishedAt ? new Date(ep.publishedAt) : null;
+        const a = document.createElement('a');
+        a.className = 'episode-card' + (i === 0 ? ' latest' : '');
+        a.href = `https://youtube.com/watch?v=${encodeURIComponent(ep.id)}`;
+        a.target = '_blank';
+        a.rel = 'noopener';
+
+        const wrap = document.createElement('div');
+        wrap.className = 'episode-thumb-wrap';
+        const img = document.createElement('img');
+        img.className = 'episode-thumb';
+        img.src = window.newsThumbUrl(ep);
+        img.alt = ep.title;
+        img.loading = 'lazy';
+        wrap.appendChild(img);
+        if (i === 0) {
+            const badge = document.createElement('span');
+            badge.className = 'episode-badge';
+            badge.textContent = '最新';
+            wrap.appendChild(badge);
+        }
+
+        const body = document.createElement('div');
+        body.className = 'episode-body';
+        const date = document.createElement('div');
+        date.className = 'episode-date';
+        date.textContent = d ? `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 公開` : '';
+        const title = document.createElement('div');
+        title.className = 'episode-title';
+        title.textContent = ep.title;
+        body.append(date, title);
+
+        a.append(wrap, body);
+        grid.appendChild(a);
+    });
+    document.getElementById('newsLead').insertAdjacentText('beforeend', `全${episodes.length}回。`);
+})();
+</script>
+</body>
+</html>
