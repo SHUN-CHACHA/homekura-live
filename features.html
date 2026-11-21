@@ -9,7 +9,7 @@
     <link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/img/apple-touch-icon.png">
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
-    <link rel="stylesheet" href="shared/theme.css?v=oqiwl1">
+    <link rel="stylesheet" href="shared/theme.css?v=9yvbfh">
     <style>
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -174,7 +174,6 @@
             margin-top: 2px;
         }
         .feat-file.index { background: #d1fae5; color: #065f46; }
-        .feat-file.admin { background: #dbeafe; color: #1e40af; }
         .feat-file.both  { background: #ede9fe; color: #5b21b6; }
 
         .feat-desc {
@@ -230,22 +229,21 @@
 
 <!-- バナー -->
 <div class="banner-container">
-    <img src="img/logo.png?v=oqiwl1" alt="homeクラ" class="header-logo">
+    <img src="img/logo.png?v=9yvbfh" alt="homeクラ" class="header-logo">
 </div>
 
 <!-- ナビゲーション -->
 <nav class="nav-bar">
-    <a href="index.html?v=oqiwl1">🏠 ポータル</a>
-    <a href="minecraft_map.html?v=oqiwl1">🗺️ 拠点マップ</a>
-    <a href="map_compare.html?v=oqiwl1">🔍 地図の比較</a>
-    <a href="admin-7b9a4c2e.html?v=oqiwl1">⚙️ 管理画面</a>
-    <a href="features.html?v=oqiwl1" class="current">📋 機能一覧</a>
+    <a href="index.html?v=9yvbfh">🏠 ポータル</a>
+    <a href="minecraft_map.html?v=9yvbfh">🗺️ 拠点マップ</a>
+    <a href="map_compare.html?v=9yvbfh">🔍 地図の比較</a>
+    <a href="features.html?v=9yvbfh" class="current">📋 機能一覧</a>
 </nav>
 
 <!-- ページタイトル -->
 <div class="page-title-area">
     <h1>📋 homeクラ 機能一覧</h1>
-    <p>トップページ・拠点マップ・地図の比較・管理画面と、裏側の仕組みの一覧です（2026年11月9日 更新）。</p>
+    <p>トップページ・拠点マップ・地図の比較と、裏側の仕組みの一覧です（2026年11月9日 更新）。</p>
 </div>
 
 <div class="section">
@@ -675,128 +673,6 @@
             </div>
             <div class="feat-desc">2枚を画面と同じ並びで1枚の画像にする。それぞれの右上に地図の名前と配置（例：10月18日・席替え前）を入れる。</div>
             <div class="feat-tags"><span class="tag ui">画像保存</span></div>
-        </div>
-
-    </div>
-</div>
-
-<div class="section">
-    <div class="section-label">⚙️ 管理画面 ― メンバー管理</div>
-    <div class="card-grid">
-
-        <div class="feat-card">
-            <div class="feat-card-top">
-                <div class="feat-icon blue">✏️</div>
-                <div>
-                    <div class="feat-name">メンバー追加・編集・削除</div>
-                    <span class="feat-file admin">admin</span>
-                </div>
-            </div>
-            <div class="feat-desc">名前・よみがな・チャンネルID・サブチャンネル・Minecraft ID・各SNS・メンバーカラー・並び順・グループを入力して保存。</div>
-            <div class="feat-tags"><span class="tag ui">UI</span></div>
-        </div>
-
-        <div class="feat-card">
-            <div class="feat-card-top">
-                <div class="feat-icon green">🆔</div>
-                <div>
-                    <div class="feat-name">UUIDと顔アイコンの取得</div>
-                    <span class="feat-file admin">admin</span>
-                </div>
-            </div>
-            <div class="feat-desc">Minecraft ID から UUID を自動取得。正面の顔画像（アウターレイヤー込み）をプレビューし、「[マイクラID].png」で保存できる。</div>
-            <div class="feat-tags"><span class="tag mc">Minecraft</span><span class="tag api">外部API</span></div>
-        </div>
-
-        <div class="feat-card">
-            <div class="feat-card-top">
-                <div class="feat-icon purple">🔒</div>
-                <div>
-                    <div class="feat-name">公開・非公開</div>
-                    <span class="feat-file admin">admin</span>
-                </div>
-            </div>
-            <div class="feat-desc">メンバーごとに公開・非公開をワンクリックで切り替え。非公開のメンバーは GitHub に上げないファイルに分けて保存し、公開ページのソースにも出ない。</div>
-            <div class="feat-tags"><span class="tag guard">非公開</span></div>
-        </div>
-
-        <div class="feat-card">
-            <div class="feat-card-top">
-                <div class="feat-icon blue">📋</div>
-                <div>
-                    <div class="feat-name">config.js の出力・コピー</div>
-                    <span class="feat-file admin">admin</span>
-                </div>
-            </div>
-            <div class="feat-desc">編集結果を公開用（js/data/config.js）と非公開用（config.private.js）の形で出力し、コピーして上書き保存する。</div>
-            <div class="feat-tags"><span class="tag ui">config.js</span></div>
-        </div>
-
-        <div class="feat-card">
-            <div class="feat-card-top">
-                <div class="feat-icon yellow">⚠️</div>
-                <div>
-                    <div class="feat-name">保存データの食い違いのお知らせ</div>
-                    <span class="feat-file admin">admin</span>
-                </div>
-            </div>
-            <div class="feat-desc">ブラウザに残っている編集データが config.js と違う時に、画面の上で知らせる（古いデータで上書きしてしまうのを防ぐ）。</div>
-            <div class="feat-tags"><span class="tag guard">安全</span></div>
-        </div>
-
-        <div class="feat-card">
-            <div class="feat-card-top">
-                <div class="feat-icon gray">📊</div>
-                <div>
-                    <div class="feat-name">メンバー一覧のCSV出力</div>
-                    <span class="feat-file admin">admin</span>
-                </div>
-            </div>
-            <div class="feat-desc">メンバー一覧をCSVファイルで書き出す。</div>
-            <div class="feat-tags"><span class="tag ui">CSV</span></div>
-        </div>
-
-    </div>
-</div>
-
-<div class="section">
-    <div class="section-label">⚙️ 管理画面 ― 地図の管理</div>
-    <div class="card-grid">
-
-        <div class="feat-card">
-            <div class="feat-card-top">
-                <div class="feat-icon orange">📍</div>
-                <div>
-                    <div class="feat-name">拠点マップの編集</div>
-                    <span class="feat-file admin">admin</span>
-                </div>
-            </div>
-            <div class="feat-desc">エリア番号とメンバー（1区画に3人まで）を選んで拠点を登録し、MAP_member.js の形で出力する。</div>
-            <div class="feat-tags"><span class="tag ui">MAP_member.js</span></div>
-        </div>
-
-        <div class="feat-card">
-            <div class="feat-card-top">
-                <div class="feat-icon red">🗺️</div>
-                <div>
-                    <div class="feat-name">目印の編集</div>
-                    <span class="feat-file admin">admin</span>
-                </div>
-            </div>
-            <div class="feat-desc">共有地などの目印の名前と座標を登録し、MAP_locations.js の形で出力する。</div>
-            <div class="feat-tags"><span class="tag ui">MAP_locations.js</span></div>
-        </div>
-
-        <div class="feat-card">
-            <div class="feat-card-top">
-                <div class="feat-icon green">🖼️</div>
-                <div>
-                    <div class="feat-name">背景地図・ウォーターマークの編集</div>
-                    <span class="feat-file admin">admin</span>
-                </div>
-            </div>
-            <div class="feat-desc">背景地図の一覧（一番上が最初に出る地図）と、スクリーンショットのウォーターマークの文字を編集し、map-config.js の形で出力する。</div>
-            <div class="feat-tags"><span class="tag ui">map-config.js</span></div>
         </div>
 
     </div>

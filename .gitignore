@@ -1,5 +1,8 @@
 # 公開しない自分用のツール（GitHub に上げない）
+# 中身は Google ドライブの homeクラWEB/homekura-private にあり、tools/private はそこへのジャンクション（近道）
+#   ・access-map.html … アクセスマップ
+#   ・admin/ … 管理画面（Season3）。非公開メンバーの config.private.js もここ
+#   ・admin-season2/ … 管理画面（Season2）
+# 別のPCでは、PowerShell で次の1行を実行して近道を作る：
+#   New-Item -ItemType Junction -Path tools\private -Target "<ドライブの homeクラWEB>\homekura-private"
 tools/private/
-
-# 非公開メンバー（管理画面の「config.private.js の内容をコピー」で作る。GitHub に上げない）
-js/data/config.private.js

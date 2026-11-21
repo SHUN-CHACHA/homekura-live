@@ -18,8 +18,8 @@ $utf8NoBom = New-Object System.Text.UTF8Encoding $false
 # src="..." / href="..." のうち、サイト内のファイル（http・#・${...} などで始まらないもの）が対象
 $attrPattern = '(?<attr>(?:src|href)=")(?<path>(?!https?:|//|#|data:|mailto:|javascript:|\$\{)[^"?#]+\.(?:css|js|png|jpe?g|gif|svg|ico|webp|pdf|html))(?:\?v=[0-9a-z]+)?"'
 
-# .git フォルダ以外にあるすべての HTML ページ
-$pages = Get-ChildItem -Path $root -Recurse -File -Filter '*.html' | Where-Object { $_.FullName -notmatch '[\\/]\.git[\\/]' }
+# .git フォルダと tools/private（GitHub に上げない自分用のページ。管理画面など）以外にあるすべての HTML ページ
+$pages = Get-ChildItem -Path $root -Recurse -File -Filter '*.html' | Where-Object { $_.FullName -notmatch '[\\/]\.git[\\/]' -and $_.FullName -notmatch '[\\/]tools[\\/]private[\\/]' }
 
 foreach ($page in $pages) {
     $file = $page.FullName
