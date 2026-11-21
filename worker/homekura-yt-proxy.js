@@ -17,6 +17,10 @@
 //   返す内容：{ timestamp, chInfoMap, vItems, newsItems }
 //   ※ news を付けた時は、見つけた回（公開済みのもの）を KV に記録していく（下の /news で一覧を返すため）
 //
+// ■ /pv/ページ名（各ページが開かれた時の知らせ。js/pageview.js が送る。YouTube API は使わない）
+//   例：/pv/map?src=load
+//   アクセス統計にパス /pv/ページ名 として記録するだけで、空の返事（204）を返す
+//
 // ■ /news（「だいたい週刊homeクラNEWS」の過去の回の一覧。YouTube API は使わない）
 //   例：/news?tag=だいたい週刊homeクラNEWS
 //     tag : /portal の news と同じ言葉
@@ -347,6 +351,10 @@ export default {
         }
 
         const path = url.pathname.replace(/^\/+|\/+$/g, '');
+        // /pv/ページ名：各ページが開かれた時の知らせ（js/pageview.js）。上の recordAccess で記録済みなので、空の返事だけ返す（YouTube API は使わない）
+        if (path.startsWith('pv/')) {
+            return new Response(null, { status: 204, headers: { ...corsHeaders(request, env), 'Cache-Control': 'no-store' } });
+        }
         if (path !== 'portal' && path !== 'news' && !ALLOWED_PARAMS[path]) {
             return json(request, env, { error: 'Unknown endpoint' }, 404);
         }

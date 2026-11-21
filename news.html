@@ -9,7 +9,7 @@
     <link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/img/apple-touch-icon.png">
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
-    <link rel="stylesheet" href="shared/theme.css?v=9yvbfh">
+    <link rel="stylesheet" href="shared/theme.css?v=78lhlm">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -76,15 +76,15 @@
 
 <!-- バナー -->
 <div class="banner-container">
-    <img src="img/logo.png?v=9yvbfh" alt="homeクラ" class="header-logo">
+    <img src="img/logo.png?v=78lhlm" alt="homeクラ" class="header-logo">
 </div>
 
 <!-- ナビゲーション -->
 <nav class="nav-bar">
-    <a href="index.html?v=9yvbfh">🏠 ポータル</a>
-    <a href="minecraft_map.html?v=9yvbfh">🗺️ 拠点マップ</a>
-    <a href="map_compare.html?v=9yvbfh">🔍 地図の比較</a>
-    <a href="news.html?v=9yvbfh" class="current">📰 NEWS 過去の回</a>
+    <a href="index.html?v=78lhlm">🏠 ポータル</a>
+    <a href="minecraft_map.html?v=78lhlm">🗺️ 拠点マップ</a>
+    <a href="map_compare.html?v=78lhlm">🔍 地図の比較</a>
+    <a href="news.html?v=78lhlm" class="current">📰 NEWS 過去の回</a>
 </nav>
 
 <!-- ページタイトル -->
@@ -96,10 +96,10 @@
 <div id="episodeGrid" class="episode-grid"></div>
 <p id="episodeEmpty" class="episode-empty" style="display: none;">まだ回がありません。</p>
 
-<script src="js/data/config.js?v=9yvbfh"></script>
-<script src="js/stats-owner.js?v=9yvbfh"></script>
-<script src="js/data/news.js?v=9yvbfh"></script>
-<script src="js/news-list.js?v=9yvbfh"></script>
+<script src="js/data/config.js?v=78lhlm"></script>
+<script src="js/stats-owner.js?v=78lhlm"></script>
+<script src="js/data/news.js?v=78lhlm"></script>
+<script src="js/news-list.js?v=78lhlm"></script>
 <script>
 // 回の一覧を描く。js/data/news.js の episodes に、Worker が記録してきた回（/news）と、
 // トップページで取得した最新動画（ブラウザに保存した portal_cache）を合わせる
@@ -153,5 +153,7 @@
     document.getElementById('newsLead').insertAdjacentText('beforeend', `全${episodes.length}回。`);
 })();
 </script>
+<!-- 📊 このページが開かれた回数を数える（js/pageview.js） -->
+<script src="js/pageview.js?v=78lhlm" data-page="news-list"></script>
 </body>
 </html>
