@@ -35,6 +35,14 @@
         } catch (e) { /* 読めないときは何もしない */ }
     }
 
+    // ブックマークアイコンも、そのテーマの色の版（img/themes/icons/名前/）に替える
+    var iconBase = new URL('../../img/themes/icons/' + name + '/', themesBase);
+    var icons = document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]');
+    for (var k = 0; k < icons.length; k++) {
+        var file = icons[k].getAttribute('href').split('?')[0].split('/').pop();
+        icons[k].href = new URL(file, iconBase).href;
+    }
+
     if (name === 'default') return;
 
     var link = document.createElement('link');

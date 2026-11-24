@@ -1,0 +1,13 @@
+{
+    "_説明": "ブックマークアイコン（HOME / クラ の2行）の色をテーマごとに決める。bg=背景、top=上の行「HOME」、bottom=下の行「クラ」。scripts/make-icons.py が読む。",
+    "default": {
+        "bg": "#2d5a27",
+        "top": "#ffffff",
+        "bottom": "#ffd23f"
+    },
+    "2026-winter-deep-freeze": {
+        "bg": "#1f4e79",
+        "top": "#ffffff",
+        "bottom": "#9fd8ff"
+    }
+}

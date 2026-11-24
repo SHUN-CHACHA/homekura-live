@@ -18,7 +18,9 @@
 3. 公開前に、ページの URL に `?theme=ファイル名（.css なし）` を付けて見た目を確認する。
    例：`index.html?theme=2026-winter-deep-freeze`
    `?theme=default` を付けると、季節テーマなしの「いつもの緑」で見られます。
-4. 上の表に1行足す。
+4. ブックマークアイコンの色を `shared/themes/icons.json` に足して、`python scripts\make-icons.py` を実行する
+   （`img/themes/icons/テーマ名/` にアイコンができる。お試し表示のときはアイコンもこの色になる）。
+5. 上の表に1行足す。
 
 ## 表に出すテーマの切り替え方
 
@@ -27,6 +29,12 @@
 - ON：`@import url("themes/ファイル名.css");`
 - OFF：その行をコメント記号で囲む
 
+ブックマークアイコンも一緒に切り替えます（img/ の3つのファイルが、そのテーマの色に置き換わる）。
+
+```powershell
+python scripts\make-icons.py --use 2026-winter-deep-freeze
+```
+
 切り替えてコミットしたら、そのときのサイト全体を残すために Git タグを付けます。
 
 ```powershell
@@ -34,6 +42,13 @@ git tag design/2026-winter
 ```
 
 タグはパソコンの中にだけ作られます。GitHub にも残したいときは `git push origin design/2026-winter` を実行してください。
+
+## ブックマークアイコン
+
+- 「HOME / クラ」の2行の文字アイコン。色は `icons.json`（bg=背景、top=HOME、bottom=クラ）。
+- 作り直しは `scripts/make-icons.py`（Python と Pillow、Windows の BIZ UDゴシックが必要）。
+- 2026年11月まで使っていた白黒イラストのアイコンは `img/themes/icons/2026-autumn-original/` に残してある。
+- ブラウザはアイコンを長く覚えているので、替えてから表示が変わるまで数時間〜数日かかることがある。
 
 ## 注意
 
