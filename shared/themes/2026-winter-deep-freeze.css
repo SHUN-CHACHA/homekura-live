@@ -20,3 +20,93 @@
     --thumb-bg: #dfe8ef;            /* サムネ読み込み中の背景 */
     --shadow-rgb: 31, 78, 121;      /* 影（氷の青み） */
 }
+
+/* ----------------------------------------------------------
+   ここから下は色以外の飾り。
+   theme.css から @import で読み込まれると各ページの <style> より先に読まれるため、
+   セレクタの頭に :root を付けて優先させています。
+---------------------------------------------------------- */
+
+/* ===== B-1 ブロックの質感：ロゴの帯を「氷塊レンガ」に ===== */
+:root .banner-container {
+    position: relative;
+    overflow: visible;          /* 下につららを垂らすため */
+    z-index: 2;
+    background-color: var(--accent-green);
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16'%3E%3Cpath d='M0 .5H32M0 8.5H32M.5 0V8M16.5 8V16' fill='none' stroke='white' stroke-opacity='.14'/%3E%3C/svg%3E"),
+        linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.10));
+    background-size: 32px 16px, 100% 100%;
+}
+:root .banner-container > * { position: relative; z-index: 1; }
+
+/* ページ全体の背景に、うっすら「雪レンガ」の目地 */
+:root body {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='32'%3E%3Cpath d='M0 .5H64M0 16.5H64M.5 0V16M32.5 16V32' fill='none' stroke='%231f4e79' stroke-opacity='.05'/%3E%3C/svg%3E");
+    background-size: 64px 32px;
+}
+
+/* ===== B-2 ゲームのボタン風：角ばらせて、押すと沈む ===== */
+:root .btn-tool,
+:root .btn-member-pdf,
+:root .map-link-btn,
+:root .pill-btn-light,
+:root .nav-bar a {
+    border-radius: 6px;
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,.22), inset 0 2px 0 rgba(255,255,255,.25);
+    transition: transform .08s, box-shadow .08s, background .2s, color .2s;
+}
+:root .btn-tool:active,
+:root .btn-member-pdf:active,
+:root .map-link-btn:active,
+:root .pill-btn-light:active,
+:root .nav-bar a:active {
+    transform: translateY(2px);
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,.22), inset 0 2px 0 rgba(0,0,0,.08);
+}
+
+/* ===== B-3 つらら：ロゴの帯の下の端に垂らす ===== */
+:root .banner-container::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; top: 100%;
+    height: 18px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='14'%3E%3Cpath d='M0 0H48V2L44 2 41 13 38 2 30 2 28 7 26 2 16 2 13 10 10 2 4 2 2 6 0 2Z' fill='%231f4e79'/%3E%3Cpath d='M41 13 39.5 4 41 3Z M13 10 11.8 4 13 3Z' fill='white' fill-opacity='.35'/%3E%3C/svg%3E") repeat-x;
+    background-size: 62px 18px;
+    pointer-events: none;
+}
+
+/* ===== C-1 雪：ロゴの帯の中にだけ、うっすら降らせる ===== */
+:root .banner-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+        radial-gradient(circle at 10px 20px, rgba(255,255,255,.85) 1.5px, transparent 2px),
+        radial-gradient(circle at 70px 80px, rgba(255,255,255,.7) 1.5px, transparent 2px),
+        radial-gradient(circle at 40px 60px, rgba(255,255,255,.6) 2px, transparent 2.5px),
+        radial-gradient(circle at 150px 120px, rgba(255,255,255,.5) 2.5px, transparent 3px);
+    background-size: 120px 120px, 120px 120px, 200px 200px, 200px 200px;
+    animation: homekura-snow 12s linear infinite;
+}
+@keyframes homekura-snow {
+    from { background-position: 0 0, 0 0, 0 0, 0 0; }
+    to   { background-position: 0 120px, 0 120px, 0 200px, 0 200px; }
+}
+/* 「視差効果を減らす」設定の人には雪を止める */
+@media (prefers-reduced-motion: reduce) {
+    :root .banner-container::before { animation: none; }
+}
+
+/* ===== C-2 凍える縁：カードにマウスを乗せると、縁が白く凍る ===== */
+:root .card:hover,
+:root .news-banner:hover,
+:root .episode-card:hover {
+    box-shadow:
+        inset 0 0 0 2px rgba(255,255,255,.9),
+        0 0 0 1px #a9cfe6,
+        0 0 14px 2px rgba(150,200,235,.55);
+}
