@@ -48,11 +48,28 @@
 }
 :root .banner-container > * { position: relative; z-index: 1; }
 
-/* ページ全体の背景に、うっすら「雪レンガ」の目地 */
+/* ページ全体の背景：氷の洞窟の絵（img/themes/2026-winter-ice-cave.webp）をタイル状に並べる。
+   上に白っぽい膜を1枚かけて、背景に直接のっている文字が読めるようにしている（.45 の数字で濃さを調整） */
 :root body {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='32'%3E%3Cpath d='M0 .5H64M0 16.5H64M.5 0V16M32.5 16V32' fill='none' stroke='%235d8db5' stroke-opacity='.22' stroke-width='1.5'/%3E%3C/svg%3E");
-    background-size: 64px 32px;
+    background-color: #2a64c4;
+    background-image:
+        linear-gradient(rgba(234,241,246,.45), rgba(234,241,246,.45)),
+        url("../../img/themes/2026-winter-ice-cave.webp");
+    background-size: auto, 836px auto;
+    background-repeat: repeat;
 }
+
+/* 背景の絵の上に直接のる文字は、すりガラスの板にのせて読みやすくする */
+:root .api-notice p,
+:root .page-title-area,
+:root #timer {
+    background: rgba(248,251,253,.88);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    border-radius: 10px;
+}
+:root .page-title-area { padding: 12px 16px; }
+:root #timer { padding: 2px 8px; }
 
 /* ===== B-2 ゲームのボタン風：角ばらせて、押すと沈む ===== */
 :root .btn-tool,
