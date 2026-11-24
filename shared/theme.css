@@ -1,3 +1,7 @@
+/* ▼ 季節テーマ：冬（Deep Freeze）… 今は OFF（いつもの緑）
+   サーバーが 26.4 になったら、下の行を囲んでいるコメント記号を外すと ON になります。 */
+/* @import url("themes/2026-winter-deep-freeze.css"); */
+
 /* ==========================================================
    homeクラ 共通ライトテーマ CSS
    index.html / admin-7b9a4c2e.html / features.html /
@@ -23,6 +27,8 @@
     --accent-blue: #2563eb;
     --accent-red: #dc2626;
     --accent-purple: #7c3aed;
+    --thumb-bg: #e6ede6;            /* サムネ読み込み中の背景 */
+    --shadow-rgb: 45, 90, 39;       /* 影の色（rgba 用の R, G, B） */
 
     /* --- features.html が使っていた別名（互換のためのエイリアス） --- */
     --bg: var(--bg-color);

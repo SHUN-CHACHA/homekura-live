@@ -1,0 +1,22 @@
+/* ==========================================================
+   homeクラ 冬テーマ「Deep Freeze」（Minecraft 26.4 がモチーフ）
+   雪・氷塊レンガ・方解石・氷の洞窟の色で、共通の色トークンを上書きします。
+
+   使い方：shared/theme.css の先頭にある @import の1行で ON / OFF します。
+   お試し表示：ページの URL に ?theme=2026-winter-deep-freeze を付けると、この見た目で表示されます。
+   ※ トークン名は「--accent-green」のままですが、冬の間は氷の青が入ります。
+========================================================== */
+
+:root:root { /* theme.css の :root より優先させるため2回書いています */
+    --bg-color: #eaf1f6;            /* 雪原 */
+    --container-bg: #f8fbfd;        /* 方解石の白 */
+    --input-bg: #edf3f8;            /* 粉雪 */
+    --text-color: #14202b;          /* 夜の氷の洞窟 */
+    --secondary-text: #3d4f5f;      /* 深い影 */
+    --accent-green: #1f4e79;        /* 深い氷（メインカラー） */
+    --accent-green-light: #e1eef8;  /* 氷塊のハイライト */
+    --accent-green-tint: #dce7f0;   /* 雪レンガ */
+    --border-color: #c9dbe8;        /* 氷塊レンガの目地 */
+    --thumb-bg: #dfe8ef;            /* サムネ読み込み中の背景 */
+    --shadow-rgb: 31, 78, 121;      /* 影（氷の青み） */
+}

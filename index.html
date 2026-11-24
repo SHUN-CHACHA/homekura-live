@@ -10,7 +10,8 @@
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
 
-    <link rel="stylesheet" href="shared/theme.css?v=78lhlm">
+    <link rel="stylesheet" href="shared/theme.css?v=stgq96">
+    <script src="shared/theme-preview.js?v=stgq96"></script>
 
     <style>
         body {
@@ -209,7 +210,7 @@
             border-radius: 16px;
             padding: 24px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 12px -2px rgba(45, 90, 39, 0.05);
+            box-shadow: 0 4px 12px -2px rgba(var(--shadow-rgb), 0.05);
             border: 1px solid var(--border-color);
         }
 
@@ -220,13 +221,13 @@
             display: flex; align-items: stretch; gap: 16px;
             background: var(--container-bg); border: 2px solid var(--accent-blue); border-radius: 16px;
             padding: 12px; text-decoration: none; color: inherit; overflow: hidden;
-            box-shadow: 0 4px 12px -2px rgba(45, 90, 39, 0.08); transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px -2px rgba(var(--shadow-rgb), 0.08); transition: transform 0.2s, box-shadow 0.2s;
         }
-        .news-banner:hover { box-shadow: 0 10px 15px -3px rgba(45, 90, 39, 0.12); }
+        .news-banner:hover { box-shadow: 0 10px 15px -3px rgba(var(--shadow-rgb), 0.12); }
         /* 最新回（左：サムネイルと文字。押すと YouTube） */
         .news-main { flex: 1; min-width: 0; display: flex; align-items: stretch; gap: 16px; text-decoration: none; color: inherit; }
         .news-main:hover .news-title { color: var(--accent-blue); }
-        .news-thumb-wrap { position: relative; flex: 0 0 45%; max-width: 360px; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background: #e6ede6; }
+        .news-thumb-wrap { position: relative; flex: 0 0 45%; max-width: 360px; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background: var(--thumb-bg); }
         .news-thumb { width: 100%; height: 100%; object-fit: cover; display: block; }
         .news-play {
             position: absolute; inset: 0; margin: auto; width: 48px; height: 48px; border-radius: 50%;
@@ -242,7 +243,7 @@
         .news-past-list { display: flex; flex-direction: column; gap: 6px; flex: 1; }
         .news-past-item { display: flex; gap: 8px; text-decoration: none; color: inherit; border-radius: 6px; }
         .news-past-item:hover .news-past-title { color: var(--accent-blue); }
-        .news-past-item img { flex: 0 0 80px; width: 80px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 5px; background: #e6ede6; }
+        .news-past-item img { flex: 0 0 80px; width: 80px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 5px; background: var(--thumb-bg); }
         .news-past-text { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
         .news-past-date { font-size: 11px; font-weight: bold; color: var(--secondary-text); }
         .news-past-title { font-size: 12px; font-weight: bold; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -292,11 +293,11 @@
             border: 1px solid var(--border-color); display: flex; flex-direction: column;
             position: relative; transition: transform 0.2s, box-shadow 0.2s;
         }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(45, 90, 39, 0.06); }
-        .card.is-live { border-color: var(--accent-green) !important; box-shadow: 0 0 8px rgba(45, 90, 39, 0.15); }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(var(--shadow-rgb), 0.06); }
+        .card.is-live { border-color: var(--accent-green) !important; box-shadow: 0 0 8px rgba(var(--shadow-rgb), 0.15); }
         .card.is-new { border-color: var(--accent-blue) !important; }
 
-        .thumb-wrap { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #e6ede6; }
+        .thumb-wrap { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; background: var(--thumb-bg); }
         .thumb { width: 100%; height: 100%; object-fit: cover; }
         .thumb-bg { position: absolute; width: 100%; height: 100%; opacity: 0.12; filter: blur(20px); }
         .thumb-profile { width: 40%; height: auto; border-radius: 50%; position: relative; z-index: 2; border: 3px solid var(--container-bg); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
@@ -314,7 +315,7 @@
         .btn-area { padding: 0 8px 8px; display: flex; flex-wrap: wrap; gap: 4px; }
         .btn {
             flex: 1; min-width: 45px; text-align: center; text-decoration: none; font-size: 10px; font-weight: bold;
-            padding: 5px 0; border-radius: 6px; color: var(--secondary-text) !important; background: #e2eae2; transition: background 0.2s;
+            padding: 5px 0; border-radius: 6px; color: var(--secondary-text) !important; background: var(--accent-green-tint); transition: background 0.2s;
         }
         .btn:hover { background: #d3ded3; color: var(--text-color) !important; }
         .btn-yt { background: #fde2e2; color: #dc2626 !important; }
@@ -337,7 +338,7 @@
         }
         .group-heading:first-child { border-top: none; margin-top: 0; padding-top: 0; }
         .row-item {
-            background: #f0f5f0; border-radius: 10px; padding: 8px 10px;
+            background: var(--input-bg); border-radius: 10px; padding: 8px 10px;
             display: flex; flex-direction: column; align-items: stretch; justify-content: center; gap: 5px;
             border: 1px solid var(--border-color); box-sizing: border-box;
             min-width: 0; overflow: hidden;
@@ -372,7 +373,7 @@
             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
             text-decoration: none; transition: all 0.2s ease; background: #ffffff; border: 1px solid var(--border-color);
         }
-        .btn-square-mini:hover { transform: scale(1.05); background: #e2eae2; filter: grayscale(100%) contrast(120%); }
+        .btn-square-mini:hover { transform: scale(1.05); background: var(--accent-green-tint); filter: grayscale(100%) contrast(120%); }
         .btn-square-mini svg { width: 13px; height: 13px; }
         .btn-square-mini.btn-yt svg { fill: #ff0000; }
         .btn-square-mini.btn-x svg { fill: #14171a; }
@@ -435,10 +436,10 @@
             display: flex; align-items: center; gap: 10px;
             padding: 9px 14px; border-radius: 10px; text-decoration: none;
             font-size: 13px; font-weight: bold; color: #333;
-            background: #f0f5f0; border: 1px solid var(--border-color);
+            background: var(--input-bg); border: 1px solid var(--border-color);
             transition: background 0.2s;
         }
-        .sns-link-item:hover { background: #e2eae2; }
+        .sns-link-item:hover { background: var(--accent-green-tint); }
         .sns-link-item svg { width: 18px; height: 18px; flex-shrink: 0; }
         .sns-link-item.yt  { background: #fde2e2; } .sns-link-item.yt svg  { fill: #dc2626; }
         .sns-link-item.tw  { background: #ede9fe; } .sns-link-item.tw svg  { fill: #9146ff; }
@@ -450,10 +451,10 @@
         #sns-modal-member-btn {
             display: block; margin-top: 14px; text-align: center; text-decoration: none;
             font-size: 12px; font-weight: bold; color: var(--secondary-text);
-            padding: 8px; border-radius: 10px; background: #f0f5f0;
+            padding: 8px; border-radius: 10px; background: var(--input-bg);
             border: 1px solid var(--border-color); transition: background 0.2s;
         }
-        #sns-modal-member-btn:hover { background: #e2eae2; }
+        #sns-modal-member-btn:hover { background: var(--accent-green-tint); }
         #sns-close-btn {
             display: block; width: 100%; margin-top: 10px; padding: 9px 0;
             background: var(--accent-green); color: #fff; border: none;
@@ -486,10 +487,10 @@
         .skin3d-anim-btn {
             font-size: 12px; font-weight: bold; padding: 6px 12px;
             border-radius: 16px; border: 1px solid var(--border-color);
-            background: #f0f5f0; color: var(--secondary-text); cursor: pointer;
+            background: var(--input-bg); color: var(--secondary-text); cursor: pointer;
             transition: 0.2s;
         }
-        .skin3d-anim-btn:hover { background: #e2eae2; }
+        .skin3d-anim-btn:hover { background: var(--accent-green-tint); }
         .skin3d-anim-btn.active { background: var(--accent-green); color: #fff; border-color: var(--accent-green); }
         #skin3d-close-btn {
             display: block; width: 100%; margin-top: 14px; padding: 9px 0;
@@ -500,7 +501,7 @@
         .mc-head-box.mc-head-clickable:hover { filter: brightness(1.08); }
 
         /* 詳細ボタン */
-        .btn-detail { background: #e8f5e8; color: var(--accent-green) !important; font-weight: bold; }
+        .btn-detail { background: var(--accent-green-light); color: var(--accent-green) !important; font-weight: bold; }
         .btn-detail:hover { background: #d1ead1; }
         .btn-member { background: #f0f0f0; color: var(--secondary-text) !important; }
         .btn-member:hover { background: #e0e0e0; }
@@ -518,7 +519,7 @@
             align-items: center;
             gap: 5px;
         }
-        .btn-qr:hover { background: #e8f5e8; border-color: var(--accent-green); color: var(--accent-green); }
+        .btn-qr:hover { background: var(--accent-green-light); border-color: var(--accent-green); color: var(--accent-green); }
 
         /* QRモーダル */
         #qr-modal {
@@ -597,7 +598,7 @@
             text-decoration: none;
             font-size: 15px;
             letter-spacing: 0.02em;
-            box-shadow: 0 2px 6px rgba(45, 90, 39, 0.35);
+            box-shadow: 0 2px 6px rgba(var(--shadow-rgb), 0.35);
             transition: opacity 0.2s, transform 0.2s;
         }
         .map-link-btn:hover { opacity: 0.88; transform: translateY(-1px); }
@@ -618,8 +619,8 @@
 
 <div class="banner-container">
     <div class="header-logo-wrap">
-        <img src="img/logo.png?v=78lhlm" alt="homeクラ" class="header-logo">
-        <img src="img/season3-text.png?v=78lhlm" alt="Season３" class="header-season">
+        <img src="img/logo.png?v=stgq96" alt="homeクラ" class="header-logo">
+        <img src="img/season3-text.png?v=stgq96" alt="Season３" class="header-season">
     </div>
 </div>
 
@@ -629,13 +630,13 @@
 
 <div class="top-buttons-wrapper">
     <a href="https://charagp.full-comi.jp/event/lp/84?chara_event_id=7" class="yurugp-btn" target="_blank" title="世界ご当地キャラ グランプリ">
-        <img src="img/charagp-icon.jpg?v=78lhlm" alt="世界ご当地キャラ グランプリ">
+        <img src="img/charagp-icon.jpg?v=stgq96" alt="世界ご当地キャラ グランプリ">
     </a>
     <a href="https://github.com/SHUN-CHACHA/minecraft-tools/tree/main" class="yurugp-btn github-btn" target="_blank" title="旬茶オリジナルMInecraft Tools">
-        <img src="img/github-icon.png?v=78lhlm" alt="旬茶オリジナルMInecraft Tools">
+        <img src="img/github-icon.png?v=stgq96" alt="旬茶オリジナルMInecraft Tools">
     </a>
     <a href="https://modrinth.com/user/SHUNCHA" class="yurugp-btn modrinth-btn" target="_blank" title="Modrinth">
-        <img src="img/modrinth-icon.png?v=78lhlm" alt="Modrinth">
+        <img src="img/modrinth-icon.png?v=stgq96" alt="Modrinth">
     </a>
     <div class="top-buttons-stack">
         <div class="external-links-container">
@@ -672,8 +673,8 @@
 </div>
 
 <div class="map-link-container">
-    <a href="minecraft_map.html?v=78lhlm" target="_blank" class="map-link-btn"><span class="ml-long">homeクラ Season3 メンバー拠点マップ</span><span class="ml-short">🗺️ Season3拠点MAP</span></a>
-    <a href="season2/index.html?v=78lhlm" class="map-link-btn" style="opacity:0.75;"><span class="ml-long">📁 Season2（過去シーズン）はこちら</span><span class="ml-short">📁 Season2</span></a>
+    <a href="minecraft_map.html?v=stgq96" target="_blank" class="map-link-btn"><span class="ml-long">homeクラ Season3 メンバー拠点マップ</span><span class="ml-short">🗺️ Season3拠点MAP</span></a>
+    <a href="season2/index.html?v=stgq96" class="map-link-btn" style="opacity:0.75;"><span class="ml-long">📁 Season2（過去シーズン）はこちら</span><span class="ml-short">📁 Season2</span></a>
 </div>
 
 <div class="main-wrapper">
@@ -694,10 +695,10 @@
     <div class="news-past">
         <div class="news-past-head">📚 これまでの回</div>
         <div id="newsPastList" class="news-past-list"></div>
-        <a class="news-past-all" href="news.html?v=78lhlm">過去の回一覧 →</a>
+        <a class="news-past-all" href="news.html?v=stgq96">過去の回一覧 →</a>
     </div>
     </div>
-    <div class="news-list-link"><a href="news.html?v=78lhlm">📚 だいたい週刊homeクラNEWS 過去の回一覧 →</a></div>
+    <div class="news-list-link"><a href="news.html?v=stgq96">📚 だいたい週刊homeクラNEWS 過去の回一覧 →</a></div>
     </div>
 
     <div id="homekuraLiveSection" class="section-box" style="display: none;">
@@ -727,16 +728,16 @@
 
     <div class="section-box" id="member">
         <div class="section-title">👥 メンバー一覧
-            <a href="members.pdf?v=78lhlm" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
+            <a href="members.pdf?v=stgq96" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
         </div>
         <div id="allList" class="list-container"></div>
     </div>
 </div>
 
-<script src="js/data/config.js?v=78lhlm"></script>
-<script src="js/data/news.js?v=78lhlm"></script>
-<script src="js/news-list.js?v=78lhlm"></script>
-<script src="js/stats-owner.js?v=78lhlm"></script>
+<script src="js/data/config.js?v=stgq96"></script>
+<script src="js/data/news.js?v=stgq96"></script>
+<script src="js/news-list.js?v=stgq96"></script>
+<script src="js/stats-owner.js?v=stgq96"></script>
 
 <!-- 🧊 3Dスキンビューアー用ライブラリ（ESM配信のみのためmoduleで読み込みwindowに公開） -->
 <script type="module">
@@ -752,7 +753,7 @@ const PROXY_URL = (window.CONFIG?.YOUTUBE_PROXY_URL || '').replace(/\/$/, '');
 const CACHE_DURATION_MS         = window.CONFIG?.CACHE_DURATION_MS          ?? (5  * 60 * 1000);
 const CHANNEL_ICON_CACHE_DURATION_MS = window.CONFIG?.CHANNEL_ICON_CACHE_DURATION_MS ?? (24 * 60 * 60 * 1000);
 // 画像のキャッシュ対策用バージョン番号（コミット時に scripts/bump-asset-version.ps1 が自動更新する）
-const ASSET_VERSION = '78lhlm';
+const ASSET_VERSION = 'stgq96';
 let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 let timeLeft = 600;

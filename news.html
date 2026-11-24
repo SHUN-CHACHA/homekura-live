@@ -9,7 +9,8 @@
     <link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/img/apple-touch-icon.png">
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
-    <link rel="stylesheet" href="shared/theme.css?v=78lhlm">
+    <link rel="stylesheet" href="shared/theme.css?v=stgq96">
+    <script src="shared/theme-preview.js?v=stgq96"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -48,11 +49,11 @@
         .episode-card {
             display: flex; flex-direction: column; text-decoration: none; color: inherit;
             background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
-            box-shadow: 0 4px 12px -2px rgba(45, 90, 39, 0.06); transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px -2px rgba(var(--shadow-rgb), 0.06); transition: transform 0.2s, box-shadow 0.2s;
         }
-        .episode-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(45, 90, 39, 0.12); border-color: var(--blue); }
+        .episode-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(var(--shadow-rgb), 0.12); border-color: var(--blue); }
         .episode-card.latest { border: 2px solid var(--blue); }
-        .episode-thumb-wrap { position: relative; aspect-ratio: 16 / 9; background: #e6ede6; }
+        .episode-thumb-wrap { position: relative; aspect-ratio: 16 / 9; background: var(--thumb-bg); }
         .episode-thumb { width: 100%; height: 100%; object-fit: cover; display: block; }
         .episode-badge {
             position: absolute; top: 8px; left: 8px; background: var(--blue); color: #fff;
@@ -76,15 +77,15 @@
 
 <!-- バナー -->
 <div class="banner-container">
-    <img src="img/logo.png?v=78lhlm" alt="homeクラ" class="header-logo">
+    <img src="img/logo.png?v=stgq96" alt="homeクラ" class="header-logo">
 </div>
 
 <!-- ナビゲーション -->
 <nav class="nav-bar">
-    <a href="index.html?v=78lhlm">🏠 ポータル</a>
-    <a href="minecraft_map.html?v=78lhlm">🗺️ 拠点マップ</a>
-    <a href="map_compare.html?v=78lhlm">🔍 地図の比較</a>
-    <a href="news.html?v=78lhlm" class="current">📰 NEWS 過去の回</a>
+    <a href="index.html?v=stgq96">🏠 ポータル</a>
+    <a href="minecraft_map.html?v=stgq96">🗺️ 拠点マップ</a>
+    <a href="map_compare.html?v=stgq96">🔍 地図の比較</a>
+    <a href="news.html?v=stgq96" class="current">📰 NEWS 過去の回</a>
 </nav>
 
 <!-- ページタイトル -->
@@ -96,10 +97,10 @@
 <div id="episodeGrid" class="episode-grid"></div>
 <p id="episodeEmpty" class="episode-empty" style="display: none;">まだ回がありません。</p>
 
-<script src="js/data/config.js?v=78lhlm"></script>
-<script src="js/stats-owner.js?v=78lhlm"></script>
-<script src="js/data/news.js?v=78lhlm"></script>
-<script src="js/news-list.js?v=78lhlm"></script>
+<script src="js/data/config.js?v=stgq96"></script>
+<script src="js/stats-owner.js?v=stgq96"></script>
+<script src="js/data/news.js?v=stgq96"></script>
+<script src="js/news-list.js?v=stgq96"></script>
 <script>
 // 回の一覧を描く。js/data/news.js の episodes に、Worker が記録してきた回（/news）と、
 // トップページで取得した最新動画（ブラウザに保存した portal_cache）を合わせる
@@ -154,6 +155,6 @@
 })();
 </script>
 <!-- 📊 このページが開かれた回数を数える（js/pageview.js） -->
-<script src="js/pageview.js?v=78lhlm" data-page="news-list"></script>
+<script src="js/pageview.js?v=stgq96" data-page="news-list"></script>
 </body>
 </html>
