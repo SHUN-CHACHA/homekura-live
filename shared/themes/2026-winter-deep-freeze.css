@@ -42,7 +42,7 @@
 
 /* ページ全体の背景に、うっすら「雪レンガ」の目地 */
 :root body {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='32'%3E%3Cpath d='M0 .5H64M0 16.5H64M.5 0V16M32.5 16V32' fill='none' stroke='%231f4e79' stroke-opacity='.05'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='32'%3E%3Cpath d='M0 .5H64M0 16.5H64M.5 0V16M32.5 16V32' fill='none' stroke='%235d8db5' stroke-opacity='.22' stroke-width='1.5'/%3E%3C/svg%3E");
     background-size: 64px 32px;
 }
 
@@ -102,11 +102,36 @@
 }
 
 /* ===== C-2 凍える縁：カードにマウスを乗せると、縁が白く凍る ===== */
+:root .card,
+:root .news-banner,
+:root .episode-card {
+    position: relative;
+    transition: transform .2s, box-shadow .25s, border-color .25s;
+}
+/* 霜の層：サムネ画像の上にも重なるよう、カードの一番上に薄く重ねる */
+:root .card::after,
+:root .news-banner::after,
+:root .episode-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 5;
+    opacity: 0;
+    transition: opacity .25s;
+    box-shadow:
+        inset 0 0 0 2px #ffffff,                  /* 縁の霜（白い線） */
+        inset 0 0 18px 5px rgba(205,235,255,.95); /* 内側に広がる冷気 */
+}
+:root .card:hover::after,
+:root .news-banner:hover::after,
+:root .episode-card:hover::after { opacity: 1; }
 :root .card:hover,
 :root .news-banner:hover,
 :root .episode-card:hover {
+    border-color: #8cc4e8 !important;
     box-shadow:
-        inset 0 0 0 2px rgba(255,255,255,.9),
-        0 0 0 1px #a9cfe6,
-        0 0 14px 2px rgba(150,200,235,.55);
+        0 0 0 2px #8cc4e8,                  /* 外側の氷の線 */
+        0 0 20px 6px rgba(120,190,240,.7);  /* 外にもれる冷たい光 */
 }
