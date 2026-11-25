@@ -11,8 +11,8 @@
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
 
-    <link rel="stylesheet" href="shared/theme.css?v=08i1m8">
-    <script src="shared/theme-preview.js?v=08i1m8"></script>
+    <link rel="stylesheet" href="shared/theme.css?v=5nfmb2">
+    <script src="shared/theme-preview.js?v=5nfmb2"></script>
 
     <style>
         body {
@@ -286,8 +286,9 @@
             .pinned-thumb-wrap { flex: none; width: 100%; }
             .pinned-body { align-items: stretch; text-align: center; gap: 4px; }
             .pinned-label { font-size: 12px; }
-            .pinned-links { flex-direction: column; gap: 4px; }
-            .pinned-link { font-size: 10px; padding: 4px 2px; }
+            /* ボタンどうしを離して、押し間違いを防ぐ */
+            .pinned-links { flex-direction: column; gap: 10px; margin-top: 2px; }
+            .pinned-link { font-size: 11px; padding: 7px 2px; }
             .news-row .news-block { flex: 1 1 0; display: flex; flex-direction: column; }
             .news-row .news-banner { flex: 1; }
             .news-row .news-main { flex-direction: column; gap: 6px; }
@@ -312,9 +313,11 @@
             .news-row .news-block { display: flex; flex-direction: column; }
             .news-row .news-banner { flex: 1; }
             .news-row .news-main { align-items: center; }
-            .news-row .news-thumb-wrap { flex: 0 0 48%; max-width: 380px; }
-            .news-row .news-title { font-size: 18px; }
-            .news-row .news-meta { font-size: 13px; }
+            .news-row .news-thumb-wrap { flex: 0 0 58%; max-width: 440px; }
+            .news-row .news-title { font-size: 15px; -webkit-line-clamp: 3; }
+            .news-row .news-meta { font-size: 12px; }
+            .news-row .news-label { font-size: 11px; padding: 2px 8px; }
+            .news-row .news-tag { font-size: 11px; }
         }
         /* 週刊NEWS のバナーが出ていない時（最新回の公開から7日たった時など）は、GOODS を横長のカードにして上に置く */
         .news-row:has(> .news-block.no-banner),
@@ -703,8 +706,8 @@
 
 <div class="banner-container">
     <div class="header-logo-wrap">
-        <img src="img/logo.png?v=08i1m8" alt="homeクラ" class="header-logo">
-        <img src="img/season3-text.png?v=08i1m8" alt="Season３" class="header-season">
+        <img src="img/logo.png?v=5nfmb2" alt="homeクラ" class="header-logo">
+        <img src="img/season3-text.png?v=5nfmb2" alt="Season３" class="header-season">
     </div>
 </div>
 
@@ -714,13 +717,13 @@
 
 <div class="top-buttons-wrapper">
     <a href="https://charagp.full-comi.jp/event/lp/84?chara_event_id=7" class="yurugp-btn" target="_blank" title="世界ご当地キャラ グランプリ">
-        <img src="img/charagp-icon.jpg?v=08i1m8" alt="世界ご当地キャラ グランプリ">
+        <img src="img/charagp-icon.jpg?v=5nfmb2" alt="世界ご当地キャラ グランプリ">
     </a>
     <a href="https://github.com/SHUN-CHACHA/minecraft-tools/tree/main" class="yurugp-btn github-btn" target="_blank" title="旬茶オリジナルMInecraft Tools">
-        <img src="img/github-icon.png?v=08i1m8" alt="旬茶オリジナルMInecraft Tools">
+        <img src="img/github-icon.png?v=5nfmb2" alt="旬茶オリジナルMInecraft Tools">
     </a>
     <a href="https://modrinth.com/user/SHUNCHA" class="yurugp-btn modrinth-btn" target="_blank" title="Modrinth">
-        <img src="img/modrinth-icon.png?v=08i1m8" alt="Modrinth">
+        <img src="img/modrinth-icon.png?v=5nfmb2" alt="Modrinth">
     </a>
     <div class="top-buttons-stack">
         <div class="external-links-container">
@@ -757,8 +760,8 @@
 </div>
 
 <div class="map-link-container">
-    <a href="minecraft_map.html?v=08i1m8" target="_blank" class="map-link-btn"><span class="ml-long">homeクラ Season3 メンバー拠点マップ</span><span class="ml-short">🗺️ Season3拠点MAP</span></a>
-    <a href="season2/index.html?v=08i1m8" class="map-link-btn" style="opacity:0.75;"><span class="ml-long">📁 Season2（過去シーズン）はこちら</span><span class="ml-short">📁 Season2</span></a>
+    <a href="minecraft_map.html?v=5nfmb2" target="_blank" class="map-link-btn"><span class="ml-long">homeクラ Season3 メンバー拠点マップ</span><span class="ml-short">🗺️ Season3拠点MAP</span></a>
+    <a href="season2/index.html?v=5nfmb2" class="map-link-btn" style="opacity:0.75;"><span class="ml-long">📁 Season2（過去シーズン）はこちら</span><span class="ml-short">📁 Season2</span></a>
 </div>
 
 <div class="main-wrapper">
@@ -794,10 +797,10 @@
     <div class="news-past">
         <div class="news-past-head">📚 これまでの回</div>
         <div id="newsPastList" class="news-past-list"></div>
-        <a class="news-past-all" href="news.html?v=08i1m8">過去の回一覧 →</a>
+        <a class="news-past-all" href="news.html?v=5nfmb2">過去の回一覧 →</a>
     </div>
     </div>
-    <div class="news-list-link"><a href="news.html?v=08i1m8">📚 だいたい週刊homeクラNEWS 過去の回一覧 →</a></div>
+    <div class="news-list-link"><a href="news.html?v=5nfmb2">📚 だいたい週刊homeクラNEWS 過去の回一覧 →</a></div>
     </div>
     </div>
 
@@ -828,16 +831,16 @@
 
     <div class="section-box" id="member">
         <div class="section-title">👥 メンバー一覧
-            <a href="members.pdf?v=08i1m8" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
+            <a href="members.pdf?v=5nfmb2" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
         </div>
         <div id="allList" class="list-container"></div>
     </div>
 </div>
 
-<script src="js/data/config.js?v=08i1m8"></script>
-<script src="js/data/news.js?v=08i1m8"></script>
-<script src="js/news-list.js?v=08i1m8"></script>
-<script src="js/stats-owner.js?v=08i1m8"></script>
+<script src="js/data/config.js?v=5nfmb2"></script>
+<script src="js/data/news.js?v=5nfmb2"></script>
+<script src="js/news-list.js?v=5nfmb2"></script>
+<script src="js/stats-owner.js?v=5nfmb2"></script>
 
 <!-- 🧊 3Dスキンビューアー用ライブラリ（ESM配信のみのためmoduleで読み込みwindowに公開） -->
 <script type="module">
@@ -853,7 +856,7 @@ const PROXY_URL = (window.CONFIG?.YOUTUBE_PROXY_URL || '').replace(/\/$/, '');
 const CACHE_DURATION_MS         = window.CONFIG?.CACHE_DURATION_MS          ?? (5  * 60 * 1000);
 const CHANNEL_ICON_CACHE_DURATION_MS = window.CONFIG?.CHANNEL_ICON_CACHE_DURATION_MS ?? (24 * 60 * 60 * 1000);
 // 画像のキャッシュ対策用バージョン番号（コミット時に scripts/bump-asset-version.ps1 が自動更新する）
-const ASSET_VERSION = '08i1m8';
+const ASSET_VERSION = '5nfmb2';
 let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 let timeLeft = 600;
