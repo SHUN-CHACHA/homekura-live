@@ -11,8 +11,8 @@
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
 
-    <link rel="stylesheet" href="shared/theme.css?v=10eslc">
-    <script src="shared/theme-preview.js?v=10eslc"></script>
+    <link rel="stylesheet" href="shared/theme.css?v=8wbo0x">
+    <script src="shared/theme-preview.js?v=8wbo0x"></script>
 
     <style>
         body {
@@ -273,11 +273,11 @@
         /* スマホ・タブレットでも、GOODS と NEWS を左右2列に並べる（どちらも「画像が上・文字が下」の縦長カード） */
         @media (max-width: 899px) {
             .news-row { flex-direction: row; align-items: stretch; gap: 8px; }
-            .pinned-card { flex: 1 1 0; flex-direction: column; align-items: stretch; justify-content: center; gap: 6px; }
+            .pinned-card { flex: 0 0 34%; flex-direction: column; align-items: stretch; justify-content: center; gap: 6px; padding: 6px; }
             .pinned-thumb-wrap { flex: none; width: 100%; aspect-ratio: 16 / 9; }
             .pinned-body { align-items: center; text-align: center; gap: 1px; }
-            .pinned-label { font-size: 13px; }
-            .pinned-sub { font-size: 10px; }
+            .pinned-label { font-size: 12px; }
+            .pinned-sub { font-size: 9px; }
             .news-row .news-block { flex: 1 1 0; display: flex; flex-direction: column; }
             .news-row .news-banner { flex: 1; }
             .news-row .news-main { flex-direction: column; gap: 6px; }
@@ -291,8 +291,9 @@
         /* 広い画面では NEWS の左隣に、縦長のカードで並べる */
         @media (min-width: 900px) {
             .news-row { flex-direction: row; align-items: stretch; }
-            .pinned-card { flex: 0 0 240px; flex-direction: column; align-items: stretch; justify-content: center; padding: 12px; border-radius: 16px; }
-            .pinned-thumb-wrap { flex: none; width: 100%; border-radius: 10px; }
+            /* contain: size で GOODS カード自身の高さを無視させ、NEWS バナーの高さにぴったり合わせる（サムネはその分だけ縮む） */
+            .pinned-card { flex: 0 0 240px; flex-direction: column; align-items: stretch; justify-content: center; padding: 12px; border-radius: 16px; contain: size; }
+            .pinned-thumb-wrap { flex: 1 1 auto; min-height: 0; width: 100%; aspect-ratio: auto; border-radius: 10px; }
             .pinned-body { align-items: center; text-align: center; }
             .pinned-label { font-size: 17px; }
         }
@@ -301,7 +302,7 @@
         .news-row:has(> .news-block.no-banner),
         .news-row:has(> .news-block[style*="none"]) { flex-direction: column; }
         .news-row:has(> .news-block.no-banner) .pinned-card,
-        .news-row:has(> .news-block[style*="none"]) .pinned-card { flex: none; flex-direction: row; align-items: center; padding: 8px; border-radius: 12px; max-width: 560px; }
+        .news-row:has(> .news-block[style*="none"]) .pinned-card { flex: none; flex-direction: row; align-items: center; padding: 8px; border-radius: 12px; max-width: 560px; contain: none; }
         .news-row:has(> .news-block.no-banner) .pinned-thumb-wrap,
         .news-row:has(> .news-block[style*="none"]) .pinned-thumb-wrap { flex: 0 0 42%; width: auto; max-width: 280px; aspect-ratio: 1200 / 630; }
         .news-row:has(> .news-block.no-banner) .pinned-body,
@@ -673,8 +674,8 @@
 
 <div class="banner-container">
     <div class="header-logo-wrap">
-        <img src="img/logo.png?v=10eslc" alt="homeクラ" class="header-logo">
-        <img src="img/season3-text.png?v=10eslc" alt="Season３" class="header-season">
+        <img src="img/logo.png?v=8wbo0x" alt="homeクラ" class="header-logo">
+        <img src="img/season3-text.png?v=8wbo0x" alt="Season３" class="header-season">
     </div>
 </div>
 
@@ -684,13 +685,13 @@
 
 <div class="top-buttons-wrapper">
     <a href="https://charagp.full-comi.jp/event/lp/84?chara_event_id=7" class="yurugp-btn" target="_blank" title="世界ご当地キャラ グランプリ">
-        <img src="img/charagp-icon.jpg?v=10eslc" alt="世界ご当地キャラ グランプリ">
+        <img src="img/charagp-icon.jpg?v=8wbo0x" alt="世界ご当地キャラ グランプリ">
     </a>
     <a href="https://github.com/SHUN-CHACHA/minecraft-tools/tree/main" class="yurugp-btn github-btn" target="_blank" title="旬茶オリジナルMInecraft Tools">
-        <img src="img/github-icon.png?v=10eslc" alt="旬茶オリジナルMInecraft Tools">
+        <img src="img/github-icon.png?v=8wbo0x" alt="旬茶オリジナルMInecraft Tools">
     </a>
     <a href="https://modrinth.com/user/SHUNCHA" class="yurugp-btn modrinth-btn" target="_blank" title="Modrinth">
-        <img src="img/modrinth-icon.png?v=10eslc" alt="Modrinth">
+        <img src="img/modrinth-icon.png?v=8wbo0x" alt="Modrinth">
     </a>
     <div class="top-buttons-stack">
         <div class="external-links-container">
@@ -727,8 +728,8 @@
 </div>
 
 <div class="map-link-container">
-    <a href="minecraft_map.html?v=10eslc" target="_blank" class="map-link-btn"><span class="ml-long">homeクラ Season3 メンバー拠点マップ</span><span class="ml-short">🗺️ Season3拠点MAP</span></a>
-    <a href="season2/index.html?v=10eslc" class="map-link-btn" style="opacity:0.75;"><span class="ml-long">📁 Season2（過去シーズン）はこちら</span><span class="ml-short">📁 Season2</span></a>
+    <a href="minecraft_map.html?v=8wbo0x" target="_blank" class="map-link-btn"><span class="ml-long">homeクラ Season3 メンバー拠点マップ</span><span class="ml-short">🗺️ Season3拠点MAP</span></a>
+    <a href="season2/index.html?v=8wbo0x" class="map-link-btn" style="opacity:0.75;"><span class="ml-long">📁 Season2（過去シーズン）はこちら</span><span class="ml-short">📁 Season2</span></a>
 </div>
 
 <div class="main-wrapper">
@@ -759,10 +760,10 @@
     <div class="news-past">
         <div class="news-past-head">📚 これまでの回</div>
         <div id="newsPastList" class="news-past-list"></div>
-        <a class="news-past-all" href="news.html?v=10eslc">過去の回一覧 →</a>
+        <a class="news-past-all" href="news.html?v=8wbo0x">過去の回一覧 →</a>
     </div>
     </div>
-    <div class="news-list-link"><a href="news.html?v=10eslc">📚 だいたい週刊homeクラNEWS 過去の回一覧 →</a></div>
+    <div class="news-list-link"><a href="news.html?v=8wbo0x">📚 だいたい週刊homeクラNEWS 過去の回一覧 →</a></div>
     </div>
     </div>
 
@@ -793,16 +794,16 @@
 
     <div class="section-box" id="member">
         <div class="section-title">👥 メンバー一覧
-            <a href="members.pdf?v=10eslc" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
+            <a href="members.pdf?v=8wbo0x" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
         </div>
         <div id="allList" class="list-container"></div>
     </div>
 </div>
 
-<script src="js/data/config.js?v=10eslc"></script>
-<script src="js/data/news.js?v=10eslc"></script>
-<script src="js/news-list.js?v=10eslc"></script>
-<script src="js/stats-owner.js?v=10eslc"></script>
+<script src="js/data/config.js?v=8wbo0x"></script>
+<script src="js/data/news.js?v=8wbo0x"></script>
+<script src="js/news-list.js?v=8wbo0x"></script>
+<script src="js/stats-owner.js?v=8wbo0x"></script>
 
 <!-- 🧊 3Dスキンビューアー用ライブラリ（ESM配信のみのためmoduleで読み込みwindowに公開） -->
 <script type="module">
@@ -818,7 +819,7 @@ const PROXY_URL = (window.CONFIG?.YOUTUBE_PROXY_URL || '').replace(/\/$/, '');
 const CACHE_DURATION_MS         = window.CONFIG?.CACHE_DURATION_MS          ?? (5  * 60 * 1000);
 const CHANNEL_ICON_CACHE_DURATION_MS = window.CONFIG?.CHANNEL_ICON_CACHE_DURATION_MS ?? (24 * 60 * 60 * 1000);
 // 画像のキャッシュ対策用バージョン番号（コミット時に scripts/bump-asset-version.ps1 が自動更新する）
-const ASSET_VERSION = '10eslc';
+const ASSET_VERSION = '8wbo0x';
 let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 let timeLeft = 600;
