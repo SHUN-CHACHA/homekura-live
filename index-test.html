@@ -11,8 +11,8 @@
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
 
-    <link rel="stylesheet" href="shared/theme.css?v=3x3crm">
-    <script src="shared/theme-preview.js?v=3x3crm"></script>
+    <link rel="stylesheet" href="shared/theme.css?v=08i1m8">
+    <script src="shared/theme-preview.js?v=08i1m8"></script>
 
     <style>
         body {
@@ -294,6 +294,7 @@
             .news-row .news-thumb-wrap { flex: none; width: 100%; max-width: none; }
             .news-row .news-body { justify-content: flex-start; }
             .news-row .news-label { display: none; }
+            .news-row .news-tag { font-size: 10px; padding: 1px 6px; }
             .news-row .news-title { font-size: 12px; }
             .news-row .news-meta { display: none; }
             .news-row .news-list-link a { font-size: 10px; padding: 2px 8px; }
@@ -328,6 +329,13 @@
         .news-row:has(> .news-block[style*="none"]) .pinned-links { flex-direction: row; justify-content: flex-start; }
         .news-row:has(> .news-block.no-banner) .pinned-link,
         .news-row:has(> .news-block[style*="none"]) .pinned-link { font-size: 12px; padding: 4px 10px; }
+
+        /* 回ごとのタグ（公開日・速報・タイトルに書かれた内容。js/news-list.js の newsTags で自動で作る） */
+        .news-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+        .news-tag { font-size: 12px; font-weight: bold; line-height: 1.3; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--accent-blue); color: var(--accent-blue); background: var(--container-bg); }
+        .news-tag.date { background: var(--accent-blue); color: #fff; }
+        .news-tag.breaking { border-color: var(--accent-red); background: var(--accent-red); color: #fff; }
+        .news-tag.topic { border-color: var(--border-color); color: var(--text-color); }
 
         /* バナーと「過去の回」リンクをまとめた NEWS ブロック */
         .news-block { margin-bottom: 20px; }
@@ -695,8 +703,8 @@
 
 <div class="banner-container">
     <div class="header-logo-wrap">
-        <img src="img/logo.png?v=3x3crm" alt="homeクラ" class="header-logo">
-        <img src="img/season3-text.png?v=3x3crm" alt="Season３" class="header-season">
+        <img src="img/logo.png?v=08i1m8" alt="homeクラ" class="header-logo">
+        <img src="img/season3-text.png?v=08i1m8" alt="Season３" class="header-season">
     </div>
 </div>
 
@@ -706,13 +714,13 @@
 
 <div class="top-buttons-wrapper">
     <a href="https://charagp.full-comi.jp/event/lp/84?chara_event_id=7" class="yurugp-btn" target="_blank" title="世界ご当地キャラ グランプリ">
-        <img src="img/charagp-icon.jpg?v=3x3crm" alt="世界ご当地キャラ グランプリ">
+        <img src="img/charagp-icon.jpg?v=08i1m8" alt="世界ご当地キャラ グランプリ">
     </a>
     <a href="https://github.com/SHUN-CHACHA/minecraft-tools/tree/main" class="yurugp-btn github-btn" target="_blank" title="旬茶オリジナルMInecraft Tools">
-        <img src="img/github-icon.png?v=3x3crm" alt="旬茶オリジナルMInecraft Tools">
+        <img src="img/github-icon.png?v=08i1m8" alt="旬茶オリジナルMInecraft Tools">
     </a>
     <a href="https://modrinth.com/user/SHUNCHA" class="yurugp-btn modrinth-btn" target="_blank" title="Modrinth">
-        <img src="img/modrinth-icon.png?v=3x3crm" alt="Modrinth">
+        <img src="img/modrinth-icon.png?v=08i1m8" alt="Modrinth">
     </a>
     <div class="top-buttons-stack">
         <div class="external-links-container">
@@ -749,8 +757,8 @@
 </div>
 
 <div class="map-link-container">
-    <a href="minecraft_map.html?v=3x3crm" target="_blank" class="map-link-btn"><span class="ml-long">homeクラ Season3 メンバー拠点マップ</span><span class="ml-short">🗺️ Season3拠点MAP</span></a>
-    <a href="season2/index.html?v=3x3crm" class="map-link-btn" style="opacity:0.75;"><span class="ml-long">📁 Season2（過去シーズン）はこちら</span><span class="ml-short">📁 Season2</span></a>
+    <a href="minecraft_map.html?v=08i1m8" target="_blank" class="map-link-btn"><span class="ml-long">homeクラ Season3 メンバー拠点マップ</span><span class="ml-short">🗺️ Season3拠点MAP</span></a>
+    <a href="season2/index.html?v=08i1m8" class="map-link-btn" style="opacity:0.75;"><span class="ml-long">📁 Season2（過去シーズン）はこちら</span><span class="ml-short">📁 Season2</span></a>
 </div>
 
 <div class="main-wrapper">
@@ -778,6 +786,7 @@
         </div>
         <div class="news-body">
             <div class="news-label">📰 だいたい週刊homeクラNEWS</div>
+            <div id="newsTags" class="news-tags"></div>
             <div id="newsTitle" class="news-title"></div>
             <div id="newsMeta" class="news-meta"></div>
         </div>
@@ -785,10 +794,10 @@
     <div class="news-past">
         <div class="news-past-head">📚 これまでの回</div>
         <div id="newsPastList" class="news-past-list"></div>
-        <a class="news-past-all" href="news.html?v=3x3crm">過去の回一覧 →</a>
+        <a class="news-past-all" href="news.html?v=08i1m8">過去の回一覧 →</a>
     </div>
     </div>
-    <div class="news-list-link"><a href="news.html?v=3x3crm">📚 だいたい週刊homeクラNEWS 過去の回一覧 →</a></div>
+    <div class="news-list-link"><a href="news.html?v=08i1m8">📚 だいたい週刊homeクラNEWS 過去の回一覧 →</a></div>
     </div>
     </div>
 
@@ -819,16 +828,16 @@
 
     <div class="section-box" id="member">
         <div class="section-title">👥 メンバー一覧
-            <a href="members.pdf?v=3x3crm" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
+            <a href="members.pdf?v=08i1m8" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
         </div>
         <div id="allList" class="list-container"></div>
     </div>
 </div>
 
-<script src="js/data/config.js?v=3x3crm"></script>
-<script src="js/data/news.js?v=3x3crm"></script>
-<script src="js/news-list.js?v=3x3crm"></script>
-<script src="js/stats-owner.js?v=3x3crm"></script>
+<script src="js/data/config.js?v=08i1m8"></script>
+<script src="js/data/news.js?v=08i1m8"></script>
+<script src="js/news-list.js?v=08i1m8"></script>
+<script src="js/stats-owner.js?v=08i1m8"></script>
 
 <!-- 🧊 3Dスキンビューアー用ライブラリ（ESM配信のみのためmoduleで読み込みwindowに公開） -->
 <script type="module">
@@ -844,7 +853,7 @@ const PROXY_URL = (window.CONFIG?.YOUTUBE_PROXY_URL || '').replace(/\/$/, '');
 const CACHE_DURATION_MS         = window.CONFIG?.CACHE_DURATION_MS          ?? (5  * 60 * 1000);
 const CHANNEL_ICON_CACHE_DURATION_MS = window.CONFIG?.CHANNEL_ICON_CACHE_DURATION_MS ?? (24 * 60 * 60 * 1000);
 // 画像のキャッシュ対策用バージョン番号（コミット時に scripts/bump-asset-version.ps1 が自動更新する）
-const ASSET_VERSION = '3x3crm';
+const ASSET_VERSION = '08i1m8';
 let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 let timeLeft = 600;
@@ -1103,6 +1112,19 @@ function isHomekuraVideo(v) {
 let newsArchive = [];
 let lastNewsVideos = [];
 const NEWS_PAST_MAX = 3;
+// 回ごとのタグ（11/17号・⚡速報・タイトルに書かれた内容）を並べる
+function renderNewsTags(el, ep) {
+    if (!el || !window.newsTags) return;
+    const t = window.newsTags(ep);
+    const chips = [];
+    const chip = (cls, text) => { const s = document.createElement('span'); s.className = `news-tag ${cls}`; s.textContent = text; return s; };
+    if (t.date) chips.push(chip('date', t.date));
+    if (t.breaking) chips.push(chip('breaking', '⚡速報'));
+    if (t.topic) chips.push(chip('topic', t.topic));
+    el.replaceChildren(...chips);
+    el.style.display = chips.length ? '' : 'none';
+}
+
 function renderNewsBanner(vItems) {
     lastNewsVideos = vItems || [];
     const cfg = window.HOMEKURA_NEWS;
@@ -1125,6 +1147,7 @@ function renderNewsBanner(vItems) {
     thumb.src = window.newsThumbUrl(pick);
     thumb.alt = pick.title || '';
     document.getElementById('newsTitle').textContent = pick.title || '';
+    renderNewsTags(document.getElementById('newsTags'), pick);
     document.getElementById('newsMeta').textContent =
         `制作：${cfg.creatorName || ''}${d ? `　/　${d.getMonth()+1}/${d.getDate()} 公開` : ''}`;
 
@@ -1145,7 +1168,8 @@ function renderNewsBanner(vItems) {
         text.className = 'news-past-text';
         const date = document.createElement('div');
         date.className = 'news-past-date';
-        date.textContent = pd ? `${pd.getMonth()+1}/${pd.getDate()} 公開` : '';
+        const pt = window.newsTags ? window.newsTags(ep) : null;
+        date.textContent = pt && pt.date ? `${pt.date}${pt.breaking ? ' ⚡速報' : ''}` : (pd ? `${pd.getMonth()+1}/${pd.getDate()} 公開` : '');
         const title = document.createElement('div');
         title.className = 'news-past-title';
         title.textContent = ep.title || '';

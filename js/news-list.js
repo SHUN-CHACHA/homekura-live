@@ -59,6 +59,33 @@
         }
     }
 
+    // 回ごとのタグ（YouTube の公開日とタイトルだけから自動で作る）
+    //   date    ：公開日から「11/17号」（タイトルに日付がない回でも必ず付く）
+    //   breaking：タイトルに「速報」が入っていれば true
+    //   topic   ：タイトルに書かれた内容（【…】・番組名・日付・「速報」を取り除いた残り）。内容がサムネイルにしかない回は ''
+    function newsTags(ep) {
+        const cfg = window.HOMEKURA_NEWS || {};
+        const d = ep && ep.publishedAt ? new Date(ep.publishedAt) : null;
+        const date = d && !isNaN(d) ? `${d.getMonth() + 1}/${d.getDate()}号` : '';
+        const raw = ((ep && ep.title) || '').normalize('NFKC');
+        const breaking = raw.includes('速報');
+        let topic = raw
+            .replace(/【[^】]*】/g, ' ')
+            .replace(/\[[^\]]*\]/g, ' ');
+        if (cfg.titleTag) {
+            const t = cfg.titleTag.normalize('NFKC').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            topic = topic.replace(new RegExp(t, 'gi'), ' ');
+        }
+        topic = topic
+            .replace(/\d{1,2}\s*[\/月]\s*\d{1,2}\s*日?\s*号?/g, ' ')
+            .replace(/速報/g, ' ')
+            .replace(/^[\s:：\-ー・|｜!！]+|[\s:：\-ー・|｜]+$/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+        return { date, breaking, topic };
+    }
+
+    window.newsTags = newsTags;
     window.collectNewsEpisodes = collectNewsEpisodes;
     window.fetchNewsArchive = fetchNewsArchive;
     window.newsThumbUrl = newsThumbUrl;
