@@ -10,8 +10,8 @@
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
 
-    <link rel="stylesheet" href="shared/theme.css?v=wc1226">
-    <script src="shared/theme-preview.js?v=wc1226"></script>
+    <link rel="stylesheet" href="shared/theme.css?v=cp7sbm">
+    <script src="shared/theme-preview.js?v=cp7sbm"></script>
 
     <style>
         body {
@@ -249,9 +249,96 @@
         .news-past-title { font-size: 12px; font-weight: bold; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .news-past-all { align-self: flex-end; font-size: 12px; font-weight: bold; color: var(--accent-blue); text-decoration: none; padding: 3px 10px; border: 1px solid var(--accent-blue); border-radius: 12px; }
         .news-past-all:hover { background: var(--accent-blue); color: #fff; }
-        @media (min-width: 900px) {
+        @media (min-width: 1100px) {
             .news-past { display: flex; flex-direction: column; gap: 6px; flex: 0 0 300px; padding-left: 16px; border-left: 1px dashed var(--border-color); }
         }
+
+        /* NEWS の左隣に固定表示するカード（まぐにぃGOODS など。中身は HTML の「固定表示カード」の所で書き換える） */
+        .news-row { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .news-row .news-block { flex: 1; min-width: 0; margin-bottom: 0; }
+        .pinned-card {
+            display: flex; align-items: center; gap: 10px;
+            background: var(--container-bg); border: 2px solid var(--accent-green); border-radius: 12px;
+            padding: 8px; color: inherit; overflow: hidden;
+            box-shadow: 0 4px 12px -2px rgba(var(--shadow-rgb), 0.08); transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .pinned-card:hover { box-shadow: 0 10px 15px -3px rgba(var(--shadow-rgb), 0.12); }
+        /* サムネは画像全体を表示（切らない）。押すと YouTube の動画 */
+        .pinned-thumb-wrap { display: block; flex: 0 0 42%; aspect-ratio: 1200 / 630; border-radius: 8px; overflow: hidden; background: var(--thumb-bg); }
+        .pinned-thumb { width: 100%; height: 100%; object-fit: contain; display: block; transition: transform 0.2s; }
+        .pinned-thumb-wrap:hover .pinned-thumb { transform: scale(1.03); }
+        .pinned-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+        .pinned-label { font-size: 16px; font-weight: 900; color: var(--accent-green); }
+        .pinned-links { display: flex; flex-wrap: wrap; gap: 6px; }
+        .pinned-link {
+            font-size: 12px; font-weight: bold; text-decoration: none; white-space: nowrap; text-align: center;
+            padding: 4px 10px; border-radius: 12px; border: 1px solid var(--accent-green);
+            color: var(--accent-green); background: var(--container-bg); transition: 0.2s;
+        }
+        .pinned-link:hover { background: var(--accent-green-light); }
+        .pinned-link.buy { background: var(--accent-green); color: #fff; }
+        .pinned-link.buy:hover { opacity: 0.85; }
+        /* スマホ・タブレット：GOODS（細め）と NEWS（広め）を左右2列に並べる。どちらも「画像が上・文字が下」 */
+        @media (max-width: 899px) {
+            .news-row { flex-direction: row; align-items: stretch; gap: 8px; }
+            /* サムネ・文字・ボタンをカードの高さいっぱいに均等に並べて、下に空白が残らないようにする */
+            .pinned-card { flex: 0 0 34%; flex-direction: column; align-items: stretch; justify-content: space-evenly; gap: 8px; padding: 8px 6px; }
+            .pinned-thumb-wrap { flex: none; width: 100%; }
+            .pinned-body { flex: 1; align-items: stretch; justify-content: space-evenly; text-align: center; gap: 10px; }
+            .pinned-label { font-size: 12px; line-height: 1.35; }
+            /* ボタンどうしを離して、押し間違いを防ぐ */
+            .pinned-links { flex-direction: column; gap: 10px; margin-top: 2px; }
+            .pinned-link { font-size: 11px; padding: 7px 2px; }
+            .news-row .news-block { flex: 1 1 0; display: flex; flex-direction: column; }
+            .news-row .news-banner { flex: 1; }
+            .news-row .news-main { flex-direction: column; gap: 6px; }
+            .news-row .news-thumb-wrap { flex: none; width: 100%; max-width: none; }
+            .news-row .news-body { justify-content: flex-start; }
+            .news-row .news-label { display: none; }
+            .news-row .news-tag { font-size: 10px; padding: 1px 6px; }
+            .news-row .news-title { font-size: 12px; }
+            .news-row .news-meta { display: none; }
+            .news-row .news-list-link a { font-size: 10px; padding: 2px 8px; }
+        }
+        /* PC：NEWS の左隣に縦長のカード。GOODS の画像は全体を表示し、NEWS 側はその高さに合わせて広がる */
+        @media (min-width: 900px) {
+            .news-row { flex-direction: row; align-items: stretch; }
+            .pinned-card { flex: 0 0 280px; flex-direction: column; align-items: stretch; justify-content: space-evenly; gap: 10px; padding: 12px; border-radius: 16px; }
+            .pinned-thumb-wrap { flex: none; width: 100%; border-radius: 10px; }
+            .pinned-body { flex: 1; align-items: center; justify-content: space-evenly; text-align: center; gap: 10px; }
+            .pinned-label { font-size: 14px; line-height: 1.35; white-space: nowrap; letter-spacing: -0.02em; }
+            .pinned-links { justify-content: center; }
+            .pinned-link { font-size: 13px; }
+            /* NEWS のバナーを GOODS と同じ高さまで伸ばす。サムネは 16:9 のまま（切らない）で、上下の真ん中に置く */
+            .news-row .news-block { display: flex; flex-direction: column; }
+            .news-row .news-banner { flex: 1; }
+            .news-row .news-main { align-items: center; }
+            .news-row .news-thumb-wrap { flex: 0 0 58%; max-width: 440px; }
+            .news-row .news-title { font-size: 15px; -webkit-line-clamp: 3; }
+            .news-row .news-meta { font-size: 12px; }
+            .news-row .news-label { font-size: 11px; padding: 2px 8px; }
+            .news-row .news-tag { font-size: 11px; }
+        }
+        /* 週刊NEWS のバナーが出ていない時（最新回の公開から7日たった時など）は、GOODS を横長のカードにして上に置く */
+        .news-row:has(> .news-block.no-banner),
+        .news-row:has(> .news-block[style*="none"]) { flex-direction: column; }
+        .news-row:has(> .news-block.no-banner) .pinned-card,
+        .news-row:has(> .news-block[style*="none"]) .pinned-card { flex: none; flex-direction: row; align-items: center; padding: 8px; border-radius: 12px; max-width: 560px; }
+        .news-row:has(> .news-block.no-banner) .pinned-thumb-wrap,
+        .news-row:has(> .news-block[style*="none"]) .pinned-thumb-wrap { flex: 0 0 42%; width: auto; max-width: 280px; }
+        .news-row:has(> .news-block.no-banner) .pinned-body,
+        .news-row:has(> .news-block[style*="none"]) .pinned-body { align-items: flex-start; text-align: left; }
+        .news-row:has(> .news-block.no-banner) .pinned-links,
+        .news-row:has(> .news-block[style*="none"]) .pinned-links { flex-direction: row; justify-content: flex-start; }
+        .news-row:has(> .news-block.no-banner) .pinned-link,
+        .news-row:has(> .news-block[style*="none"]) .pinned-link { font-size: 12px; padding: 4px 10px; }
+
+        /* 回ごとのタグ（公開日・速報・タイトルに書かれた内容。js/news-list.js の newsTags で自動で作る） */
+        .news-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+        .news-tag { font-size: 12px; font-weight: bold; line-height: 1.3; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--accent-blue); color: var(--accent-blue); background: var(--container-bg); }
+        .news-tag.date { background: var(--accent-blue); color: #fff; }
+        .news-tag.breaking { border-color: var(--accent-red); background: var(--accent-red); color: #fff; }
+        .news-tag.topic { border-color: var(--border-color); color: var(--text-color); }
 
         /* バナーと「過去の回」リンクをまとめた NEWS ブロック */
         .news-block { margin-bottom: 20px; }
@@ -259,7 +346,7 @@
             display: flex; justify-content: flex-end; margin-top: 6px;
         }
         /* 広い画面では一覧へのリンクはバナーの右側にあるので、下のリンクはバナーが出ていない時だけ */
-        @media (min-width: 900px) {
+        @media (min-width: 1100px) {
             .news-block:not(.no-banner) .news-list-link { display: none; }
         }
         .news-list-link a {
@@ -619,8 +706,8 @@
 
 <div class="banner-container">
     <div class="header-logo-wrap">
-        <img src="img/logo.png?v=wc1226" alt="homeクラ" class="header-logo">
-        <img src="img/season3-text.png?v=wc1226" alt="Season３" class="header-season">
+        <img src="img/logo.png?v=cp7sbm" alt="homeクラ" class="header-logo">
+        <img src="img/season3-text.png?v=cp7sbm" alt="Season３" class="header-season">
     </div>
 </div>
 
@@ -630,13 +717,13 @@
 
 <div class="top-buttons-wrapper">
     <a href="https://charagp.full-comi.jp/event/lp/84?chara_event_id=7" class="yurugp-btn" target="_blank" title="世界ご当地キャラ グランプリ">
-        <img src="img/charagp-icon.jpg?v=wc1226" alt="世界ご当地キャラ グランプリ">
+        <img src="img/charagp-icon.jpg?v=cp7sbm" alt="世界ご当地キャラ グランプリ">
     </a>
     <a href="https://github.com/SHUN-CHACHA/minecraft-tools/tree/main" class="yurugp-btn github-btn" target="_blank" title="旬茶オリジナルMInecraft Tools">
-        <img src="img/github-icon.png?v=wc1226" alt="旬茶オリジナルMInecraft Tools">
+        <img src="img/github-icon.png?v=cp7sbm" alt="旬茶オリジナルMInecraft Tools">
     </a>
     <a href="https://modrinth.com/user/SHUNCHA" class="yurugp-btn modrinth-btn" target="_blank" title="Modrinth">
-        <img src="img/modrinth-icon.png?v=wc1226" alt="Modrinth">
+        <img src="img/modrinth-icon.png?v=cp7sbm" alt="Modrinth">
     </a>
     <div class="top-buttons-stack">
         <div class="external-links-container">
@@ -673,12 +760,26 @@
 </div>
 
 <div class="map-link-container">
-    <a href="minecraft_map.html?v=wc1226" target="_blank" class="map-link-btn"><span class="ml-long">homeクラ Season3 メンバー拠点マップ</span><span class="ml-short">🗺️ Season3拠点MAP</span></a>
-    <a href="season2/index.html?v=wc1226" class="map-link-btn" style="opacity:0.75;"><span class="ml-long">📁 Season2（過去シーズン）はこちら</span><span class="ml-short">📁 Season2</span></a>
+    <a href="minecraft_map.html?v=cp7sbm" target="_blank" class="map-link-btn"><span class="ml-long">homeクラ Season3 メンバー拠点マップ</span><span class="ml-short">🗺️ Season3拠点MAP</span></a>
+    <a href="season2/index.html?v=cp7sbm" class="map-link-btn" style="opacity:0.75;"><span class="ml-long">📁 Season2（過去シーズン）はこちら</span><span class="ml-short">📁 Season2</span></a>
 </div>
 
 <div class="main-wrapper">
     <!-- homeクラワールドの速報動画（js/data/news.js で設定。ナナホシナナさん制作「だいたい週刊homeクラNEWS」）と過去の回一覧へのリンク -->
+    <div class="news-row">
+    <!-- ▼ 固定表示カード（NEWS の左隣）。リンク先・画像・文字はここを書き換える。いらなくなったら <div class="pinned-card">〜</div> を消す -->
+    <div class="pinned-card">
+        <a class="pinned-thumb-wrap" href="https://youtu.be/Jt-ko5FydLY" target="_blank" rel="noopener">
+            <img class="pinned-thumb" src="https://pbs.twimg.com/media/HX7rxWBbgAALjUw?format=jpg&amp;name=medium" alt="まぐにぃ ゲーム実況本館 Birthday GOODS" loading="lazy">
+        </a>
+        <div class="pinned-body">
+            <div class="pinned-label">🛍️ まぐねぇさんが勝手に作ったグッズ</div>
+            <div class="pinned-links">
+                <a class="pinned-link" href="https://x.com/maguro29/status/2125395312286261555" target="_blank" rel="noopener">𝕏 ポストを見る</a>
+                <a class="pinned-link buy" href="https://creator-store.jp/blogs/features/magunii-261125?creator=magunii" target="_blank" rel="noopener">🛒 購入はこちら</a>
+            </div>
+        </div>
+    </div>
     <div id="newsBlock" class="news-block" style="display: none;">
     <div id="newsBanner" class="news-banner" style="display: none;">
     <a id="newsMain" class="news-main" href="#" target="_blank" rel="noopener">
@@ -688,6 +789,7 @@
         </div>
         <div class="news-body">
             <div class="news-label">📰 だいたい週刊homeクラNEWS</div>
+            <div id="newsTags" class="news-tags"></div>
             <div id="newsTitle" class="news-title"></div>
             <div id="newsMeta" class="news-meta"></div>
         </div>
@@ -695,10 +797,11 @@
     <div class="news-past">
         <div class="news-past-head">📚 これまでの回</div>
         <div id="newsPastList" class="news-past-list"></div>
-        <a class="news-past-all" href="news.html?v=wc1226">過去の回一覧 →</a>
+        <a class="news-past-all" href="news.html?v=cp7sbm">過去の回一覧 →</a>
     </div>
     </div>
-    <div class="news-list-link"><a href="news.html?v=wc1226">📚 だいたい週刊homeクラNEWS 過去の回一覧 →</a></div>
+    <div class="news-list-link"><a href="news.html?v=cp7sbm">📚 だいたい週刊homeクラNEWS 過去の回一覧 →</a></div>
+    </div>
     </div>
 
     <div id="homekuraLiveSection" class="section-box" style="display: none;">
@@ -728,16 +831,16 @@
 
     <div class="section-box" id="member">
         <div class="section-title">👥 メンバー一覧
-            <a href="members.pdf?v=wc1226" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
+            <a href="members.pdf?v=cp7sbm" target="_blank" class="btn-member-pdf" title="メンバー一覧（PDF）を開く">📄 PDF</a>
         </div>
         <div id="allList" class="list-container"></div>
     </div>
 </div>
 
-<script src="js/data/config.js?v=wc1226"></script>
-<script src="js/data/news.js?v=wc1226"></script>
-<script src="js/news-list.js?v=wc1226"></script>
-<script src="js/stats-owner.js?v=wc1226"></script>
+<script src="js/data/config.js?v=cp7sbm"></script>
+<script src="js/data/news.js?v=cp7sbm"></script>
+<script src="js/news-list.js?v=cp7sbm"></script>
+<script src="js/stats-owner.js?v=cp7sbm"></script>
 
 <!-- 🧊 3Dスキンビューアー用ライブラリ（ESM配信のみのためmoduleで読み込みwindowに公開） -->
 <script type="module">
@@ -753,7 +856,7 @@ const PROXY_URL = (window.CONFIG?.YOUTUBE_PROXY_URL || '').replace(/\/$/, '');
 const CACHE_DURATION_MS         = window.CONFIG?.CACHE_DURATION_MS          ?? (5  * 60 * 1000);
 const CHANNEL_ICON_CACHE_DURATION_MS = window.CONFIG?.CHANNEL_ICON_CACHE_DURATION_MS ?? (24 * 60 * 60 * 1000);
 // 画像のキャッシュ対策用バージョン番号（コミット時に scripts/bump-asset-version.ps1 が自動更新する）
-const ASSET_VERSION = 'wc1226';
+const ASSET_VERSION = 'cp7sbm';
 let channels = [];
 let reservedVideos = JSON.parse(localStorage.getItem('reserved_videos') || '[]');
 let timeLeft = 600;
@@ -1012,6 +1115,19 @@ function isHomekuraVideo(v) {
 let newsArchive = [];
 let lastNewsVideos = [];
 const NEWS_PAST_MAX = 3;
+// 回ごとのタグ（11/17号・⚡速報・タイトルに書かれた内容）を並べる
+function renderNewsTags(el, ep) {
+    if (!el || !window.newsTags) return;
+    const t = window.newsTags(ep);
+    const chips = [];
+    const chip = (cls, text) => { const s = document.createElement('span'); s.className = `news-tag ${cls}`; s.textContent = text; return s; };
+    if (t.date) chips.push(chip('date', t.date));
+    if (t.breaking) chips.push(chip('breaking', '⚡速報'));
+    if (t.topic) chips.push(chip('topic', t.topic));
+    el.replaceChildren(...chips);
+    el.style.display = chips.length ? '' : 'none';
+}
+
 function renderNewsBanner(vItems) {
     lastNewsVideos = vItems || [];
     const cfg = window.HOMEKURA_NEWS;
@@ -1034,6 +1150,7 @@ function renderNewsBanner(vItems) {
     thumb.src = window.newsThumbUrl(pick);
     thumb.alt = pick.title || '';
     document.getElementById('newsTitle').textContent = pick.title || '';
+    renderNewsTags(document.getElementById('newsTags'), pick);
     document.getElementById('newsMeta').textContent =
         `制作：${cfg.creatorName || ''}${d ? `　/　${d.getMonth()+1}/${d.getDate()} 公開` : ''}`;
 
@@ -1054,7 +1171,8 @@ function renderNewsBanner(vItems) {
         text.className = 'news-past-text';
         const date = document.createElement('div');
         date.className = 'news-past-date';
-        date.textContent = pd ? `${pd.getMonth()+1}/${pd.getDate()} 公開` : '';
+        const pt = window.newsTags ? window.newsTags(ep) : null;
+        date.textContent = pt && pt.date ? `${pt.date}${pt.breaking ? ' ⚡速報' : ''}` : (pd ? `${pd.getMonth()+1}/${pd.getDate()} 公開` : '');
         const title = document.createElement('div');
         title.className = 'news-past-title';
         title.textContent = ep.title || '';

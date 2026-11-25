@@ -9,8 +9,8 @@
     <link rel="apple-touch-icon" href="https://shun-chacha.github.io/homekura-live/img/apple-touch-icon.png">
     <link rel="manifest" href="https://shun-chacha.github.io/homekura-live/site.webmanifest">
     <meta name="apple-mobile-web-app-title" content="homeクラ合衆国Season3">
-    <link rel="stylesheet" href="shared/theme.css?v=wc1226">
-    <script src="shared/theme-preview.js?v=wc1226"></script>
+    <link rel="stylesheet" href="shared/theme.css?v=cp7sbm">
+    <script src="shared/theme-preview.js?v=cp7sbm"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -62,6 +62,12 @@
         .episode-body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 4px; }
         .episode-date { font-size: 12px; font-weight: bold; color: var(--blue); }
         .episode-title { font-size: 14px; font-weight: 800; line-height: 1.45; }
+        /* 回ごとのタグ（公開日・速報・タイトルに書かれた内容。js/news-list.js の newsTags で自動で作る） */
+        .episode-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+        .episode-tag { font-size: 12px; font-weight: bold; line-height: 1.3; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--blue); color: var(--blue); background: var(--surface); }
+        .episode-tag.date { background: var(--blue); color: #fff; }
+        .episode-tag.breaking { border-color: var(--red); background: var(--red); color: #fff; }
+        .episode-tag.topic { border-color: var(--border); color: var(--text); }
         .episode-empty { max-width: 960px; margin: 20px auto 0; padding: 0 16px; color: var(--sub); font-size: 14px; }
 
         @media (max-width: 599px) {
@@ -77,15 +83,15 @@
 
 <!-- バナー -->
 <div class="banner-container">
-    <img src="img/logo.png?v=wc1226" alt="homeクラ" class="header-logo">
+    <img src="img/logo.png?v=cp7sbm" alt="homeクラ" class="header-logo">
 </div>
 
 <!-- ナビゲーション -->
 <nav class="nav-bar">
-    <a href="index.html?v=wc1226">🏠 ポータル</a>
-    <a href="minecraft_map.html?v=wc1226">🗺️ 拠点マップ</a>
-    <a href="map_compare.html?v=wc1226">🔍 地図の比較</a>
-    <a href="news.html?v=wc1226" class="current">📰 NEWS 過去の回</a>
+    <a href="index.html?v=cp7sbm">🏠 ポータル</a>
+    <a href="minecraft_map.html?v=cp7sbm">🗺️ 拠点マップ</a>
+    <a href="map_compare.html?v=cp7sbm">🔍 地図の比較</a>
+    <a href="news.html?v=cp7sbm" class="current">📰 NEWS 過去の回</a>
 </nav>
 
 <!-- ページタイトル -->
@@ -97,10 +103,10 @@
 <div id="episodeGrid" class="episode-grid"></div>
 <p id="episodeEmpty" class="episode-empty" style="display: none;">まだ回がありません。</p>
 
-<script src="js/data/config.js?v=wc1226"></script>
-<script src="js/stats-owner.js?v=wc1226"></script>
-<script src="js/data/news.js?v=wc1226"></script>
-<script src="js/news-list.js?v=wc1226"></script>
+<script src="js/data/config.js?v=cp7sbm"></script>
+<script src="js/stats-owner.js?v=cp7sbm"></script>
+<script src="js/data/news.js?v=cp7sbm"></script>
+<script src="js/news-list.js?v=cp7sbm"></script>
 <script>
 // 回の一覧を描く。js/data/news.js の episodes に、Worker が記録してきた回（/news）と、
 // トップページで取得した最新動画（ブラウザに保存した portal_cache）を合わせる
@@ -146,7 +152,15 @@
         const title = document.createElement('div');
         title.className = 'episode-title';
         title.textContent = ep.title;
-        body.append(date, title);
+        // タグ（11/17号・⚡速報・タイトルに書かれた内容）
+        const tags = document.createElement('div');
+        tags.className = 'episode-tags';
+        const t = window.newsTags ? window.newsTags(ep) : {};
+        const chip = (cls, text) => { const c = document.createElement('span'); c.className = `episode-tag ${cls}`; c.textContent = text; return c; };
+        if (t.date) tags.appendChild(chip('date', t.date));
+        if (t.breaking) tags.appendChild(chip('breaking', '⚡速報'));
+        if (t.topic) tags.appendChild(chip('topic', t.topic));
+        body.append(tags, date, title);
 
         a.append(wrap, body);
         grid.appendChild(a);
@@ -155,6 +169,6 @@
 })();
 </script>
 <!-- 📊 このページが開かれた回数を数える（js/pageview.js） -->
-<script src="js/pageview.js?v=wc1226" data-page="news-list"></script>
+<script src="js/pageview.js?v=cp7sbm" data-page="news-list"></script>
 </body>
 </html>

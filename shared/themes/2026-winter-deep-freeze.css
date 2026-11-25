@@ -128,6 +128,7 @@
 /* ===== C-2 凍える縁：カードにマウスを乗せると、縁が白く凍る ===== */
 :root .card,
 :root .news-banner,
+:root .pinned-card,
 :root .episode-card {
     position: relative;
     transition: transform .2s, box-shadow .25s, border-color .25s;
@@ -135,6 +136,7 @@
 /* 霜の層：サムネ画像の上にも重なるよう、カードの一番上に薄く重ねる */
 :root .card::after,
 :root .news-banner::after,
+:root .pinned-card::after,
 :root .episode-card::after {
     content: "";
     position: absolute;
@@ -150,9 +152,11 @@
 }
 :root .card:hover::after,
 :root .news-banner:hover::after,
+:root .pinned-card:hover::after,
 :root .episode-card:hover::after { opacity: 1; }
 :root .card:hover,
 :root .news-banner:hover,
+:root .pinned-card:hover,
 :root .episode-card:hover {
     border-color: #8cc4e8 !important;
     box-shadow:
