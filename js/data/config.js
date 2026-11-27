@@ -268,6 +268,7 @@ window.CONFIG = {
                 "homepageUrl": "https://lit.link/uga_totemuman",
                 "color": "#e8c99c",
                 "avatarImg": "avatars/uga_youtube.png",
+                "id2": "UCroKdygkUA6G0MRZ1OB_ibg",
                 "order": 121
         },
         {
